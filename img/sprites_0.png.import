@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/timer.png-485f0cad83450b1a7954b6d3c4af2cd4.stex"
+path="res://.import/sprites_0.png-a42ced6b6b1e1b10827f1c18e2f56a00.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://img/timer.png"
-dest_files=[ "res://.import/timer.png-485f0cad83450b1a7954b6d3c4af2cd4.stex" ]
+source_file="res://img/sprites_0.png"
+dest_files=[ "res://.import/sprites_0.png-a42ced6b6b1e1b10827f1c18e2f56a00.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2
