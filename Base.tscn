@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://img/eagle.png" type="Texture" id=1]
+[ext_resource path="res://img/sprites_0.png" type="Texture" id=1]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 20, 20 )
+extents = Vector2( 8, 8 )
 
 [node name="Base" type="StaticBody2D"]
 collision_layer = 2
@@ -11,6 +11,9 @@ collision_mask = 0
 
 [node name="Sprite" type="Sprite" parent="."]
 texture = ExtResource( 1 )
+vframes = 18
+hframes = 16
+frame = 256
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )
