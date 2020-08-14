@@ -1,6 +1,6 @@
 extends KinematicBody2D
 
-export(int) var SPEED = 100
+export(int) var SPEED = 32
 
 onready var sprite = $Sprite
 
