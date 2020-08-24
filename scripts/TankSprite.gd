@@ -3,8 +3,9 @@ extends Sprite
 # Sprite API
 
 var dir_set = [0, 1]
-var moving = 0  # switch between 0 and 1 for track animation
+var animation_frame = 0  # switch between 0 and 1 for track animation
 var playing = true
+var colliding = false
 
 # Get sprite direction set (columns) from input vector
 func set_dir_set(vec):
@@ -22,8 +23,9 @@ func set_dir_set(vec):
 # Motion effect
 func _process(delta):
 	if playing:
-		moving = 0 if moving else 1
-		set_frame(dir_set[moving])
+		if not colliding:
+			animation_frame = 0 if animation_frame else 1
+		set_frame(dir_set[animation_frame])
 	
 func play():
 	playing = true

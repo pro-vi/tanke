@@ -6,7 +6,7 @@ onready var sprite = $Sprite
 
 var velocity = Vector2()
 
-func _physics_process(_delta):
+func _physics_process(delta):
 	var input_vector = Vector2()
 	
 	if Input.is_action_pressed("ui_up"):
@@ -25,4 +25,8 @@ func _physics_process(_delta):
 		sprite.stop()
 	velocity = input_vector * SPEED
 	sprite.set_dir_set(input_vector)
-	velocity = move_and_slide(velocity)
+	
+	var collision = move_and_collide(velocity * delta)
+	if collision:
+		velocity = velocity.slide(collision.normal)
+	$Sprite.colliding = collision != null
