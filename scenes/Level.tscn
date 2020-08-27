@@ -2,7 +2,7 @@
 
 [ext_resource path="res://img/sprites_1.png" type="Texture" id=1]
 [ext_resource path="res://scenes/Base.tscn" type="PackedScene" id=2]
-[ext_resource path="res://scenes/Level.gd" type="Script" id=3]
+[ext_resource path="res://scripts/Level.gd" type="Script" id=3]
 [ext_resource path="res://scenes/PlayerTank.tscn" type="PackedScene" id=4]
 
 [sub_resource type="ConvexPolygonShape2D" id=1]
