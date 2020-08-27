@@ -15,5 +15,5 @@ func _replace_bricks():
 	var brick_cells = brickTileMap.get_used_cells()
 	for cell in brick_cells:
 		var brick_block = BrickBlock.instance()
-		brick_block.global_position = Vector2(cell.x, cell.y) 
+		brick_block.global_position = Vector2(cell.x, cell.y)
 	brick_cells.clear()
