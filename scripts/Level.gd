@@ -1,10 +1,14 @@
 extends Node2D
 
 var BrickBlock = preload("res://scenes/BrickBlock.tscn")
-
+onready var camera = $Camera2D
+onready var player = $PlayerTank
 onready var tiles = $Tiles
 onready var brickTileMap = tiles.get_node("BrickTileMap")
 onready var steelTileMap = tiles.get_node("SteelTileMap")
+onready var grassTileMap = tiles.get_node("GrassTileMap")
+var width = ProjectSettings.get_setting("display/window/size/width")
+var height = ProjectSettings.get_setting("display/window/size/height")
 
 
 func _ready():
