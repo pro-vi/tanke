@@ -40,7 +40,7 @@ func _ready():
 
 		_generate_level_perlin()
 
-	_replace_bricks()
+	_replace_blocks()
 
 func _process(_delta):
 	var player_pos = player.position
@@ -53,7 +53,7 @@ func _process(_delta):
 			_pave_set(sid, next_row)
 			if debug:
 				_pave_debug(sid, next_row)
-		_replace_bricks()
+		_replace_blocks()
 
 		next_row -= 1
 
@@ -80,16 +80,23 @@ func _pave_set(sid, row):
 			grassTileMap.set_cell(c*2+1, row*2, 0)
 			grassTileMap.set_cell(c*2, row*2+1, 0)
 			grassTileMap.set_cell(c*2+1, row*2+1, 0)
-	elif 2 <= size and size <= 3 and (sid % 5 == 0 or sid % 7 == 0):
+	elif 2 <= size and size <= 3 and sid % 5 == 0:
 		for c in ps.sets[sid]:
 			steelTileMap.set_cell(c*2, row*2, 0)
 			steelTileMap.set_cell(c*2+1, row*2, 0)
 			steelTileMap.set_cell(c*2, row*2+1, 0)
 			steelTileMap.set_cell(c*2+1, row*2+1, 0)
+	elif size <= 6 and sid % 7 == 0:
+		for c in ps.sets[sid]:
+			waterTileMap.set_cell(c*2, row*2, 0)
+			waterTileMap.set_cell(c*2+1, row*2, 0)
+			waterTileMap.set_cell(c*2, row*2+1, 0)
+			waterTileMap.set_cell(c*2+1, row*2+1, 0)
 
 func _pave_debug(sid, row):
 	for c in ps.sets[sid]:
 		var debug_block = DebugBlock.instance()
+		debug_block.set_z_index(999)
 		debug_block.get_node("Rect/Text").text = str(sid%100)
 		debug_block.position = Vector2(c*grid_size+8, row*grid_size+8)
 		add_child(debug_block)
