@@ -139,3 +139,4 @@ collision_layer = 0
 collision_mask = 0
 format = 1
 tile_data = PoolIntArray( 983055, 0, 0, 983056, 0, 0, 983066, 0, 0, 983067, 0, 0, 1048591, 0, 0, 1048592, 0, 0, 1048602, 0, 0, 1048603, 0, 0, 1114127, 0, 0, 1114128, 0, 0, 1114138, 0, 0, 1114139, 0, 0, 1572872, 0, 0, 1572873, 0, 0, 1638408, 0, 0, 1638409, 0, 0 )
+[connection signal="shoot" from="PlayerTank" to="." method="_on_PlayerTank_shoot"]

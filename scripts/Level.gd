@@ -34,3 +34,9 @@ func _replace_blocks():
 		water_block.global_position = waterTileMap.map_to_world(cell) + offset
 		add_child(water_block)
 	waterTileMap.clear()
+
+
+func _on_PlayerTank_shoot(bullet, _position, _direction):
+	var b = bullet.instance()
+	add_child(b)
+	b.start(_position, _direction)

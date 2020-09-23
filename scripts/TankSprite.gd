@@ -26,6 +26,7 @@ func _process(delta):
 		if not colliding:
 			animation_frame = 0 if animation_frame else 1
 		set_frame(dir_set[animation_frame])
+	set_global_rotation(0)
 	
 func play():
 	playing = true
