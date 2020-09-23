@@ -14,6 +14,9 @@ var grid = Vector2(4, 4)  # minimum grid size to snap to when turning
 
 var can_shoot = true
 
+func _ready():
+	set_dir(Constants.Dir.U)
+
 func _physics_process(delta):
 	var input_vector = Vector2()
 	
