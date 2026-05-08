@@ -1,15 +1,22 @@
-# Godot-specific ignores
-.import/
-*.import
+# Godot 4
+.godot/
 export.cfg
 export_presets.cfg
-
-# Imported translations (automatically generated from CSV files)
 *.translation
-
-# Mono-specific ignores
-.mono/
+*.mono/
 data_*/
 
-# macOS specific
+# Godot 3 legacy (kept for history)
+.import/
+*.import
+
+# macOS
 .DS_Store
+
+# Loop output
+tools/out/
+
+# Session/tracking
+.claude/
+.prov/
+logs/

@@ -2,7 +2,7 @@ extends "res://scripts/Level.gd"
 
 const ProceduralStep = preload("res://scripts/ProceduralStep.gd")
 const DebugBlock = preload("res://scenes/DebugBlock.tscn")
-export var debug = false
+@export var debug = false
 
 # algo variables
 var osn
@@ -13,7 +13,6 @@ var grid_size = 16
 
 
 func _ready():
-	randomize()
 	# init starting area
 	ps = ProceduralStep.new(width/grid_size)
 	verts = ps.generate_step()
@@ -31,9 +30,9 @@ func _ready():
 
 	if false:
 		# perlin noise
-		osn = OpenSimplexNoise.new()
+		osn = FastNoiseLite.new()
 		osn.seed = randi()
-		osn.octaves = 4
+		osn.fractal_octaves = 4
 		osn.period = 15
 		osn.lacunarity = 1.5
 		osn.persistence = 0.75
@@ -70,32 +69,32 @@ func _pave_set(sid, row):
 	var size = ps.sets[sid].size()
 	if 2 <= size and size <= 7 and sid % 2 == 0:
 		for c in ps.sets[sid]:
-			brickTileMap.set_cell(c*2, row*2, 0)
-			brickTileMap.set_cell(c*2+1, row*2, 0)
-			brickTileMap.set_cell(c*2, row*2+1, 0)
-			brickTileMap.set_cell(c*2+1, row*2+1, 0)
+			brickTileMap.set_cell(0, Vector2i(c*2, row*2), 0, Vector2i(0, 0))
+			brickTileMap.set_cell(0, Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
+			brickTileMap.set_cell(0, Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
+			brickTileMap.set_cell(0, Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
 	elif size <= 1 and sid % 3 == 0:
 		for c in ps.sets[sid]:
-			grassTileMap.set_cell(c*2, row*2, 0)
-			grassTileMap.set_cell(c*2+1, row*2, 0)
-			grassTileMap.set_cell(c*2, row*2+1, 0)
-			grassTileMap.set_cell(c*2+1, row*2+1, 0)
+			grassTileMap.set_cell(0, Vector2i(c*2, row*2), 0, Vector2i(0, 0))
+			grassTileMap.set_cell(0, Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
+			grassTileMap.set_cell(0, Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
+			grassTileMap.set_cell(0, Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
 	elif 2 <= size and size <= 3 and sid % 5 == 0:
 		for c in ps.sets[sid]:
-			steelTileMap.set_cell(c*2, row*2, 0)
-			steelTileMap.set_cell(c*2+1, row*2, 0)
-			steelTileMap.set_cell(c*2, row*2+1, 0)
-			steelTileMap.set_cell(c*2+1, row*2+1, 0)
+			steelTileMap.set_cell(0, Vector2i(c*2, row*2), 0, Vector2i(0, 0))
+			steelTileMap.set_cell(0, Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
+			steelTileMap.set_cell(0, Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
+			steelTileMap.set_cell(0, Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
 	elif size <= 6 and sid % 7 == 0:
 		for c in ps.sets[sid]:
-			waterTileMap.set_cell(c*2, row*2, 0)
-			waterTileMap.set_cell(c*2+1, row*2, 0)
-			waterTileMap.set_cell(c*2, row*2+1, 0)
-			waterTileMap.set_cell(c*2+1, row*2+1, 0)
+			waterTileMap.set_cell(0, Vector2i(c*2, row*2), 0, Vector2i(0, 0))
+			waterTileMap.set_cell(0, Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
+			waterTileMap.set_cell(0, Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
+			waterTileMap.set_cell(0, Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
 
 func _pave_debug(sid, row):
 	for c in ps.sets[sid]:
-		var debug_block = DebugBlock.instance()
+		var debug_block = DebugBlock.instantiate()
 		debug_block.set_z_index(999)
 		debug_block.get_node("Rect/Text").text = str(sid%100)
 		debug_block.position = Vector2(c*grid_size+8, row*grid_size+8)
@@ -107,8 +106,8 @@ func _generate_level_perlin():
 		for y in height/grid_size:
 			var sample = osn.get_noise_2d(float(x), float(y))
 			if sample < -0.3:
-				steelTileMap.set_cell(x, y, 0)
+				steelTileMap.set_cell(0, Vector2i(x, y), 0, Vector2i(0, 0))
 			elif (sample > 0.25) or (sample > -0.033 and sample < 0.033):
-				brickTileMap.set_cell(x, y, 0)
+				brickTileMap.set_cell(0, Vector2i(x, y), 0, Vector2i(0, 0))
 
 

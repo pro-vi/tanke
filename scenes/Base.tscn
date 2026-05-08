@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://img/sprites_0.png" type="Texture" id=1]
+[ext_resource path="res://img/sprites_0.png" type="Texture2D" id=1]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 8, 8 )
@@ -9,7 +9,7 @@ extents = Vector2( 8, 8 )
 collision_layer = 0
 collision_mask = 0
 
-[node name="Sprite" type="Sprite" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource( 1 )
 vframes = 18
 hframes = 16

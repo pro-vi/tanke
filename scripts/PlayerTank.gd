@@ -1,12 +1,12 @@
-extends KinematicBody2D
+extends CharacterBody2D
 
 signal shoot
 
-export (int) var speed = 32
-export (int) var gun_cooldown = 100
-export (PackedScene) var Bullet
+@export var speed: int = 32
+@export var gun_cooldown: int = 100
+@export var Bullet: PackedScene
 
-onready var sprite = $Sprite
+@onready var sprite = $Sprite2D
 
 var velocity = Vector2()
 var direction = Constants.Dir.U
