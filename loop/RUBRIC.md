@@ -1,161 +1,174 @@
-# tanke — Loop Rubric
+# tanke — Loop Rubric (Procedural Engine Focus)
 
-10 criteria, 0–5 scale. Any score above 2 requires citation (file:line or tool output).
-Rubric is a discovered artifact — revise anchors when a criterion's ceiling is hit.
+10 criteria, 0–5 scale. Score > 2 requires citation (file:line or tool output excerpt).
+Rubric is a discovered artifact — revise anchors when a ceiling is hit.
 
----
-
-## 1. Gameplay Loop Completeness (0–5)
-
-Does the game have a complete loop: move → fight → die → restart?
-
-| Score | Anchor |
-|-------|--------|
-| 0 | No game loop; player spawns but nothing happens |
-| 1 | Player can move; no enemies or destruction |
-| 2 | Player can shoot; bullets exist but nothing reacts |
-| 3 | Bullets destroy BrickBlocks; player can reach a dead end |
-| 4 | Enemies exist, shoot back; player can die; game restarts |
-| 5 | Win condition + score + restart feel intentional; difficulty escalates |
-
-**Current state:** 1 — player moves and shoots, bullets exist, nothing reacts (Bullet.gd impact() calls queue_free but no BrickBlock collision response).
+Gameplay features (destruction, enemies) are out of scope for this loop.
+They live on a future `feat/gameplay` branch.
 
 ---
 
-## 2. BrickBlock Destruction (0–5)
+## 1. Headless Oracle Quality (0–5)
+
+Does `loop/test_runner.gd` give a reliable, information-rich signal?
 
 | Score | Anchor |
 |-------|--------|
-| 0 | BrickBlock.gd is a stub with two TODOs |
-| 1 | Collision shape exists; no damage logic |
-| 2 | Impact registered (print statement); no visual change |
-| 3 | `scripts/BrickBlock.gd`: hp decrements on bullet hit; node freed at 0 — cite line |
-| 4 | 2-frame crumble animation plays before free; frame PNGs in img/ |
-| 5 | Partial destruction (e.g. 2hp → cracked sprite → crumble); satisfying pixel feedback |
+| 0 | test_runner.gd doesn't exist |
+| 1 | Exists but crashes or prints nothing useful |
+| 2 | Prints PASS/FAIL; no tile-level data |
+| 3 | Prints tile counts per type + Eller set metrics (avg size, max size, merge rate) — cite output |
+| 4 | Prints reproducibility check: two runs with same seed → identical tile map hash |
+| 5 | Structured JSON output; loop can parse and diff across iterations without reading text |
 
-**Current state:** 0 — `scripts/BrickBlock.gd:5` has `#TODO: destruction on bullet impact`.
+**Current state:** 0
 
 ---
 
-## 3. Enemy AI Quality (0–5)
+## 2. Algorithm Variety (0–5)
+
+Does the Eller's algorithm parameter space produce meaningfully different level characters?
 
 | Score | Anchor |
 |-------|--------|
-| 0 | No enemy scene or script |
-| 1 | Enemy scene exists; no behavior |
-| 2 | Enemy moves (patrol direction); no targeting |
-| 3 | Enemy shoots toward player when LoS is clear; cite detection logic file:line |
-| 4 | Enemy navigates around obstacles; doesn't get stuck on walls |
-| 5 | Enemy difficulty scales with level depth; multiple enemy types or behaviors |
+| 0 | Single hardcoded merge probability (`randi() % 3 > 0`) |
+| 1 | Merge probability is a named var; still one value |
+| 2 | Two parameters exposed (merge prob, vertical density); default behavior unchanged |
+| 3 | 3 distinct parameter sets produce visually distinguishable levels — cite stdout oracle diff |
+| 4 | Parameters exposed on LevelConfig; agent can mutate one field and change level feel |
+| 5 | Continuous parameter space documented; loop has run a mini-sweep (≥5 seeds × ≥3 configs) and charted output variance |
 
-**Current state:** 0 — no enemy scene.
+**Current state:** 0 — `ProceduralStep.gd:12`: `randi() % 3 > 0` hardcoded.
 
 ---
 
-## 4. Procedural Variety (0–5)
+## 3. LevelConfig Mutability (0–5)
 
 | Score | Anchor |
 |-------|--------|
-| 0 | Level generation crashes or is empty |
-| 1 | Level generates one terrain type only |
-| 2 | All 4 terrain types appear; distribution feels random but not interesting |
-| 3 | LevelConfig weights produce noticeably different level characters (dense/open/watery) — cite config values used |
-| 4 | Biome-like zones: level feel shifts as player scrolls deeper |
-| 5 | Agent can mutate LevelConfig in a single resource file and immediately see different feel without editor |
-
-**Current state:** 2 — all 4 types generate; distribution is naive modular arithmetic (`_pave_set` in ProceduralLevel.gd:69).
-
----
-
-## 5. LevelConfig Mutability (0–5)
-
-| Score | Anchor |
-|-------|--------|
-| 0 | No LevelConfig; weights are hardcoded modular arithmetic |
+| 0 | No LevelConfig; tile distribution is hardcoded modular arithmetic in `_pave_set` |
 | 1 | LevelConfig class exists; not wired to generation |
-| 2 | LevelConfig loaded and passed to _pave_set; default values unchanged from old behavior |
-| 3 | Changing a weight value in LevelConfig.gd produces measurably different terrain distribution — cite the weight field and test output |
-| 4 | LevelConfig is a Godot Resource (.tres file); editable without touching .gd |
-| 5 | LevelConfig has named presets (e.g. "urban", "swamp", "fortress"); agent can swap presets |
+| 2 | LevelConfig loaded and passed to `_pave_set`; defaults replicate old behavior |
+| 3 | Changing a weight in LevelConfig produces measurably different tile distribution — cite oracle output before/after |
+| 4 | LevelConfig is a `.tres` Godot Resource; editable without touching `.gd` files |
+| 5 | Named presets exist ("dense", "open", "swamp", "fortress"); agent swaps preset → confirmed by oracle diff |
 
-**Current state:** 0 — hardcoded in ProceduralLevel.gd:69–94.
-
----
-
-## 6. Level DNA Reproducibility (0–5)
-
-| Score | Anchor |
-|-------|--------|
-| 0 | No seed/config struct; levels are not reproducible |
-| 1 | LevelDNA struct exists with seed field; not used in generation |
-| 2 | Seed passed to ProceduralStep; same seed = same layout on one run |
-| 3 | `level_dna.seed + level_dna.config` fully determines a level — proven by running two instances with same DNA and comparing tile maps — cite test |
-| 4 | LevelDNA serializable to JSON; loadable from file |
-| 5 | Loop can propose a LevelDNA mutation, apply it, and score the result — full agent-iteration cycle demonstrated |
-
-**Current state:** 0 — `randi()` is used without stored seed.
+**Current state:** 0 — `ProceduralLevel.gd:69–94` hardcoded.
 
 ---
 
-## 7. Visual Coherence (0–5)
+## 4. Level DNA Reproducibility (0–5)
 
 | Score | Anchor |
 |-------|--------|
-| 0 | Missing sprites; obvious placeholder tiles |
-| 1 | All assets present; no visual consistency |
-| 2 | Pixel-snap works; no floating-point jitter |
-| 3 | New assets (enemy sprites, crumble frames) match existing palette — cite palette extraction from sprites_0.png |
-| 4 | UI elements (score, lives) use VT323 font and fit the 320×240 aesthetic |
-| 5 | Screenshot at any moment looks like a coherent game from one era |
+| 0 | No seed stored; levels are not reproducible |
+| 1 | LevelDNA struct exists with seed field; not used |
+| 2 | Seed passed into ProceduralStep; same seed → same layout on one run |
+| 3 | `seed + config` fully determines a level — oracle prints tile hash; two runs match — cite hash output |
+| 4 | LevelDNA serializable to JSON/dict; round-trips without loss |
+| 5 | Loop proposes a LevelDNA mutation, applies it, oracle confirms change, loop scores result — full agent-iteration cycle |
 
-**Current state:** 2 — existing assets work, no new assets generated yet.
+**Current state:** 0 — `ProceduralLevel.gd:15` uses `randi()` with no stored seed.
 
 ---
 
-## 8. Agent Editability (0–5)
+## 5. Tile Visual Coherence (0–5)
 
-Does an agent (me) have clear, low-friction paths to mutate game behavior?
+Do tiles look like they belong together? Assessed via screencapture oracle + PIL analysis.
 
 | Score | Anchor |
 |-------|--------|
-| 0 | All logic interleaved; no clear edit points |
-| 1 | Scripts exist but behavior is fully implicit (magic numbers) |
-| 2 | Key parameters are named constants in Constants.gd |
-| 3 | LevelConfig is a separate resource; BrickBlock hp is exported var — cite file:line |
-| 4 | AGENTS.md documents the grammar: every mutable parameter with file, line, type, valid range |
-| 5 | Loop can propose a mutation, apply it, run test_runner.gd, and score result in one iteration with no human help |
+| 0 | Missing tiles; pink/error squares |
+| 1 | Default Godot placeholder or wrong tile mapping (wrong source_id) |
+| 2 | Correct tiles render; no palette consistency with original sprites |
+| 3 | PIL analysis of screencapture: dominant colors match expected palette per terrain type — cite `analyze_frame.py` output |
+| 4 | PIL-generated tile variants used in game; palette extracted from `sprites_0.png` applied — cite ASSET-MANIFEST entry |
+| 5 | Screencapture at any seed looks like a coherent pixel art level; no tile bleeds or misaligned seams |
 
-**Current state:** 1 — `PlayerTank.gd:5` has `@export var speed: int = 32` and `@export var gun_cooldown: int = 100` but game behavior is mostly hardcoded.
+**Current state:** 1 — TileSet migration not yet run; source_id unknown. Tiles may not render.
 
 ---
 
-## 9. GDScript Correctness (0–5)
+## 6. Screencapture Oracle Quality (0–5)
+
+Can the loop take a screenshot and extract game-state information from pixels?
 
 | Score | Anchor |
 |-------|--------|
-| 0 | Script parse errors; project won't load |
-| 1 | Loads but throws runtime errors on play |
-| 2 | Runs; deprecation warnings present; no crashes in normal play |
-| 3 | No errors in test_runner.gd output — cite test run output |
-| 4 | No deprecation warnings (`TileMap` → `TileMapLayer` migration complete) |
-| 5 | Typed GDScript throughout; static analysis clean |
+| 0 | No screencapture pipeline |
+| 1 | `screencapture -x` runs; image saved but not analyzed |
+| 2 | `tools/analyze_frame.py` exists; reads PNG and counts pixel color buckets |
+| 3 | Oracle identifies terrain regions by color; outputs terrain coverage % — cite output |
+| 4 | Oracle diffs two frames (before/after LevelConfig change) and detects distribution shift |
+| 5 | Oracle used as loop scoring signal: loop changes config, screenshots before/after, reports Δ coverage |
 
-**Current state:** 2 — converted from GD3 to GD4; TileMap deprecated nodes remain; test_runner.gd not yet written.
+**Current state:** 0
 
 ---
 
-## 10. Asset Pipeline Usability (0–5)
+## 7. Agent Edit Friction (0–5)
+
+How many files/lines must change to alter one behavior?
 
 | Score | Anchor |
 |-------|--------|
-| 0 | tools/ doesn't exist |
-| 1 | tools/ exists; scripts error on run |
-| 2 | gen_tile.py produces PNGs; gen_sprite.py not yet tested |
-| 3 | Full pipeline: gen_tile → compose_sheet → import to Godot TileSet — cite output file and size |
-| 4 | gen_sprite.py (MLX-SD) produces an enemy sprite variant in <60s — cite output |
-| 5 | Any tile or sprite in the game can be regenerated from tools/ + ASSET-MANIFEST.md with no editor intervention |
+| 0 | Behavior scattered across 3+ files with no named constants |
+| 1 | Key params are named but buried in logic |
+| 2 | `Constants.gd` holds some values; LevelConfig doesn't exist yet |
+| 3 | One config change → one file edit → oracle confirms effect — cite the single file:line |
+| 4 | `loop/AGENTS.md` documents every mutable param: file, line, type, valid range |
+| 5 | Agent can propose mutation as a diff, apply it with `Edit` tool, oracle confirms in same iteration — zero human steps |
 
-**Current state:** 2 — gen_tile.py works (`tools/out/brick_000.png` through `water_003.png` generated at 8×8); gen_sprite.py untested; MLX-SD not installed.
+**Current state:** 1 — `PlayerTank.gd:5` `@export var speed` exists but LevelConfig does not.
+
+---
+
+## 8. Procedural Richness (0–5)
+
+How varied do levels feel across seeds and configs?
+
+| Score | Anchor |
+|-------|--------|
+| 0 | Every level looks identical |
+| 1 | Obvious randomness but no interesting structure |
+| 2 | 4 terrain types appear; distribution feels random but flat |
+| 3 | Some seeds produce notably dense/open/watery levels — oracle shows >20% variance in terrain distribution across 5 seeds |
+| 4 | Biome-like zones: level character shifts as player scrolls deeper |
+| 5 | A playtest of 3 seeds at 3 configs produces 9 clearly distinct level feelings — documented with oracle output + screencaptures |
+
+**Current state:** 1 — Eller's generates structure but `_pave_set` modular arithmetic produces a flat, predictable distribution.
+
+---
+
+## 9. Pipeline Completeness (0–5)
+
+Full chain: `gen_tile.py` PNG → Godot TileSet → `set_cell` → rendered pixel.
+
+| Score | Anchor |
+|-------|--------|
+| 0 | Chain broken at TileSet import (source_id unknown) |
+| 1 | TileSet migrated; source_id known and written to STATE.md |
+| 2 | `set_cell(0, Vector2i(x,y), source_id, atlas_coords)` calls use correct values — cite STATE.md tile_source_ids |
+| 3 | PIL-generated tile PNG imported into TileSet and used in game — cite ASSET-MANIFEST entry |
+| 4 | All 4 terrain tile variants regenerable from `gen_tile.py` without editor intervention |
+| 5 | New tile variant generated, imported, live in game, screencapture confirms render — full loop in one iteration |
+
+**Current state:** 0 — blocked on TileSet migration (preloop gate).
+
+---
+
+## 10. GDScript Correctness (0–5)
+
+| Score | Anchor |
+|-------|--------|
+| 0 | Parse errors; project won't load |
+| 1 | Loads; runtime errors on play |
+| 2 | Runs; TileMap deprecation warnings present |
+| 3 | test_runner.gd output: zero errors — cite run output |
+| 4 | TileMap → TileMapLayer migration complete; zero deprecation warnings |
+| 5 | Typed GDScript throughout; all exported vars have type annotations |
+
+**Current state:** 2 — converted from GD3; TileMap deprecated nodes remain; test_runner.gd not yet written.
 
 ---
 
@@ -163,4 +176,5 @@ Does an agent (me) have clear, low-friction paths to mutate game behavior?
 
 | Iter | Change | Reason |
 |------|--------|--------|
-| 0 | Initial rubric written | Bootstrap |
+| 0 | Initial rubric: gameplay scope (destruction, enemies, LevelConfig, Level DNA) | Bootstrap |
+| 0 | Rewrite: procedural engine focus only; add oracle axes | User direction: procedural-only, dual oracle |

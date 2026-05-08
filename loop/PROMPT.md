@@ -1,4 +1,4 @@
-# tanke — Greenfield Loop Prompt
+# tanke — Greenfield Loop Prompt (Procedural Engine)
 
 Read this file fully before taking any action. Every section is load-bearing.
 
@@ -6,21 +6,24 @@ Read this file fully before taking any action. Every section is load-bearing.
 
 ## CONTEXT
 
-You are iterating on **tanke**, a Godot 4.6.2 top-down pixel tank game (GDScript only, no C#).
+You are iterating on **tanke**, a Godot 4.6.2 top-down pixel tank game (GDScript only).
 
 - **Resolution:** 320×240, pixel-snap enabled
 - **Engine:** Godot 4.6.2, project at repo root
 - **Core mechanic:** Infinite procedural levels via Eller's algorithm (ProceduralStep.gd — row-by-row union-find sets). 4 terrain types: Brick, Steel, Grass, Water.
 - **Asset pipeline:** `tools/gen_tile.py` (PIL, 8×8 tiles), `tools/gen_sprite.py` (MLX-SD for novel sprites), `tools/compose_sheet.py` (spritesheet assembler)
-- **Headless test signal:** `godot --headless --path . --script res://loop/test_runner.gd` — write and maintain this as your primary feedback mechanism
 
-**The stone:** A complete, playable, agent-evolvable tank game where procedural level generation and game rules are fully parameter-mutable by an agent with no editor intervention.
+**The stone:** A fully agent-mutable procedural level engine — where algorithm parameters, tile distribution weights, and level seeds are first-class objects an agent can read, mutate, and verify without opening the editor.
+
+**Gameplay features (BrickBlock destruction, enemy tanks) are explicitly out of scope for this loop.** They live on a future `feat/gameplay` branch. Do not implement them here.
 
 **Build priority (in order):**
-1. BrickBlock destruction — bullet impact → crumble animation → node free
-2. Enemy tanks — patrol, line-of-sight, shoot; spawn from procedural sets
-3. LevelConfig resource — weighted tile distribution replacing naive modular arithmetic
-4. Level DNA — seed + LevelConfig → exactly reproducible level
+1. **Headless oracle** — `loop/test_runner.gd` printing tile counts, Eller set metrics, tile map hash
+2. **Screencapture oracle** — `tools/analyze_frame.py` analyzing PNG for terrain coverage by color
+3. **LevelConfig resource** — weighted tile distribution replacing `_pave_set` modular arithmetic
+4. **Level DNA** — seed + LevelConfig → exactly reproducible level; serializable
+5. **Algorithm parameter space** — expose Eller's merge probability + vertical density on LevelConfig
+6. **Pipeline completeness** — PIL tile → TileSet → `set_cell` → rendered pixel, full chain verified
 
 ---
 
@@ -28,36 +31,34 @@ You are iterating on **tanke**, a Godot 4.6.2 top-down pixel tank game (GDScript
 
 **Gate:** `preloop_complete: yes` in `loop/STATE.md`.
 
-The human must complete this checklist before the loop begins iterating. Do not iterate past iter 0 until the gate is flipped.
+Do not iterate past iter 0 until the gate is literally `yes`.
 
 ```
-[ ] Open project in Godot 4 editor (Godot.app → Import project)
-    The editor will offer to convert TileSets — accept. This migrates
-    TileMap tile data from Godot 3 packed format to Godot 4 sources.
-[ ] After conversion, open each TileMap in Level.tscn and note the
-    source_id and atlas_coords for each terrain tile. Write them to
-    loop/STATE.md under "tile_source_ids".
-[ ] Verify basic movement works (player tank moves, camera follows)
-[ ] Confirm ProceduralLevel.tscn generates terrain without console errors
-[ ] Flip preloop_complete: yes in loop/STATE.md
+[ ] Open project in Godot 4 editor (Godot.app → Import → select project.godot)
+    Accept TileSet conversion when prompted.
+[ ] After conversion, open each TileMap in Level.tscn and note source_id +
+    atlas_coords for each terrain tile. Write to loop/STATE.md under "tile_source_ids".
+[ ] Verify player tank moves, camera follows, no console errors.
+[ ] Verify ProceduralLevel.tscn generates terrain without errors.
+[ ] Flip preloop_complete: yes in loop/STATE.md.
 ```
 
-**Gate is binary.** "Almost done" does not count. The loop halts at any iter > 0 attempt if the flag is not literally `yes`.
+**Gate is binary.** No partial fills. Loop halts if `preloop_complete: no` and iter > 0.
 
 ---
 
 ## ITER 0 — BOOTSTRAP (runs once, no scoring)
 
-On iter 0:
+1. If `preloop_complete: no`: write `loop/test_runner.gd` stub only, then output the preloop checklist for the user and halt.
 
-1. Check the gate. If `preloop_complete: no`, do exactly one thing: write a `loop/test_runner.gd` headless script that can be invoked to verify the project loads without errors. Then halt and tell the user the preloop checklist.
-
-2. If `preloop_complete: yes`, do all of the following:
-   - Create/update `loop/test_runner.gd` — headless GDScript that instantiates ProceduralLevel, steps 10 frames, and prints "PASS" or the error to stdout
-   - Verify `tools/gen_tile.py` runs and produces output: `python3 tools/gen_tile.py --tile brick --variant 0 --out tools/out`
-   - Read `loop/RUBRIC.md` fully. Populate concrete pixel/artifact-level anchors for every criterion using the current codebase state.
-   - Write initial LEDGER entry: iter 0, mode BOOTSTRAP, state of each rubric criterion with citation evidence.
-   - Commit: `git add loop/ && git commit -m "chore(loop): iter 000 — BOOTSTRAP — scaffolding"`
+2. If `preloop_complete: yes`:
+   - Write `loop/test_runner.gd` — headless GDScript: instantiate ProceduralLevel, step 60 frames, print tile counts per type + Eller set avg/max size + "PASS" or error
+   - Write `tools/analyze_frame.py` — PIL script: reads a PNG, buckets pixels by terrain palette color, outputs JSON coverage %
+   - Run `python3 tools/gen_tile.py --tile brick --variant 0 --out tools/out` — confirm it works
+   - Run `godot --headless --path . --script res://loop/test_runner.gd 2>&1` — record output
+   - Populate RUBRIC.md criterion 1 and 6 anchors with real evidence from these runs
+   - Write iter 0 LEDGER entry (no scores — bootstrap only)
+   - Commit: `git add -A && git commit -m "chore(loop): iter 000 — BOOTSTRAP — oracle scaffolding"`
 
 ---
 
@@ -65,80 +66,90 @@ On iter 0:
 
 Each iteration:
 
-### 1. DIAGNOSE (required, ~3 sentences)
-Read `loop/STATE.md`. Identify the single most under-developed dimension of the stone using the RUBRIC. Name it explicitly: "The weakest axis is [criterion] at score [N] because [evidence]."
+### 1. DIAGNOSE (~3 sentences, required)
+
+Read `loop/STATE.md`. Identify the single weakest rubric axis using the LEDGER.
+Write: "Weakest axis: [criterion] at [N]/5. Evidence: [citation]. This iteration: [action]."
 
 ### 2. SELECT MODE
-Choose exactly one mode per iteration. Write `MODE: <chosen>` before acting.
 
-| Mode | When to use |
-|------|-------------|
-| **BUILD** | Implement a game feature in GDScript. Must advance a rubric axis. |
-| **CAPABILITY** | Add/extend tools — test runner, asset gen, PIL tile variants, MLX-SD integration. Justified against a stone-axis. Not yak-shaving. |
-| **AUDIT** | Read existing code and rubric; adjust scores with evidence; identify contradictions. |
-| **CONSULT** | Every ~10 iterations: ask "what's seductive-but-hollow about recent progress?" Use a frontier model if available, else reason adversarially yourself. |
-| **AWAIT** | Only for: paid APIs without budget cap, public-publish actions, secrets the loop cannot supply. NOT for: creative choices, test results, code structure. |
+Write `MODE: <chosen>` before acting.
 
-**AWAIT saturation rule:** 2 consecutive AWAITs on the same logical question → default on the third iteration and document the choice.
+| Mode | When |
+|------|------|
+| **BUILD** | Implement a GDScript feature. Must advance ≥1 rubric axis. |
+| **CAPABILITY** | Extend tools/ — oracle, PIL tile gen, MLX-SD pipeline. Justified against a rubric axis. |
+| **AUDIT** | Re-score all criteria with fresh evidence. Do this every 5 iterations or after any BUILD changes the oracle. |
+| **CONSULT** | Every ~10 iters: ask "what's seductive-but-hollow?" and "what omission would embarrass in a demo?" Write to `loop/creative-consults.md`. |
+| **SWEEP** | Run the headless oracle across ≥5 seeds × ≥3 configs. Chart variance. Use to score Procedural Richness and Algorithm Variety. |
+| **AWAIT** | Only for: paid APIs without budget cap, publish actions, secrets. NOT for creative or structural choices. |
+
+**AWAIT saturation:** 2 consecutive AWAITs on the same question → default on the 3rd, document it.
 
 ### 3. ACT
-Execute the mode. For BUILD and CAPABILITY, write code. For AUDIT, write updated scores with citations. For CONSULT, write the consult log to `loop/creative-consults.md`.
 
-**Headless feedback:** After any BUILD change, run:
-```
-godot --headless --path . --script res://loop/test_runner.gd 2>&1 | tail -20
-```
-If it prints ERROR, fix before marking the build done. "Untested" caps the relevant rubric score at 2.
+**After any BUILD, run both oracles:**
 
-**Asset generation:** When a BUILD needs a new tile or sprite variant:
 ```bash
-python3 tools/gen_tile.py --tile <TYPE> --variant <SEED> --out tools/out --scale 1
+# Headless oracle
+godot --headless --path . --script res://loop/test_runner.gd 2>&1 | tail -30
+
+# Screencapture oracle (requires game window open)
+screencapture -x /tmp/tanke_frame.png && python3 tools/analyze_frame.py /tmp/tanke_frame.png
 ```
-For novel sprites (enemies, explosions): `tools/gen_sprite.py`. Add provenance to `loop/ASSET-MANIFEST.md`:
+
+If headless oracle prints ERROR: fix before scoring. "Untested" caps the relevant score at 2.
+
+Screencapture oracle requires the game to be running. If it's not open, skip it and note "screencapture: skipped (game not running)" in the LEDGER. Do not AWAIT the user to open it — just note and continue.
+
+**Asset provenance:** Any new tile or sprite → add to `loop/ASSET-MANIFEST.md`:
 ```
-slotId | semanticRole | source | prompt | seed | replaceability | comprehensionClaim
+slotId | semanticRole | source | prompt_or_params | seed | replaceability | comprehensionClaim
 ```
 
 ### 4. SCORE
-After acting, score ALL 10 rubric criteria. Rules:
-- Any score above 2 requires citation: file path + line number or tool output excerpt
-- If you cannot cite it, the score is ≤ 2
-- Run the "cheap dignity test": would a player who just opened the game for the first time find this output embarrassing? If yes, no criterion scores > 3 this iteration.
-- Write scores to `loop/LEDGER.md` in the append-only format below
+
+Score all 10 criteria. Rules:
+- Score > 2 → citation required (file:line or oracle output excerpt)
+- No citation → score ≤ 2
+- "Cheap dignity test": would this embarrass in a 5-minute playtest? If yes → no score > 3
+
+Append to `loop/LEDGER.md`.
 
 ### 5. COMMIT
+
 ```bash
-git add -A
-git commit -m "chore(loop): iter NNN — <MODE> — <focus>"
+git add -A && git commit -m "chore(loop): iter NNN — <MODE> — <focus>"
 ```
+
 No iteration ends without a commit if any file changed.
 
-### 6. SCHEDULE NEXT
-Update `loop/STATE.md`. Schedule next wake-up via ScheduleWakeup. Typical cadence: BUILD/CAPABILITY iterations take real work, so 120–270s. AUDIT/CONSULT can be shorter.
+### 6. SCHEDULE
+
+Update `loop/STATE.md`. ScheduleWakeup: BUILD/CAPABILITY = 120–270s, AUDIT/SWEEP = 60–120s.
 
 ---
 
 ## LEDGER FORMAT
 
-Append to `loop/LEDGER.md` each iteration:
-
-```
+```markdown
 ## Iter NNN — MODE — YYYY-MM-DD
-**Focus:** <one-line description>
+**Focus:** <one line>
 **Changed files:** <list>
+**Oracle output:** <excerpt or "skipped">
 
 | Criterion | Score | Evidence |
 |-----------|-------|----------|
-| Gameplay loop | N | <citation or "untested"> |
-| BrickBlock destruction | N | ... |
-| Enemy AI | N | ... |
-| Procedural variety | N | ... |
+| Headless oracle | N | <cite or "not yet"> |
+| Algorithm variety | N | ... |
 | LevelConfig mutability | N | ... |
-| Level DNA reproducibility | N | ... |
-| Visual coherence | N | ... |
-| Agent editability | N | ... |
+| Level DNA | N | ... |
+| Tile visual coherence | N | ... |
+| Screencapture oracle | N | ... |
+| Agent edit friction | N | ... |
+| Procedural richness | N | ... |
+| Pipeline completeness | N | ... |
 | GDScript correctness | N | ... |
-| Asset pipeline | N | ... |
 
 **Total:** NN/50
 **Weakest axis next:** <criterion>
@@ -146,63 +157,58 @@ Append to `loop/LEDGER.md` each iteration:
 
 ---
 
-## SCORING RULES
+## CEILING RULE
 
-Scores are 0–5 per criterion (max total: 50).
-
-| Score | Meaning |
-|-------|---------|
-| 0 | Not started, doesn't exist |
-| 1 | Scaffolded/stubbed, doesn't run |
-| 2 | Runs without crash, no meaningful behavior |
-| 3 | **Citation required.** Feature demonstrably works in isolation |
-| 4 | **Citation required.** Feature works in context of full game |
-| 5 | **Citation required.** Feature is polished, agent-mutable, and would not embarrass in a demo |
-
-**Ceiling demolition rule:** When total score hits 35/50 faster than iter 15, the rubric was too easy. Add 2 new criteria and/or raise anchor definitions for scores 4 and 5.
+If total hits 35/50 before iter 15, the rubric was too easy. Add 2 criteria or raise score-4/5 anchor definitions. Note the change in RUBRIC.md Revision Log.
 
 ---
 
 ## CONSULT SCHEDULE
 
-Every ~10 iterations (iters 10, 20, 30, …), run a CONSULT iteration. Ask:
-1. "What's seductive-but-hollow about the progress so far?"
-2. "What omission would look embarrassing in a playtest in 6 months?"
-3. "Is the agent-editability (LevelConfig/Level DNA) actually agent-friendly, or is it just a renamed config file?"
+Iters 10, 20, 30: CONSULT mode. Questions:
+1. "What's seductive-but-hollow about the procedural engine so far?"
+2. "Is LevelConfig actually agent-friendly, or just a renamed config file?"
+3. "What would a generative systems researcher find embarrassing about this Eller's implementation?"
 
-Write answers to `loop/creative-consults.md` with iteration number.
+Write to `loop/creative-consults.md`.
 
 ---
 
 ## USER-LOOK GATES
 
-At iter 20 and iter 40 (and every 20 after), AWAIT the user to:
-- Play the current build for 5 minutes
-- Name the single thing that feels most wrong
-- Optionally reframe the target (any reframe invalidates scores for affected criteria — mark them stale in STATE.md)
+Iter 20 and iter 40: AWAIT the user to:
+- Run the game for 5 minutes across 3 seeds
+- Name what feels most monotonous about level generation
+- Optionally reframe (any reframe → mark affected scores stale in STATE.md)
 
-This is the only permitted AWAIT trigger besides paid APIs and secrets.
+---
+
+## AGENTS.md CONTRACT
+
+Once LevelConfig exists, maintain `loop/AGENTS.md` — every agent-mutable parameter:
+```
+param | file | line | type | valid_range | effect
+```
+This is the agent's map of the parameter space.
 
 ---
 
 ## HALT CONDITIONS
 
-Stop and emit `Next action: HALT` in STATE.md if:
-- `preloop_complete: no` and iter > 0 has been attempted
-- 3 consecutive BUILD iterations that don't advance any rubric score (diagnose why)
-- The user writes "stop" or "halt" in the session
-- A destructive file operation is about to run (delete scenes, overwrite img/ without backup)
+- `preloop_complete: no` and iter > 0 attempted
+- 3 consecutive BUILD iters with no rubric score change (diagnose and switch mode)
+- User writes "stop" or "halt"
+- About to delete or overwrite `img/sprites_0.png` or `img/PlayerTank.png` without backup
 
 ---
 
-## ANTI-PATTERNS — DO NOT
+## DO NOT
 
-- Score your own BUILD above 3 without running `test_runner.gd` or citing a file/line
-- Use `@tool` scripts or editor plugins (we are headless-first)
-- Add C# files (GDScript only per constraints)
-- Modify `img/sprites_0.png` or `img/PlayerTank.png` directly (use tools/ pipeline, add to manifest)
-- `await` on user-facing questions about code structure, feature order, or creative direction — decide yourself
-- Let `loop/LEDGER.md` go more than 1 iteration without a commit
+- Implement BrickBlock destruction or enemy tanks (future branch)
+- Use C# (GDScript only)
+- Score BUILD above 3 without oracle output citation
+- AWAIT on code structure or creative direction — decide yourself
+- Let LEDGER go 2+ iterations without a commit
 
 ---
 
