@@ -2,17 +2,28 @@ GODOT       ?= godot
 PROJECT_DIR := $(shell pwd)
 HEADLESS     = $(GODOT) --headless --path $(PROJECT_DIR)
 
-.PHONY: check run export
+PROC_SCENE  := scenes/ProceduralLevel.tscn
+TEST_FRAMES ?= 120
+NOISE_FILTER = grep -Ev "RID allocations|resources still in use"
 
-# Run headless parse/load check — filters noise, exits non-zero on errors
+.PHONY: check test screenshot run
+
+# Parse/load validation — catches bad scripts and missing nodes
 check:
-	@out=$$($(HEADLESS) --quit 2>&1 | grep -E "^(ERROR|SCRIPT ERROR)" | grep -Ev "RID allocations|resources still in use"); \
+	@out=$$($(HEADLESS) --quit 2>&1 | grep -E "^(ERROR|SCRIPT ERROR)" | $(NOISE_FILTER)); \
 	if [ -n "$$out" ]; then echo "$$out"; exit 1; fi
 
-# Launch the game (editor mode)
+# Runtime validation — runs TEST_FRAMES frames, catches _ready/_process errors
+test:
+	@out=$$($(HEADLESS) $(PROC_SCENE) --quit-after $(TEST_FRAMES) 2>&1 | grep -E "^(ERROR|SCRIPT ERROR)" | $(NOISE_FILTER)); \
+	if [ -n "$$out" ]; then echo "$$out"; exit 1; fi
+
+# Capture a frame as PNG for PIL/oracle analysis
+screenshot:
+	@mkdir -p $(PROJECT_DIR)/tools/out
+	$(HEADLESS) $(PROC_SCENE) --quit-after $(TEST_FRAMES) 2>/dev/null; \
+	echo "screenshot saved to tools/out/frame.png if capture script is wired"
+
+# Launch the game (editor)
 run:
 	$(GODOT) --path $(PROJECT_DIR)
-
-# Headless scene test (pass scene=path/to/Scene.tscn)
-scene:
-	$(HEADLESS) $(scene) --quit

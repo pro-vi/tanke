@@ -40,7 +40,7 @@ func _physics_process(delta):
 	
 	var collision = move_and_collide(velocity * delta)
 	if collision:
-		velocity = velocity.slide(collision.normal)
+		velocity = velocity.slide(collision.get_normal())
 	sprite.colliding = collision != null
 	
 	if Input.is_action_pressed("ui_accept"):
