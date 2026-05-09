@@ -69,28 +69,28 @@ func _pave_set(sid, row):
 	var size = ps.sets[sid].size()
 	if 2 <= size and size <= 7 and sid % 2 == 0:
 		for c in ps.sets[sid]:
-			brickTileMap.set_cell(0, Vector2i(c*2, row*2), 0, Vector2i(0, 0))
-			brickTileMap.set_cell(0, Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
-			brickTileMap.set_cell(0, Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
-			brickTileMap.set_cell(0, Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
+			brickTileMap.set_cell(Vector2i(c*2, row*2), 0, Vector2i(0, 0))
+			brickTileMap.set_cell(Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
+			brickTileMap.set_cell(Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
+			brickTileMap.set_cell(Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
 	elif size <= 1 and sid % 3 == 0:
 		for c in ps.sets[sid]:
-			grassTileMap.set_cell(0, Vector2i(c*2, row*2), 0, Vector2i(0, 0))
-			grassTileMap.set_cell(0, Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
-			grassTileMap.set_cell(0, Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
-			grassTileMap.set_cell(0, Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
+			grassTileMap.set_cell(Vector2i(c*2, row*2), 0, Vector2i(0, 0))
+			grassTileMap.set_cell(Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
+			grassTileMap.set_cell(Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
+			grassTileMap.set_cell(Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
 	elif 2 <= size and size <= 3 and sid % 5 == 0:
 		for c in ps.sets[sid]:
-			steelTileMap.set_cell(0, Vector2i(c*2, row*2), 0, Vector2i(0, 0))
-			steelTileMap.set_cell(0, Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
-			steelTileMap.set_cell(0, Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
-			steelTileMap.set_cell(0, Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
+			steelTileMap.set_cell(Vector2i(c*2, row*2), 0, Vector2i(0, 0))
+			steelTileMap.set_cell(Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
+			steelTileMap.set_cell(Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
+			steelTileMap.set_cell(Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
 	elif size <= 6 and sid % 7 == 0:
 		for c in ps.sets[sid]:
-			waterTileMap.set_cell(0, Vector2i(c*2, row*2), 0, Vector2i(0, 0))
-			waterTileMap.set_cell(0, Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
-			waterTileMap.set_cell(0, Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
-			waterTileMap.set_cell(0, Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
+			waterTileMap.set_cell(Vector2i(c*2, row*2), 0, Vector2i(0, 0))
+			waterTileMap.set_cell(Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
+			waterTileMap.set_cell(Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
+			waterTileMap.set_cell(Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
 
 func _pave_debug(sid, row):
 	for c in ps.sets[sid]:
@@ -106,8 +106,8 @@ func _generate_level_perlin():
 		for y in height/grid_size:
 			var sample = osn.get_noise_2d(float(x), float(y))
 			if sample < -0.3:
-				steelTileMap.set_cell(0, Vector2i(x, y), 0, Vector2i(0, 0))
+				steelTileMap.set_cell(Vector2i(x, y), 0, Vector2i(0, 0))
 			elif (sample > 0.25) or (sample > -0.033 and sample < 0.033):
-				brickTileMap.set_cell(0, Vector2i(x, y), 0, Vector2i(0, 0))
+				brickTileMap.set_cell(Vector2i(x, y), 0, Vector2i(0, 0))
 
 
