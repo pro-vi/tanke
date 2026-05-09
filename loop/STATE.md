@@ -13,24 +13,23 @@ preloop_complete: no
 ## Preloop Checklist
 
 ```
-[ ] Open project in Godot 4 editor (Godot.app → Import → select project.godot)
-    Accept TileSet conversion when prompted.
-[ ] Note source_id + atlas_coords for each terrain tile. Fill in tile_source_ids below.
-[ ] Verify: player tank moves, camera follows, no console errors.
-[ ] Verify: ProceduralLevel.tscn generates terrain without errors.
-[ ] Flip preloop_complete: yes above.
+[x] Open project in Godot 4 editor — done (user ran Extract on TileMaps)
+[x] source_id + atlas_coords resolved from scene files (see below)
+[ ] Verify: player tank moves, camera follows, no console errors (hit F5 in editor)
+[ ] Verify: ProceduralLevel.tscn generates terrain without errors
+[ ] Flip preloop_complete: yes above
 ```
 
 ---
 
-## Tile Source IDs (fill after editor migration)
+## Tile Source IDs
 
 ```
 tile_source_ids:
-  brick:  source_id=?  atlas_coords=Vector2i(?,?)
-  steel:  source_id=?  atlas_coords=Vector2i(?,?)
-  grass:  source_id=?  atlas_coords=Vector2i(?,?)
-  water:  source_id=?  atlas_coords=Vector2i(?,?)
+  brick:  source_id=0  atlas_coords=Vector2i(0,0)  margins=Vector2i(40,0) in sprites_1.png
+  steel:  source_id=0  atlas_coords=Vector2i(0,0)  margins=Vector2i(16,0) in sprites_1.png
+  grass:  source_id=0  atlas_coords=Vector2i(0,0)  margins=Vector2i(24,0) in sprites_1.png
+  water:  source_id=0  atlas_coords=Vector2i(0,0)  margins=Vector2i(24,8) in sprites_1.png
 ```
 
 ---
