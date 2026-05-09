@@ -67,34 +67,22 @@ remote_path = NodePath("../../Camera2D")
 
 [node name="Tiles" type="Node2D" parent="."]
 
-[node name="SteelTileMap" type="TileMap" parent="Tiles"]
-tile_set = SubResource("SteelSet")
-format = 2
+[node name="SteelTileMap" type="Node2D" parent="Tiles"]
 
 [node name="Layer0" type="TileMapLayer" parent="Tiles/SteelTileMap"]
-use_parent_material = true
 tile_set = SubResource("SteelSet")
 
-[node name="BrickTileMap" type="TileMap" parent="Tiles"]
-tile_set = SubResource("BrickSet")
-format = 2
+[node name="BrickTileMap" type="Node2D" parent="Tiles"]
 
 [node name="Layer0" type="TileMapLayer" parent="Tiles/BrickTileMap"]
-use_parent_material = true
 tile_set = SubResource("BrickSet")
 
-[node name="GrassTileMap" type="TileMap" parent="Tiles"]
-tile_set = SubResource("GrassSet")
-format = 2
+[node name="GrassTileMap" type="Node2D" parent="Tiles"]
 
 [node name="Layer0" type="TileMapLayer" parent="Tiles/GrassTileMap"]
-use_parent_material = true
 tile_set = SubResource("GrassSet")
 
-[node name="WaterTileMap" type="TileMap" parent="Tiles"]
-tile_set = SubResource("WaterSet")
-format = 2
+[node name="WaterTileMap" type="Node2D" parent="Tiles"]
 
 [node name="Layer0" type="TileMapLayer" parent="Tiles/WaterTileMap"]
-use_parent_material = true
 tile_set = SubResource("WaterSet")
