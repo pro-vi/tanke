@@ -14,6 +14,7 @@ var height = ProjectSettings.get_setting("display/window/size/viewport_height")
 
 
 func _ready():
+	player.shoot.connect(_on_PlayerTank_shoot)
 	_replace_blocks()
 
 

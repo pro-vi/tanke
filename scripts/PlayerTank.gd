@@ -8,7 +8,6 @@ signal shoot
 
 @onready var sprite = $Sprite2D
 
-var velocity = Vector2()
 var direction = Constants.Dir.U
 var grid = Vector2(4, 4)  # minimum grid size to snap to when turning
 
@@ -45,7 +44,7 @@ func _physics_process(delta):
 	sprite.colliding = collision != null
 	
 	if Input.is_action_pressed("ui_accept"):
-		shoot()
+		_fire()
 
 func set_dir(new_dir):
 	# snap to grid
@@ -53,11 +52,11 @@ func set_dir(new_dir):
 		position = position.snapped(grid)
 	direction = new_dir
 	set_rotation(Constants.dir_to_rotation(direction))
-	
-func shoot():
+
+func _fire():
 	if can_shoot:
 		$GunTimer.start()
-		emit_signal('shoot', Bullet, $Muzzle.global_position, direction)
+		shoot.emit(Bullet, $Muzzle.global_position, direction)
 		can_shoot = false
 	
 func _on_GunTimer_timeout():
