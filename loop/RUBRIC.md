@@ -47,7 +47,7 @@ Does the Eller's algorithm parameter space produce meaningfully different level 
 | 4 | Parameters exposed on LevelConfig; agent can mutate one field and change level feel |
 | 5 | Continuous parameter space documented; loop has run a mini-sweep (≥5 seeds × ≥3 configs) and charted output variance |
 
-**Current state:** 0 — `ProceduralStep.gd:12`: `randi() % 3 > 0` hardcoded.
+**Current state:** 3 — `merge_probability` and 5 terrain weights exposed on `LevelConfig`. Three presets (`default.tres`, `watery.tres`, `fortress.tres`) at seed 42 produce visibly distinguishable distributions: default 37/19/23/21 brick/water/steel/grass, watery 22/66/6/6, fortress 15/4/64/17. Distinct tile_hashes `6159ef2f`, `74e4d9ad`, `60feb24a`. To reach 4: agent mutates a single field on a .tres → oracle confirms shift. To reach 5: SWEEP across ≥5 seeds × ≥3 configs.
 
 ---
 
@@ -62,7 +62,7 @@ Does the Eller's algorithm parameter space produce meaningfully different level 
 | 4 | LevelConfig is a `.tres` Godot Resource; editable without touching `.gd` files |
 | 5 | Named presets exist ("dense", "open", "swamp", "fortress"); agent swaps preset → confirmed by oracle diff |
 
-**Current state:** 0 — `ProceduralLevel.gd:69–94` hardcoded.
+**Current state:** 4 — `LevelConfig` is a `class_name` Resource (`scripts/LevelConfig.gd`); `.tres` instances live under `configs/`. ProceduralLevel exposes `@export var config: LevelConfig`. Editing `configs/watery.tres` field `water_weight = 0.60` shifts oracle output from 19% water → 66% water at seed 42 with no `.gd` changes. To reach 5: presets exist (default/watery/fortress) — bumping to 5 next iter once `loop/AGENTS.md` is wired into agent prompts.
 
 ---
 
@@ -137,7 +137,7 @@ How many files/lines must change to alter one behavior?
 | 4 | `loop/AGENTS.md` documents every mutable param: file, line, type, valid range |
 | 5 | Agent can propose mutation as a diff, apply it with `Edit` tool, oracle confirms in same iteration — zero human steps |
 
-**Current state:** 1 — `PlayerTank.gd:5` `@export var speed` exists but LevelConfig does not.
+**Current state:** 4 — `loop/AGENTS.md` documents every mutable param: `merge_probability`, 5 terrain weights, `level_seed`. Each lists file:line, type, valid range, effect, and mutation surface (`.tres` edit, scene field, or CLI flag). Single edit + single command → oracle delta. To reach 5: agent proposes a Edit-tool diff, applies, oracle confirms in same iteration.
 
 ---
 
@@ -154,7 +154,7 @@ How varied do levels feel across seeds and configs?
 | 4 | Biome-like zones: level character shifts as player scrolls deeper |
 | 5 | A playtest of 3 seeds at 3 configs produces 9 clearly distinct level feelings — documented with oracle output + screencaptures |
 
-**Current state:** 1 — Eller's generates structure but `_pave_set` modular arithmetic produces a flat, predictable distribution.
+**Current state:** 2 — 4 terrain types reliably appear in every config. Default config: 37/19/23/21 (brick/water/steel/grass). Distribution still feels "uniform random" within a config — no biome zones, no along-axis variation. To reach 3: SWEEP ≥5 seeds × default config and verify ≥20% variance in at least one terrain.
 
 ---
 

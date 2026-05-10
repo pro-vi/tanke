@@ -7,14 +7,18 @@ const DEFAULT_SEED := 42
 
 func _initialize() -> void:
 	var test_seed := DEFAULT_SEED
+	var config_path := ""
 	var args := OS.get_cmdline_user_args()
 	for i in args.size():
 		if args[i] == "--seed" and i + 1 < args.size():
 			test_seed = int(args[i + 1])
-			break
+		elif args[i] == "--config" and i + 1 < args.size():
+			config_path = args[i + 1]
 
 	var level: Node = ProceduralLevelScene.instantiate()
 	level.level_seed = test_seed
+	if config_path != "":
+		level.config = load(config_path)
 	root.add_child(level)
 
 	# Let _ready and a few _process iterations run

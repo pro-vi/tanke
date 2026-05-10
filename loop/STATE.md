@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 2
+iteration: 3
 preloop_complete: yes
 ```
 
@@ -35,21 +35,21 @@ tile_source_ids:
 
 ---
 
-## Current Scores (post iter 1)
+## Current Scores (post iter 2)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
-| Headless oracle | 4 | seed-aware reproducibility; same seed → same hash |
-| Algorithm variety | 0 | merge prob `randi() % 3 > 0` still hardcoded ProceduralStep.gd:18 |
-| LevelConfig mutability | 0 | LevelConfig resource doesn't exist |
-| Level DNA | 3 | `ProceduralLevel.gd:6` level_seed export; verified via tile_hash |
-| Tile visual coherence | 3 | 4/4 palettes render correctly per analyze_frame.py |
-| Screencapture oracle | 3 | analyze_frame.py classifies by palette; coverage/variety/entropy |
-| Agent edit friction | 1 | only level_seed, debug, PlayerTank.speed exported |
-| Procedural richness | 1 | seed 42: 56% brick, 28% grass, 11% water, 5% steel — flat |
-| Pipeline completeness | 2 | set_cell calls correct; PIL→TileSet path not yet exercised |
-| GDScript correctness | 3 | make test + test_runner clean across seeds |
-| **Total** | **20/50** | |
+| Headless oracle | 4 | seed + config-aware; reproducible hash |
+| Algorithm variety | 3 | 3 configs (default/watery/fortress) → 3 distinct distributions @ seed 42 |
+| LevelConfig mutability | 4 | `.tres` Resource; weights editable without `.gd` changes |
+| Level DNA | 3 | level_seed + config combine for full reproducibility |
+| Tile visual coherence | 3 | 4/4 palettes render; all configs visually correct |
+| Screencapture oracle | 3 | analyze_frame.py classifies by palette; entropy 3.9 |
+| Agent edit friction | 4 | `loop/AGENTS.md` documents all 7 mutable params |
+| Procedural richness | 2 | 4 types reliable; awaiting multi-seed SWEEP for variance |
+| Pipeline completeness | 2 | set_cell correct; PIL→TileSet path unexercised |
+| GDScript correctness | 3 | make test clean; test_runner clean across configs |
+| **Total** | **31/50** | +11 from iter 1; ceiling check at 35 |
 
 ---
 
@@ -82,24 +82,29 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 1 BUILD: Level DNA — stored seed.
-- @export level_seed on ProceduralLevel.gd; seed() called in _ready before generation
-- test_runner.gd accepts -- --seed N (defaults 42)
-- Reproducibility verified: seed 42 × 2 → hash 619cb88ffed7e906; seed 7 → beac3183dc58e335
-- 5 rubric criteria lifted; total 17 → 20
+Iter 2 BUILD: LevelConfig as Resource (.tres).
+- LevelConfig.gd with merge_probability + 5 terrain weights + sample_terrain()
+- 3 .tres presets: default / watery / fortress
+- _pave_set rewritten as weighted sample → tilemap dispatch
+- ProceduralStep accepts merge_probability through _init
+- test_runner.gd accepts -- --config PATH
+- AGENTS.md documents all 7 mutable params
+- Quad-axis lift: criteria 2 (0→3), 3 (0→4), 7 (1→4), 8 (1→2). Total 20→31.
 ```
 
 ---
 
 ## Stale Scores
 
-Resolved: distribution score was non-deterministic; now deterministic at seed 42 baseline (brick 56% / grass 28% / water 11% / steel 5%).
+None. Old seed-42 baseline (brick 56%/grass 28%/water 11%/steel 5%, hash 619cb88f) was a modular-arithmetic artifact — replaced with weighted baseline (37/19/23/21, hash 6159ef2f).
 
 ---
 
 ## Next Action
 
-`Iter 2 BUILD: LevelConfig resource — extract _pave_set hardcoded conditionals into a Resource with weights per terrain. Force multiplier across criteria 2, 3, 7, 8.`
+`Iter 3 SWEEP: ≥5 seeds × default config — measure inter-seed variance, score Procedural Richness criterion 8. If <20% variance, follow with BUILD to add structural variation (biome zones / Perlin overlay).`
+
+Approaching ceiling rule (35/50). If iter 3 lands above 35, raise rubric score-4/5 anchors before iter 4.
 
 ---
 

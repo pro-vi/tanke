@@ -2,8 +2,11 @@ extends "res://scripts/Level.gd"
 
 const ProceduralStep = preload("res://scripts/ProceduralStep.gd")
 const DebugBlock = preload("res://scenes/DebugBlock.tscn")
+const LevelConfigT = preload("res://scripts/LevelConfig.gd")
+const DefaultConfig = preload("res://configs/default.tres")
 @export var debug = false
 @export var level_seed: int = 0  # 0 = random; any other value = deterministic Level DNA
+@export var config: LevelConfigT
 
 # algo variables
 var osn
@@ -14,12 +17,14 @@ var grid_size = 16
 
 
 func _ready():
+	if config == null:
+		config = DefaultConfig.duplicate()
 	if level_seed == 0:
 		level_seed = randi()
 	seed(level_seed)
 	print("level_seed: %d" % level_seed)
 	# init starting area
-	ps = ProceduralStep.new(width/grid_size)
+	ps = ProceduralStep.new(width/grid_size, 0, config.merge_probability)
 	verts = ps.generate_step()
 	for row in range(height/grid_size, -1, -1):
 		if row == height/grid_size - 1:
@@ -66,39 +71,34 @@ func _process(_delta):
 
 # populate the next procedural step using verts
 func _generate_next_row():
-	ps = ProceduralStep.new(width/grid_size, ps.set_count)
+	ps = ProceduralStep.new(width/grid_size, ps.set_count, config.merge_probability)
 	for sid in verts:
 		for c in verts[sid]:
 			ps.add_cell(c, sid)
 	verts = ps.generate_step()
 
-# naive approach tile distribution
+# weighted-sample tile distribution from LevelConfig
 func _pave_set(sid, row):
-	var size = ps.sets[sid].size()
-	if 2 <= size and size <= 7 and sid % 2 == 0:
-		for c in ps.sets[sid]:
-			brickTileMap.set_cell(Vector2i(c*2, row*2), 0, Vector2i(0, 0))
-			brickTileMap.set_cell(Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
-			brickTileMap.set_cell(Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
-			brickTileMap.set_cell(Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
-	elif size <= 1 and sid % 3 == 0:
-		for c in ps.sets[sid]:
-			grassTileMap.set_cell(Vector2i(c*2, row*2), 0, Vector2i(0, 0))
-			grassTileMap.set_cell(Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
-			grassTileMap.set_cell(Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
-			grassTileMap.set_cell(Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
-	elif 2 <= size and size <= 3 and sid % 5 == 0:
-		for c in ps.sets[sid]:
-			steelTileMap.set_cell(Vector2i(c*2, row*2), 0, Vector2i(0, 0))
-			steelTileMap.set_cell(Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
-			steelTileMap.set_cell(Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
-			steelTileMap.set_cell(Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
-	elif size <= 6 and sid % 7 == 0:
-		for c in ps.sets[sid]:
-			waterTileMap.set_cell(Vector2i(c*2, row*2), 0, Vector2i(0, 0))
-			waterTileMap.set_cell(Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
-			waterTileMap.set_cell(Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
-			waterTileMap.set_cell(Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
+	var terrain: String = config.sample_terrain()
+	if terrain == "":
+		return
+	var tilemap = _tilemap_for(terrain)
+	if tilemap == null:
+		return
+	for c in ps.sets[sid]:
+		tilemap.set_cell(Vector2i(c*2, row*2), 0, Vector2i(0, 0))
+		tilemap.set_cell(Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
+		tilemap.set_cell(Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
+		tilemap.set_cell(Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
+
+
+func _tilemap_for(terrain: String) -> TileMapLayer:
+	match terrain:
+		"brick": return brickTileMap
+		"steel": return steelTileMap
+		"grass": return grassTileMap
+		"water": return waterTileMap
+		_: return null
 
 func _pave_debug(sid, row):
 	for c in ps.sets[sid]:

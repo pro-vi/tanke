@@ -2,20 +2,22 @@ var sets = {}  # set -> cells mapping
 var cells = {}  # cells -> set mapping
 var cell_width = 0  # cell num per row
 var set_count = 0  # current set id
+var merge_probability: float = 0.333  # P(merge) for horizontally adjacent cells
 
-func _init(width, next_set=0):
+func _init(width, next_set=0, p_merge: float = 0.333):
 	cell_width = width
 	sets = sets
 	cells = cells
 	set_count = next_set
+	merge_probability = p_merge
 
 func generate_step():
 	# assign each cell to its own set
 	_init_row()
-	
+
 	# horizontally connect cells randomly
 	for c in cell_width - 1:
-		if _in_same_set(c, c+1) || randi() % 3 > 0:
+		if _in_same_set(c, c+1) || randf() >= merge_probability:
 			continue
 		else:
 			_merge(c, c+1)

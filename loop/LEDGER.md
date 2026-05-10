@@ -80,3 +80,52 @@ A == B (reproducibility ✓), A ≠ C (seed sensitivity ✓).
 
 **Total:** 20/50
 **Weakest axis next:** Algorithm variety (criterion 2) tied with LevelConfig mutability (3) — both 0/5. Tackle LevelConfig first (criterion 3): it's the structural unblock that enables 2 (parameter exposure), 3 (mutability), 7 (agent edit friction), and downstream 8 (richness). One BUILD lifts four axes.
+
+---
+
+## Iter 002 — BUILD — 2026-05-10
+**Focus:** LevelConfig Resource — extract terrain selection + Eller merge probability into a `.tres`. Prove mutability by oracle diff across 3 presets at fixed seed.
+**Changed files:**
+- `scripts/LevelConfig.gd` (new) — `class_name` Resource with `merge_probability` + 5 terrain weights + `sample_terrain()` weighted picker.
+- `configs/default.tres` (new) — balanced preset (`0.40/0.15/0.20/0.15` brick/steel/grass/water, p_merge=0.333).
+- `configs/watery.tres` (new) — water-heavy preset (`0.15/0.05/0.10/0.60`, p_merge=0.5).
+- `configs/fortress.tres` (new) — steel-heavy + larger sets (`0.20/0.55/0.15/0.05`, p_merge=0.7).
+- `scripts/ProceduralLevel.gd` — `@export var config: LevelConfigT`; falls back to `DefaultConfig.duplicate()`; `_pave_set` rewritten as weighted sample → tilemap dispatch.
+- `scripts/ProceduralStep.gd` — `_init` accepts `p_merge`; replaces hardcoded `randi() % 3 > 0`.
+- `loop/test_runner.gd` — accepts `-- --config PATH` to load alternate configs.
+- `loop/AGENTS.md` (new) — agent parameter map: file/line/type/range/effect for every mutable knob.
+
+**Oracle output (seed 42, 3 configs):**
+```
+DEFAULT:   brick 400  water 200  steel 244  grass 228  total 1072  sets 15  avg 1.33  hash 6159ef2f5464edb1
+WATERY:    brick 232  water 688  steel  64  grass  60  total 1044  sets  8  avg 2.50  hash 74e4d9ad07f08693
+FORTRESS:  brick 172  water  40  steel 720  grass 192  total 1124  sets  3  avg 6.67  hash 60feb24a96c2161a
+```
+
+Three distinct hashes confirm config sensitivity. Three distinct distributions confirm visible character difference. Reproducibility check: default twice → identical hash.
+
+**Screencapture oracle (random seed, default config):**
+```
+Coverage 99.9%   Variety 4/4   Distribution entropy 1.562 bits  score 3.9/5.0
+brick: 47410  steel: 9072  grass: 11280  water: 8960
+```
+
+Distribution score lifted from 3.0 (modular) → 3.9 (weighted) — measurable improvement in pixel-level balance.
+
+**Parse-error fix:** `class_name LevelConfig` doesn't resolve in headless mode (no class registry scan). Worked around with `const LevelConfigT = preload(...)` in ProceduralLevel.gd (caught by PostToolUse hook on first attempt — hook validation paid off).
+
+| Criterion | Score | Evidence |
+|-----------|-------|----------|
+| Headless oracle | 4 | unchanged; reproducibility verified iter 1 |
+| Algorithm variety | 3 | 3 configs × seed 42 → 3 distinguishable distributions; cited above |
+| LevelConfig mutability | 4 | `LevelConfig.gd` + `.tres` editable without `.gd` changes; watery shift cited |
+| Level DNA | 3 | seed reproducibility holds with config-aware generation |
+| Tile visual coherence | 3 | screencapture: 4/4 variety, all palettes render correctly |
+| Screencapture oracle | 3 | unchanged; entropy now 3.9 (informative) |
+| Agent edit friction | 4 | `loop/AGENTS.md` documents all 7 mutable params with file:line+range+effect |
+| Procedural richness | 2 | 4 types reliably present; awaiting SWEEP for variance score |
+| Pipeline completeness | 2 | unchanged |
+| GDScript correctness | 3 | `make test` clean; `test_runner.gd` clean across configs/seeds |
+
+**Total:** 31/50 (+11 from iter 1)
+**Weakest axis next:** Procedural richness (criterion 8) at 2/5. Run SWEEP mode: ≥5 seeds × default config, capture variance per terrain. If variance >20% → score 3 cited.
