@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 1
+iteration: 2
 preloop_complete: yes
 ```
 
@@ -35,21 +35,21 @@ tile_source_ids:
 
 ---
 
-## Current Scores
+## Current Scores (post iter 1)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
-| Headless oracle | 3 | `make test` catches GDScript runtime errors (120 frames, headless) |
-| Algorithm variety | 0 | merge prob hardcoded ProceduralStep.gd:12 |
-| LevelConfig mutability | 0 | ProceduralLevel.gd:69 hardcoded modular arithmetic |
-| Level DNA | 0 | no stored seed |
-| Tile visual coherence | 2 | TileMaps functional, tiles render; 100% brick dominance |
-| Screencapture oracle | 4 | `make screenshot` + `make analyze` working; PIL tile oracle calibrated |
-| Agent edit friction | 1 | only PlayerTank.gd exports exist |
-| Procedural richness | 1 | flat modular distribution; 100% brick, 0 variety (oracle confirmed) |
-| Pipeline completeness | 3 | check/test/screenshot/analyze/run all working |
-| GDScript correctness | 3 | collision.normal → get_normal() fixed; make test clean |
-| **Total** | **17/50** | |
+| Headless oracle | 4 | seed-aware reproducibility; same seed → same hash |
+| Algorithm variety | 0 | merge prob `randi() % 3 > 0` still hardcoded ProceduralStep.gd:18 |
+| LevelConfig mutability | 0 | LevelConfig resource doesn't exist |
+| Level DNA | 3 | `ProceduralLevel.gd:6` level_seed export; verified via tile_hash |
+| Tile visual coherence | 3 | 4/4 palettes render correctly per analyze_frame.py |
+| Screencapture oracle | 3 | analyze_frame.py classifies by palette; coverage/variety/entropy |
+| Agent edit friction | 1 | only level_seed, debug, PlayerTank.speed exported |
+| Procedural richness | 1 | seed 42: 56% brick, 28% grass, 11% water, 5% steel — flat |
+| Pipeline completeness | 2 | set_cell calls correct; PIL→TileSet path not yet exercised |
+| GDScript correctness | 3 | make test + test_runner clean across seeds |
+| **Total** | **20/50** | |
 
 ---
 
@@ -82,24 +82,24 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 0 BOOTSTRAP complete:
-- loop/test_runner.gd written (SceneTree harness, 30-frame step, tile counts + Eller metrics + SHA fingerprint)
-- gen_tile.py smoke test: brick_000.png written
-- Headless oracle output recorded in LEDGER + RUBRIC anchors
-- Screencapture oracle re-read: 4/4 variety, distribution 3.0/5 (prior 100% brick was seed outlier)
+Iter 1 BUILD: Level DNA — stored seed.
+- @export level_seed on ProceduralLevel.gd; seed() called in _ready before generation
+- test_runner.gd accepts -- --seed N (defaults 42)
+- Reproducibility verified: seed 42 × 2 → hash 619cb88ffed7e906; seed 7 → beac3183dc58e335
+- 5 rubric criteria lifted; total 17 → 20
 ```
 
 ---
 
 ## Stale Scores
 
-Earlier "100% brick distribution=0/5" reading invalidated by fresh seed run; treat distribution score as non-deterministic until Level DNA / stored seed lands.
+Resolved: distribution score was non-deterministic; now deterministic at seed 42 baseline (brick 56% / grass 28% / water 11% / steel 5%).
 
 ---
 
 ## Next Action
 
-`Iter 1 BUILD: add stored seed to ProceduralLevel (Level DNA criterion 4) — unblocks deterministic oracle scoring across iterations`
+`Iter 2 BUILD: LevelConfig resource — extract _pave_set hardcoded conditionals into a Resource with weights per terrain. Force multiplier across criteria 2, 3, 7, 8.`
 
 ---
 

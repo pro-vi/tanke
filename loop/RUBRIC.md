@@ -30,7 +30,7 @@ tile_hash: e55b96e4256a8acf
 PASS
 ```
 
-**Current state:** 3 — `loop/test_runner.gd:1-90` prints per-type counts, last-row Eller metrics (sets/avg/max), SHA-256 fingerprint of placed tiles, and PASS/FAIL. To reach 4: prove same-seed reproducibility (need stored seed first). To reach 5: switch to JSON.
+**Current state:** 4 — `loop/test_runner.gd` prints per-type counts, Eller metrics, SHA-256 fingerprint, seed used, PASS/FAIL. CLI `--seed N` accepted. Same-seed reproducibility verified (iter 1: two runs of seed 42 produced identical hash `619cb88ffed7e906`). To reach 5: switch to JSON output.
 
 ---
 
@@ -77,7 +77,7 @@ Does the Eller's algorithm parameter space produce meaningfully different level 
 | 4 | LevelDNA serializable to JSON/dict; round-trips without loss |
 | 5 | Loop proposes a LevelDNA mutation, applies it, oracle confirms change, loop scores result — full agent-iteration cycle |
 
-**Current state:** 0 — `ProceduralLevel.gd:15` uses `randi()` with no stored seed.
+**Current state:** 3 — `ProceduralLevel.gd:6` exposes `@export var level_seed: int = 0`; `_ready()` (line 17) calls `seed(level_seed)` before any generation. Verified iter 1: two runs at seed 42 → identical tile_hash `619cb88ffed7e906`; seed 7 → distinct hash `beac3183dc58e335`. To reach 4: serialize LevelDNA (seed + future LevelConfig) to a `.tres` resource.
 
 ---
 
@@ -94,7 +94,7 @@ Do tiles look like they belong together? Assessed via screencapture oracle + PIL
 | 4 | PIL-generated tile variants used in game; palette extracted from `sprites_0.png` applied — cite ASSET-MANIFEST entry |
 | 5 | Screencapture at any seed looks like a coherent pixel art level; no tile bleeds or misaligned seams |
 
-**Current state:** 1 — TileSet migration not yet run; source_id unknown. Tiles may not render.
+**Current state:** 3 — TileSet operational (`scenes/ProceduralLevel.tscn:7-49`); `tools/analyze_frame.py` confirms all 4 terrain palettes render to expected colors (iter 0 frame: brick 55034, steel 1512, grass 12240, water 7936 px; classifier threshold 70 from `sprites_1.png` palette).
 
 ---
 
@@ -171,7 +171,7 @@ Full chain: `gen_tile.py` PNG → Godot TileSet → `set_cell` → rendered pixe
 | 4 | All 4 terrain tile variants regenerable from `gen_tile.py` without editor intervention |
 | 5 | New tile variant generated, imported, live in game, screencapture confirms render — full loop in one iteration |
 
-**Current state:** 0 — blocked on TileSet migration (preloop gate).
+**Current state:** 2 — TileSet migrated and working. `set_cell(Vector2i, source_id=0, atlas_coords=Vector2i(0,0))` calls in `ProceduralLevel.gd:_pave_set` confirmed correct against the in-scene atlas sources. `gen_tile.py` smoke-tested. PIL→TileSet step not yet exercised.
 
 ---
 
@@ -186,7 +186,7 @@ Full chain: `gen_tile.py` PNG → Godot TileSet → `set_cell` → rendered pixe
 | 4 | TileMap → TileMapLayer migration complete; zero deprecation warnings |
 | 5 | Typed GDScript throughout; all exported vars have type annotations |
 
-**Current state:** 2 — converted from GD3; TileMap deprecated nodes remain; test_runner.gd not yet written.
+**Current state:** 3 — `make test` clean (120-frame headless); `test_runner.gd` runs to PASS with no errors across seeds 42, 7. TileMap-as-Node2D wrappers around TileMapLayer remain (cosmetic deprecation); no functional warnings.
 
 ---
 

@@ -2,10 +2,19 @@ extends SceneTree
 
 const ProceduralLevelScene = preload("res://scenes/ProceduralLevel.tscn")
 const FRAMES_TO_STEP := 30
+const DEFAULT_SEED := 42
 
 
 func _initialize() -> void:
+	var test_seed := DEFAULT_SEED
+	var args := OS.get_cmdline_user_args()
+	for i in args.size():
+		if args[i] == "--seed" and i + 1 < args.size():
+			test_seed = int(args[i + 1])
+			break
+
 	var level: Node = ProceduralLevelScene.instantiate()
+	level.level_seed = test_seed
 	root.add_child(level)
 
 	# Let _ready and a few _process iterations run
@@ -64,6 +73,7 @@ func _collect(level: Node) -> Dictionary:
 	var tile_hash: String = fingerprint.sha256_text()
 
 	return {
+		"seed_used": level.level_seed,
 		"brick": brick_count,
 		"water": water_count,
 		"steel": steel_cells,
@@ -78,6 +88,7 @@ func _collect(level: Node) -> Dictionary:
 
 func _print_report(r: Dictionary) -> void:
 	print("=== tanke headless oracle ===")
+	print("seed: %d" % r.seed_used)
 	print("brick: %d  water: %d  steel: %d  grass: %d  total: %d" % [
 		r.brick, r.water, r.steel, r.grass, r.total_terrain
 	])

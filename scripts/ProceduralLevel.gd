@@ -3,6 +3,7 @@ extends "res://scripts/Level.gd"
 const ProceduralStep = preload("res://scripts/ProceduralStep.gd")
 const DebugBlock = preload("res://scenes/DebugBlock.tscn")
 @export var debug = false
+@export var level_seed: int = 0  # 0 = random; any other value = deterministic Level DNA
 
 # algo variables
 var osn
@@ -13,6 +14,10 @@ var grid_size = 16
 
 
 func _ready():
+	if level_seed == 0:
+		level_seed = randi()
+	seed(level_seed)
+	print("level_seed: %d" % level_seed)
 	# init starting area
 	ps = ProceduralStep.new(width/grid_size)
 	verts = ps.generate_step()
