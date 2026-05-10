@@ -19,12 +19,10 @@ func _ready():
 
 
 func _replace_blocks():
-	var offset = Vector2(4, 4)
-
 	var brick_cells = brickTileMap.get_used_cells()
 	for cell in brick_cells:
 		var brick_block = BrickBlock.instantiate()
-		brick_block.global_position = brickTileMap.map_to_local(cell) + offset
+		brick_block.global_position = brickTileMap.map_to_local(cell)
 		add_child(brick_block)
 	brickTileMap.clear()
 
@@ -32,7 +30,7 @@ func _replace_blocks():
 	for cell in water_cells:
 		var water_block = WaterBlock.instantiate()
 		water_block.get_node("AnimatedSprite2D").play()
-		water_block.global_position = waterTileMap.map_to_local(cell) + offset
+		water_block.global_position = waterTileMap.map_to_local(cell)
 		add_child(water_block)
 	waterTileMap.clear()
 
