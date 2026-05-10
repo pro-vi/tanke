@@ -546,3 +546,48 @@ biome (d→w)    0.692              662 / 956            35221010827d11ff
 **Total:** 43/55 (was 40/50). As percentage: 78.2% vs prior 80.0%. Proportional score went *down* — exactly what should happen when a new axis enters at non-max. Honest direction trade.
 
 **Weakest axis next:** Push criterion 11 toward 4 in iter 12 by citing a *mutation cycle* where one edit produces a *predicted* Δ in `vert_persistence`. Hypothesis: raising `merge_probability` from 0.333 → 0.7 should *increase* persistence (bigger Eller sets → more contiguous same-terrain). If confirmed, criterion 11 lifts 3→4 and the new metric joins the loop's empirical toolkit.
+
+---
+
+## Iter 012 — BUILD — 2026-05-10
+**Focus:** Cited mutation cycle on criterion 11. Test merge_probability hypothesis. Outcome: **falsification** — a more valuable finding than confirmation.
+**Changed files:**
+- `configs/test_p_merge.tres` (new) — fixture for the mutation cycle. Initially identical to default.tres; `merge_probability` then edited 0.333 → 0.7 via Edit tool (single-line surgical change).
+
+**Cycle (seed 42):**
+```
+                       merge_p   eller_sets  avg_size  max_size  brick water steel grass  vert_pers   tile_hash
+BEFORE (0.333):           0.333      15        1.33        2      400   200   244   228   0.647       6159ef2f5464edb1
+AFTER  (0.700):           0.700       3        6.67       17      356   148   352   248   0.628       e4cd32579d884f3d
+Δ:                        +110%      -80%      +401%     +750%    -11%  -26%  +44%  +9%   -2.9%       distinct
+```
+
+**Hypothesis:** higher `merge_probability` → bigger Eller sets → more contiguous same-terrain regions → *higher* `vert_persistence`.
+
+**Result:** **FALSIFIED.** Set sizes did grow dramatically (5× avg, 8.5× max — Eller's mechanics work as expected). Persistence went DOWN, not up.
+
+**Interpretation:** The current `vert_persistence` metric has a structural floor of ~0.5 from the 2x2 block paving (`_pave_set` writes 4 tiles per set-cell at `(c*2, r*2)`, `(c*2+1, r*2)`, etc.; intra-block vertical pairs are *guaranteed* same-terrain). The above-floor lift (~0.15) reflects inter-block continuity. When merge_probability rises:
+- *Within-row* sets become huge (single-set rows possible), so within-row terrain composition is *more concentrated* (1–3 terrains per row)
+- *But* `_pave_set` samples terrain INDEPENDENTLY per set per row — even when the same set ID carries forward via `verts`, terrain is re-sampled — so adjacent rows are still independent at the terrain level
+- Bigger sets reduce the number of inter-block boundaries within a row, so there are *fewer* opportunities for cross-row matches — the metric's denominator shifts
+
+**This is the iter 10 H2 (Goodhart) bleeding through to the new metric.** The metric reads partly as "is one terrain dominating?" not as "is space structured?". Watery (water-dominant) and fortress (steel-dominant) score high not because they're architecturally distinct but because their dominant terrain creates incidental same-terrain pairs.
+
+**The honest score:** anchor 4 specifies "reports predicted Δ" — the predicted direction was wrong — so criterion 11 stays at **3/5**. The metric DID respond measurably (0.647 → 0.628), so it's not broken; it's just measuring something narrower than I named it.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| (criteria 1-10 all unchanged) | — | — | — |
+| 11. Spatial Coherence | 3 | **3** | mutation cycle yielded measurable Δ but in wrong direction; anchor 4 not met |
+
+**Total:** 43/55 — unchanged (78.2%).
+
+**Weakest axis next:** Iter 13 — refine the metric. Options (priority):
+1. **Subtract the 0.5 block floor**: report `(vert_persistence - 0.5) / 0.5` as a normalized "above-floor coherence". Default 0.294, watery 0.454, fortress 0.420, biome 0.384, post-mutation 0.256 — wider dynamic range.
+2. **Normalize against IID baseline**: compute expected persistence given config's weight distribution, report ratio. Lifts the metric out of concentration-dependence.
+3. **Add connected-component metric**: count of distinct contiguous same-terrain regions; smaller count = bigger regions = more structure.
+4. **Sample at the BLOCK level** (every 2 cells) instead of tile level — eliminates the 2x2 floor entirely.
+
+Lean (1) for iter 13 — cheapest, immediately revealing. Then (2) for iter 14 to expose structure-vs-concentration as independent axes. Both feed back into criterion 11 anchors and may surface that 11 should split into "Spatial coherence (block-edge)" and "Spatial coherence (carryover)".
+
+**Falsification value:** this iter is the LOOP's first empirical disconfirmation. Up through iter 11, every cited mutation produced the predicted direction. The metric refinement work (iter 13+) wouldn't have been on the queue at all without this miss. Confirms the loop has measurement honesty.

@@ -237,12 +237,7 @@ between its endpoints (default 0.647 → watery 0.727; biome at 0.692 ≈ midpoi
 0.687 — interpolation reads structurally too, not just at the count level).
 
 **Current state:** 3 — `loop/test_runner.gd` computes `vert_persistence` via
-8px-grid lookup; cited above for 4 configs (3 distinct + 1 biome that falls
-intermediately). To reach 4: cite a mutation cycle where one parameter edit
-produces a *predicted* Δ in vert_persistence (e.g. raising `merge_probability`
-from 0.333 → 0.7 should increase persistence). To reach 5: independent axis —
-need a config that's high diversity + high coherence (e.g. fortress is high
-coherence + low diversity; need the high+high quadrant filled).
+8px-grid lookup; cited for 4 configs. **Iter 12 cited mutation cycle (`merge_probability` 0.333 → 0.7) FALSIFIED naive structural prediction:** persistence went DOWN slightly (0.647 → 0.628) despite Eller set size growing 5× (avg 1.33 → 6.67, max 2 → 17). Metric responds, but not in the predicted direction — reading partly captures *concentration* (which terrain dominates), not pure spatial structure. Anchor 4 *not* met (predicted Δ was wrong sign). Real action: iter 13+ should refine the metric — either subtract the 0.5 block-floor (the 2x2 paving guarantees half the pairs are same-terrain regardless of structure) or normalize against IID baseline so concentration stops dominating.
 
 ---
 

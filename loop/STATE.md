@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 12
+iteration: 13
 preloop_complete: yes
 ```
 
@@ -83,26 +83,36 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 11 META + BUILD: criterion 11 added; vert_persistence metric implemented.
-- test_runner.gd builds 8px (col,row)→terrain grid; counts vertical adjacencies
-- Cited readings (seed 42): default 0.647, watery 0.727, fortress 0.710, biome 0.692
-- Biome lands at midpoint of its endpoints — interpolation reads structurally
-- Criterion 11 enters at 3/5 (cited values across 4 configs, biome predictive)
-- Rubric now /55 (11 criteria); proportional score 78% (was 80% on /50)
-- Honest direction trade: % score down, measurement instrument matches intent
+Iter 12 BUILD: HYPOTHESIS FALSIFIED — and that's a good thing.
+- Created configs/test_p_merge.tres (initially identical to default)
+- Edit tool: merge_probability 0.333 → 0.7 (single-line surgical)
+- BEFORE: vert_persistence 0.647, eller_sets=15, avg_size=1.33
+- AFTER:  vert_persistence 0.628, eller_sets=3,  avg_size=6.67  (sets grew 5×)
+- Predicted UP, got DOWN slightly. Set mechanics worked perfectly; metric
+  doesn't measure what I named it.
+- DIAGNOSIS: vert_persistence has a 0.5 "block floor" from the 2x2 paving;
+  what's above the floor measures concentration (which terrain dominates),
+  not pure spatial structure. Iter 10 H2 (Goodhart) bleeding through.
+- Honest score: criterion 11 stays 3/5 (predicted direction wrong).
+- The loop's first empirical disconfirmation. Confirms measurement honesty.
 ```
 
 ---
 
 ## Stale Scores
 
-None — no prior scores changed; criterion 11 is new evidence, not a re-score.
+None — but criterion 11 reading needs a refined metric to be trustable as
+a structure measure.
 
 ---
 
 ## Next Action
 
-`Iter 12 BUILD: cited mutation cycle on criterion 11. Hypothesis: raising merge_probability 0.333 → 0.7 should INCREASE vert_persistence (bigger Eller sets → more contiguous same-terrain). Edit a config field, run BEFORE/AFTER, cite Δ. Pushes criterion 11 → 4 if confirmed.`
+`Iter 13 BUILD: refine vert_persistence. Options ranked by leverage:
+  (1) subtract 0.5 block floor → "above-floor coherence", normalized 0-1
+  (2) normalize against IID baseline (decouples from concentration)
+  (3) sample at block level (every-other), avoid the floor entirely
+Pick (1) for iter 13 — cheapest reveal. Plan (2) for iter 14.`
 
 External CONSULT retry: iter 20.
 
