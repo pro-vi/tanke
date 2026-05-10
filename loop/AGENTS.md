@@ -126,3 +126,35 @@ OR (d) `vert_structure_lift` shifts by ≥0.05 (about 2% relative).
 
 When citing CC metrics across configs, run ≥3 seeds and report mean (or
 mean ± σ). `structure_lift` can be cited at single seed.
+
+## Reachability oracle (iter 29 — gameplay floor)
+
+**`playable: bool` is the gameplay rubric floor.** A config that fails the
+reachability check cannot score above 0 on the gameplay rubric, regardless
+of how its structural metrics look. This is the explicit fix for the
+iter-22-to-iter-18 over-optimization on visual/structural metrics that
+ignored traversability.
+
+Reported by `loop/test_runner.gd`:
+
+| Field | Meaning |
+|-------|---------|
+| `reachable_cells` | BFS flood-fill from spawn (20, 29); cells reachable via passable terrain |
+| `min_reachable_row` | Topmost tilemap row the player can reach |
+| `rows_climbed` | `29 - min_reachable_row`; how many rows above spawn the player can travel |
+| `playable` | `rows_climbed >= 10` (configurable in `MIN_ROWS_CLIMBED`) |
+
+Passability rules: empty cell or grass → passable. Brick / steel / water →
+impassable.
+
+**Config audit (seed 42, iter 29):**
+```
+default          reachable 120  rows 3   ✗ BLOCK   (the screenshot's config)
+playable (new)   reachable 804  rows 29  ✓ PLAY    (only traversable preset)
+watery           reachable  80  rows 1   ✗ BLOCK
+fortress         reachable 108  rows 3   ✗ BLOCK
+biome_balanced   reachable 120  rows 3   ✗ BLOCK   (iter-18 high+high quadrant — unplayable)
+```
+
+Single-seed deterministic; should be checked against ≥3 seeds for any
+config a gameplay iter promotes as default-playable.

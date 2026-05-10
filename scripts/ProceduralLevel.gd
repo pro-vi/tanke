@@ -19,6 +19,9 @@ var grid_size: int = 16
 
 
 func _ready() -> void:
+	# Connect player shoot signal — Level._ready() isn't called when this
+	# subclass overrides _ready, so we wire the signal here directly.
+	player.shoot.connect(_on_PlayerTank_shoot)
 	if config == null:
 		var override_path: String = OS.get_environment("TANKE_CONFIG")
 		if override_path != "":

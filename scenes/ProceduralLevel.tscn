@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://btw4ryipmrg4n" path="res://img/steel_007.png" id="5"]
 [ext_resource type="Texture2D" uid="uid://dqcyr7h1gwsw3" path="res://img/grass_007.png" id="6"]
 [ext_resource type="Texture2D" uid="uid://dg7td6i6nfwni" path="res://img/water_007.png" id="7"]
+[ext_resource type="Resource" path="res://configs/playable.tres" id="8"]
 
 [sub_resource type="TileSetAtlasSource" id="SteelSrc"]
 texture = ExtResource("5")
@@ -54,6 +55,7 @@ sources/0 = SubResource("WaterSrc")
 
 [node name="ProceduralLevel" type="Node2D"]
 script = ExtResource("2")
+config = ExtResource("8")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(160, 232)

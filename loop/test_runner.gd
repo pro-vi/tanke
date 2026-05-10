@@ -189,6 +189,38 @@ func _collect(level: Node) -> Dictionary:
 		cc_total += s
 	var cc_avg: float = (float(cc_total) / float(cc_count)) if cc_count > 0 else 0.0
 
+	# Reachability flood-fill (iter 28+). BFS from player spawn at tile (20, 29);
+	# passable = empty cell OR grass (which has no collision); impassable = brick,
+	# steel, water. Reports reachable cell count + topmost row reached. A level
+	# is "playable" if the player can climb >= MIN_ROWS_CLIMBED rows above spawn.
+	const SPAWN_TILE: Vector2i = Vector2i(20, 29)
+	const MAP_W: int = 40
+	const MAP_H: int = 30
+	const MIN_ROWS_CLIMBED: int = 10
+	var reach_visited: Dictionary = {}
+	var reach_queue: Array = [SPAWN_TILE]
+	while not reach_queue.is_empty():
+		var cur: Vector2i = reach_queue.pop_back()
+		if reach_visited.has(cur):
+			continue
+		if cur.x < 0 or cur.x >= MAP_W or cur.y < 0 or cur.y >= MAP_H:
+			continue
+		# Passable iff (no terrain placed) or (terrain is grass)
+		if grid.has(cur) and grid[cur] != "grass":
+			continue
+		reach_visited[cur] = true
+		reach_queue.push_back(Vector2i(cur.x + 1, cur.y))
+		reach_queue.push_back(Vector2i(cur.x - 1, cur.y))
+		reach_queue.push_back(Vector2i(cur.x, cur.y + 1))
+		reach_queue.push_back(Vector2i(cur.x, cur.y - 1))
+	var reachable_cells: int = reach_visited.size()
+	var min_reachable_row: int = MAP_H
+	for cell in reach_visited:
+		if cell.y < min_reachable_row:
+			min_reachable_row = cell.y
+	var rows_climbed: int = SPAWN_TILE.y - min_reachable_row
+	var playable: bool = rows_climbed >= MIN_ROWS_CLIMBED
+
 	return {
 		"seed_used": level.level_seed,
 		"brick": brick_count,
@@ -209,6 +241,10 @@ func _collect(level: Node) -> Dictionary:
 		"cc_count": cc_count,
 		"cc_max": cc_max,
 		"cc_avg": cc_avg,
+		"reachable_cells": reachable_cells,
+		"min_reachable_row": min_reachable_row,
+		"rows_climbed": rows_climbed,
+		"playable": playable,
 	}
 
 
@@ -261,6 +297,9 @@ func _print_report(r: Dictionary) -> void:
 		r.vert_above_floor, r.vert_iid_expected, r.vert_structure_lift
 	])
 	print("cc_count: %d   cc_max: %d   cc_avg: %.2f" % [r.cc_count, r.cc_max, r.cc_avg])
+	print("reachable: %d cells   rows_climbed: %d (min_row %d)   playable: %s" % [
+		r.reachable_cells, r.rows_climbed, r.min_reachable_row, str(r.playable)
+	])
 	print("tile_hash: %s" % r.tile_hash.substr(0, 16))
 	if r.total_terrain == 0:
 		print("FAIL: zero tiles placed")
