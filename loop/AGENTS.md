@@ -114,3 +114,15 @@ jq -n --slurpfile a /tmp/a.json --slurpfile b /tmp/b.json \
 A change is "real" only if (a) `tile_hash` changes vs baseline, AND (b) at least
 one terrain count changes by ≥10%, OR (c) `make diff` reports `shift_detected: True`,
 OR (d) `vert_structure_lift` shifts by ≥0.05 (about 2% relative).
+
+## Metric reliability (iter 26 multi-seed evidence)
+
+| Metric | Single-seed CV | Multi-seed required? |
+|--------|----------------|----------------------|
+| `vert_structure_lift` | 5.1% | No — single seed is diagnostic |
+| `cc_count` | 11.0% | Optional — moderate variance |
+| `cc_avg` | 7.8% | Optional |
+| `cc_max` | **35.2%** | **Yes — single seed unreliable** |
+
+When citing CC metrics across configs, run ≥3 seeds and report mean (or
+mean ± σ). `structure_lift` can be cited at single seed.

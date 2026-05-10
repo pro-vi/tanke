@@ -1196,3 +1196,53 @@ The loop's predict-then-test discipline has been productive — but the data sho
 But: the loop has surfaced its own systematic blind spot. Acknowledging "I cannot reliably predict CC behavior at single seeds" is an epistemic upgrade — comparable to the iter-13 instrument refinement, but at the prediction layer.
 
 **Weakest axis next:** Iter 26 — multi-seed CC sweep on biome_balanced. Run seeds {1, 7, 42, 100, 314, 999} (the iter-3 SWEEP grid). Report mean/stddev for cc_max, cc_count, structure_lift. If mean cc_max varies across seeds with high variance, single-seed CC is officially unreliable and the rubric's "biome_balanced has cc_max=68" cite needs to be retired in favor of mean ± stddev. Honest measurement. This iter is a SWEEP, not BUILD.
+
+---
+
+## Iter 026 — SWEEP — 2026-05-10
+**Focus:** Multi-seed CC variance check on biome_balanced. 6 seeds × biome_balanced.
+
+**Pre-commit prediction:** ≥30% CV on cc_max across seeds (high variance) means single-seed cites unreliable.
+
+**Sweep result (biome_balanced, seeds {1, 7, 42, 100, 314, 999}):**
+```
+seed     cc_count   cc_max   cc_avg   structure_lift   hash
+1         65         144      15.38    2.418            60f17d66
+7         68          80      16.06    2.562            68cdcbbf
+42        77          68      14.23    2.628            8a483467   ← iter 22's cite
+100       84          84      13.71    2.480            fc1a98e9
+314       66         144      15.88    2.296            06c7f36e
+999       80          76      13.35    2.614            bfa0645b
+
+Statistic            min     max     mean    stdev    CV
+cc_count             65      84      73.3    8.0      11.0%
+cc_max               68      144     99.3    35.0     **35.2%**
+cc_avg               13.4    16.1    14.8    1.2      7.8%
+structure_lift       2.30    2.63    2.50    0.13     **5.1%**
+```
+
+**Hypothesis confirmed.** `cc_max` CV = 35.2% — single-seed measurement is unreliable. The iter-22 cite (cc_max=68) was at the *minimum* of the observed range; mean is 99 ± 35.
+
+**`structure_lift` CV = 5.1%** — reliable at single seed. The 2.5× range across configs in prior iters was real signal.
+
+**Re-anchoring:**
+- AGENTS.md updated with metric-reliability table: `structure_lift` is single-seed-diagnostic, `cc_max` requires ≥3 seeds.
+- RUBRIC criterion 11 updated: iter-22 single-seed CC cites contextualized.
+
+**Two meta-level findings in the iter 20-26 arc:**
+1. Iter 21: written pre-mortems work even when external CONSULT fails
+2. Iter 26: CC metrics need multi-seed averaging; structure_lift doesn't
+
+Both are about the loop's measurement and prediction discipline, not about the engine.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| (all 11 unchanged) | — | — | — |
+
+**Total:** 49/55 — unchanged.
+
+But AGENTS.md (the agent's parameter/metric map) now includes calibrated reliability data. Future iters will avoid the iter-22 single-seed CC overclaim pattern.
+
+**Weakest axis next:** Iter 27 — typed GDScript pass on Level.gd, ProceduralLevel.gd, LevelConfig.gd, BiomeConfig.gd, LevelDNA.gd. Lifts criterion 10 (GDScript correctness) 4 → 5. Anchor 5: "Typed GDScript throughout; all exported vars have type annotations". Closes the last criterion below 5 (every C reaches 4+ already). Total → 50/55 if it lands.
+
+The arc 0-19 was building the loop; arc 20-26 was stress-testing predictions and surfacing meta-findings; arc 27+ closes the rubric and reaches a natural pause point.

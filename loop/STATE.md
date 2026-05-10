@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 26
+iteration: 27
 preloop_complete: yes
 ```
 
@@ -83,26 +83,21 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 25 SWEEP: single-variable p_merge sweep — 4th falsification.
+Iter 26 SWEEP: multi-seed CC variance check (biome_balanced, 6 seeds).
+Pre-commit prediction (≥30% CV on cc_max) CONFIRMED.
 
-Sweep (balanced_steel weights, vary only p_merge, seed 42):
-  p=0.333  cc_max  96
-  p=0.4    cc_max  96
-  p=0.5    cc_max 192   ← non-monotone peak
-  p=0.6    cc_max 144   ← drops back
+Statistic            mean    stdev    CV
+cc_max               99.3    35.0     35.2%   ← high variance, single-seed unreliable
+structure_lift       2.50    0.13     5.1%    ← stable across seeds
+cc_count             73.3     8.0     11.0%
+cc_avg               14.8     1.2     7.8%
 
-Predicted: monotonic growth. Got: peaked-and-dropped.
+iter-22 cite "biome_balanced cc_max=68" was at MIN of multi-seed range
+(actual mean 99). structure_lift's 2.5× range was real signal.
 
-structure_lift IS roughly monotonic (↓ with ↑ p_merge: 2.506 → 2.443).
-That's the only stable predictable dimension.
-
-cumulative: 4 falsified directional predictions on CC behavior (0/4
-accuracy). Single-seed CC measurements are chaotic due to compound
-randomness across rows. Cannot be predicted by intuitive parameter
-modeling.
-
-META-DECISION: stop framing CC iters as "predict and verify". Frame as
-"explore and report". The empirical map matters more than my predictions.
+Meta-finding #2 in the iter 20-26 arc: CC metrics need multi-seed
+averaging; structure_lift doesn't. AGENTS.md gained a metric-
+reliability table.
 
 No score change. Total 49/55.
 ```
@@ -111,27 +106,32 @@ No score change. Total 49/55.
 
 ## Stale Scores
 
-The iter-22 cite "biome_balanced has cc_max=68" is single-seed
-data. Multi-seed sweep at iter 26 will report mean ± stddev. If
-variance is high, the cited number becomes unreliable as anchor.
+iter-22 single-seed CC cites are now contextualized as min-of-range.
+RUBRIC criterion 11 cite updated.
 
-USER-LOOK GATE: open 5 iters, user firing /loop without feedback —
-proceeding with self-direction.
+USER-LOOK GATE: open 6 iters; treating user's repeated /loop firings
+as implicit "continue self-direction".
 
 ---
 
 ## Next Action
 
-`Iter 26 SWEEP: multi-seed CC sweep on biome_balanced. Seeds {1, 7, 42,
-100, 314, 999} (iter-3 grid). Report mean/stddev for cc_max, cc_count,
-structure_lift. Honest measurement.
+`Iter 27 BUILD: typed GDScript pass. Add type annotations to:
+  - Level.gd (5 @onready vars + signal handlers)
+  - ProceduralLevel.gd (osn, ps, verts, next_row, grid_size)
+  - LevelConfig.gd (already typed)
+  - BiomeConfig.gd (already typed)
+  - LevelDNA.gd (mostly typed)
+  - ProceduralStep.gd (sets, cells, cell_width, set_count)
+  - PlayerTank.gd (whatever's there)
+  - test_runner.gd (already typed)
 
-If high variance: retire single-seed CC anchors; re-cite as mean ± σ.
-If low variance: the iter-22 cited values are reliable; the chaos
-surfaced in iter 25 was specific to p_merge interaction.
+Lifts criterion 10 4 → 5. Anchor 5: "Typed GDScript throughout; all
+exported vars have type annotations".
 
-Either way, this is the empirical map at multi-seed resolution —
-overdue.`
+Total 49 → 50/55 if it lands. Closes the last <5 criterion. The arc
+0-19 built; arc 20-26 stress-tested; arc 27+ caps and reaches a
+natural pause point for retro/extraction.`
 
 ---
 
