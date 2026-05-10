@@ -777,3 +777,46 @@ brick: 54482   steel: 3944   grass: 0   water: 13720
 **Total:** 45/55 — unchanged. The C9 lift was real but the C5 regression cancels it. **The trade was knowable in advance** (gen_tile palettes were always disconnected from sprite sheet) but accepting the regression now exposes the work for iter 17 cleanly.
 
 **Weakest axis next:** Iter 17 — palette-extraction in `gen_tile.py`. Read top-3 frequent colors from `sprites_1.png` at given margins; use them as the palette for that terrain's variant. Result: PIL tiles within 70-distance of original → classifier recognizes them → criterion 5 lifts back to 3 AND potentially to 4 (anchor 4: "PIL-generated tile variants used in game; palette extracted from sprites_0.png applied"). Single iter recovers the regression and pushes further than where we were.
+
+---
+
+## Iter 017 — BUILD — 2026-05-10
+**Focus:** Recover C5 regression from iter 16 by grounding gen_tile.py palettes in `sprites_1.png`.
+**Changed files:**
+- `tools/gen_tile.py` — added `extract_palette(sheet_path, margins)` function (reads top-4 frequent non-near-black colors from an 8x8 region); added `SHEET_MARGINS` dict matching `analyze_frame.py`'s `TILE_DEFS`; `--from-sheet PATH` CLI flag mutates `PALETTES[tile]` before generation.
+- `img/{brick,steel,grass,water}_007.png` — regenerated with extracted palettes; .import UIDs preserved (no scene edit needed).
+- `loop/ASSET-MANIFEST.md` — iter 17 regeneration block added with extracted palettes + before/after analyze readings.
+
+**Extracted palettes (verifiable with `analyze_frame.py`'s reference):**
+```
+brick at (40, 0): [(156, 74, 0), (99, 99, 99), (107, 8, 0), ...]
+steel at (16, 0): [(173, 173, 173), (99, 99, 99), (255, 255, 255), ...]
+grass at (24, 0): [(140, 214, 0), (0, 82, 8), (8, 74, 0), ...]
+water at (24, 8): [(66, 66, 255), (181, 239, 239), (181, 239, 239), ...]
+```
+
+These match the analyze_frame.py reference *by construction* — both extraction routines read the same sheet at the same offsets.
+
+**Screencapture before/after (default config, random seed):**
+```
+                 coverage   variety   entropy        brick   steel   grass   water
+iter 16          93.9%      3/4       2.5/5.0        54482   3944    0       13720
+iter 17          99.9%      4/4       4.0/5.0        45638   5740    14080   11264
+```
+
+**Distribution entropy 4.0/5.0** is *better* than the original baseline of 3.9 (with stock `sprites_1.png` textures). Why higher? PIL variant 7 has slightly more pixel variation per tile (mortar lines, scratches) than the original tiles — the classifier sees a richer color spread.
+
+**Headless hash anchor preserved:** `6159ef2f5464edb1` at seed 42 — third confirmation that texture changes don't perturb game logic. The cosmetic/logic separation has been tested across 1-tile swap (iter 4), 4-tile swap with hardcoded palette (iter 16), and 4-tile swap with extracted palette (iter 17). Logic is rock-stable.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| 5. Tile visual coherence | 2 | **4** | (a) classifier reads 4/4 variety, dominant colors match reference (anchor 3); (b) PIL variants used in game with sprite-sheet-extracted palette (anchor 4) |
+| (criteria 1-4, 6-11 unchanged) | — | — | — |
+
+**Total:** 47/55 (+2 from iter 16). 85.5% on the expanded rubric. Two-step recovery+overshoot from the iter-16 regression (-1) — a +3 swing.
+
+**Weakest axis next:** Two criteria still at 3 (10 GDScript correctness, and back-of-pack 6 Screencapture oracle if it's still there at 3 — let me check). Actually iter 8 lifted C6 to 4. So at 3: only C10. Highest leverage now: criterion 11 (Spatial Coherence) anchor 5 — find a config that's high diversity AND high structure_lift simultaneously. Currently the high-lift quadrant is biome-only; the high-diversity quadrant is default-only. Constructing a config that's *both* would push criterion 11 → 5. That's the loop's hardest remaining task.
+
+Alternative iter 18: chip away at criterion 10 (deprecation warnings audit). Less interesting but cheap.
+
+Lean toward criterion 11 → 5 attempt (config search) — fits the loop's "agent does iterative search" theme, even if it falls short on first try.

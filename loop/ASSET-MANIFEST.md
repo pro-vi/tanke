@@ -62,7 +62,7 @@ Full PIL → TileSet → set_cell → rendered pixel chain verified in one itera
 - grass_007: `uid://dqcyr7h1gwsw3`
 - water_007: `uid://dg7td6i6nfwni`
 
-**Iter 16 verification:**
+**Iter 16 verification (hardcoded palettes):**
 ```
 Headless (seed 42, post-swap):
   hash 6159ef2f5464edb1 (UNCHANGED — texture swap is cosmetic)
@@ -73,12 +73,27 @@ Screencapture:
   brick 54482, steel 3944, grass 0, water 13720
 ```
 
-The 4-tile swap demonstrates the gen_tile→import→atlas-source→render chain
-end-to-end (criterion 9 anchor 4). But the gen_tile grass palette
-((80,140,60), (60,120,40), (100,160,80), (40,100,30)) is more than 70
-color-distance from any of the analyze_frame.py reference colors extracted
-from `sprites_1.png` margins (24, 0). Criterion 5 (palette consistency)
-regressed 3→2 as a result.
+**Iter 17 regeneration (sprite-sheet-extracted palettes):**
+
+`gen_tile.py --from-sheet img/sprites_1.png` extracts top-4 frequent colors
+from each terrain's canonical 8×8 region (margins `(40,0)` brick, `(16,0)`
+steel, `(24,0)` grass, `(24,8)` water) and uses them as the variant palette:
+```
+brick: [(156, 74, 0), (99, 99, 99), (107, 8, 0), (107, 8, 0)]
+steel: [(173, 173, 173), (99, 99, 99), (255, 255, 255), (255, 255, 255)]
+grass: [(140, 214, 0), (0, 82, 8), (8, 74, 0), (8, 74, 0)]
+water: [(66, 66, 255), (181, 239, 239), (181, 239, 239), (181, 239, 239)]
+```
+
+These match `analyze_frame.py`'s reference exactly (same source). Re-screencap:
+```
+coverage 99.9%, variety 4/4
+distribution entropy 1.581 bits  score 4.0/5.0   ← BETTER than original baseline (3.9)
+brick 45638, steel 5740, grass 14080, water 11264
+```
+
+The PIL-generated tiles now sit *inside* the classifier window. Headless
+hash anchor `6159ef2f5464edb1` still preserved across the regeneration.
 
 ---
 
