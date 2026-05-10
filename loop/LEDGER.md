@@ -417,3 +417,58 @@ Single command (`make diff CONFIG=watery`) now: captures default frame → swaps
 **Total:** 39/50 (+1 from iter 7). Anchors raised iter 7 still binding; this lift was against the unchanged C6 anchor 4.
 
 **Weakest axis next:** Four criteria at 3/5 (5, 8, 9, 10). Iter 9 candidate: tackle criterion 8 (Procedural richness) by implementing biome-zones — depth-modulated weights via 2-3 LevelConfig presets that interpolate as player scrolls. Anchor 4: "Biome-like zones: level character shifts as player scrolls deeper". This is the heaviest BUILD remaining and the most genuine procedural-engine sophistication. Iter 10 still due as CONSULT — iter 9 BUILD then iter 10 CONSULT.
+
+---
+
+## Iter 009 — BUILD — 2026-05-10
+**Focus:** Biome-zone weighting (criterion 8 anchor 4). Depth-modulated `LevelConfig` via interpolation between two endpoint configs.
+**Changed files:**
+- `scripts/BiomeConfig.gd` (new) — Resource bundling `surface: LevelConfig`, `deep: LevelConfig`, `surface_row` (default 14), `depth_scale` (default 14). `depth_t(row)` returns clamped `(surface_row - row) / depth_scale`. `config_at(row)` returns a fresh LevelConfig with all 6 fields lerp'd between surface and deep at that t.
+- `configs/biome_default_to_watery.tres` (new) — surface=default, deep=watery, scale=14 (full transition across visible 14-row screen).
+- `scripts/ProceduralLevel.gd` — `@export var biome: BiomeConfigT`; `TANKE_BIOME` env override; `_active_config(row)` helper; refactored `_generate_next_row` → `_generate_next_row_for(row)` (passes row through to access biome interp); `_pave_set` uses per-row config too.
+- `loop/test_runner.gd` — `-- --biome PATH` flag.
+- `loop/AGENTS.md` — biome param table + TANKE_BIOME env entry + biome preset row.
+
+**Compile-error caught by hook:** PostToolUse hook flagged forward references to `_active_config()` and `_generate_next_row_for()` after the first edit (defined-later, called-earlier). Saved an iteration. Pattern: write the new helper definitions FIRST, then update call sites.
+
+**Headless oracle output (seed 42):**
+```
+                    brick  water  steel  grass  total  tile_hash
+flat default:        400    200    244    228   1072   6159ef2f5464edb1   ← iter 2 baseline preserved
+biome default→watery: 424    240    180    220   1064   35221010827d11ff   ← biome active
+Δ from flat:         +6%   +20%   -26%   -3%
+```
+
+**Screencapture diff (seed 42, flat vs biome):**
+```
+brick:  41322 → 41930  (+1.5%)
+steel:   9912 →  7224  (-27.1%)
+grass:  13200 → 12720  (-3.6%)
+water:  12288 → 14848  (+20.8%)
+entropy 1.722 → 1.686 bits  (Δ -0.036)
+shift_detected: True
+```
+
+Both oracles agree on direction (water up ~20%, steel down ~27%). The biome interpolation is a real spatial-coherence feature, not just a global mean shift — top of visible screen is at t=1 (deep biome = watery weights) and bottom is at t=0 (surface = default weights). Viewing the screencapture would show a vertical gradient.
+
+**No regressions:** flat default seed-42 hash `6159ef2f5464edb1` preserved exactly across the refactor. The control measurement anchor still binds.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| Headless oracle | 4 | 4 | unchanged |
+| Algorithm variety | 4 | 4 | unchanged |
+| LevelConfig mutability | 5 | 5 | unchanged (new BiomeConfig is composition, not replacement) |
+| Level DNA | 5 | 5 | unchanged |
+| Tile visual coherence | 3 | 3 | unchanged |
+| Screencapture oracle | 4 | 4 | unchanged |
+| Agent edit friction | 5 | 5 | unchanged (AGENTS.md updated to expose biome) |
+| Procedural richness | 3 | **4** | iter 9 biome cited above; level character shifts as player scrolls deeper |
+| Pipeline completeness | 3 | 3 | unchanged |
+| GDScript correctness | 3 | 3 | unchanged |
+
+**Total:** 40/50 (+1 from iter 8). Approaching the rubric's natural plateau — three criteria still at 3 (5, 9, 10), each with specific 4-anchors that require non-trivial work.
+
+**Weakest axis next:** **Iter 10 = CONSULT mode** per CONSULT SCHEDULE. Three pre-staged hollow-points to interrogate (from iter 6 audit + iter 9 reflection):
+1. Spatial coherence is *only* on the depth axis — there's no horizontal banding, no "rooms", no walls following the maze. The Eller's algorithm output is decorrelated from the procedural texture beneath it.
+2. The oracle measures distribution but not "interestingness". A perfectly uniform 25/25/25/25 split would max the entropy score while being maximally boring. Goodhart risk.
+3. `merge_probability` only affects horizontal connectivity, not vertical. The level structure is implicitly row-by-row independent on the vertical axis (only Eller's vertical carry-overs link rows).

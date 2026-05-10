@@ -166,7 +166,7 @@ How varied do levels feel across seeds and configs?
 | 4 | Biome-like zones: level character shifts as player scrolls deeper |
 | 5 | A playtest of 3 seeds at 3 configs produces 9 clearly distinct level feelings — documented with oracle output + screencaptures |
 
-**Current state:** 3 — SWEEP iter 3 across 6 seeds (1, 7, 42, 100, 314, 999) × default config: per-terrain range/mean variance brick 49.6%, water 40.6%, steel 62.9%, grass 41.7%. All four exceed the 20% threshold. 6/6 seeds produced distinct `tile_hash` values. To reach 4: implement biome-like zones — level character shifts as player scrolls deeper (e.g. depth-modulated weights, region noise overlay).
+**Current state:** 4 — iter 9 implemented `BiomeConfig` (`scripts/BiomeConfig.gd`): two LevelConfigs interpolated linearly over `depth_scale` rows. `ProceduralLevel.gd` `_active_config(row)` returns the per-row interpolated config; both `_generate_next_row_for(row)` and `_pave_set(sid, row)` consume it. Demonstration: `configs/biome_default_to_watery.tres` (depth_scale=14) at seed 42, headless: brick 400→424, water 200→240 (+20%), steel 244→180 (-26%), hash 6159ef2f→3522101. Screencapture matches direction: water +20.8%, steel -27.1%, `shift_detected: True`. Level character measurably shifts top-of-screen vs bottom. To reach 5: 9 distinct level-feelings across 3 seeds × 3 biomes documented (full SWEEP grid + screencaptures).
 
 ---
 

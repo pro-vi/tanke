@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 9
+iteration: 10
 preloop_complete: yes
 ```
 
@@ -46,10 +46,10 @@ tile_source_ids:
 | Tile visual coherence | 3 | 4/4 palettes render; all configs visually correct |
 | Screencapture oracle | 4 | iter 8 --diff mode + make diff CONFIG=<preset>; per-terrain Δ + shift_detected |
 | Agent edit friction | 5 | iter 7 zero-human-step cycle: AGENTS→Edit→rerun→Δ in one iter |
-| Procedural richness | 3 | 6-seed sweep: per-terrain variance 40–63% (>20% threshold met) |
+| Procedural richness | 4 | iter 9 biome interp: visible top-vs-bottom gradient; water +20.8% Δ |
 | Pipeline completeness | 3 | gen_tile→import→TileSet→render chain verified iter 4 (brick_007) |
 | GDScript correctness | 3 | make test clean; test_runner clean across configs |
-| **Total** | **39/50** | +1 from iter 7; iter 7 raised anchors still binding |
+| **Total** | **40/50** | +1 from iter 8; three 3-criteria remain (5/9/10); iter 10 = CONSULT |
 
 ---
 
@@ -82,28 +82,29 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 8 CAPABILITY: diff oracle + env-var rendering overrides.
-- analyze_frame.py --diff A.png B.png: per-terrain Δ + entropy Δ + shift_detected
-- ProceduralLevel.gd: TANKE_CONFIG / TANKE_SEED env reads in _ready (non-destructive)
-- Makefile: make diff CONFIG=<preset>
-- AGENTS.md updated: env vars + make diff documented
-- Demo: default vs watery @ seed 42 → water +95.8%, steel -67.8%, shift_detected: True
-- Criterion 6: 3 → 4. Total 38 → 39/50.
+Iter 9 BUILD: biome-zone weighting (criterion 8 anchor 4).
+- BiomeConfig.gd: surface + deep LevelConfigs interpolated over depth_scale rows
+- biome_default_to_watery.tres: full transition over visible 14-row screen
+- ProceduralLevel.gd: _active_config(row) helper; refactored generate/pave to per-row config
+- TANKE_BIOME env override added; test_runner --biome flag added
+- Hook caught forward-ref bug after partial edit — pattern: define helpers before call sites
+- Headless: water +20% / steel -26%, hash 6159ef2f → 35221010
+- Screencap diff: water +20.8% / steel -27.1%, shift_detected: True
+- Both oracles agree on direction; flat-default hash 6159ef2f preserved (no regression)
+- Criterion 8: 3 → 4. Total 39 → 40/50.
 ```
 
 ---
 
 ## Stale Scores
 
-None. Iter 7 already noted watery.tres state.
+None.
 
 ---
 
 ## Next Action
 
-`Iter 9 BUILD: biome-zone weighting. Implement depth-modulated LevelConfig (e.g. interpolate between two configs as player scrolls). Targets criterion 8 (Procedural richness 3→4). Heaviest remaining build; genuine procedural-engine sophistication.`
-
-Iter 10 = CONSULT gate. Pre-staged hollow-points: (a) no spatial coherence in terrain (iter 9 should target this), (b) merge_probability is depth-invariant, (c) entropy oracle is goodhart-able.
+`Iter 10 = CONSULT mode (per CONSULT SCHEDULE). Frontier-model query on 3 pre-staged hollow-points: (1) spatial coherence is only depth-axis — no rooms / walls / horizontal banding; (2) entropy oracle is goodhart-able toward uniform-uninteresting; (3) merge_probability has no vertical effect. Write to loop/creative-consults.md.`
 
 ---
 

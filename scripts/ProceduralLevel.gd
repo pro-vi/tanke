@@ -3,10 +3,12 @@ extends "res://scripts/Level.gd"
 const ProceduralStep = preload("res://scripts/ProceduralStep.gd")
 const DebugBlock = preload("res://scenes/DebugBlock.tscn")
 const LevelConfigT = preload("res://scripts/LevelConfig.gd")
+const BiomeConfigT = preload("res://scripts/BiomeConfig.gd")
 const DefaultConfig = preload("res://configs/default.tres")
 @export var debug = false
 @export var level_seed: int = 0  # 0 = random; any other value = deterministic Level DNA
 @export var config: LevelConfigT
+@export var biome: BiomeConfigT  # optional; when set, depth-modulates per-row config
 
 # algo variables
 var osn
@@ -23,6 +25,10 @@ func _ready():
 			config = load(override_path)
 		else:
 			config = DefaultConfig.duplicate()
+	if biome == null:
+		var biome_override: String = OS.get_environment("TANKE_BIOME")
+		if biome_override != "":
+			biome = load(biome_override)
 	var override_seed: String = OS.get_environment("TANKE_SEED")
 	if override_seed != "" and level_seed == 0:
 		level_seed = int(override_seed)
@@ -30,13 +36,14 @@ func _ready():
 		level_seed = randi()
 	seed(level_seed)
 	print("level_seed: %d" % level_seed)
-	# init starting area
-	ps = ProceduralStep.new(width/grid_size, 0, config.merge_probability)
+	# init starting area — use first row's active config for the seed step
+	var first_row: int = height/grid_size
+	ps = ProceduralStep.new(width/grid_size, 0, _active_config(first_row).merge_probability)
 	verts = ps.generate_step()
 	for row in range(height/grid_size, -1, -1):
 		if row == height/grid_size - 1:
 			continue
-		_generate_next_row()
+		_generate_next_row_for(row)
 
 		for sid in ps.sets:
 			_pave_set(sid, row)
@@ -64,9 +71,9 @@ func _ready():
 func _process(_delta):
 	var player_pos = player.position
 	var next_row_h = next_row * grid_size
-	
+
 	if player_pos.y - next_row_h < height/2 + grid_size:
-		_generate_next_row()
+		_generate_next_row_for(next_row)
 
 		for sid in ps.sets:
 			_pave_set(sid, next_row)
@@ -76,17 +83,30 @@ func _process(_delta):
 
 		next_row -= 1
 
-# populate the next procedural step using verts
-func _generate_next_row():
-	ps = ProceduralStep.new(width/grid_size, ps.set_count, config.merge_probability)
+
+# Returns the LevelConfig active at the given row — biome-interpolated if biome
+# is set, otherwise the flat config.
+func _active_config(row: int) -> LevelConfigT:
+	if biome != null:
+		return biome.config_at(row)
+	return config
+
+
+# populate the next procedural step using verts; merge_probability is sampled
+# from the active config at this row.
+func _generate_next_row_for(row: int):
+	var row_cfg := _active_config(row)
+	ps = ProceduralStep.new(width/grid_size, ps.set_count, row_cfg.merge_probability)
 	for sid in verts:
 		for c in verts[sid]:
 			ps.add_cell(c, sid)
 	verts = ps.generate_step()
 
-# weighted-sample tile distribution from LevelConfig
+
+# weighted-sample tile distribution from the active LevelConfig at this row
 func _pave_set(sid, row):
-	var terrain: String = config.sample_terrain()
+	var row_cfg := _active_config(row)
+	var terrain: String = row_cfg.sample_terrain()
 	if terrain == "":
 		return
 	var tilemap = _tilemap_for(terrain)

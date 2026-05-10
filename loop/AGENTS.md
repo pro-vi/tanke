@@ -50,9 +50,24 @@ Loop may add new presets to `configs/` and re-run the oracle to test new combina
 
 | param | file | line | type | valid_range | effect |
 |-------|------|------|------|-------------|--------|
-| `level_seed` | `ProceduralLevel.gd` | 7 | int | any int (0 = random) | RNG seed. Same seed + same config → identical tile_hash. |
-| `config` | `ProceduralLevel.gd` | 8 | LevelConfig | any `.tres` matching `LevelConfig.gd` | Distribution recipe; null falls back to `configs/default.tres`. |
-| `debug` | `ProceduralLevel.gd` | 5 | bool | true/false | Overlay numeric set IDs on each cell — visual debugging only. |
+| `level_seed` | `ProceduralLevel.gd` | 8 | int | any int (0 = random) | RNG seed. Same seed + same config → identical tile_hash. |
+| `config` | `ProceduralLevel.gd` | 9 | LevelConfig | any `.tres` matching `LevelConfig.gd` | Flat distribution recipe (one config across all rows); null falls back to `configs/default.tres`. |
+| `biome` | `ProceduralLevel.gd` | 10 | BiomeConfig | optional `.tres` matching `BiomeConfig.gd` | Depth-modulated config: each row uses an interpolation between `surface` and `deep` configs based on `depth_t(row)`. When set, supersedes flat `config` for per-row weighting. |
+| `debug` | `ProceduralLevel.gd` | 7 | bool | true/false | Overlay numeric set IDs on each cell — visual debugging only. |
+
+## BiomeConfig (`scripts/BiomeConfig.gd`)
+
+A pair of LevelConfigs interpolated over depth.
+
+| param | file | line | type | valid_range | effect |
+|-------|------|------|------|-------------|--------|
+| `surface` | `BiomeConfig.gd` | 14 | LevelConfig | any `.tres` | Config at depth t=0. |
+| `deep` | `BiomeConfig.gd` | 15 | LevelConfig | any `.tres` | Config at depth t=1. |
+| `surface_row` | `BiomeConfig.gd` | 16 | int | any | Row index considered shallowest. Default 14 (player start row). |
+| `depth_scale` | `BiomeConfig.gd` | 17 | int | 1–200 | Rows over which transition completes. Smaller = sharper biome boundary. |
+
+**Available biome presets:**
+- `configs/biome_default_to_watery.tres` — surface=default, deep=watery, scale=14 (full transition over visible area)
 
 **Mutate via:** edit `scenes/ProceduralLevel.tscn` to set defaults persistently,
 or pass via `test_runner.gd` `-- --seed N --config PATH`.
@@ -68,6 +83,7 @@ renderer (`make screenshot`, `make diff`) instead reads env vars:
 |---------|--------|---------|
 | `TANKE_SEED=N` | Sets `level_seed` (only if scene's `level_seed == 0`) | `ProceduralLevel.gd:_ready()` |
 | `TANKE_CONFIG=res://...tres` | Sets `config` (only if scene's `config` is null) | `ProceduralLevel.gd:_ready()` |
+| `TANKE_BIOME=res://...tres` | Sets `biome` (only if scene's `biome` is null) | `ProceduralLevel.gd:_ready()` |
 
 Used by `make diff CONFIG=<preset>` to capture two deterministic frames at
 the same seed with two different configs.

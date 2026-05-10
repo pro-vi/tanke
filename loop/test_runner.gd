@@ -11,6 +11,7 @@ func _initialize() -> void:
 	var config_path := ""
 	var dna_path := ""
 	var roundtrip_path := ""
+	var biome_path := ""
 	var args := OS.get_cmdline_user_args()
 	for i in args.size():
 		if args[i] == "--seed" and i + 1 < args.size():
@@ -21,6 +22,8 @@ func _initialize() -> void:
 			dna_path = args[i + 1]
 		elif args[i] == "--dna-roundtrip" and i + 1 < args.size():
 			roundtrip_path = args[i + 1]
+		elif args[i] == "--biome" and i + 1 < args.size():
+			biome_path = args[i + 1]
 
 	if roundtrip_path != "":
 		_dna_roundtrip(roundtrip_path)
@@ -36,6 +39,8 @@ func _initialize() -> void:
 		level.level_seed = test_seed
 		if config_path != "":
 			level.config = load(config_path)
+	if biome_path != "":
+		level.biome = load(biome_path)
 	root.add_child(level)
 
 	# Let _ready and a few _process iterations run
