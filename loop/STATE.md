@@ -3,9 +3,9 @@
 ## Phase
 
 ```
-phase: preloop
+phase: bootstrap
 iteration: 0
-preloop_complete: no
+preloop_complete: yes
 ```
 
 ---
@@ -17,8 +17,8 @@ preloop_complete: no
 [x] source_id + atlas_coords resolved from scene files (see below)
 [x] ProceduralLevel.tscn generates terrain without errors — make test clean
 [x] Screencapture oracle working — make screenshot + make analyze produce valid oracle output
-[ ] Verify interactively: player tank moves, camera follows, no console errors (F5 in editor)
-[ ] Flip preloop_complete: yes above
+[x] Verify interactively: player tank moves, camera follows, no console errors (F5 in editor)
+[x] Flip preloop_complete: yes above
 ```
 
 ---
@@ -82,9 +82,13 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Viewport fix: project.godot stretch mode "canvas_items" → "viewport".
-Oracle confirmed working: 320×240 capture, 100% coverage, 1/4 variety (all brick).
-make test clean. All preloop automated checks passing.
+Preloop complete. All checks passing:
+- make test clean (headless, 120 frames)
+- make screenshot + make analyze working (320×240 oracle, 100% coverage)
+- interactive playtest: tank moves, camera follows, no errors
+- camera startup glide fixed (reset_smoothing + force_update_scroll)
+- RemoteTransform2D rotation/scale leak fixed
+- tile positioning offset fixed (map_to_local center-aware in Godot 4)
 ```
 
 ---
@@ -97,7 +101,7 @@ None.
 
 ## Next Action
 
-`HALT — awaiting preloop_complete: yes (user must flip after interactive playtest)`
+`Bootstrap — iter 0: fix _pave_set() distribution (brick 100%, variety 1/4)`
 
 ---
 
