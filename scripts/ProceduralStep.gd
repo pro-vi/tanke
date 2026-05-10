@@ -22,12 +22,17 @@ func generate_step():
 		else:
 			_merge(c, c+1)
 	
-	# for each set, add 0<n<size vertical connections to the next row
+	# For each set, carry 1..size cells vertically to the next row.
+	# Classical Eller's invariant: every set MUST have at least one vertical
+	# connection or it gets stranded as a topological island. Iter 21 fixed
+	# the off-by-one (`randi() % size` could emit zero) — every set now
+	# carries at least one cell.
 	var verticals = {}
 	for sid in sets.keys():
 		var cells = sets[sid]
 		cells.shuffle()
-		cells = cells.slice(0, randi() % cells.size())
+		var carry: int = (randi() % cells.size()) + 1
+		cells = cells.slice(0, carry)
 		verticals[sid] = cells
 
 	return verticals

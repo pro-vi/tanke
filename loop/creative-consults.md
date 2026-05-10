@@ -87,6 +87,12 @@ Adding criterion 11 is a meta-move: the loop edits its own measurement instrumen
 
 **Pending response.** Iter 20 STATE notes "consult fired"; iter 21 will read back and integrate.
 
+**Iter 21 read-back: FAILED.** `agentify_status` for the key returned `tab_not_found` (tab was reaped); `agentify_read_page` returned only the empty-page footer. The query was accepted at iter 20 (queryId returned), but the response was lost — most likely the tab was garbage-collected before completion. This is the second consecutive external CONSULT failure (iter 10 was frozen-tab block).
+
+**Decision: stop trying.** Two consecutive failures of agentify external consult is enough signal that the infra path is unreliable for this session. The loop has been measurably honest with self-consults (the iter-10 self-reflective consult surfaced exactly the H1/H2/H3 the iter-11-19 work resolved, and the iter-20 pre-mortem named the Eller's bug as the parked item). The CONSULT cadence remains valuable — but external models aren't required for it; rigorous self-pre-mortem in writing serves the same epistemic role.
+
+**Action**: iter 21 pivots from "read consult response" to "act on the iter-20 pre-mortem #1 finding (Eller's zero-length carryover bug)". The pre-mortem named what was being avoided; the response arriving or not, that finding stands.
+
 ### Iter-19 self-assessment (pending external review)
 
 Three things I expect the model to surface that I'm partly avoiding:

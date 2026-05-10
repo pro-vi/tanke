@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 21
+iteration: 22
 preloop_complete: yes
 ```
 
@@ -83,36 +83,55 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 20 CONSULT: external agentify retry FIRED, async pending.
-- Tab pool clear (iter-10 frozen tab released in intervening hours)
-- Prompt: 19-iter trajectory summary + 3 new H1/H2/H3 questions
-- creative-consults.md updated with prompt summary + 3 self-assessment items
-- USER-LOOK GATE OPEN per PROMPT.md: user requested to playtest 3 seeds
-  (default / biome_balanced / fortress) and name what feels monotonous
-- No score changes (CONSULT mode); total 49/55.
+Iter 21 BUILD: agentify CONSULT readback FAILED (tab reaped); pivoted to
+fix the Eller's zero-length carryover bug (iter-20 pre-mortem #1, parked
+10 iters).
+
+ProceduralStep.gd line 30: cells.slice(0, randi() % cells.size())
+                       → cells.slice(0, (randi() % cells.size()) + 1)
+
+Result (seed 42 default):
+  Hash anchor RETIRED: 6159ef2f5464edb1 → 1f80435080844dce
+  eller_sets 15→11, avg_size 1.33→1.82, max_size 2→5
+  vert_persistence 0.647→0.684 (+5.7%)
+  structure_lift 2.388×→2.414× (+1.1%)
+
+biome_balanced post-fix: structure_lift 2.522×→2.628× (+4.2%, NEW HIGH)
+
+External CONSULT failed twice in a row — iter 10 frozen tab + iter 20
+tab-reaped. Decision: stop relying on agentify; iter-20 self-pre-mortem
+stands as effective consult.
+
+No score changes. Total 49/55. But: real bug fix + epistemic confirmation
+that pre-mortems-in-writing work even when external consults fail.
 ```
 
 ---
 
 ## Stale Scores
 
-None — but pending user-look feedback may stale criterion 8 (Procedural
-richness) at 4/5 if a human reports the levels feel monotonous despite
-the structure_lift metric variation.
+The seed-42 default-config hash anchor 6159ef2f5464edb1 (cited in iters
+2, 4, 11, 13, 14, 15, 16, 17, 19) is now HISTORICAL. Iter 21+ baseline
+is 1f80435080844dce. All vert_persistence / structure_lift values cited
+in iter logs prior to iter 21 are pre-bug-fix readings.
+
+USER-LOOK GATE STILL OPEN — no human has played in ~11 iters.
 
 ---
 
 ## Next Action
 
-`Iter 21: poll agentify status for key 'consult-iter20-procedural'. If
-done, read response, integrate into creative-consults.md, treat any
-unpredicted item as a falsification of my self-assessment (act on it).
-If model confirms my 3 predicted items, attack the parked Eller's
-zero-length carryover bug (10 iters dormant, highest-leverage open seam).
-If still running, schedule re-poll and pick a different BUILD target
-(C1 → richer JSON, OR C5 → 5 via no-tile-bleed seam-check oracle).`
+`Iter 22 BUILD: connected-component count metric. Add to test_runner.gd:
+flood-fill the (col,row)→terrain grid; report (count, max_size, avg_size).
+Higher CC count = more fragmented; bigger CCs = more architectural
+runs. Addresses iter-20 self-assessment #2 (vert_persistence is
+pair-counting, not structure-recognizing). Cite values across configs;
+predict biome_balanced has fewer/bigger CCs than fortress. If predicted
+direction holds, criterion 11 anchor 5 gets second axis confirming
+structure-vs-distribution decoupling.`
 
-USER-LOOK GATE OPEN — feedback at any time will reframe targets.
+Alternative: WAIT for user-look feedback before another BUILD. The gate
+has been open one iter; no movement yet.
 
 ---
 
