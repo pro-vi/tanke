@@ -1246,3 +1246,57 @@ But AGENTS.md (the agent's parameter/metric map) now includes calibrated reliabi
 **Weakest axis next:** Iter 27 — typed GDScript pass on Level.gd, ProceduralLevel.gd, LevelConfig.gd, BiomeConfig.gd, LevelDNA.gd. Lifts criterion 10 (GDScript correctness) 4 → 5. Anchor 5: "Typed GDScript throughout; all exported vars have type annotations". Closes the last criterion below 5 (every C reaches 4+ already). Total → 50/55 if it lands.
 
 The arc 0-19 was building the loop; arc 20-26 was stress-testing predictions and surfacing meta-findings; arc 27+ closes the rubric and reaches a natural pause point.
+
+---
+
+## Iter 027 — BUILD — 2026-05-10
+**Focus:** Typed GDScript pass to lift criterion 10 4 → 5. Closes the last criterion below 5.
+**Changed files (typed):**
+- `scripts/Constants.gd` — `dir_to_rotation(dir: int) -> float`
+- `scripts/Level.gd` — `BrickBlock`/`WaterBlock` as `const PackedScene`; `camera`/`player`/`tiles` typed; `width`/`height` int; all functions have return + param types
+- `scripts/PlayerTank.gd` — `sprite: Sprite2D`, `direction: int`, `grid: Vector2`, `can_shoot: bool`; `_physics_process(delta: float) -> void`; `set_dir(new_dir: int) -> void`; etc.
+- `scripts/TankSprite.gd` — `dir_set: Array`, `animation_frame: int`, `playing: bool`, `colliding: bool`; functions typed
+- `scripts/BrickBlock.gd` — `sprite: Sprite2D`; obsolete TODO removed
+- `scripts/ProceduralLevel.gd` — `osn`, `ps`, `verts` typed; `next_row`/`grid_size` int; `_pave_set(sid, row)` etc. fully typed
+- `scripts/ProceduralStep.gd` — `sets: Dictionary`, `cells: Dictionary`, `cell_width: int`, `set_count: int`; all function signatures typed; renamed inner shadow var `cells` → `members` in `generate_step` for clarity
+
+**Verification (seed 42 default):**
+```
+hash: 1f80435080844dce   ← matches iter-21 post-bug-fix anchor (typing is cosmetic)
+brick=420 water=176 steel=220 grass=220
+vert_persistence=0.684  structure_lift=2.414×
+cc_count=87  cc_max=140  cc_avg=11.91
+```
+
+**biome_balanced post-typing:**
+```
+hash=8a4834679f9e4eb2  structure_lift=2.628×  cc_max=68
+```
+
+All measurements match prior iters. Logic is unchanged.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| 10. GDScript correctness | 4 | **5** | typed throughout (every var, every function param/return), `make test` clean, anchor 5 met |
+
+**Total:** 50/55 (+1 from iter 26). 90.9% on the expanded rubric.
+
+**Score landscape post iter 27:**
+- 5/5: criteria 1, 3, 4, 7, 10, 11 (six of eleven)
+- 4/5: criteria 2, 5, 6, 8, 9 (five of eleven)
+
+**The natural pause point.** All 4-criteria have anchor-5 requirements that need *new mechanisms*, not just tuning:
+- C2: non-obvious parameter-interaction (raised iter 7); requires search-style experimentation
+- C5: zero tile bleed across seeds; needs a seam-check oracle (new tooling)
+- C6: oracle drives loop scoring decisions; needs automation
+- C8: 9 distinct level feelings × 3 seeds × 3 configs documented with playtest; **explicitly needs user-look**
+- C9: tile generated/imported/live in single iter; would need a Make target
+
+The user-look gate has been open **7 iterations** without movement. Several remaining anchors require it directly. Continuing without will hit diminishing returns.
+
+**Weakest axis next: STOP and write a retrospective.** Iter 28 should be a META iter: write `loop/META-RETRO.md` summarizing the 27-iter trajectory, key findings, what worked / didn't, and what the rubric's remaining 4-anchors actually demand. Anchor for stopping the loop is appropriate at this point.
+
+Alternative iter 28 candidates if not stopping:
+- Multi-seed grid across all configs (would supersede iter 22's table)
+- Three-band BiomeConfig (architectural change)
+- Actually do something C5-meaningful: add a seam-check oracle

@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 27
+iteration: 28
 preloop_complete: yes
 ```
 
@@ -48,9 +48,9 @@ tile_source_ids:
 | Agent edit friction | 5 | iter 7 zero-human-step cycle: AGENTS→Edit→rerun→Δ in one iter |
 | Procedural richness | 4 | iter 9 biome interp: visible top-vs-bottom gradient; water +20.8% Δ |
 | Pipeline completeness | 4 | iter 16 all 4 terrains regenerated via gen_tile + atlas swap; full-sheet chain |
-| GDScript correctness | 4 | iter 19 flattened TileMap wrappers; structurally migrated; zero deprecation warnings |
+| GDScript correctness | 5 | iter 27 typed throughout; every var + function annotated; make test clean |
 | 11. Spatial Coherence | 5 | iter 18 biome_balanced: most-dom 30% + structure_lift 2.522× (high+high quadrant filled) |
-| **Total** | **49/55** | +1 from iter 18; 89.1% on expanded rubric |
+| **Total** | **50/55** | +1 from iter 26; 90.9% on expanded rubric; natural pause point |
 
 ---
 
@@ -83,55 +83,53 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 26 SWEEP: multi-seed CC variance check (biome_balanced, 6 seeds).
-Pre-commit prediction (≥30% CV on cc_max) CONFIRMED.
+Iter 27 BUILD: typed GDScript pass — criterion 10 → 5.
 
-Statistic            mean    stdev    CV
-cc_max               99.3    35.0     35.2%   ← high variance, single-seed unreliable
-structure_lift       2.50    0.13     5.1%    ← stable across seeds
-cc_count             73.3     8.0     11.0%
-cc_avg               14.8     1.2     7.8%
+7 scripts received type annotations (Constants/Level/PlayerTank/
+TankSprite/BrickBlock/ProceduralLevel/ProceduralStep). Every var
+typed; every function param/return typed where nontrivial.
 
-iter-22 cite "biome_balanced cc_max=68" was at MIN of multi-seed range
-(actual mean 99). structure_lift's 2.5× range was real signal.
+Verification (seed 42 default):
+  hash 1f80435080844dce   ← matches iter-21 post-bug-fix anchor
+  structure_lift 2.414×, all metrics consistent
 
-Meta-finding #2 in the iter 20-26 arc: CC metrics need multi-seed
-averaging; structure_lift doesn't. AGENTS.md gained a metric-
-reliability table.
+Logic unchanged. Typing is cosmetic. Total 49 → 50/55 (90.9%).
 
-No score change. Total 49/55.
+Score landscape:
+  5/5: criteria 1, 3, 4, 7, 10, 11 (six)
+  4/5: criteria 2, 5, 6, 8, 9 (five — all need NEW mechanisms or user-look)
 ```
 
 ---
 
 ## Stale Scores
 
-iter-22 single-seed CC cites are now contextualized as min-of-range.
-RUBRIC criterion 11 cite updated.
+None. Hash anchor 1f80435080844dce is the post-iter-21 baseline (preserved
+through iter 22 CC metric, iter 27 typing pass).
 
-USER-LOOK GATE: open 6 iters; treating user's repeated /loop firings
-as implicit "continue self-direction".
+USER-LOOK GATE: 7 iters open. Multiple remaining 4-anchors explicitly need it.
 
 ---
 
 ## Next Action
 
-`Iter 27 BUILD: typed GDScript pass. Add type annotations to:
-  - Level.gd (5 @onready vars + signal handlers)
-  - ProceduralLevel.gd (osn, ps, verts, next_row, grid_size)
-  - LevelConfig.gd (already typed)
-  - BiomeConfig.gd (already typed)
-  - LevelDNA.gd (mostly typed)
-  - ProceduralStep.gd (sets, cells, cell_width, set_count)
-  - PlayerTank.gd (whatever's there)
-  - test_runner.gd (already typed)
+`Iter 28 META: write loop/META-RETRO.md.
 
-Lifts criterion 10 4 → 5. Anchor 5: "Typed GDScript throughout; all
-exported vars have type annotations".
+Natural pause point. The remaining 4-anchors (criteria 2, 5, 6, 8, 9)
+all need new mechanisms — search-style experimentation, seam-check
+oracle, automation, multi-config playtest with HUMAN feedback, single-
+iter generate-import-render. None are tunings; all are real new work.
 
-Total 49 → 50/55 if it lands. Closes the last <5 criterion. The arc
-0-19 built; arc 20-26 stress-tested; arc 27+ caps and reaches a
-natural pause point for retro/extraction.`
+The retro should:
+  - Summarize the 27-iter trajectory (build → stress-test → cap)
+  - Cite the four falsifications and the meta-findings
+  - Catalog what each remaining 4-criterion would actually need
+  - Make explicit what user-look would unlock
+  - Decide: does the loop continue (substantive new work) or pause
+    (rubric is honestly capped without human input)
+
+Per greenfield-loop META protocol, this is the right moment for a
+written summary before either a pivot or a halt.`
 
 ---
 

@@ -200,7 +200,7 @@ Full chain: `gen_tile.py` PNG → Godot TileSet → `set_cell` → rendered pixe
 | 4 | TileMap → TileMapLayer migration complete; zero deprecation warnings |
 | 5 | Typed GDScript throughout; all exported vars have type annotations |
 
-**Current state:** 4 — iter 19 flattened the GD3-migration leftover Node2D wrappers (`BrickTileMap/Layer0` → `Brick`; same for Steel/Grass/Water). All four are now direct `TileMapLayer` children of `Tiles`. `Level.gd` `@onready` paths updated. Verified: `make test` clean, hash anchor `6159ef2f5464edb1` preserved (logic untouched), screencap variety 4/4, **zero deprecation warnings** in stderr from headless test_runner. Migration is now structurally complete. To reach 5: typed GDScript throughout (every `@export` and `var` annotated).
+**Current state:** 5 — iter 19 flattened TileMap migration; iter 27 added type annotations across the codebase: `Constants.gd`, `Level.gd`, `PlayerTank.gd`, `TankSprite.gd`, `BrickBlock.gd`, `ProceduralLevel.gd`, `ProceduralStep.gd`. Every var has an explicit type annotation; every function has param + return types where nontrivial. `LevelConfig.gd`, `BiomeConfig.gd`, `LevelDNA.gd`, `test_runner.gd` were already typed. Verified post-typing: `make test` clean; hash anchor `1f80435080844dce` (post-iter-21) preserved (typing is cosmetic — no logic shifts).
 
 ---
 

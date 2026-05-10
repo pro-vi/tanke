@@ -1,24 +1,24 @@
 extends "res://scripts/Level.gd"
 
 const ProceduralStep = preload("res://scripts/ProceduralStep.gd")
-const DebugBlock = preload("res://scenes/DebugBlock.tscn")
+const DebugBlock: PackedScene = preload("res://scenes/DebugBlock.tscn")
 const LevelConfigT = preload("res://scripts/LevelConfig.gd")
 const BiomeConfigT = preload("res://scripts/BiomeConfig.gd")
-const DefaultConfig = preload("res://configs/default.tres")
-@export var debug = false
+const DefaultConfig: Resource = preload("res://configs/default.tres")
+@export var debug: bool = false
 @export var level_seed: int = 0  # 0 = random; any other value = deterministic Level DNA
 @export var config: LevelConfigT
 @export var biome: BiomeConfigT  # optional; when set, depth-modulates per-row config
 
 # algo variables
-var osn
-var ps
-var verts
-var next_row = 0
-var grid_size = 16
+var osn: FastNoiseLite
+var ps: ProceduralStep
+var verts: Dictionary
+var next_row: int = 0
+var grid_size: int = 16
 
 
-func _ready():
+func _ready() -> void:
 	if config == null:
 		var override_path: String = OS.get_environment("TANKE_CONFIG")
 		if override_path != "":
@@ -37,11 +37,11 @@ func _ready():
 	seed(level_seed)
 	print("level_seed: %d" % level_seed)
 	# init starting area — use first row's active config for the seed step
-	var first_row: int = height/grid_size
-	ps = ProceduralStep.new(width/grid_size, 0, _active_config(first_row).merge_probability)
+	var first_row: int = height / grid_size
+	ps = ProceduralStep.new(width / grid_size, 0, _active_config(first_row).merge_probability)
 	verts = ps.generate_step()
-	for row in range(height/grid_size, -1, -1):
-		if row == height/grid_size - 1:
+	for row in range(height / grid_size, -1, -1):
+		if row == height / grid_size - 1:
 			continue
 		_generate_next_row_for(row)
 
@@ -68,11 +68,11 @@ func _ready():
 	camera.reset_smoothing()
 	camera.force_update_scroll()
 
-func _process(_delta):
-	var player_pos = player.position
-	var next_row_h = next_row * grid_size
+func _process(_delta: float) -> void:
+	var player_pos: Vector2 = player.position
+	var next_row_h: int = next_row * grid_size
 
-	if player_pos.y - next_row_h < height/2 + grid_size:
+	if player_pos.y - next_row_h < height / 2 + grid_size:
 		_generate_next_row_for(next_row)
 
 		for sid in ps.sets:
@@ -94,9 +94,9 @@ func _active_config(row: int) -> LevelConfigT:
 
 # populate the next procedural step using verts; merge_probability is sampled
 # from the active config at this row.
-func _generate_next_row_for(row: int):
-	var row_cfg := _active_config(row)
-	ps = ProceduralStep.new(width/grid_size, ps.set_count, row_cfg.merge_probability)
+func _generate_next_row_for(row: int) -> void:
+	var row_cfg: LevelConfigT = _active_config(row)
+	ps = ProceduralStep.new(width / grid_size, ps.set_count, row_cfg.merge_probability)
 	for sid in verts:
 		for c in verts[sid]:
 			ps.add_cell(c, sid)
@@ -104,19 +104,19 @@ func _generate_next_row_for(row: int):
 
 
 # weighted-sample tile distribution from the active LevelConfig at this row
-func _pave_set(sid, row):
-	var row_cfg := _active_config(row)
+func _pave_set(sid: int, row: int) -> void:
+	var row_cfg: LevelConfigT = _active_config(row)
 	var terrain: String = row_cfg.sample_terrain()
 	if terrain == "":
 		return
-	var tilemap = _tilemap_for(terrain)
+	var tilemap: TileMapLayer = _tilemap_for(terrain)
 	if tilemap == null:
 		return
 	for c in ps.sets[sid]:
-		tilemap.set_cell(Vector2i(c*2, row*2), 0, Vector2i(0, 0))
-		tilemap.set_cell(Vector2i(c*2+1, row*2), 0, Vector2i(0, 0))
-		tilemap.set_cell(Vector2i(c*2, row*2+1), 0, Vector2i(0, 0))
-		tilemap.set_cell(Vector2i(c*2+1, row*2+1), 0, Vector2i(0, 0))
+		tilemap.set_cell(Vector2i(c * 2, row * 2), 0, Vector2i(0, 0))
+		tilemap.set_cell(Vector2i(c * 2 + 1, row * 2), 0, Vector2i(0, 0))
+		tilemap.set_cell(Vector2i(c * 2, row * 2 + 1), 0, Vector2i(0, 0))
+		tilemap.set_cell(Vector2i(c * 2 + 1, row * 2 + 1), 0, Vector2i(0, 0))
 
 
 func _tilemap_for(terrain: String) -> TileMapLayer:
@@ -127,19 +127,20 @@ func _tilemap_for(terrain: String) -> TileMapLayer:
 		"water": return waterTileMap
 		_: return null
 
-func _pave_debug(sid, row):
+
+func _pave_debug(sid: int, row: int) -> void:
 	for c in ps.sets[sid]:
-		var debug_block = DebugBlock.instantiate()
+		var debug_block: Node2D = DebugBlock.instantiate()
 		debug_block.set_z_index(999)
-		debug_block.get_node("Rect/Text").text = str(sid%100)
-		debug_block.position = Vector2(c*grid_size+8, row*grid_size+8)
+		debug_block.get_node("Rect/Text").text = str(sid % 100)
+		debug_block.position = Vector2(c * grid_size + 8, row * grid_size + 8)
 		add_child(debug_block)
 
 
-func _generate_level_perlin():
-	for x in width/grid_size:
-		for y in height/grid_size:
-			var sample = osn.get_noise_2d(float(x), float(y))
+func _generate_level_perlin() -> void:
+	for x in width / grid_size:
+		for y in height / grid_size:
+			var sample: float = osn.get_noise_2d(float(x), float(y))
 			if sample < -0.3:
 				steelTileMap.set_cell(Vector2i(x, y), 0, Vector2i(0, 0))
 			elif (sample > 0.25) or (sample > -0.033 and sample < 0.033):
