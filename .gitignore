@@ -20,3 +20,6 @@ tools/out/
 .claude/
 .prov/
 logs/
+
+# Research clones (read-only references, not part of repo)
+.research/repos/
