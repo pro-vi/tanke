@@ -171,7 +171,7 @@ Full chain: `gen_tile.py` PNG → Godot TileSet → `set_cell` → rendered pixe
 | 4 | All 4 terrain tile variants regenerable from `gen_tile.py` without editor intervention |
 | 5 | New tile variant generated, imported, live in game, screencapture confirms render — full loop in one iteration |
 
-**Current state:** 2 — TileSet migrated and working. `set_cell(Vector2i, source_id=0, atlas_coords=Vector2i(0,0))` calls in `ProceduralLevel.gd:_pave_set` confirmed correct against the in-scene atlas sources. `gen_tile.py` smoke-tested. PIL→TileSet step not yet exercised.
+**Current state:** 3 — Full chain exercised iter 4. `tools/gen_tile.py --tile brick --variant 7` → `img/brick_007.png` → `godot --headless --import` (auto-generated `.import` with uid `dy83met4b40yn`) → `BrickSrc.texture` swapped to `ExtResource("4")` in `scenes/ProceduralLevel.tscn` → `make screenshot` → `make analyze`: brick pixel count 47410 → 41194 (-13%), confirming pixel-level swap rendered. Cited in `loop/ASSET-MANIFEST.md`. Headless oracle hash for seed 42 unchanged (texture-only mutation, no logic shift). To reach 4: regenerate all 4 terrain variants via gen_tile and confirm full-sheet replacement.
 
 ---
 

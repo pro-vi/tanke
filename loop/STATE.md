@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 4
+iteration: 5
 preloop_complete: yes
 ```
 
@@ -47,9 +47,9 @@ tile_source_ids:
 | Screencapture oracle | 3 | analyze_frame.py classifies by palette; entropy 3.9 |
 | Agent edit friction | 4 | `loop/AGENTS.md` documents all 7 mutable params |
 | Procedural richness | 3 | 6-seed sweep: per-terrain variance 40–63% (>20% threshold met) |
-| Pipeline completeness | 2 | set_cell correct; PIL→TileSet path unexercised |
+| Pipeline completeness | 3 | gen_tile→import→TileSet→render chain verified iter 4 (brick_007) |
 | GDScript correctness | 3 | make test clean; test_runner clean across configs |
-| **Total** | **32/50** | +1 from iter 2; ceiling check at 35 |
+| **Total** | **33/50** | +1 from iter 3; ceiling check at 35 (2 to go) |
 
 ---
 
@@ -82,11 +82,14 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 3 SWEEP: 6 seeds × default config.
-- Per-terrain range/mean variance: brick 49.6%, water 40.6%, steel 62.9%, grass 41.7%
-- All > 20% threshold; criterion 8 → 3
-- 6/6 hashes unique (no collisions)
-- Total 31 → 32/50; under 35 ceiling
+Iter 4 BUILD: PIL → TileSet → render chain verified.
+- gen_tile.py brick variant 7 → img/brick_007.png
+- godot --headless --import generated .import (uid://dy83met4b40yn)
+- ProceduralLevel.tscn BrickSrc swapped to new texture
+- Screenshot: brick pixel count 47410 → 41194 (-13%) confirms swap
+- Headless seed-42 hash 6159ef2f5464edb1 unchanged (texture-only mutation)
+- ASSET-MANIFEST.md created with full provenance
+- Criterion 9: 2 → 3. Total 32 → 33/50.
 ```
 
 ---
@@ -99,7 +102,9 @@ None.
 
 ## Next Action
 
-`Iter 4 BUILD: exercise PIL→TileSet pipeline. Generate brick variant via gen_tile.py, import as TileSet atlas source, hot-swap brick terrain to use it, screenshot to confirm render, write ASSET-MANIFEST entry. Targets criterion 9 (Pipeline completeness 2→3).`
+`Iter 5 BUILD: serialize LevelDNA (seed + LevelConfig) into a single .tres so a complete level recipe is one editable artifact. Targets criterion 4 (Level DNA 3→4) — also unlocks the "loop proposes a mutation" path for criterion 4 level 5 in iter 6.`
+
+Approaching 35/50 ceiling. Iter 5 may push to 34. Schedule iter 6 AUDIT to re-score everything with fresh evidence; if total ≥35 then, raise rubric anchors per CEILING RULE.
 
 ---
 
