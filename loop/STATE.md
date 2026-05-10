@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 15
+iteration: 16
 preloop_complete: yes
 ```
 
@@ -39,7 +39,7 @@ tile_source_ids:
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
-| Headless oracle | 4 | seed + config-aware; reproducible hash |
+| Headless oracle | 5 | --json flag emits 16-field JSON; jq-based diff workflow demonstrated |
 | Algorithm variety | 4 | iter 7 cited single-field mutation: water_weight 0.6→0.2 → water -43% Δ |
 | LevelConfig mutability | 5 | iter 7 full agent cycle: AGENTS.md → Edit → rerun → cite Δ |
 | Level DNA | 5 | DNA-referenced config mutation + oracle confirmation in iter 7 |
@@ -50,7 +50,7 @@ tile_source_ids:
 | Pipeline completeness | 3 | gen_tile→import→TileSet→render chain verified iter 4 (brick_007) |
 | GDScript correctness | 3 | make test clean; test_runner clean across configs |
 | 11. Spatial Coherence | 4 | iter 14 cycle: depth_scale 14→100 → structure_lift 2.464×→2.236× (predicted DOWN, confirmed) |
-| **Total** | **44/55** | +1 from iter 13; back to 80% on expanded rubric |
+| **Total** | **45/55** | +1 from iter 14; 81.8% on expanded rubric |
 
 ---
 
@@ -83,20 +83,13 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 14 BUILD: cited mutation cycle on REFINED metric — predicted direction confirmed.
-- New fixture configs/biome_test_depth.tres (initially identical to biome_d→w)
-- Edit tool: depth_scale 14 → 100 (single-line)
-- BEFORE: structure_lift 2.464×, vert_persistence 0.692
-- AFTER:  structure_lift 2.236×, vert_persistence 0.675
-- Δ structure_lift: -9.2%, predicted DOWN — CONFIRMED ✓
-- Criterion 11: 3 → 4. Total 43→44/55, back to 80% on expanded rubric.
-
-Epistemic milestone:
-  iters 1-11: 11 cited cycles, predictions held
-  iter 12: first FALSIFICATION (merge_probability)
-  iter 13: instrument refined
-  iter 14: re-prediction with refined instrument, CONFIRMED
-The predict→falsify→refine→re-predict→verify cycle is complete.
+Iter 15 BUILD: --json flag on test_runner.gd; criterion 1 → 5.
+- 16-field JSON emit on --json (suppresses text mode)
+- Verified: parsed by python; full keys cited
+- jq-based diff workflow end-to-end demonstrated
+  before/after captures + jq slurpfile produces structured Δ
+- AGENTS.md updated: JSON usage + diff workflow + new "real change" criterion
+- Criterion 1: 4 → 5. Total 44 → 45/55 (81.8%).
 ```
 
 ---
@@ -109,13 +102,14 @@ None.
 
 ## Next Action
 
-`Iter 15 BUILD: criterion 1 (Headless oracle) 4 → 5. Add --json flag to
-test_runner.gd that emits structured output instead of text. Cheap;
-makes the loop's measurements machine-readable for future diff/trend
-tooling. Alternative: tackle criterion 11 anchor 5 (high diversity AND
-high structure_lift) — but that requires search-style experimentation.`
+`Iter 16 BUILD: criterion 9 (Pipeline completeness) 3 → 4. Anchor: "All 4
+terrain tile variants regenerable from gen_tile.py without editor
+intervention". Generate steel/grass/water variants via gen_tile.py, import
+all, point each atlas source at the new texture, screencap, confirm 4/4
+varieties still detected. Force-multiplier with criterion 5 if gen_tile
+palettes are extracted from sprites_0.png instead of hardcoded.`
 
-External CONSULT retry: iter 20.
+External CONSULT retry: iter 20 (4 iters away).
 
 ---
 

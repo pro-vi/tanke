@@ -680,3 +680,61 @@ This is the predict→falsify→refine→re-predict→verify pattern. The loop d
 **Total:** 44/55 (+1 from iter 13). Back at 80% on the expanded rubric — the iter-11 dilution from adding criterion 11 has been recouped on the merits.
 
 **Weakest axis next:** Three criteria still at 3 (5, 9, 10). Iter 15 candidate: tackle criterion 1 (Headless oracle) → 5 by emitting JSON when test_runner is invoked with `--json`. Cheap, useful as the loop's empirical scaffolding grows. Pulls criterion 1 4→5 and makes the loop's measurements machine-readable for diff/trend tooling. Alternative: try to fill the "high diversity AND high structure_lift" quadrant (criterion 11 anchor 5) — would require a config-search experiment.
+
+---
+
+## Iter 015 — BUILD — 2026-05-10
+**Focus:** Criterion 1 (Headless oracle) 4 → 5. Add `--json` to `test_runner.gd`; emit a single JSON object instead of formatted text. Verify parseable end-to-end.
+**Changed files:**
+- `loop/test_runner.gd` — `--json` flag; when set, emits `JSON.stringify(report)` (one line) and skips `_print_report`.
+- `loop/AGENTS.md` — JSON usage examples + jq-based diff workflow + new "real change" criterion (`structure_lift` Δ ≥ 0.05).
+
+**JSON shape (16 fields):**
+```
+brick eller_avg_size eller_max_size eller_sets grass seed_used steel
+tile_hash total_terrain vert_above_floor vert_iid_expected vert_pairs_same
+vert_pairs_total vert_persistence vert_structure_lift water
+```
+
+**Roundtrip verified:**
+```bash
+$ godot --headless ... --seed 42 --json | grep '^{' | python3 -m json.tool
+parsed OK — 16 keys
+  seed_used=42  hash=6159ef2f5464edb1
+  brick=400  water=200  steel=244  grass=228
+  vert_persistence=0.647  structure_lift=2.388x
+```
+
+**End-to-end diff workflow demonstrated:**
+```bash
+$ godot ... --seed 42 --json | grep '^{' > /tmp/a.json
+$ godot ... --seed 42 --biome <PATH> --json | grep '^{' > /tmp/b.json
+$ jq -n --slurpfile a /tmp/a.json --slurpfile b /tmp/b.json '{
+    brick_delta: ($b[0].brick - $a[0].brick),
+    structure_lift_delta: ($b[0].vert_structure_lift - $a[0].vert_structure_lift)
+  }'
+{
+  "before_hash": "6159ef2f5464edb1",
+  "after_hash":  "35221010827d11ff",
+  "brick_delta": 24,
+  "steel_delta": -64,
+  "vert_persistence_delta": 0.045,
+  "structure_lift_delta": 0.075
+}
+```
+
+The loop can now diff iterations programmatically. Future automated mutation-and-evaluate cycles can compute deltas in jq/python without parsing print() output.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| **1. Headless oracle** | 4 | **5** | `--json` flag + jq-based diff workflow demonstrated |
+| (criteria 2-11 unchanged) | — | — | — |
+
+**Total:** 45/55 (+1 from iter 14). 81.8% on the expanded rubric.
+
+**Weakest axis next:** Three criteria remain at 3 (5, 9, 10). Highest leverage:
+- (a) **C5 Tile visual coherence** → 4: anchor "PIL-generated tile variants used in game; palette extracted from `sprites_0.png` applied". Need to make `gen_tile.py`'s palette extract from the game's actual sprite sheet, not hardcoded values. Then regen brick_007 with extracted palette and re-import. Force-multiplier with criterion 9.
+- (b) **C9 Pipeline completeness** → 4: "All 4 terrain tile variants regenerable from gen_tile.py without editor intervention". Generate steel/grass/water tiles too, point all 4 atlas sources at them, screenshot, confirm.
+- (c) **C10 GDScript correctness** → 4: explicit deprecation warning audit. Fold the Node2D-as-TileMap wrappers into direct TileMapLayer parents.
+
+Lean (b) — the iter 4 brick_007 was a one-tile demo; doing all 4 closes the chain properly and lets the loop demonstrate end-to-end visual mutation by regenerating tiles. Plus it surfaces whether the gen_tile.py palette work would be needed (criterion 5).

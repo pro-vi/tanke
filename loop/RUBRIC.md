@@ -32,7 +32,7 @@ tile_hash: e55b96e4256a8acf
 PASS
 ```
 
-**Current state:** 4 — `loop/test_runner.gd` prints per-type counts, Eller metrics, SHA-256 fingerprint, seed used, PASS/FAIL. CLI `--seed N` accepted. Same-seed reproducibility verified (iter 1: two runs of seed 42 produced identical hash `619cb88ffed7e906`). To reach 5: switch to JSON output.
+**Current state:** 5 — iter 15 added `--json` flag to `test_runner.gd`; emits a single JSON object with 16 fields (seed, terrain counts, Eller metrics, tile_hash, vert_* metrics) instead of text. Verified: `godot --headless ... --json | grep '^{' | python3 -m json.tool` parses cleanly. End-to-end diff demonstrated via `jq -n --slurpfile a ... --slurpfile b ...` producing structured Δ for every field (`brick_delta`, `structure_lift_delta`, etc.). Loop can now diff across iterations without reading text.
 
 ---
 

@@ -12,6 +12,7 @@ func _initialize() -> void:
 	var dna_path := ""
 	var roundtrip_path := ""
 	var biome_path := ""
+	var json_output := false
 	var args := OS.get_cmdline_user_args()
 	for i in args.size():
 		if args[i] == "--seed" and i + 1 < args.size():
@@ -24,6 +25,8 @@ func _initialize() -> void:
 			roundtrip_path = args[i + 1]
 		elif args[i] == "--biome" and i + 1 < args.size():
 			biome_path = args[i + 1]
+		elif args[i] == "--json":
+			json_output = true
 
 	if roundtrip_path != "":
 		_dna_roundtrip(roundtrip_path)
@@ -48,7 +51,10 @@ func _initialize() -> void:
 		await process_frame
 
 	var report := _collect(level)
-	_print_report(report)
+	if json_output:
+		print(JSON.stringify(report))
+	else:
+		_print_report(report)
 	quit()
 
 

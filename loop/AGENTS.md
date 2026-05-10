@@ -92,15 +92,25 @@ the same seed with two different configs.
 
 After any mutation:
 ```bash
-# Headless oracle: deterministic distribution + tile_hash
+# Headless oracle: deterministic distribution + tile_hash (text)
 godot --headless --path . --script res://loop/test_runner.gd -- --seed 42 --config <PATH>
+
+# Headless oracle: structured JSON (parseable by jq/python)
+godot --headless --path . --script res://loop/test_runner.gd -- --seed 42 --config <PATH> --json | grep '^{'
 
 # Screencapture oracle: pixel-level per-terrain coverage (single frame)
 make screenshot && make analyze
 
 # Diff oracle: pixel-level Δ between default and target preset
 make diff CONFIG=watery
+
+# Headless diff: structured Δ via jq
+godot ... --seed 42 --json | grep '^{' > /tmp/a.json
+godot ... --seed 42 --config <NEW> --json | grep '^{' > /tmp/b.json
+jq -n --slurpfile a /tmp/a.json --slurpfile b /tmp/b.json \
+  '{ structure_lift_delta: ($b[0].vert_structure_lift - $a[0].vert_structure_lift) }'
 ```
 
 A change is "real" only if (a) `tile_hash` changes vs baseline, AND (b) at least
-one terrain count changes by ≥10%, OR (c) `make diff` reports `shift_detected: True`.
+one terrain count changes by ≥10%, OR (c) `make diff` reports `shift_detected: True`,
+OR (d) `vert_structure_lift` shifts by ≥0.05 (about 2% relative).
