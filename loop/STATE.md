@@ -13,10 +13,11 @@ preloop_complete: no
 ## Preloop Checklist
 
 ```
-[x] Open project in Godot 4 editor — done (user ran Extract on TileMaps)
+[x] Open project in Godot 4 editor — done
 [x] source_id + atlas_coords resolved from scene files (see below)
-[ ] Verify: player tank moves, camera follows, no console errors (hit F5 in editor)
-[ ] Verify: ProceduralLevel.tscn generates terrain without errors
+[x] ProceduralLevel.tscn generates terrain without errors — make test clean
+[x] Screencapture oracle working — make screenshot + make analyze produce valid oracle output
+[ ] Verify interactively: player tank moves, camera follows, no console errors (F5 in editor)
 [ ] Flip preloop_complete: yes above
 ```
 
@@ -38,35 +39,51 @@ tile_source_ids:
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
-| Headless oracle | 0 | test_runner.gd not yet written |
+| Headless oracle | 3 | `make test` catches GDScript runtime errors (120 frames, headless) |
 | Algorithm variety | 0 | merge prob hardcoded ProceduralStep.gd:12 |
-| LevelConfig mutability | 0 | ProceduralLevel.gd:69 hardcoded |
+| LevelConfig mutability | 0 | ProceduralLevel.gd:69 hardcoded modular arithmetic |
 | Level DNA | 0 | no stored seed |
-| Tile visual coherence | 1 | TileSet migration not run; source_id unknown |
-| Screencapture oracle | 0 | analyze_frame.py not yet written |
+| Tile visual coherence | 2 | TileMaps functional, tiles render; 100% brick dominance |
+| Screencapture oracle | 4 | `make screenshot` + `make analyze` working; PIL tile oracle calibrated |
 | Agent edit friction | 1 | only PlayerTank.gd exports exist |
-| Procedural richness | 1 | flat modular distribution |
-| Pipeline completeness | 0 | blocked on TileSet migration |
-| GDScript correctness | 2 | converted, TileMap deprecated warnings |
-| **Total** | **5/50** | |
+| Procedural richness | 1 | flat modular distribution; 100% brick, 0 variety (oracle confirmed) |
+| Pipeline completeness | 3 | check/test/screenshot/analyze/run all working |
+| GDScript correctness | 3 | collision.normal → get_normal() fixed; make test clean |
+| **Total** | **17/50** | |
+
+---
+
+## Oracle Reading (iter 0)
+
+```
+frame: frame00000004.png
+coverage:     100.0%  score 5/5
+variety:      1/4     score 1/4   ← primary target
+distribution: 0.000 bits  score 0.0/5.0  ← primary target
+brick: 76800px  steel: 0  grass: 0  water: 0
+```
+
+Root cause: `_pave_set()` brick condition (2≤size≤7, sid%2==0) catches nearly all
+sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 
 ---
 
 ## Open Seams
 
-1. TileSet migration → source_id/atlas_coords unknown (blocks pipeline completeness, tile coherence)
-2. test_runner.gd not written (blocks oracle quality scoring above 0)
-3. analyze_frame.py not written (blocks screencapture oracle)
-4. LevelConfig doesn't exist (blocks mutability, richness, Level DNA)
-5. No stored seed in ProceduralLevel (blocks Level DNA)
+1. `_pave_set()` distribution algorithm — brick dominates, oracle score 0/5; needs LevelConfig weights
+2. LevelConfig resource doesn't exist — blocks mutability, Level DNA
+3. No stored seed in ProceduralLevel — blocks Level DNA
+4. BrickBlock destruction — bullet impact TODOs in BrickBlock.gd
+5. Enemy tank AI not implemented
 
 ---
 
 ## Last Action
 
 ```
-Rewrote loop to procedural-only focus + dual oracle (headless + screencapture).
-Committed baseline on exp/godot4-loop (db6338f).
+Viewport fix: project.godot stretch mode "canvas_items" → "viewport".
+Oracle confirmed working: 320×240 capture, 100% coverage, 1/4 variety (all brick).
+make test clean. All preloop automated checks passing.
 ```
 
 ---
@@ -79,7 +96,7 @@ None.
 
 ## Next Action
 
-`HALT — awaiting preloop_complete: yes`
+`HALT — awaiting preloop_complete: yes (user must flip after interactive playtest)`
 
 ---
 
