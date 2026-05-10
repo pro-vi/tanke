@@ -864,3 +864,48 @@ OR push criterion 1 (Headless oracle) further with a richer JSON schema (e.g. in
 **Weakest axis next:** Iter 19 — pick C10 → 4 (cheap, makes the scene cleaner) OR pause and write a scratch retrospective at the upcoming iter-20 CONSULT slot. Iter 20 is mandatory CONSULT per schedule; could prep notes early.
 
 Lean iter 19 BUILD on C10. Cheap surgical iter; minor cleanup; rubric closes a loose end.
+
+---
+
+## Iter 019 — BUILD — 2026-05-10
+**Focus:** Criterion 10 anchor 4. Flatten Node2D-as-TileMap wrappers (GD3 migration leftover) to direct TileMapLayer children.
+**Changed files:**
+- `scenes/ProceduralLevel.tscn` — removed 4 `*TileMap` Node2D wrappers; their child `Layer0` TileMapLayers promoted to direct children of `Tiles`, renamed `Brick`/`Steel`/`Grass`/`Water`.
+- `scripts/Level.gd` — `@onready` paths updated: `tiles.get_node("BrickTileMap/Layer0")` → `tiles.get_node("Brick")` (same for the other three).
+
+**PostToolUse hook caught the desync:** edited the .tscn first, hadn't yet updated Level.gd, hook ran `make test` and surfaced 4 "Node not found" errors instantly. Fixed Level.gd; re-ran clean. The hook is paying for itself again — third time it caught a partial-edit state (iter 2 LevelConfig class_name, iter 9 forward refs, iter 19 path desync).
+
+**Verification:**
+```
+Headless (seed 42):
+  hash 6159ef2f5464edb1   ← preserved (4th confirmation: structural changes don't perturb logic)
+  brick=400 water=200 steel=244 grass=228   vert_persistence=0.647
+
+Screencap:
+  coverage 99.9%, variety 4/4, entropy 1.501 bits / 3.8/5.0
+  brick 48270, steel 4900, grass 10496, water 13056
+
+Deprecation warnings (stderr grep, full headless run):
+  (none)
+```
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| 10. GDScript correctness | 3 | **4** | TileMap → TileMapLayer migration structurally complete; zero deprecation warnings |
+| (criteria 1-9, 11 unchanged) | — | — | — |
+
+**Total:** 49/55 (+1 from iter 18). 89.1% on the expanded rubric.
+
+**Hash anchor count:** 4 confirmations now that `6159ef2f5464edb1` survives:
+- iter 4 (1-tile texture swap)
+- iter 16 (4-tile hardcoded-palette swap)
+- iter 17 (4-tile extracted-palette regen)
+- iter 19 (scene-structure flatten)
+
+Logic and presentation are cleanly separated. The seed-42 default-config hash is the loop's most durable invariant.
+
+**Weakest axis next:** **Iter 20 = mandatory CONSULT** per CONSULT SCHEDULE. Plan: retry the external agentify CONSULT that failed iter 10 (frozen tab from another session blocked it then; should be recoverable now). Same H1/H2/H3 prompt — but with the loop's full 19-iter trajectory as context, including the falsification (iter 12) and re-prediction (iter 14). That trajectory is unusual and worth external review.
+
+Iter 20 deliverable: `creative-consults.md` second entry with frontier-model response + comparison to iter-10 self-consult. No score change expected (CONSULT mode); the value is course-correction.
+
+After iter 20: only criteria 1, 5 (4), 9 (4), and 10 (4) sit below 5. Three of those have well-defined level-5 anchors (JSON schema richness, no tile bleed at any seed, all 4 regen-able single-iter, typed GDScript throughout). The loop has clear runway.

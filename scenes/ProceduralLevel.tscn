@@ -74,22 +74,14 @@ update_scale = false
 
 [node name="Tiles" type="Node2D" parent="."]
 
-[node name="SteelTileMap" type="Node2D" parent="Tiles"]
-
-[node name="Layer0" type="TileMapLayer" parent="Tiles/SteelTileMap"]
+[node name="Steel" type="TileMapLayer" parent="Tiles"]
 tile_set = SubResource("SteelSet")
 
-[node name="BrickTileMap" type="Node2D" parent="Tiles"]
-
-[node name="Layer0" type="TileMapLayer" parent="Tiles/BrickTileMap"]
+[node name="Brick" type="TileMapLayer" parent="Tiles"]
 tile_set = SubResource("BrickSet")
 
-[node name="GrassTileMap" type="Node2D" parent="Tiles"]
-
-[node name="Layer0" type="TileMapLayer" parent="Tiles/GrassTileMap"]
+[node name="Grass" type="TileMapLayer" parent="Tiles"]
 tile_set = SubResource("GrassSet")
 
-[node name="WaterTileMap" type="Node2D" parent="Tiles"]
-
-[node name="Layer0" type="TileMapLayer" parent="Tiles/WaterTileMap"]
+[node name="Water" type="TileMapLayer" parent="Tiles"]
 tile_set = SubResource("WaterSet")

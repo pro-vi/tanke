@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 19
+iteration: 20
 preloop_complete: yes
 ```
 
@@ -48,9 +48,9 @@ tile_source_ids:
 | Agent edit friction | 5 | iter 7 zero-human-step cycle: AGENTS→Edit→rerun→Δ in one iter |
 | Procedural richness | 4 | iter 9 biome interp: visible top-vs-bottom gradient; water +20.8% Δ |
 | Pipeline completeness | 4 | iter 16 all 4 terrains regenerated via gen_tile + atlas swap; full-sheet chain |
-| GDScript correctness | 3 | make test clean; test_runner clean across configs |
+| GDScript correctness | 4 | iter 19 flattened TileMap wrappers; structurally migrated; zero deprecation warnings |
 | 11. Spatial Coherence | 5 | iter 18 biome_balanced: most-dom 30% + structure_lift 2.522× (high+high quadrant filled) |
-| **Total** | **48/55** | +1 from iter 17; 87.3% on expanded rubric |
+| **Total** | **49/55** | +1 from iter 18; 89.1% on expanded rubric |
 
 ---
 
@@ -83,19 +83,14 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 18 BUILD: high-diversity AND high-structure_lift quadrant filled.
-- Created configs/balanced_steel.tres (b 0.20/s 0.30/g 0.25/w 0.20, p_merge 0.4)
-- Created configs/biome_balanced.tres (default ⇄ balanced_steel)
-- biome_balanced @ seed 42:
-    distribution: brick 29% / water 17% / steel 30% / grass 24%
-    most-dominant: 30%   structure_lift: 2.522×
-  Strictly better than prior champion biome_default_to_watery (40% / 2.464×).
-- Side finding: balanced_steel flat alone → structure_lift 2.456× (>default 2.388×)
-  Moderate-merge balanced configs are productive even without biome.
-- Criterion 11: 4 → 5. Total 47 → 48/55 (87.3%).
-
-Anchor 5 of C11 explicitly required "Spatial-coherence axis is independent of
-distribution axis" — demonstrated.
+Iter 19 BUILD: TileMap wrapper flatten — criterion 10 → 4.
+- 4 Node2D-as-TileMap wrappers removed; Layer0 children promoted to direct
+  TileMapLayer children of Tiles, renamed Brick/Steel/Grass/Water
+- Level.gd onready paths updated (4 lines)
+- PostToolUse hook caught the partial-edit state on first try (3rd time)
+- Hash anchor 6159ef2f5464edb1 PRESERVED — 4th confirmation logic untouched
+- Screencap variety 4/4; zero deprecation warnings in stderr grep
+- Criterion 10: 3 → 4. Total 48 → 49/55 (89.1%).
 ```
 
 ---
@@ -108,14 +103,12 @@ None.
 
 ## Next Action
 
-`Iter 19 BUILD: criterion 10 (GDScript correctness) 3 → 4. Anchor 4:
-"TileMap → TileMapLayer migration complete; zero deprecation warnings."
-Flatten the Node2D-as-TileMap wrappers in ProceduralLevel.tscn (e.g.
-"BrickTileMap" Node2D containing "Layer0" TileMapLayer) into direct
-TileMapLayer children of Tiles. Update Level.gd onready paths.
-Verify with godot --headless --quit and grep for warnings.`
-
-External CONSULT retry: iter 20 (1 iter away — prep notes after iter 19).
+`Iter 20 = MANDATORY CONSULT per CONSULT SCHEDULE. Retry external agentify
+CONSULT that failed iter 10 (tab pool was frozen). Same H1/H2/H3 prompt
+PLUS context: the loop has gone through one full predict→falsify→refine→
+re-predict→verify cycle (iter 12 falsified merge_p hypothesis; iter 13
+refined metric; iter 14 confirmed; iter 18 found high+high quadrant).
+Worth external review. Deliverable: creative-consults.md second entry.`
 
 ---
 

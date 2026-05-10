@@ -5,10 +5,10 @@ var WaterBlock = preload("res://scenes/WaterBlock.tscn")
 @onready var camera = $Camera2D
 @onready var player = $PlayerTank
 @onready var tiles = $Tiles
-@onready var brickTileMap: TileMapLayer = tiles.get_node("BrickTileMap/Layer0")
-@onready var steelTileMap: TileMapLayer = tiles.get_node("SteelTileMap/Layer0")
-@onready var grassTileMap: TileMapLayer = tiles.get_node("GrassTileMap/Layer0")
-@onready var waterTileMap: TileMapLayer = tiles.get_node("WaterTileMap/Layer0")
+@onready var brickTileMap: TileMapLayer = tiles.get_node("Brick")
+@onready var steelTileMap: TileMapLayer = tiles.get_node("Steel")
+@onready var grassTileMap: TileMapLayer = tiles.get_node("Grass")
+@onready var waterTileMap: TileMapLayer = tiles.get_node("Water")
 var width = ProjectSettings.get_setting("display/window/size/viewport_width")
 var height = ProjectSettings.get_setting("display/window/size/viewport_height")
 

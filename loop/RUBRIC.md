@@ -200,7 +200,7 @@ Full chain: `gen_tile.py` PNG → Godot TileSet → `set_cell` → rendered pixe
 | 4 | TileMap → TileMapLayer migration complete; zero deprecation warnings |
 | 5 | Typed GDScript throughout; all exported vars have type annotations |
 
-**Current state:** 3 — `make test` clean (120-frame headless); `test_runner.gd` runs to PASS with no errors across seeds 42, 7. TileMap-as-Node2D wrappers around TileMapLayer remain (cosmetic deprecation); no functional warnings.
+**Current state:** 4 — iter 19 flattened the GD3-migration leftover Node2D wrappers (`BrickTileMap/Layer0` → `Brick`; same for Steel/Grass/Water). All four are now direct `TileMapLayer` children of `Tiles`. `Level.gd` `@onready` paths updated. Verified: `make test` clean, hash anchor `6159ef2f5464edb1` preserved (logic untouched), screencap variety 4/4, **zero deprecation warnings** in stderr from headless test_runner. Migration is now structurally complete. To reach 5: typed GDScript throughout (every `@export` and `var` annotated).
 
 ---
 
