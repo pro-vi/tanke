@@ -3,33 +3,33 @@
 ## Phase
 
 ```
-phase: preloop
+phase: loop
 iteration: 0
-preloop_complete: no
+preloop_complete: yes
 ```
 
 ---
 
-## Preloop Checklist
+## Preloop Checklist (cleared iter 0)
 
 ```
-[ ] F5 the scene; confirm tank moves with WASD/arrows
-[ ] Confirm scene loads without console errors (godot --quit returns 0)
-[ ] Confirm reachability oracle reports playable: true:
-    godot --headless --path . --script res://loop/test_runner.gd -- --seed 42 --json | grep '^{' | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print(d['playable'])"
-[ ] Note: shooting is KNOWN BROKEN (Bullet.tscn format=2, no Bullet.gd) — that's iter 1's job, not preloop's.
-[ ] Flip preloop_complete: yes above
+[x] F5 the scene; tank moves with WASD/arrows (user-confirmed iter 0)
+[x] Scene loads without console errors (headless --quit exit 0, clean output)
+[x] Reachability oracle reports playable: true (seed 42: reachable_cells=804, rows_climbed=29)
+[x] project.godot run/main_scene flipped Level.tscn → ProceduralLevel.tscn (iter 0 preloop fix)
+[~] Shooting KNOWN BROKEN — iter 1's job
 ```
 
 ---
 
-## Substrate baseline (iter 0 will record)
+## Substrate baseline (recorded iter 0)
 
 Active scene config: `configs/playable.tres`
 - empty 0.55 / brick 0.18 / steel 0.07 / grass 0.12 / water 0.08
 - merge_probability 0.4
-- Reachability at seed 42: reachable_cells 804, rows_climbed 29, **playable: true**
-- Hash anchor for this config + scene at seed 42: (iter 0 records)
+- Reachability at seed 42: reachable_cells **804**, rows_climbed **29**, **playable: true**
+- Hash anchor (seed 42): `f873ae60ee3c420c57cdef5762acdad857b1a763ec50b76db80971ef4503e797`
+- Engine-loop historical anchors for reference only: `6159ef2f5464edb1`, `1f80435080844dce` (post-iter-21), `8a4834679f9e4eb2` (biome_balanced)
 
 Substrate freeze rule per `PROMPT.md`: do not modify `LevelConfig`,
 `BiomeConfig`, `LevelDNA`, `ProceduralStep`, `ProceduralLevel` (the
@@ -83,9 +83,10 @@ procedural generation logic). Add new configs/scripts/scenes as needed.
 ## Last Action
 
 ```
-Loop initialized iter 0. Engine loop archived at loop/* (50/55, paused).
-Substrate freeze in effect. User-look is mandatory iter 5 / every 3 after.
-First task post-bootstrap: fix Bullet system (criterion 1 baseline).
+Iter 0 BOOTSTRAP complete. Preloop cleared (user F5 confirmed WASD/arrows).
+project.godot main_scene flipped to ProceduralLevel.tscn so F5 lands on the
+gameplay scene. Substrate baseline recorded (hash anchor f873ae60ee3c420c).
+Next: iter 1 BUILD — fix the Bullet system per open seam #1.
 ```
 
 ---
@@ -98,12 +99,16 @@ None (new loop).
 
 ## Next Action
 
-`Iter 0 BOOTSTRAP:
-  - Verify reachability oracle reports playable: true on active scene
-  - Record baseline tile_hash + reachable_cells in LEDGER iter 000
-  - Read META-RETRO "What survives past the loop" section (substrate map)
-  - Commit "chore(gameplay): iter 000 — BOOTSTRAP — substrate confirmed"
-  - Schedule iter 1 (BUILD: fix Bullet system)`
+`Iter 1 BUILD — Bullet system:
+  - Pre-mortem to PRE-MORTEMS.md
+  - DIAGNOSE: weakest axis is criterion 1 (core loop closes), 0/5 — shooting broken
+  - Write scripts/Bullet.gd: start(pos, dir), _physics_process movement,
+    area_entered → despawn, lifetime timeout
+  - Migrate scenes/Bullet.tscn format=2 → format=3
+  - Fix extents → size on RectangleShape2D in Bullet.tscn
+  - Headless smoke: godot --quit clean; oracle still playable: true
+  - Score (criterion 1 should land at 1 or 2 depending on collision visibility)
+  - Commit; ScheduleWakeup 240s (BUILD cadence per PROMPT §7)`
 
 ---
 
