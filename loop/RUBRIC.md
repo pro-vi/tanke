@@ -21,7 +21,16 @@ Does `loop/test_runner.gd` give a reliable, information-rich signal?
 | 4 | Prints reproducibility check: two runs with same seed → identical tile map hash |
 | 5 | Structured JSON output; loop can parse and diff across iterations without reading text |
 
-**Current state:** 0
+**Reference output (iter 0 bootstrap):**
+```
+=== tanke headless oracle ===
+brick: 380  water: 88  steel: 32  grass: 156  total: 656
+eller_sets: 12  avg_size: 1.67  max_size: 5
+tile_hash: e55b96e4256a8acf
+PASS
+```
+
+**Current state:** 3 — `loop/test_runner.gd:1-90` prints per-type counts, last-row Eller metrics (sets/avg/max), SHA-256 fingerprint of placed tiles, and PASS/FAIL. To reach 4: prove same-seed reproducibility (need stored seed first). To reach 5: switch to JSON.
 
 ---
 
@@ -102,7 +111,16 @@ Can the loop take a screenshot and extract game-state information from pixels?
 | 4 | Oracle diffs two frames (before/after LevelConfig change) and detects distribution shift |
 | 5 | Oracle used as loop scoring signal: loop changes config, screenshots before/after, reports Δ coverage |
 
-**Current state:** 0
+**Reference output (iter 0 bootstrap, frame00000004.png):**
+```
+=== Oracle: frame00000004.png ===
+Coverage      99.9%   score 5/5
+Variety      4/4 types  score 4/4
+Distribution entropy 1.216 bits  score 3.0/5.0
+Tile counts  {'brick': 55034, 'steel': 1512, 'grass': 12240, 'water': 7936}
+```
+
+**Current state:** 3 — `tools/analyze_frame.py:64-72` classifies pixels by nearest reference color from `sprites_1.png`; outputs per-type pixel counts, coverage %, variety, entropy. Reachable via `make screenshot && make analyze`. To reach 4: implement diff-mode across two frames. To reach 5: wire the diff into loop scoring.
 
 ---
 

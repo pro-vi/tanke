@@ -3,8 +3,8 @@
 ## Phase
 
 ```
-phase: bootstrap
-iteration: 0
+phase: build
+iteration: 1
 preloop_complete: yes
 ```
 
@@ -82,26 +82,24 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Preloop complete. All checks passing:
-- make test clean (headless, 120 frames)
-- make screenshot + make analyze working (320×240 oracle, 100% coverage)
-- interactive playtest: tank moves, camera follows, no errors
-- camera startup glide fixed (reset_smoothing + force_update_scroll)
-- RemoteTransform2D rotation/scale leak fixed
-- tile positioning offset fixed (map_to_local center-aware in Godot 4)
+Iter 0 BOOTSTRAP complete:
+- loop/test_runner.gd written (SceneTree harness, 30-frame step, tile counts + Eller metrics + SHA fingerprint)
+- gen_tile.py smoke test: brick_000.png written
+- Headless oracle output recorded in LEDGER + RUBRIC anchors
+- Screencapture oracle re-read: 4/4 variety, distribution 3.0/5 (prior 100% brick was seed outlier)
 ```
 
 ---
 
 ## Stale Scores
 
-None.
+Earlier "100% brick distribution=0/5" reading invalidated by fresh seed run; treat distribution score as non-deterministic until Level DNA / stored seed lands.
 
 ---
 
 ## Next Action
 
-`Bootstrap — iter 0: fix _pave_set() distribution (brick 100%, variety 1/4)`
+`Iter 1 BUILD: add stored seed to ProceduralLevel (Level DNA criterion 4) — unblocks deterministic oracle scoring across iterations`
 
 ---
 
