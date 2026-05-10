@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 24
+iteration: 25
 preloop_complete: yes
 ```
 
@@ -83,22 +83,25 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 23 BUILD: tried to beat biome_balanced — FALSIFIED on all axes.
+Iter 24 BUILD: gentle-contrast biome (steel↔grass) — partial falsification.
 
-biome_interleave (balanced_brick ⇄ balanced_water, 30-point swings):
-  structure_lift  2.609×  (vs biome_balanced 2.628× — LOSS)
-  cc_max          176     (vs 68 — much WORSE)
-  cc_count        71      (vs 77 — slightly WORSE)
-  most-dom        30%     (tied)
+biome_gentle (balanced_steel ⇄ balanced_grass, both p=0.4):
+  structure_lift  2.440×  (vs 2.628× biome_balanced — predicted LOWER ✓)
+  cc_count        79      (vs 77 — predicted HIGHER ✓)
+  cc_max          96      (vs 68 — predicted LOWER ✗ got HIGHER)
+  most-dom        32%     (vs 30% — predicted LOWER ✗)
 
-Stronger contrast → stratification, not interleave. Each row-band has a
-near-dominant terrain (brick at top, water at bottom) → giant blob. The
-Pareto frontier on contrast is non-monotone; biome_balanced sits in a
-Goldilocks zone (15-point swing — strong enough to correlate, gentle
-enough to interleave).
+2 of 4 sub-predictions confirmed; 2 falsified.
 
-2nd loop falsification (iter 12 was 1st). Predictions about emergent
-procedural behavior continue to require experimental discipline.
+NEW THEORY: cc_max is dominated by merge_probability, not terrain
+contrast. biome_balanced has interpolated p_merge ≈ 0.367; biome_gentle
+has flat p=0.4. The +0.03 lift in p_merge accounts for ~28-cell
+increase in cc_max — bigger effect than the contrast change.
+
+3 cumulative falsifications now (iter 12, 23, 24). All 3 about
+emergent procedural behavior. CC-specific predictions: 0/2.
+Pattern: loop overestimates ability to predict 2-variable
+interactions; needs single-variable isolation tests.
 
 No score change. Total 49/55.
 ```
@@ -108,23 +111,24 @@ No score change. Total 49/55.
 ## Stale Scores
 
 None.
-USER-LOOK GATE STILL OPEN — 13 iters dormant.
+USER-LOOK GATE: open 4 iters, user fired /loop without feedback —
+treating as implicit "continue self-direction".
 
 ---
 
 ## Next Action
 
-`Iter 24: WAIT for user-look feedback. The gate has been open 3 iters
-while the loop has run 3 metric-climbing BUILDs (CC metric, Eller fix,
-interleave-beat attempt). Continuing without human anchor risks more
-metric-blind falsifications.
+`Iter 25 BUILD: clean single-variable p_merge sweep on biome_balanced
+endpoints. Vary p_merge in both default + balanced_steel: 0.333, 0.4,
+0.5, 0.6. Hold all other weights constant. Test new theory: cc_max
+grows monotonically with p_merge regardless of contrast.
 
-If no feedback by next firing, fallback BUILD candidates:
-  (a) OPPOSITE direction — lower-contrast biome (steel↔grass swap) to
-      sketch the other side of the Pareto frontier
-  (b) three-band biome (BiomeConfig refactor: surface/mid/deep)
-  (c) polish iter — typed GDScript pass on Level.gd, scripts/, configs/
-      to push C10 from 4 to 5 (anchor 5: typed throughout)`
+If theory holds → can finally separate "blob mode" (high p_merge) from
+"interleave mode" (low p_merge) as orthogonal axes. Configs become
+2D-tunable: contrast on one axis, blob/interleave on another.
+
+If theory falsified again → CC is more chaotic than I think; metric
+may need redesign or replacement.`
 
 ---
 

@@ -1091,3 +1091,56 @@ biome_balanced may be a locally-optimal point on the diversity × structure_lift
 - **(c)** WAIT for user-look feedback — gate has been open 3 iters. Whatever the user reports will reframe.
 
 Lean (c) — we've been climbing automated metrics for 3 iters since the user-look gate opened. The gate exists explicitly to anchor the loop in human perception. Continuing without it risks more falsifications of the kind that automated metrics can't catch.
+
+---
+
+## Iter 024 — BUILD — 2026-05-10
+**Focus:** Map the Pareto-frontier on the gentle-contrast side. Strategy: biome between two non-dominant-terrain-swap configs (steel ⇄ grass, both at 30% in their respective endpoints).
+**Changed files:**
+- `configs/balanced_grass.tres` (new) — mirror of balanced_steel: brick 0.20 / steel 0.25 / grass 0.30 / water 0.20, p_merge 0.4
+- `configs/biome_gentle.tres` (new) — surface=balanced_steel, deep=balanced_grass, scale=14
+
+**Pre-commit prediction:**
+- structure_lift LOWER than biome_balanced (less row correlation from gentler contrast)
+- cc_count HIGHER (more fragmentation)
+- cc_max LOWER (no terrain dominates strongly anywhere)
+- most-dom LOWER (steel/grass each at 30% endpoints, midpoint balanced)
+
+**Result (seed 42):**
+```
+                      s_lift     cc_count   cc_max   cc_avg   most-dom
+biome_balanced        2.628×     77         68       14.23    30%
+biome_gentle          2.440×     79         96       14.23    32%   ← steel↔grass swap
+                      ✓ -0.188   ✓ +2       ✗ +28    tied     ✗ +2pp
+```
+
+**2 of 4 sub-predictions confirmed; 2 falsified.**
+
+The structure_lift drop matches the Pareto-frontier-shape theory: gentler endpoint contrast → weaker row correlation → lower lift. ✓
+
+But cc_max went UP, not down. The hypothesis "less dominance → less giant blobs" was too simple.
+
+**New theory:** `cc_max` is more sensitive to `merge_probability` than to terrain dominance.
+- biome_balanced uses default (p=0.333) ⇄ balanced_steel (p=0.4). Interpolated p_merge ≈ 0.367 at midpoint
+- biome_gentle uses balanced_steel (p=0.4) ⇄ balanced_grass (p=0.4). Flat p_merge = 0.4
+- Higher p_merge → bigger Eller sets → bigger horizontal blocks → bigger CCs
+- The 0.03-step lift in p_merge accounts for ~28-cell increase in cc_max — much larger effect than the contrast change.
+
+**Two CC predictions in a row (iter 23 + iter 24) have been falsified.** My CC mental model is missing the merge_probability dependency. This is an empirical pattern worth tracking — the loop is *consistently overestimating* its ability to predict architectural emergence.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| (all 11 unchanged) | — | — | — |
+
+**Total:** 49/55 — unchanged.
+
+**Cumulative falsifications:**
+- Iter 12: ↑ merge_probability ⇒ ↑ vert_persistence — got slight ↓
+- Iter 23: ↑ contrast ⇒ ↑ structure_lift, ↓ cc_max — both worse
+- Iter 24: ↓ contrast ⇒ ↓ cc_max — got ↑ instead
+
+3 falsifications in 24 iters. Accuracy on directional predictions: ~85% (most predictions held). On CC-specific predictions: 0/2. The signal is clear: I need to test with single-variable variation before predicting two-variable interactions.
+
+**Weakest axis next:** Iter 25 — clean single-variable test on merge_probability isolated from contrast. Take biome_balanced (the current Pareto champion). Vary ONLY p_merge in both endpoints (set both to 0.333 → both 0.4 → both 0.5 → both 0.6). Predict: cc_max grows monotonically with p_merge; structure_lift may or may not — don't know.
+
+If cc_max growth confirms: the new theory holds and merge_probability is the right knob to control architecture mode (interleave ↔ blob).
