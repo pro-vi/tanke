@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 25
+iteration: 26
 preloop_complete: yes
 ```
 
@@ -83,25 +83,26 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 24 BUILD: gentle-contrast biome (steel↔grass) — partial falsification.
+Iter 25 SWEEP: single-variable p_merge sweep — 4th falsification.
 
-biome_gentle (balanced_steel ⇄ balanced_grass, both p=0.4):
-  structure_lift  2.440×  (vs 2.628× biome_balanced — predicted LOWER ✓)
-  cc_count        79      (vs 77 — predicted HIGHER ✓)
-  cc_max          96      (vs 68 — predicted LOWER ✗ got HIGHER)
-  most-dom        32%     (vs 30% — predicted LOWER ✗)
+Sweep (balanced_steel weights, vary only p_merge, seed 42):
+  p=0.333  cc_max  96
+  p=0.4    cc_max  96
+  p=0.5    cc_max 192   ← non-monotone peak
+  p=0.6    cc_max 144   ← drops back
 
-2 of 4 sub-predictions confirmed; 2 falsified.
+Predicted: monotonic growth. Got: peaked-and-dropped.
 
-NEW THEORY: cc_max is dominated by merge_probability, not terrain
-contrast. biome_balanced has interpolated p_merge ≈ 0.367; biome_gentle
-has flat p=0.4. The +0.03 lift in p_merge accounts for ~28-cell
-increase in cc_max — bigger effect than the contrast change.
+structure_lift IS roughly monotonic (↓ with ↑ p_merge: 2.506 → 2.443).
+That's the only stable predictable dimension.
 
-3 cumulative falsifications now (iter 12, 23, 24). All 3 about
-emergent procedural behavior. CC-specific predictions: 0/2.
-Pattern: loop overestimates ability to predict 2-variable
-interactions; needs single-variable isolation tests.
+cumulative: 4 falsified directional predictions on CC behavior (0/4
+accuracy). Single-seed CC measurements are chaotic due to compound
+randomness across rows. Cannot be predicted by intuitive parameter
+modeling.
+
+META-DECISION: stop framing CC iters as "predict and verify". Frame as
+"explore and report". The empirical map matters more than my predictions.
 
 No score change. Total 49/55.
 ```
@@ -110,25 +111,27 @@ No score change. Total 49/55.
 
 ## Stale Scores
 
-None.
-USER-LOOK GATE: open 4 iters, user fired /loop without feedback —
-treating as implicit "continue self-direction".
+The iter-22 cite "biome_balanced has cc_max=68" is single-seed
+data. Multi-seed sweep at iter 26 will report mean ± stddev. If
+variance is high, the cited number becomes unreliable as anchor.
+
+USER-LOOK GATE: open 5 iters, user firing /loop without feedback —
+proceeding with self-direction.
 
 ---
 
 ## Next Action
 
-`Iter 25 BUILD: clean single-variable p_merge sweep on biome_balanced
-endpoints. Vary p_merge in both default + balanced_steel: 0.333, 0.4,
-0.5, 0.6. Hold all other weights constant. Test new theory: cc_max
-grows monotonically with p_merge regardless of contrast.
+`Iter 26 SWEEP: multi-seed CC sweep on biome_balanced. Seeds {1, 7, 42,
+100, 314, 999} (iter-3 grid). Report mean/stddev for cc_max, cc_count,
+structure_lift. Honest measurement.
 
-If theory holds → can finally separate "blob mode" (high p_merge) from
-"interleave mode" (low p_merge) as orthogonal axes. Configs become
-2D-tunable: contrast on one axis, blob/interleave on another.
+If high variance: retire single-seed CC anchors; re-cite as mean ± σ.
+If low variance: the iter-22 cited values are reliable; the chaos
+surfaced in iter 25 was specific to p_merge interaction.
 
-If theory falsified again → CC is more chaotic than I think; metric
-may need redesign or replacement.`
+Either way, this is the empirical map at multi-seed resolution —
+overdue.`
 
 ---
 

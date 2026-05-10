@@ -1144,3 +1144,55 @@ But cc_max went UP, not down. The hypothesis "less dominance → less giant blob
 **Weakest axis next:** Iter 25 — clean single-variable test on merge_probability isolated from contrast. Take biome_balanced (the current Pareto champion). Vary ONLY p_merge in both endpoints (set both to 0.333 → both 0.4 → both 0.5 → both 0.6). Predict: cc_max grows monotonically with p_merge; structure_lift may or may not — don't know.
 
 If cc_max growth confirms: the new theory holds and merge_probability is the right knob to control architecture mode (interleave ↔ blob).
+
+---
+
+## Iter 025 — SWEEP — 2026-05-10
+**Focus:** Single-variable p_merge sweep on flat balanced_steel weights. Test iter-24 theory: cc_max grows monotonically with p_merge.
+**Changed files:**
+- `configs/pmerge_test_03.tres` (new) — balanced_steel weights at p=0.333
+- `configs/pmerge_test_05.tres` (new) — balanced_steel weights at p=0.5
+- `configs/pmerge_test_06.tres` (new) — balanced_steel weights at p=0.6
+- (existing balanced_steel.tres provides p=0.4)
+
+**Sweep result (seed 42, weights brick 0.20/steel 0.30/grass 0.25/water 0.20, vary only p_merge):**
+```
+p_merge   cc_count   cc_max   cc_avg   s_lift    eller_avg   eller_max
+0.333     85         96       12.19    2.506     1.82        5
+0.4       75         96       14.99    2.451     1.33        3
+0.5       52         192      20.85    2.426     6.67        11
+0.6       49         144      21.71    2.443     5.00        9
+```
+
+**Hypothesis (cc_max monotone in p_merge): FALSIFIED.** cc_max went 96 → 96 → **192** → 144. Non-monotone with a sharp peak at p=0.5. Eller_avg also non-monotone: 1.82 → 1.33 → 6.67 → 5.00.
+
+**Side findings:**
+- structure_lift IS roughly monotonic (↓ slightly with ↑ p_merge): 2.506 → 2.451 → 2.426 → 2.443. Consistent with iter 12's finding.
+- The same seed produces different Eller metrics at different p_merge values not just because of threshold — earlier merges affect later row generation in compound ways.
+- Single-seed CC measurements are inherently chaotic on this engine.
+
+### 4 cumulative falsifications — clear meta-pattern
+
+```
+Iter   Prediction                                          Outcome
+12     ↑ p_merge ⇒ ↑ vert_persistence                     ↓ slight (false)
+23     ↑ contrast ⇒ ↑ s_lift, ↓ cc_max                    both worse (false)
+24     ↓ contrast ⇒ ↓ cc_max                              ↑ instead (false)
+25     ↑ p_merge ⇒ ↑ cc_max monotonically                 non-monotone (false)
+```
+
+**Directional prediction accuracy on CC behavior: 0/4.**
+
+The loop's predict-then-test discipline has been productive — but the data show that emergent procedural behavior on this engine is **predictable in some dimensions (structure_lift) and chaotic in others (CC, eller_*)** when measured at single seeds. The chaotic dimensions resist intuitive parameter modeling because of compound randomness across rows.
+
+**Meta-decision (proposed for iter 26+):** stop framing iters as "predict and verify" for CC-flavored metrics. Frame as "explore, report, and look for stable patterns across multiple seeds". The discipline of writing a prediction before measuring is still valuable as an epistemic check — but I should accept that the prediction will often be wrong on CC and that the value is the empirical map, not the prediction.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| (all 11 unchanged) | — | — | — |
+
+**Total:** 49/55 — unchanged.
+
+But: the loop has surfaced its own systematic blind spot. Acknowledging "I cannot reliably predict CC behavior at single seeds" is an epistemic upgrade — comparable to the iter-13 instrument refinement, but at the prediction layer.
+
+**Weakest axis next:** Iter 26 — multi-seed CC sweep on biome_balanced. Run seeds {1, 7, 42, 100, 314, 999} (the iter-3 SWEEP grid). Report mean/stddev for cc_max, cc_count, structure_lift. If mean cc_max varies across seeds with high variance, single-seed CC is officially unreliable and the rubric's "biome_balanced has cc_max=68" cite needs to be retired in favor of mean ± stddev. Honest measurement. This iter is a SWEEP, not BUILD.
