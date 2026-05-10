@@ -2,12 +2,16 @@
 """
 Tile distribution oracle for tanke procedural levels.
 
-Classifies every pixel in a captured frame by nearest tile color,
-then reports coverage, variety, and distribution entropy as oracle scores.
+Single-frame mode: classifies every pixel by nearest tile color,
+reports coverage, variety, and distribution entropy as oracle scores.
+
+Diff mode: compares two frames, reports per-terrain pixel deltas and
+whether a shift was detected (>=5% relative or >=500 absolute on any terrain).
 
 Usage:
     python3 tools/analyze_frame.py <frame.png>
     python3 tools/analyze_frame.py          # uses latest tools/out/frame*.png
+    python3 tools/analyze_frame.py --diff <a.png> <b.png>
     make analyze
 """
 import sys
@@ -130,7 +134,61 @@ def analyze(frame_path: Path) -> dict:
     }
 
 
+def diff(path_a: Path, path_b: Path) -> dict:
+    """Compute per-terrain pixel delta between two frames."""
+    a = analyze(path_a)
+    b = analyze(path_b)
+    deltas = {}
+    for k in TILE_DEFS:
+        ca, cb = a["counts"][k], b["counts"][k]
+        delta = cb - ca
+        pct = (delta / ca * 100.0) if ca > 0 else (float("inf") if cb > 0 else 0.0)
+        deltas[k] = {
+            "before": ca,
+            "after": cb,
+            "delta": delta,
+            "pct_change": round(pct, 2),
+        }
+    # "Significant" shift: any terrain moved by >= 5% relative or 500 absolute pixels
+    significant = any(
+        abs(d["delta"]) >= 500 or abs(d["pct_change"]) >= 5
+        for d in deltas.values()
+    )
+    return {
+        "before_frame": path_a.name,
+        "after_frame": path_b.name,
+        "before_entropy_bits": a["tile_entropy_bits"],
+        "after_entropy_bits": b["tile_entropy_bits"],
+        "entropy_delta_bits": round(b["tile_entropy_bits"] - a["tile_entropy_bits"], 3),
+        "deltas": deltas,
+        "shift_detected": significant,
+    }
+
+
+def _print_diff(d: dict) -> None:
+    print(f"\n=== Frame Diff: {d['before_frame']} → {d['after_frame']} ===")
+    print(f"{'terrain':<8} {'before':>7} {'after':>7} {'Δ pixels':>10} {'Δ %':>8}")
+    print("-" * 44)
+    for k, v in d["deltas"].items():
+        print(f"{k:<8} {v['before']:>7} {v['after']:>7} {v['delta']:>+10} {v['pct_change']:>+7.1f}%")
+    print(f"entropy: {d['before_entropy_bits']:.3f} → {d['after_entropy_bits']:.3f} bits  "
+          f"(Δ {d['entropy_delta_bits']:+.3f})")
+    print(f"shift_detected: {d['shift_detected']}")
+
+
 def main():
+    if len(sys.argv) >= 4 and sys.argv[1] == "--diff":
+        path_a = Path(sys.argv[2])
+        path_b = Path(sys.argv[3])
+        for p in (path_a, path_b):
+            if not p.exists():
+                print(f"ERROR: {p} not found", file=sys.stderr)
+                sys.exit(1)
+        result = diff(path_a, path_b)
+        print(json.dumps(result, indent=2))
+        _print_diff(result)
+        return
+
     if len(sys.argv) > 1:
         frame_path = Path(sys.argv[1])
         if not frame_path.exists():

@@ -120,7 +120,19 @@ Distribution entropy 1.216 bits  score 3.0/5.0
 Tile counts  {'brick': 55034, 'steel': 1512, 'grass': 12240, 'water': 7936}
 ```
 
-**Current state:** 3 — `tools/analyze_frame.py:64-72` classifies pixels by nearest reference color from `sprites_1.png`; outputs per-type pixel counts, coverage %, variety, entropy. Reachable via `make screenshot && make analyze`. To reach 4: implement diff-mode across two frames. To reach 5: wire the diff into loop scoring.
+**Reference diff output (iter 8, default vs watery at seed 42):**
+```
+=== Frame Diff: frame_a → frame_b ===
+terrain   before   after   Δ pixels      Δ %
+brick      41322   37706      -3616    -8.8%
+steel       9912    3192      -6720   -67.8%
+grass      13200   11760      -1440   -10.9%
+water      12288   24064     +11776   +95.8%
+entropy: 1.722 → 1.634 bits  (Δ -0.088)
+shift_detected: True
+```
+
+**Current state:** 4 — `tools/analyze_frame.py --diff A.png B.png` reports per-terrain Δ, % change, entropy delta, and `shift_detected` boolean (≥5% relative or ≥500 absolute on any terrain). One-command reproducibility via `make diff CONFIG=<preset>` — the `TANKE_CONFIG` / `TANKE_SEED` env overrides on `ProceduralLevel.gd` enable two deterministic captures with one config swap and zero scene edits. To reach 5: wire diff results into automated loop scoring (loop reads the JSON, decides next mutation based on Δ).
 
 ---
 

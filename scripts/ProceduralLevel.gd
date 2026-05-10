@@ -18,7 +18,14 @@ var grid_size = 16
 
 func _ready():
 	if config == null:
-		config = DefaultConfig.duplicate()
+		var override_path: String = OS.get_environment("TANKE_CONFIG")
+		if override_path != "":
+			config = load(override_path)
+		else:
+			config = DefaultConfig.duplicate()
+	var override_seed: String = OS.get_environment("TANKE_SEED")
+	if override_seed != "" and level_seed == 0:
+		level_seed = int(override_seed)
 	if level_seed == 0:
 		level_seed = randi()
 	seed(level_seed)

@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 8
+iteration: 9
 preloop_complete: yes
 ```
 
@@ -44,12 +44,12 @@ tile_source_ids:
 | LevelConfig mutability | 5 | iter 7 full agent cycle: AGENTS.md → Edit → rerun → cite Δ |
 | Level DNA | 5 | DNA-referenced config mutation + oracle confirmation in iter 7 |
 | Tile visual coherence | 3 | 4/4 palettes render; all configs visually correct |
-| Screencapture oracle | 3 | analyze_frame.py classifies by palette; entropy 3.9 |
+| Screencapture oracle | 4 | iter 8 --diff mode + make diff CONFIG=<preset>; per-terrain Δ + shift_detected |
 | Agent edit friction | 5 | iter 7 zero-human-step cycle: AGENTS→Edit→rerun→Δ in one iter |
 | Procedural richness | 3 | 6-seed sweep: per-terrain variance 40–63% (>20% threshold met) |
 | Pipeline completeness | 3 | gen_tile→import→TileSet→render chain verified iter 4 (brick_007) |
 | GDScript correctness | 3 | make test clean; test_runner clean across configs |
-| **Total** | **38/50** | +4 from iter 6; **CEILING TRIPPED**; anchors raised iter 7 |
+| **Total** | **39/50** | +1 from iter 7; iter 7 raised anchors still binding |
 
 ---
 
@@ -82,29 +82,28 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 7 BUILD: cited mutation cycle (anticipated quad-lift, anticipated ceiling trip).
-- BEFORE: watery.tres water_weight=0.60 → water 688
-- Edit tool: water_weight 0.60 → 0.20 (single line, surgical)
-- AFTER: water 392 (-43%), grass 60 → 212 (+253%), distinct hash
-- Hypothesis confirmed: smallest competitor (grass) gains most when dominant weight shrinks
-- Quad-lift: C2 3→4, C3 4→5, C4 4→5, C7 4→5
-- Total 34→38/50; CEILING RULE TRIPPED
-- Anchor revision: C2/3/4/7 score-5 anchors raised (Revision Log)
+Iter 8 CAPABILITY: diff oracle + env-var rendering overrides.
+- analyze_frame.py --diff A.png B.png: per-terrain Δ + entropy Δ + shift_detected
+- ProceduralLevel.gd: TANKE_CONFIG / TANKE_SEED env reads in _ready (non-destructive)
+- Makefile: make diff CONFIG=<preset>
+- AGENTS.md updated: env vars + make diff documented
+- Demo: default vs watery @ seed 42 → water +95.8%, steel -67.8%, shift_detected: True
+- Criterion 6: 3 → 4. Total 38 → 39/50.
 ```
 
 ---
 
 ## Stale Scores
 
-watery.tres now permanently at water_weight=0.20 (was 0.60). Prior LEDGER cites of "watery → water 688" are historical; current state is water 392.
+None. Iter 7 already noted watery.tres state.
 
 ---
 
 ## Next Action
 
-`Iter 8 BUILD: implement diff-mode in analyze_frame.py — compare two frames, output distribution shift. Targets criterion 6 (Screencapture oracle 3→4). Force-multiplier: enables future C5/C8 measurements via screencapture Δ.`
+`Iter 9 BUILD: biome-zone weighting. Implement depth-modulated LevelConfig (e.g. interpolate between two configs as player scrolls). Targets criterion 8 (Procedural richness 3→4). Heaviest remaining build; genuine procedural-engine sophistication.`
 
-Iter 10 CONSULT gate looms. Pre-staged hollow-points: (a) no spatial coherence in terrain, (b) merge_probability is depth-invariant, (c) entropy oracle is goodhart-able.
+Iter 10 = CONSULT gate. Pre-staged hollow-points: (a) no spatial coherence in terrain (iter 9 should target this), (b) merge_probability is depth-invariant, (c) entropy oracle is goodhart-able.
 
 ---
 

@@ -9,7 +9,7 @@ CAPTURE_FRAMES ?= 5
 NOISE_FILTER    = grep -Ev "RID allocations|resources still in use"
 FRAMES_DIR      = $(PROJECT_DIR)/tools/out
 
-.PHONY: check test screenshot analyze run
+.PHONY: check test screenshot analyze run diff
 
 # Parse/load validation — catches bad scripts and missing nodes
 check:
@@ -37,6 +37,23 @@ analyze:
 	@latest=$$(ls $(FRAMES_DIR)/frame*.png 2>/dev/null | tail -1); \
 	if [ -z "$$latest" ]; then echo "run 'make screenshot' first"; exit 1; fi; \
 	python3 $(PROJECT_DIR)/tools/analyze_frame.py "$$latest"
+
+# Diff two screencaptures: default config vs CONFIG=<name>
+# Usage: make diff CONFIG=watery   (or fortress, default)
+diff:
+	@if [ -z "$(CONFIG)" ]; then echo "usage: make diff CONFIG=<name>"; exit 1; fi
+	@mkdir -p $(FRAMES_DIR)
+	@find $(FRAMES_DIR) -name "frame_a*.png" -delete 2>/dev/null; find $(FRAMES_DIR) -name "frame_b*.png" -delete 2>/dev/null; true
+	@find $(FRAMES_DIR) -name "frame_a*.wav" -delete 2>/dev/null; find $(FRAMES_DIR) -name "frame_b*.wav" -delete 2>/dev/null; true
+	@TANKE_SEED=42 $(RENDERER) --write-movie $(FRAMES_DIR)/frame_a.png \
+		--fixed-fps 1 --quit-after $(CAPTURE_FRAMES) $(PROC_SCENE) 2>/dev/null || true
+	@TANKE_SEED=42 TANKE_CONFIG=res://configs/$(CONFIG).tres $(RENDERER) \
+		--write-movie $(FRAMES_DIR)/frame_b.png \
+		--fixed-fps 1 --quit-after $(CAPTURE_FRAMES) $(PROC_SCENE) 2>/dev/null || true
+	@a=$$(ls $(FRAMES_DIR)/frame_a*.png 2>/dev/null | tail -1); \
+	 b=$$(ls $(FRAMES_DIR)/frame_b*.png 2>/dev/null | tail -1); \
+	 if [ -z "$$a" ] || [ -z "$$b" ]; then echo "ERROR: capture failed"; exit 1; fi; \
+	 python3 $(PROJECT_DIR)/tools/analyze_frame.py --diff "$$a" "$$b"
 
 # Launch the game (editor)
 run:

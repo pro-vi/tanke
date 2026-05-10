@@ -375,3 +375,45 @@ These anchors force iterative agent-driven exploration, not just capability demo
 - (c) C1 → 5: structured JSON output from test_runner. Cheap; useful tooling.
 
 Leaning (a) — single tool addition unlocks new measurement, fits the "oracle improvement" theme of the loop.
+
+---
+
+## Iter 008 — CAPABILITY — 2026-05-10
+**Focus:** Pixel-level diff oracle. Extend `analyze_frame.py` with `--diff`; add `TANKE_CONFIG`/`TANKE_SEED` env overrides so screencapture can vary inputs without scene edits; expose via `make diff CONFIG=<preset>`.
+**Changed files:**
+- `tools/analyze_frame.py` — new `diff()` + `_print_diff()`; `--diff A.png B.png` invocation; updated docstring.
+- `scripts/ProceduralLevel.gd` — `_ready()` reads `TANKE_CONFIG` and `TANKE_SEED` env vars when scene fields are null/0 (non-destructive override).
+- `Makefile` — new `make diff CONFIG=<preset>` target: clears `frame_a*` / `frame_b*`, captures two screencaptures with `TANKE_SEED=42`, runs `analyze --diff`.
+- `loop/AGENTS.md` — documented `TANKE_CONFIG` / `TANKE_SEED` env vars and `make diff` workflow.
+
+**Diff oracle output (default vs watery, seed 42):**
+```
+terrain   before   after   Δ pixels      Δ %
+brick      41322   37706      -3616    -8.8%
+steel       9912    3192      -6720   -67.8%
+grass      13200   11760      -1440   -10.9%
+water      12288   24064     +11776   +95.8%
+entropy: 1.722 → 1.634 bits  (Δ -0.088)
+shift_detected: True
+```
+
+Single command (`make diff CONFIG=watery`) now: captures default frame → swaps config via env var → captures comparison frame → reports per-terrain Δ + entropy Δ + boolean shift detection. JSON output for tooling consumption (the `shift_detected` bool is what a future automated scorer would key off).
+
+**Note on watery state:** since iter 7, `watery.tres` has `water_weight = 0.20` (not the original 0.60). The +95.8% water Δ here is between default (0.15) and current watery (0.20) plus higher merge_probability (0.5 vs 0.333). Bigger sets at higher merge prob compound the per-cell weight effect.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| Headless oracle | 4 | 4 | unchanged |
+| Algorithm variety | 4 | 4 | unchanged |
+| LevelConfig mutability | 5 | 5 | unchanged |
+| Level DNA | 5 | 5 | unchanged |
+| Tile visual coherence | 3 | 3 | unchanged |
+| Screencapture oracle | 3 | **4** | iter 8 diff mode + `make diff` cited above; meets old anchor 4 |
+| Agent edit friction | 5 | 5 | unchanged (env overrides reduce friction further but no new anchor) |
+| Procedural richness | 3 | 3 | unchanged |
+| Pipeline completeness | 3 | 3 | unchanged |
+| GDScript correctness | 3 | 3 | unchanged |
+
+**Total:** 39/50 (+1 from iter 7). Anchors raised iter 7 still binding; this lift was against the unchanged C6 anchor 4.
+
+**Weakest axis next:** Four criteria at 3/5 (5, 8, 9, 10). Iter 9 candidate: tackle criterion 8 (Procedural richness) by implementing biome-zones — depth-modulated weights via 2-3 LevelConfig presets that interpolate as player scrolls. Anchor 4: "Biome-like zones: level character shifts as player scrolls deeper". This is the heaviest BUILD remaining and the most genuine procedural-engine sophistication. Iter 10 still due as CONSULT — iter 9 BUILD then iter 10 CONSULT.

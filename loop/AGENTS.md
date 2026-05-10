@@ -59,6 +59,19 @@ or pass via `test_runner.gd` `-- --seed N --config PATH`.
 
 ---
 
+## Environment overrides (rendering paths)
+
+Headless paths take CLI flags (`--seed`, `--config`, `--dna`). The full
+renderer (`make screenshot`, `make diff`) instead reads env vars:
+
+| Env var | Effect | Read at |
+|---------|--------|---------|
+| `TANKE_SEED=N` | Sets `level_seed` (only if scene's `level_seed == 0`) | `ProceduralLevel.gd:_ready()` |
+| `TANKE_CONFIG=res://...tres` | Sets `config` (only if scene's `config` is null) | `ProceduralLevel.gd:_ready()` |
+
+Used by `make diff CONFIG=<preset>` to capture two deterministic frames at
+the same seed with two different configs.
+
 ## Verification
 
 After any mutation:
@@ -66,9 +79,12 @@ After any mutation:
 # Headless oracle: deterministic distribution + tile_hash
 godot --headless --path . --script res://loop/test_runner.gd -- --seed 42 --config <PATH>
 
-# Screencapture oracle: pixel-level per-terrain coverage
+# Screencapture oracle: pixel-level per-terrain coverage (single frame)
 make screenshot && make analyze
+
+# Diff oracle: pixel-level Δ between default and target preset
+make diff CONFIG=watery
 ```
 
 A change is "real" only if (a) `tile_hash` changes vs baseline, AND (b) at least
-one terrain count changes by ≥10%.
+one terrain count changes by ≥10%, OR (c) `make diff` reports `shift_detected: True`.
