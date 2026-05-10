@@ -77,7 +77,7 @@ Does the Eller's algorithm parameter space produce meaningfully different level 
 | 4 | LevelDNA serializable to JSON/dict; round-trips without loss |
 | 5 | Loop proposes a LevelDNA mutation, applies it, oracle confirms change, loop scores result — full agent-iteration cycle |
 
-**Current state:** 3 — `ProceduralLevel.gd:6` exposes `@export var level_seed: int = 0`; `_ready()` (line 17) calls `seed(level_seed)` before any generation. Verified iter 1: two runs at seed 42 → identical tile_hash `619cb88ffed7e906`; seed 7 → distinct hash `beac3183dc58e335`. To reach 4: serialize LevelDNA (seed + future LevelConfig) to a `.tres` resource.
+**Current state:** 4 — `scripts/LevelDNA.gd` bundles seed + LevelConfig; `to_dict()` / `from_dict()` / `to_json()` / `from_json()` round-trip through Dictionary and JSON without loss (iter 5 verified: source dict == roundtrip dict, ROUNDTRIP_OK). Test_runner accepts `-- --dna PATH`; loading `configs/dna_default_s42.tres` reproduces seed-42 default hash `6159ef2f5464edb1` exactly. To reach 5: agent proposes a DNA mutation (Edit tool diff on a .tres), applies it, runs oracle in same iteration, scores delta.
 
 ---
 

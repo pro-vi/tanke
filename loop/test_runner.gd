@@ -1,6 +1,7 @@
 extends SceneTree
 
 const ProceduralLevelScene = preload("res://scenes/ProceduralLevel.tscn")
+const LevelDNAT = preload("res://scripts/LevelDNA.gd")
 const FRAMES_TO_STEP := 30
 const DEFAULT_SEED := 42
 
@@ -8,17 +9,33 @@ const DEFAULT_SEED := 42
 func _initialize() -> void:
 	var test_seed := DEFAULT_SEED
 	var config_path := ""
+	var dna_path := ""
+	var roundtrip_path := ""
 	var args := OS.get_cmdline_user_args()
 	for i in args.size():
 		if args[i] == "--seed" and i + 1 < args.size():
 			test_seed = int(args[i + 1])
 		elif args[i] == "--config" and i + 1 < args.size():
 			config_path = args[i + 1]
+		elif args[i] == "--dna" and i + 1 < args.size():
+			dna_path = args[i + 1]
+		elif args[i] == "--dna-roundtrip" and i + 1 < args.size():
+			roundtrip_path = args[i + 1]
+
+	if roundtrip_path != "":
+		_dna_roundtrip(roundtrip_path)
+		quit()
+		return
 
 	var level: Node = ProceduralLevelScene.instantiate()
-	level.level_seed = test_seed
-	if config_path != "":
-		level.config = load(config_path)
+	if dna_path != "":
+		var dna = load(dna_path)
+		level.level_seed = dna.level_seed
+		level.config = dna.config
+	else:
+		level.level_seed = test_seed
+		if config_path != "":
+			level.config = load(config_path)
 	root.add_child(level)
 
 	# Let _ready and a few _process iterations run
@@ -88,6 +105,39 @@ func _collect(level: Node) -> Dictionary:
 		"tile_hash": tile_hash,
 		"total_terrain": brick_count + water_count + steel_cells + grass_cells,
 	}
+
+
+func _dna_roundtrip(path: String) -> void:
+	print("=== LevelDNA roundtrip: %s ===" % path)
+	var dna_a = load(path)
+	if dna_a == null:
+		print("FAIL: could not load DNA from %s" % path)
+		return
+	var dict_a: Dictionary = dna_a.to_dict()
+	var json_str: String = JSON.stringify(dict_a)
+	var dna_b = LevelDNAT.from_json(json_str)
+	if dna_b == null:
+		print("FAIL: from_json returned null")
+		return
+	var dict_b: Dictionary = dna_b.to_dict()
+	var ok := true
+	for k in dict_a:
+		if not dict_b.has(k):
+			print("FAIL: key %s missing after roundtrip" % k)
+			ok = false
+		elif typeof(dict_a[k]) == TYPE_FLOAT:
+			if abs(dict_a[k] - dict_b[k]) > 1e-6:
+				print("FAIL: %s drifted: %s != %s" % [k, dict_a[k], dict_b[k]])
+				ok = false
+		elif dict_a[k] != dict_b[k]:
+			print("FAIL: %s differs: %s != %s" % [k, dict_a[k], dict_b[k]])
+			ok = false
+	print("source dict: %s" % dict_a)
+	print("roundtrip:   %s" % dict_b)
+	if ok:
+		print("ROUNDTRIP_OK")
+	else:
+		print("ROUNDTRIP_FAIL")
 
 
 func _print_report(r: Dictionary) -> void:

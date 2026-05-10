@@ -231,3 +231,46 @@ Identical to iter 2. Texture swap is cosmetic — does not perturb tile placemen
 **Total:** 33/50 (+1 from iter 3). Two points below ceiling.
 
 **Weakest axis next:** Tied seven-way at 3/5 (criteria 4, 5, 6, 8, 9, 10) plus criterion 2 at 3. Pick by force-multiplier: serialize LevelDNA (seed + config) into a single `.tres` to lift criterion 4 to 4 (and unlocks "loop proposes mutation" path for level 5). After that, schedule iter 5 AUDIT to re-score everything with fresh evidence.
+
+---
+
+## Iter 005 — BUILD — 2026-05-10
+**Focus:** LevelDNA serialization — single `.tres` artifact bundling seed + config; lossless round-trip through JSON.
+**Changed files:**
+- `scripts/LevelDNA.gd` (new) — Resource with `level_seed` + `config` fields; `to_dict` / `from_dict` / `to_json` / `from_json`. `from_dict` uses `load("res://scripts/LevelDNA.gd")` to avoid headless class_name self-reference.
+- `configs/dna_default_s42.tres` (new) — example DNA bundling seed 42 + `default.tres` config via `ExtResource`.
+- `loop/test_runner.gd` — `-- --dna PATH` (load DNA, drive level) and `-- --dna-roundtrip PATH` (verify dict→JSON→dict equality).
+
+**Oracle output:**
+
+```
+=== LevelDNA roundtrip: res://configs/dna_default_s42.tres ===
+source dict: { "level_seed": 42, "merge_probability": 0.333, "empty_weight": 0.1, "brick_weight": 0.4, "steel_weight": 0.15, "grass_weight": 0.2, "water_weight": 0.15 }
+roundtrip:   { "level_seed": 42, "merge_probability": 0.333, "empty_weight": 0.1, "brick_weight": 0.4, "steel_weight": 0.15, "grass_weight": 0.2, "water_weight": 0.15 }
+ROUNDTRIP_OK
+```
+
+```
+--- DNA-driven generation (configs/dna_default_s42.tres) ---
+level_seed: 42  brick: 400  water: 200  steel: 244  grass: 228
+tile_hash: 6159ef2f5464edb1   ← IDENTICAL to iter 2 seed-42 default baseline
+```
+
+**Compile-error fix (recurrence):** `var dna := LevelDNA.new()` inside the static `from_dict` re-triggered "Identifier not found: LevelDNA" — same headless class_name resolution issue we hit iter 2. Workaround: resolve script via `load("res://scripts/LevelDNA.gd")` then `.new()`. Pattern note for future iters: never reference a class_name from inside its own script in code paths headless will hit.
+
+| Criterion | Score | Evidence |
+|-----------|-------|----------|
+| Headless oracle | 4 | unchanged |
+| Algorithm variety | 3 | unchanged |
+| LevelConfig mutability | 4 | unchanged |
+| Level DNA | 4 | LevelDNA.gd + roundtrip OK + DNA-driven hash matches iter 2 baseline |
+| Tile visual coherence | 3 | unchanged |
+| Screencapture oracle | 3 | unchanged |
+| Agent edit friction | 4 | unchanged (AGENTS.md still applies; LevelDNA params subsume LevelConfig's) |
+| Procedural richness | 3 | unchanged |
+| Pipeline completeness | 3 | unchanged |
+| GDScript correctness | 3 | unchanged; make test + roundtrip clean |
+
+**Total:** 34/50 (+1 from iter 4). One point below ceiling.
+
+**Weakest axis next:** Per LOOP PROTOCOL ("AUDIT every 5 iterations or after any BUILD changes the oracle"), iter 6 is **AUDIT** — re-score everything with fresh evidence after 5 build iterations of accumulated drift. If total ≥ 35 after audit, the CEILING RULE fires: raise score-4/5 anchors before iter 7. CONSULT mode also looms at iter 10.
