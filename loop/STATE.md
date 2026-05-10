@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 6
+iteration: 7
 preloop_complete: yes
 ```
 
@@ -82,27 +82,28 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 5 BUILD: LevelDNA serialization.
-- scripts/LevelDNA.gd: bundles seed + LevelConfig; to_dict/from_dict/to_json/from_json
-- configs/dna_default_s42.tres: example DNA via ExtResource
-- test_runner.gd: --dna PATH (drive level) + --dna-roundtrip PATH (verify)
-- Roundtrip OK: source dict == roundtrip dict (no drift on 7 fields)
-- DNA-driven generation produces tile_hash 6159ef2f5464edb1 (matches iter 2 baseline)
-- Workaround: from_dict uses load() to avoid headless class_name self-reference
-- Criterion 4: 3 → 4. Total 33 → 34/50.
+Iter 6 AUDIT: re-scored 10 criteria with fresh evidence.
+- Roundtrip OK; default DNA seed-42 hash 6159ef2f5464edb1 (iter 2 baseline preserved)
+- 3-config sweep: distinct hashes per config
+- Screencapture: variety 4/4, entropy 4.4/5
+- Total 34/50 — unchanged. No inflation, no regressions.
+- Insight: 4 criteria (2/3/4/7) all gated on same anchor — "cited end-to-end mutation cycle".
+  One cited mutation in iter 7 could quad-lift to ceiling-bust.
 ```
 
 ---
 
 ## Stale Scores
 
-None. Six BUILDs since boot have all been ratchet-only (no regressions).
+None.
 
 ---
 
 ## Next Action
 
-`Iter 6 AUDIT: re-score all 10 criteria with fresh evidence after 5 cumulative build iterations. If total ≥ 35 → CEILING RULE fires; raise score-4/5 anchors before iter 7. CONSULT mode looms at iter 10.`
+`Iter 7 BUILD: cited mutation cycle. Edit one weight on configs/watery.tres, rerun oracle, cite Δ in LEDGER. Targets quad-axis lift of criteria 2 (3→4), 3 (4→5), 4 (4→5), 7 (4→5) — anticipated +4 to total. Will trip CEILING RULE; pre-stage anchor revisions.`
+
+CONSULT gate at iter 10 (3 iters away). Pre-staged hollow-point candidates documented in LEDGER iter 6 audit observations.
 
 ---
 

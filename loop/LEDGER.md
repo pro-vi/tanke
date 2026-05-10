@@ -274,3 +274,47 @@ tile_hash: 6159ef2f5464edb1   ← IDENTICAL to iter 2 seed-42 default baseline
 **Total:** 34/50 (+1 from iter 4). One point below ceiling.
 
 **Weakest axis next:** Per LOOP PROTOCOL ("AUDIT every 5 iterations or after any BUILD changes the oracle"), iter 6 is **AUDIT** — re-score everything with fresh evidence after 5 build iterations of accumulated drift. If total ≥ 35 after audit, the CEILING RULE fires: raise score-4/5 anchors before iter 7. CONSULT mode also looms at iter 10.
+
+---
+
+## Iter 006 — AUDIT — 2026-05-10
+**Focus:** Re-score all 10 criteria after 5 BUILDs + 1 SWEEP. Catch inflation. Verify regressions absent.
+
+**Fresh evidence (regenerated this iter):**
+```
+A. roundtrip:                        ROUNDTRIP_OK (7 fields, no drift)
+B. DNA-driven seed-42 default:       brick 400  water 200  steel 244  grass 228  hash 6159ef2f5464edb1  PASS
+   ↑ matches iter 2 baseline exactly — the seed-42 hash is a stable anchor
+C. 3-config sweep @ seed 42:
+   default   brick 400  water 200  steel 244  grass 228  → 6159ef2f5464edb1
+   watery    brick 232  water 688  steel  64  grass  60  → 74e4d9ad07f08693
+   fortress  brick 172  water  40  steel 720  grass 192  → 60feb24a96c2161a
+D. screencapture:                    coverage 99.9%, variety 4/4, entropy 4.4/5
+                                     brick 40242  steel 10416  grass 12240  water 13824
+```
+
+**Cheap-dignity audit per criterion:**
+
+| # | Criterion | Prior | Verdict | Reasoning |
+|---|-----------|-------|---------|-----------|
+| 1 | Headless oracle | 4 | **4** | Reproducibility, multi-input (seed/config/dna). Anchor 5 (JSON) not met. Holds. |
+| 2 | Algorithm variety | 3 | **3** | 3 cited configs distinct. Anchor 4 needs "agent mutates one field" — capability exists but no cited demonstration. Holds. |
+| 3 | LevelConfig mutability | 4 | **4** | `.tres` editable, no `.gd` touches. Anchor 5 needs "agent swaps preset → oracle confirms in full cycle". Capability exists, demonstration not cited. Holds. |
+| 4 | Level DNA | 4 | **4** | Roundtrip OK; DNA-driven hash matches baseline. Anchor 5 needs full agent-iteration mutation cycle. Holds. |
+| 5 | Tile visual coherence | 3 | **3** | brick_007 palette is hand-tuned, not extracted from `sprites_0.png` per anchor 4. Holds. |
+| 6 | Screencapture oracle | 3 | **3** | Single-frame analysis only. Anchor 4 needs diff-mode (before/after frame compare). Holds. |
+| 7 | Agent edit friction | 4 | **4** | AGENTS.md present; anchor 5 needs cited Edit-tool mutation cycle. Holds. |
+| 8 | Procedural richness | 3 | **3** | 6-seed sweep variance 40–63% beats 20% threshold. Anchor 4 needs biome zones — depth-modulated weights or region noise overlay, not implemented. Holds. |
+| 9 | Pipeline completeness | 3 | **3** | brick_007 chain cited. Anchor 4 needs all 4 terrains regeneratable from gen_tile.py. Only brick swapped. Holds. |
+| 10 | GDScript correctness | 3 | **3** | `make test` + `test_runner.gd` clean. Anchor 4 ("zero deprecation warnings") not precisely measured this iter — Node2D wrappers around TileMapLayers exist but are not literal deprecated TileMap nodes. Conservative hold. |
+
+**Total:** 34/50 — unchanged from iter 5. No inflation. No regressions.
+
+**CEILING RULE check:** total < 35 → no anchor lift required. Anchors hold.
+
+**Audit observations:**
+1. **The seed-42 hash is now a load-bearing measurement anchor.** Five iterations have produced or cited `6159ef2f5464edb1` for seed-42 default-config, regardless of texture changes, file additions, or DNA wrapper. Any future change that breaks this hash without intent is a regression.
+2. **The 4-anchor → 5-anchor pattern across criteria 2, 3, 4, 7 is convergent: all four need "cited end-to-end agent mutation cycle".** A single iter 7 BUILD that performs one cited mutation (Edit watery.tres `water_weight` → rerun oracle → diff Δ) could lift four criteria simultaneously: 2 → 4, 3 → 5, 4 → 5, 7 → 5. That's a **+4** ceiling-busting move.
+3. **The CONSULT gate is at iter 10.** Three iterations away. Question to prepare: "What's seductive-but-hollow about this procedural engine?" Strong candidate hollow-points: (a) the elif terrain selection is uniform random per set with no spatial coherence — no biome zones; (b) merge_probability is a single global, can't vary by depth; (c) the oracle measures distribution but not "interestingness" — a perfectly uniform 25/25/25/25 split would score 5/5 on entropy while being maximally boring.
+
+**Weakest axis next:** No single weakest. Strategic move: iter 7 BUILD performs one cited Edit→rerun→diff to ceiling-bust criteria 2, 3, 4, 7 simultaneously.
