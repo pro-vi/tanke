@@ -81,3 +81,106 @@ Engine-loop deliverables I will not modify and may reuse:
 - First mandatory PLAYTEST: iter 5 (or earlier if shoot+move+enemies all work)
 
 ---
+
+## Iter 001 — BUILD — Bullet system
+
+**Mode:** BUILD
+**Focus:** criterion 1 (core loop closes) — fix the broken Bullet so shoot+travel+collision actually works
+**Date:** 2026-05-10
+**Pre-mortem:** PRE-MORTEMS.md iter 001 (predicted criterion 1 → 2/5; predicted headless clean; predicted oracle unchanged)
+
+### Diagnose
+
+Weakest axis: **criterion 1 (Core loop closes) at 0/5**. Evidence: STATE.md
+iter-0 scores all at floor; user F5 confirms move works (iter 0), but
+shooting known broken per open seam #1. PROMPT §"KNOWN BROKEN" iter-1 work:
+fix the Bullet system.
+
+### Findings during inspection
+
+PROMPT was slightly off: `Bullet.gd` *did* exist (at repo root, not in
+`scripts/`). The actual blockers were:
+1. `scenes/Bullet.tscn` was `format=2` (Godot 3) — broken ext_resource
+   syntax + `extents` on RectangleShape2D (Godot 4 wants `size`)
+2. Only `area_entered` was wired — but terrain (BrickBlock, WaterBlock,
+   TileMapLayer) is `StaticBody2D`, so collisions never fired
+3. `speed = 5` in the .tscn (Godot-3 frame-tied speed) is unplayable at
+   `_process(delta)` semantics — 5 px/sec × 1s lifetime = 5px total travel
+4. `Bullet.gd` at repo root violates the `scripts/` convention used by
+   every other game script
+
+### Actions
+
+1. Moved `Bullet.gd` repo-root → `scripts/Bullet.gd` (preserved
+   `uid://cbdxbbvo1fdgj` in `scripts/Bullet.gd.uid`; deleted root files)
+2. Rewrote `scripts/Bullet.gd` typed (consistent with iter-27 substrate):
+   - `start(pos: Vector2, dir: int)` sets position/rotation/velocity, sets
+     timer `wait_time = lifetime` and starts it
+   - `_physics_process(delta)` moves the bullet (physics frame so collision
+     callbacks sync)
+   - `_on_area_entered(_area)` + `_on_body_entered(_body)` both
+     `queue_free()` — covers future enemies (Areas) and current terrain
+     (StaticBodies)
+   - `_on_lifetime_timeout()` `queue_free()`
+   - Defaults: `speed = 120` px/s, `damage = 1`, `lifetime = 2.0s`
+3. Migrated `scenes/Bullet.tscn`:
+   - `format=2` → `format=3` with proper Godot 4 ext_resource syntax
+   - `extents = Vector2(2.00204, 1.50773)` → `size = Vector2(4, 3)` (Godot
+     4 RectangleShape2D uses full size, not half-extents — `2.00204*2 ≈ 4`)
+   - Removed the `speed = 5` override (let Bullet.gd default of 120 stand)
+   - `collision_layer = 4` (Bullet), `collision_mask = 1` (Environment)
+   - `LifeTimeTimer wait_time = 2.0, one_shot = true`
+   - Signal connections updated to `_on_area_entered`, `_on_body_entered`,
+     `_on_lifetime_timeout`
+
+### Verification
+
+- `godot --headless --path . --quit` → exit 0, clean (one cosmetic UID-cache
+  warning about `uid://cbdxbbvo1fdgj` falling back to text path — Godot
+  will refresh the UID cache on next editor open; harmless)
+- Reachability oracle (seed 42): `playable: true, reachable_cells: 804,
+  rows_climbed: 29, tile_hash: f873ae60ee3c420c…` — identical to iter-0
+  baseline. Bullet changes don't touch tile placement, as predicted.
+
+### Scores
+
+| Criterion | Iter 0 | Iter 1 | Δ | Citation |
+|-----------|--------|--------|---|----------|
+| 1. Core loop closes | 0 | **2** | +2 | `scripts/Bullet.gd:13-30`, `scenes/Bullet.tscn:9-26`, headless boot exit 0. Capped at 2 — feel criterion, needs playtest for >2. |
+| 2. Spawn / wave system | 0 | 0 | – | No enemies still |
+| 3. HP + death model | 0 | 0 | – | No HP still |
+| 4. XP + level-up flow | 0 | 0 | – | – |
+| 5. Upgrade variety | 0 | 0 | – | – |
+| 6. Enemy variety | 0 | 0 | – | – |
+| 7. Run pacing | 0 | 0 | – | – |
+| 8. Visual feedback / juice | 0 | 0 | – | No spark/impact yet |
+| 9. UI / UX | 0 | 0 | – | – |
+| 10. Build distinctness | 0 | 0 | – | – |
+| **Total** | **0** | **2** | **+2** | |
+
+### Pre-mortem evaluation
+
+Prediction 1 (criterion 1 → 2): **landed** as called.
+Prediction 2 (headless clean): **landed** (one cosmetic UID warning aside).
+Prediction 3 (oracle unchanged): **landed** exactly.
+
+No falsifications this iter — pre-mortem was conservative and correct.
+Real falsification risk shifts to iter 5 playtest: does the bullet actually
+visibly move and visibly despawn? Code says yes; user eyes will tell.
+
+### Files touched
+
+- Created: `scripts/Bullet.gd`, `scripts/Bullet.gd.uid`,
+  `loop/gameplay/PRE-MORTEMS.md`
+- Rewrote: `scenes/Bullet.tscn` (format 2 → 3 migration)
+- Deleted: `Bullet.gd`, `Bullet.gd.uid` (from repo root)
+
+### Schedule
+
+- Iter 2 candidate = BUILD: enemies (Enemy.tscn + Enemy.gd + basic chaser
+  AI + spawner stub). Advances criteria 2 + 6 simultaneously. Also creates
+  a real bullet target so iter-1's collision register gets visual proof.
+- ScheduleWakeup 240s (BUILD cadence per PROMPT §7)
+- PLAYTEST gate remains iter 5
+
+---
