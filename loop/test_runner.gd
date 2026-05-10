@@ -152,6 +152,43 @@ func _collect(level: Node) -> Dictionary:
 	var above_floor: float = max(0.0, (vert_persistence - 0.5) / 0.5)
 	var structure_lift: float = (vert_persistence / iid_expected) if iid_expected > 0.0 else 0.0
 
+	# Connected-component analysis (iter 22). Flood-fill 4-connected on the
+	# (col, row) grid; record count + max + avg of contiguous same-terrain
+	# regions. Captures architecture in a way pair-counting can't: a level
+	# with one giant blob has cc_count=1, cc_max=large; a level with many
+	# small islands has cc_count=large, cc_avg=small.
+	var visited: Dictionary = {}
+	var cc_sizes: Array = []
+	for start in grid:
+		if visited.has(start):
+			continue
+		var terrain_t = grid[start]
+		var size: int = 0
+		var queue: Array = [start]
+		while not queue.is_empty():
+			var cur: Vector2i = queue.pop_back()
+			if visited.has(cur):
+				continue
+			if not grid.has(cur):
+				continue
+			if grid[cur] != terrain_t:
+				continue
+			visited[cur] = true
+			size += 1
+			queue.push_back(Vector2i(cur.x + 1, cur.y))
+			queue.push_back(Vector2i(cur.x - 1, cur.y))
+			queue.push_back(Vector2i(cur.x, cur.y + 1))
+			queue.push_back(Vector2i(cur.x, cur.y - 1))
+		cc_sizes.append(size)
+	var cc_count: int = cc_sizes.size()
+	var cc_max: int = 0
+	var cc_total: int = 0
+	for s in cc_sizes:
+		if s > cc_max:
+			cc_max = s
+		cc_total += s
+	var cc_avg: float = (float(cc_total) / float(cc_count)) if cc_count > 0 else 0.0
+
 	return {
 		"seed_used": level.level_seed,
 		"brick": brick_count,
@@ -169,6 +206,9 @@ func _collect(level: Node) -> Dictionary:
 		"vert_above_floor": above_floor,
 		"vert_iid_expected": iid_expected,
 		"vert_structure_lift": structure_lift,
+		"cc_count": cc_count,
+		"cc_max": cc_max,
+		"cc_avg": cc_avg,
 	}
 
 
@@ -220,6 +260,7 @@ func _print_report(r: Dictionary) -> void:
 	print("vert_above_floor: %.3f   iid_expected: %.3f   structure_lift: %.3fx" % [
 		r.vert_above_floor, r.vert_iid_expected, r.vert_structure_lift
 	])
+	print("cc_count: %d   cc_max: %d   cc_avg: %.2f" % [r.cc_count, r.cc_max, r.cc_avg])
 	print("tile_hash: %s" % r.tile_hash.substr(0, 16))
 	if r.total_terrain == 0:
 		print("FAIL: zero tiles placed")

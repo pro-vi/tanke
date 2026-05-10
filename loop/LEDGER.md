@@ -993,3 +993,59 @@ But TWO meaningful artifacts created:
 - **(c)** Wait for user-look feedback before another BUILD. Honest given the gate is open.
 
 Lean (b) — addresses self-assessment #2, measurable improvement to the rubric's most novel criterion.
+
+---
+
+## Iter 022 — BUILD — 2026-05-10
+**Focus:** Connected-component flood-fill metric. Test whether CC ranking differs from structure_lift ranking — if yes, CC measures something pair-counting cannot.
+**Changed files:**
+- `loop/test_runner.gd` — added 4-connected BFS flood-fill on the (col, row) → terrain grid. Reports `cc_count`, `cc_max`, `cc_avg` in both text + JSON.
+
+**Pre-commit prediction (recorded before measurement):**
+1. CC ranking will differ from structure_lift ranking
+2. Fortress will top cc_max (steel-dominant giant component)
+3. biome_balanced will be moderate cc_count, moderate cc_max
+
+**Results (seed 42, post-Eller-fix):**
+```
+config              most-dom   cc_count   cc_max   cc_avg    structure_lift
+default             41%         87         140     11.91     2.414×
+watery              32%         45          88     23.56     2.303×
+fortress            55%         32         256     34.12     1.751×    ← cc_max ⏶ s_lift ⏷
+balanced_steel      32%         75          96     14.99     2.451×
+biome_d→w           36%         47         124     20.94     2.601×
+biome_balanced      30%         77          68     14.23     2.628×    ← s_lift ⏶ cc_max ⏷
+```
+
+**Hypothesis 1 confirmed.** Spearman correlation between cc_max and structure_lift is strongly NEGATIVE: fortress is highest cc_max but lowest s_lift; biome_balanced is highest s_lift but lowest cc_max. The two metrics measure different architectural modes.
+
+**Hypothesis 2 confirmed.** Fortress cc_max = 256 (vs next highest default's 140). Steel-dominant config produces a giant blob.
+
+**Hypothesis 3 partially confirmed.** biome_balanced cc_count = 77 (moderate, between fortress's 32 and default's 87) — predicted moderate ✓. cc_max = 68 — *lowest* of all configs, more fragmented than I predicted ✗.
+
+**Architectural insight:** "structure" in the rubric was implicitly bundling two distinct modes:
+1. **Blob mode** (fortress): one terrain dominates → giant CC + high pair-correlation by trivial concentration
+2. **Interleave mode** (biome_balanced): multiple terrains, each in medium-sized regions, *correlated across rows* via biome interpolation → many medium CCs, *low* pair-correlation if you only look within one row, but *high* correlation across rows
+
+structure_lift captures #2 well (because IID normalization cancels concentration). cc_max captures #1 well (because giant blobs need a winner). Together they pin down architecture more rigorously.
+
+**This addresses iter-20 self-assessment #2** ("structure_lift may be Goodhart-shifted, not eliminated"). It is partially eliminated, partially shifted — but a SECOND independent axis can pin down what either alone cannot. Goodharting both simultaneously requires fundamentally different architecture.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| (all 11 unchanged) | — | — | — |
+
+**Total:** 49/55 — unchanged.
+
+C1 (Headless oracle, JSON) implicitly enriched with 3 new fields (cc_count, cc_max, cc_avg). Anchor 5 doesn't list field count, so no lift. C11 anchor 5 is more rigorously supported but already at 5.
+
+**No score lift, but the rubric is now harder to gimmick.** Future "high score" requires being good on *both* structure_lift and CC distribution — not either alone.
+
+**Weakest axis next:** Iter 23 candidates:
+- **(a)** Construct an "interleave maximizer" config that beats biome_balanced on BOTH structure_lift AND has lower cc_max + higher cc_count (more fragmentation). Tests whether the new axis has room above current best.
+- **(b)** Expose `vertical_carry_min` / `vertical_carry_max` on LevelConfig — now that the floor is fixed at 1, the range becomes an agent-tunable parameter.
+- **(c)** Wait for user-look feedback. Two iters open, no movement.
+
+User-look gate STILL OPEN. If it closes (user does playtest), reframes may stale several scores. Worth waiting.
+
+Lean (a) — extends the empirical map.
