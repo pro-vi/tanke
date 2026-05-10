@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 14
+iteration: 15
 preloop_complete: yes
 ```
 
@@ -49,8 +49,8 @@ tile_source_ids:
 | Procedural richness | 4 | iter 9 biome interp: visible top-vs-bottom gradient; water +20.8% Δ |
 | Pipeline completeness | 3 | gen_tile→import→TileSet→render chain verified iter 4 (brick_007) |
 | GDScript correctness | 3 | make test clean; test_runner clean across configs |
-| 11. Spatial Coherence | 3 | iter 11 vert_persistence metric; cited 0.647/0.727/0.710/0.692 across configs |
-| **Total** | **43/55** | iter 11 added criterion 11; proportional score 78% (was 80% on /50) |
+| 11. Spatial Coherence | 4 | iter 14 cycle: depth_scale 14→100 → structure_lift 2.464×→2.236× (predicted DOWN, confirmed) |
+| **Total** | **44/55** | +1 from iter 13; back to 80% on expanded rubric |
 
 ---
 
@@ -83,25 +83,20 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 13 BUILD: vert_persistence refined with two new derived metrics.
-- vert_above_floor = (vp - 0.5) / 0.5
-- vert_structure_lift = vp / iid_expected (Σ p_i² over observed distribution)
-Survey (seed 42):
-  default     structure_lift 2.388×    (balanced)
-  watery      structure_lift 2.357×    (water-heavy concentration)
-  fortress    structure_lift 1.529×    ← LOWEST despite huge sets
-  biome       structure_lift 2.464×    ← HIGHEST (more than its endpoints!)
-  high p_merge structure_lift 2.291×   (still slightly down from default)
+Iter 14 BUILD: cited mutation cycle on REFINED metric — predicted direction confirmed.
+- New fixture configs/biome_test_depth.tres (initially identical to biome_d→w)
+- Edit tool: depth_scale 14 → 100 (single-line)
+- BEFORE: structure_lift 2.464×, vert_persistence 0.692
+- AFTER:  structure_lift 2.236×, vert_persistence 0.675
+- Δ structure_lift: -9.2%, predicted DOWN — CONFIRMED ✓
+- Criterion 11: 3 → 4. Total 43→44/55, back to 80% on expanded rubric.
 
-3 findings unmasked:
-  1. Fortress's high raw persistence was concentration; structurally weakest
-  2. Default ≈ watery on structure once concentration is normalized
-  3. Biome creates MORE structure than either flat endpoint — real architecture
-     from depth-modulation, not just count-shifting
-
-Iter 12 falsification holds under refined metric (now -4.1% vs -2.9% raw).
-Bigger Eller sets really do reduce per-cell structural lift.
-Criterion 11 stays 3/5 (no new mutation cycle with confirmed direction).
+Epistemic milestone:
+  iters 1-11: 11 cited cycles, predictions held
+  iter 12: first FALSIFICATION (merge_probability)
+  iter 13: instrument refined
+  iter 14: re-prediction with refined instrument, CONFIRMED
+The predict→falsify→refine→re-predict→verify cycle is complete.
 ```
 
 ---
@@ -114,11 +109,11 @@ None.
 
 ## Next Action
 
-`Iter 14 BUILD: biome enable/disable as proper cited mutation cycle. Prediction
-(refined): enabling biome on a level should INCREASE structure_lift vs flat
-default (today's survey supports this: 2.388 → 2.464, +3.2%). Run as
-single-fixture before/after with the Edit tool. If predicted Δ confirmed,
-criterion 11 lifts 3 → 4 — the loop's first re-prediction after a falsification.`
+`Iter 15 BUILD: criterion 1 (Headless oracle) 4 → 5. Add --json flag to
+test_runner.gd that emits structured output instead of text. Cheap;
+makes the loop's measurements machine-readable for future diff/trend
+tooling. Alternative: tackle criterion 11 anchor 5 (high diversity AND
+high structure_lift) — but that requires search-style experimentation.`
 
 External CONSULT retry: iter 20.
 
