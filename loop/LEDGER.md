@@ -1300,3 +1300,41 @@ Alternative iter 28 candidates if not stopping:
 - Multi-seed grid across all configs (would supersede iter 22's table)
 - Three-band BiomeConfig (architectural change)
 - Actually do something C5-meaningful: add a seam-check oracle
+
+---
+
+## Iter 028 — AUDIT (META) — 2026-05-10
+**Focus:** Write `loop/META-RETRO.md` to summarize the 27-iter trajectory.
+**Changed files:**
+- `loop/META-RETRO.md` (new) — full retrospective: arc shape (build/stress-test/cap), engineering deliverables, hash-anchor pattern, falsifications + meta-findings, what each remaining 4-anchor needs, pivot-vs-halt analysis.
+
+**Recommendation in the retro: honest halt.** The loop has produced what it can without user-look. Each remaining 4-anchor either explicitly requires a human (C8) or substantial new tooling (C5/C6/C9) or a search-experimentation chunk (C2). None are tunings.
+
+The retrospective makes legible:
+- Why the score is 50/55 specifically (the 5 4-criteria each have specific anchor-5 demands documented)
+- What survives past the loop (LevelDNA, hash-anchor pattern, structure_lift metric, gen_tile palette extraction, Eller's invariant fix, AGENTS.md, cited-cycle discipline)
+- What shouldn't survive without rework (single-seed CC anchors, PROMPT.md's `_pave_set` ghost reference)
+
+**No score change.** Total stays 50/55.
+
+The CONSULT (iter 10/20) and AUDIT (iter 6) modes have done their work. This iter is essentially a closing AUDIT — same role, longer time horizon.
+
+**Loop direction:** the retro recommends halt. The user fired /loop again to trigger this iter, so my interpretation is the user wanted the retro-and-decision artifact, not a 28th metric. Iter 29 will check status and either halt or pivot per the user's response after reading META-RETRO.md.
+
+**If continuing:** the recommendation is **iter 29 = C9 → 5 via `make new-tile`** (trivial bash glue, ~30 min) **then iter 30 = C5 seam-check oracle** (substantive tooling). Both are honest progress without requiring user-look.
+
+**If halting:** the loop's deliverables are committed; the retrospective frames the natural pickup points for any continuation.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| (all 11 unchanged) | — | — | — |
+
+**Total:** 50/55 — unchanged.
+
+**End-of-arc summary** (from META-RETRO.md numbers section):
+- 27 iters of building + 1 retro
+- 50/55 total (90.9%)
+- 4 falsifications, 1 re-prediction-and-verify cycle (iter 14)
+- 2 hash anchors active (default + biome_balanced post-iter-21)
+- 13 configs (8 LevelConfig + 5 BiomeConfig)
+- 0 user-look feedback received in 8 iters of open gate

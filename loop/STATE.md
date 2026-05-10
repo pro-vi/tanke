@@ -3,7 +3,7 @@
 ## Phase
 
 ```
-phase: build
+phase: pause
 iteration: 28
 preloop_complete: yes
 ```
@@ -83,53 +83,54 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 27 BUILD: typed GDScript pass — criterion 10 → 5.
+Iter 28 AUDIT/META: META-RETRO.md written. Loop reaches honest halt.
 
-7 scripts received type annotations (Constants/Level/PlayerTank/
-TankSprite/BrickBlock/ProceduralLevel/ProceduralStep). Every var
-typed; every function param/return typed where nontrivial.
+Retro covers:
+  - 3-phase arc (build / stress-test / cap)
+  - 13 engineering deliverables catalogued
+  - 4 falsifications + 2 meta-findings cited
+  - 5 remaining 4-criteria with explicit anchor-5 requirements
+  - Pivot-vs-halt decision (recommend halt without user-look)
+  - What survives past the loop (and what shouldn't)
 
-Verification (seed 42 default):
-  hash 1f80435080844dce   ← matches iter-21 post-bug-fix anchor
-  structure_lift 2.414×, all metrics consistent
+Phase changed: build → pause. The loop has produced what it can
+without user feedback; the retrospective IS this iter's artifact.
 
-Logic unchanged. Typing is cosmetic. Total 49 → 50/55 (90.9%).
-
-Score landscape:
-  5/5: criteria 1, 3, 4, 7, 10, 11 (six)
-  4/5: criteria 2, 5, 6, 8, 9 (five — all need NEW mechanisms or user-look)
+No score change. Total 50/55. Final score for the no-user-look path.
 ```
 
 ---
 
 ## Stale Scores
 
-None. Hash anchor 1f80435080844dce is the post-iter-21 baseline (preserved
-through iter 22 CC metric, iter 27 typing pass).
+None. The 5 4-criteria are honestly capped — anchor-5 requirements are
+documented in META-RETRO.md and either need user-look or substantive
+new tooling.
 
-USER-LOOK GATE: 7 iters open. Multiple remaining 4-anchors explicitly need it.
+USER-LOOK GATE: 8 iters open without movement. The retro names this
+explicitly and recommends halt.
 
 ---
 
 ## Next Action
 
-`Iter 28 META: write loop/META-RETRO.md.
+`HALT — recommended. Loop has reached a natural pause point at 50/55.
 
-Natural pause point. The remaining 4-anchors (criteria 2, 5, 6, 8, 9)
-all need new mechanisms — search-style experimentation, seam-check
-oracle, automation, multi-config playtest with HUMAN feedback, single-
-iter generate-import-render. None are tunings; all are real new work.
+If user reads META-RETRO.md and wants to continue:
+  iter 29 = C9 anchor 5 via 'make new-tile TILE=brick VARIANT=N' bash
+            target (single-iter gen + import + scene patch + screencap +
+            diff). ~30 min of glue. Trivial honest +1 → 51/55.
+  iter 30 = C5 anchor 5 via seam-check oracle. Substantive new tooling
+            (PIL pass on screencap detecting tile-boundary artifacts).
 
-The retro should:
-  - Summarize the 27-iter trajectory (build → stress-test → cap)
-  - Cite the four falsifications and the meta-findings
-  - Catalog what each remaining 4-criterion would actually need
-  - Make explicit what user-look would unlock
-  - Decide: does the loop continue (substantive new work) or pause
-    (rubric is honestly capped without human input)
+If user runs the playtest (closes the user-look gate):
+  iter 29 = C8 anchor 5 — document 9 distinct level feelings × 3 seeds ×
+            3 configs based on user feedback. Total → 51/55.
 
-Per greenfield-loop META protocol, this is the right moment for a
-written summary before either a pivot or a halt.`
+If user asks for retrospective extraction (what to take to next project):
+  see META-RETRO.md "What survives past the loop" section.
+
+Otherwise: loop halts. Schedule omitted.`
 
 ---
 
