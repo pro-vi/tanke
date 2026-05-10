@@ -45,6 +45,43 @@ Full PIL → TileSet → set_cell → rendered pixel chain verified in one itera
 
 ---
 
+## steel_007 / grass_007 / water_007
+
+| field | value |
+|-------|-------|
+| **slotId** | `img/{steel,grass,water}_007.png` |
+| **semanticRole** | TileSetAtlasSource textures for `SteelSrc` / `GrassSrc` / `WaterSrc` (replaces respective `sprites_1.png` regions) |
+| **source** | `tools/gen_tile.py` |
+| **prompt_or_params** | `--tile {steel,grass,water} --variant 7 --out img` |
+| **seed** | 7 |
+| **replaceability** | regenerable in <0.1s; safe to delete and rerun. Re-import via `godot --headless --import` |
+| **comprehensionClaim** | "Reads as steel/grass/water at 1× zoom — but palette is hardcoded in gen_tile.py and diverges from sprites_1.png reference, so analyze_frame.py classifier loses grass entirely. Iter 17 plan: extract palettes from sprite sheet." |
+
+**UIDs (post-import):**
+- steel_007: `uid://btw4ryipmrg4n`
+- grass_007: `uid://dqcyr7h1gwsw3`
+- water_007: `uid://dg7td6i6nfwni`
+
+**Iter 16 verification:**
+```
+Headless (seed 42, post-swap):
+  hash 6159ef2f5464edb1 (UNCHANGED — texture swap is cosmetic)
+  brick 400 water 200 steel 244 grass 228  vert_persistence 0.647
+
+Screencapture:
+  coverage 93.9%, variety 3/4   ← grass classified as background!
+  brick 54482, steel 3944, grass 0, water 13720
+```
+
+The 4-tile swap demonstrates the gen_tile→import→atlas-source→render chain
+end-to-end (criterion 9 anchor 4). But the gen_tile grass palette
+((80,140,60), (60,120,40), (100,160,80), (40,100,30)) is more than 70
+color-distance from any of the analyze_frame.py reference colors extracted
+from `sprites_1.png` margins (24, 0). Criterion 5 (palette consistency)
+regressed 3→2 as a result.
+
+---
+
 ## Future entries
 
 When `tools/gen_sprite.py` (MLX-SD) generates a novel asset, add an entry with

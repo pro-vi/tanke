@@ -96,7 +96,7 @@ Do tiles look like they belong together? Assessed via screencapture oracle + PIL
 | 4 | PIL-generated tile variants used in game; palette extracted from `sprites_0.png` applied — cite ASSET-MANIFEST entry |
 | 5 | Screencapture at any seed looks like a coherent pixel art level; no tile bleeds or misaligned seams |
 
-**Current state:** 3 — TileSet operational (`scenes/ProceduralLevel.tscn:7-49`); `tools/analyze_frame.py` confirms all 4 terrain palettes render to expected colors (iter 0 frame: brick 55034, steel 1512, grass 12240, water 7936 px; classifier threshold 70 from `sprites_1.png` palette).
+**Current state:** 2 — iter 16 swapped all 4 atlas sources to `gen_tile.py`-generated PNGs. The render works, but the classifier (which references `sprites_1.png` palettes) now reports only 3/4 variety and coverage 93.9% (was 99.9%): grass 0px, steel 3944px, water 13720px, brick 54482px. The grass tile's hardcoded green palette in `gen_tile.py` is too far from `sprites_1.png`'s grass palette to fall within the 70-distance threshold. Anchor 3 ("dominant colors match expected palette per terrain type") fails for grass. To return to 3: extract gen_tile palettes from `sprites_1.png` (or `sprites_0.png`) instead of hardcoding. To reach 4: PIL-generated variants used in game with palette-extracted from sprite sheet (iter 17 plan).
 
 ---
 
@@ -185,7 +185,7 @@ Full chain: `gen_tile.py` PNG → Godot TileSet → `set_cell` → rendered pixe
 | 4 | All 4 terrain tile variants regenerable from `gen_tile.py` without editor intervention |
 | 5 | New tile variant generated, imported, live in game, screencapture confirms render — full loop in one iteration |
 
-**Current state:** 3 — Full chain exercised iter 4. `tools/gen_tile.py --tile brick --variant 7` → `img/brick_007.png` → `godot --headless --import` (auto-generated `.import` with uid `dy83met4b40yn`) → `BrickSrc.texture` swapped to `ExtResource("4")` in `scenes/ProceduralLevel.tscn` → `make screenshot` → `make analyze`: brick pixel count 47410 → 41194 (-13%), confirming pixel-level swap rendered. Cited in `loop/ASSET-MANIFEST.md`. Headless oracle hash for seed 42 unchanged (texture-only mutation, no logic shift). To reach 4: regenerate all 4 terrain variants via gen_tile and confirm full-sheet replacement.
+**Current state:** 4 — iter 16 regenerated all 4 terrains via `gen_tile.py --tile {steel,grass,water} --variant 7`; imported via `godot --headless --import` (UIDs `btw4ryipmrg4n`, `dqcyr7h1gwsw3`, `dg7td6i6nfwni`); each atlas source in `scenes/ProceduralLevel.tscn` swapped to its corresponding new texture (margins all (0,0)). All 4 textures render in the screencapture without errors. Headless seed-42 hash `6159ef2f5464edb1` preserved across the full-sheet swap (texture-only mutation, no logic shift — the iter-4 measurement-anchor invariant holds across 4-tile replacement too). To reach 5: a *new* tile variant generated, imported, live in game, screencap-confirmed, in a single iteration without manual editor intervention (already nearly there — the chain is reproducible from CLI; iter 17 could automate it via Make target).
 
 ---
 

@@ -738,3 +738,42 @@ The loop can now diff iterations programmatically. Future automated mutation-and
 - (c) **C10 GDScript correctness** → 4: explicit deprecation warning audit. Fold the Node2D-as-TileMap wrappers into direct TileMapLayer parents.
 
 Lean (b) — the iter 4 brick_007 was a one-tile demo; doing all 4 closes the chain properly and lets the loop demonstrate end-to-end visual mutation by regenerating tiles. Plus it surfaces whether the gen_tile.py palette work would be needed (criterion 5).
+
+---
+
+## Iter 016 — BUILD — 2026-05-10
+**Focus:** Full-sheet PIL pipeline. Regenerate steel/grass/water variants, import all, swap each atlas source. Verify chain + uncover whether the gen_tile palette is sprite-sheet-faithful.
+**Changed files:**
+- `img/steel_007.png`, `img/grass_007.png`, `img/water_007.png` (new) — gen_tile variant 7 outputs.
+- `img/{steel,grass,water}_007.png.import` (auto-generated; UIDs `btw4ryipmrg4n`, `dqcyr7h1gwsw3`, `dg7td6i6nfwni`).
+- `scenes/ProceduralLevel.tscn` — load_steps 12→15; 3 new ExtResources (id=5,6,7); SteelSrc/GrassSrc/WaterSrc textures swapped + margins → (0,0).
+- `loop/ASSET-MANIFEST.md` — entry for steel_007/grass_007/water_007 with full provenance + the analyze-frame regression noted.
+
+**Headless oracle (seed 42, post-swap):**
+```
+hash: 6159ef2f5464edb1   ← UNCHANGED across full-sheet swap
+brick=400 water=200 steel=244 grass=228
+vert_persistence=0.647   structure_lift=2.388×
+```
+
+The seed-42 measurement anchor survives a 4-tile cosmetic replacement. This is the second confirmation (after iter 4) that texture changes don't perturb game logic; the cosmetic/logic separation is rock solid.
+
+**Screencapture (default config, random seed):**
+```
+coverage 93.9%   variety 3/4   distribution entropy 0.991 bits  score 2.5/5.0
+brick: 54482   steel: 3944   grass: 0   water: 13720
+```
+
+**Honest finding — grass is invisible to the classifier.** `gen_tile.py` grass palette `[(80,140,60), (60,120,40), (100,160,80), (40,100,30)]` is too far from `sprites_1.png` grass at margins (24, 0); every grass pixel falls outside the 70-distance window and classifies as background. Steel partially survives (3944 vs ~9912 prior); water and brick survive close to fully. The hardcoded palettes in `gen_tile.py` were never grounded in the actual sprite sheet — they're "approximately right by eye," and the classifier disagrees.
+
+**Score trade:**
+
+| Criterion | Prior | New | Reasoning |
+|-----------|-------|-----|-----------|
+| 5. Tile visual coherence | 3 | **2** | grass→0 means anchor 3 ("dominant colors match expected palette per terrain type") fails. Honest regression from the swap. |
+| 9. Pipeline completeness | 3 | **4** | All 4 terrains regeneratable from gen_tile.py; full chain (PIL → import → atlas swap → render) verified. Anchor 4 met. |
+| (criteria 1-4, 6-8, 10-11 unchanged) | — | — | — |
+
+**Total:** 45/55 — unchanged. The C9 lift was real but the C5 regression cancels it. **The trade was knowable in advance** (gen_tile palettes were always disconnected from sprite sheet) but accepting the regression now exposes the work for iter 17 cleanly.
+
+**Weakest axis next:** Iter 17 — palette-extraction in `gen_tile.py`. Read top-3 frequent colors from `sprites_1.png` at given margins; use them as the palette for that terrain's variant. Result: PIL tiles within 70-distance of original → classifier recognizes them → criterion 5 lifts back to 3 AND potentially to 4 (anchor 4: "PIL-generated tile variants used in game; palette extracted from sprites_0.png applied"). Single iter recovers the regression and pushes further than where we were.
