@@ -9,4 +9,4 @@ empty_weight = 0.10
 brick_weight = 0.15
 steel_weight = 0.05
 grass_weight = 0.10
-water_weight = 0.60
+water_weight = 0.20

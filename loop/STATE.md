@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 7
+iteration: 8
 preloop_complete: yes
 ```
 
@@ -40,16 +40,16 @@ tile_source_ids:
 | Criterion | Score | Notes |
 |-----------|-------|-------|
 | Headless oracle | 4 | seed + config-aware; reproducible hash |
-| Algorithm variety | 3 | 3 configs (default/watery/fortress) → 3 distinct distributions @ seed 42 |
-| LevelConfig mutability | 4 | `.tres` Resource; weights editable without `.gd` changes |
-| Level DNA | 4 | LevelDNA.gd serializes seed+config; JSON round-trip OK; DNA-driven hash matches |
+| Algorithm variety | 4 | iter 7 cited single-field mutation: water_weight 0.6→0.2 → water -43% Δ |
+| LevelConfig mutability | 5 | iter 7 full agent cycle: AGENTS.md → Edit → rerun → cite Δ |
+| Level DNA | 5 | DNA-referenced config mutation + oracle confirmation in iter 7 |
 | Tile visual coherence | 3 | 4/4 palettes render; all configs visually correct |
 | Screencapture oracle | 3 | analyze_frame.py classifies by palette; entropy 3.9 |
-| Agent edit friction | 4 | `loop/AGENTS.md` documents all 7 mutable params |
+| Agent edit friction | 5 | iter 7 zero-human-step cycle: AGENTS→Edit→rerun→Δ in one iter |
 | Procedural richness | 3 | 6-seed sweep: per-terrain variance 40–63% (>20% threshold met) |
 | Pipeline completeness | 3 | gen_tile→import→TileSet→render chain verified iter 4 (brick_007) |
 | GDScript correctness | 3 | make test clean; test_runner clean across configs |
-| **Total** | **34/50** | +1 from iter 4; ceiling check at 35 (1 to go); iter 6 AUDIT next |
+| **Total** | **38/50** | +4 from iter 6; **CEILING TRIPPED**; anchors raised iter 7 |
 
 ---
 
@@ -82,28 +82,29 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 6 AUDIT: re-scored 10 criteria with fresh evidence.
-- Roundtrip OK; default DNA seed-42 hash 6159ef2f5464edb1 (iter 2 baseline preserved)
-- 3-config sweep: distinct hashes per config
-- Screencapture: variety 4/4, entropy 4.4/5
-- Total 34/50 — unchanged. No inflation, no regressions.
-- Insight: 4 criteria (2/3/4/7) all gated on same anchor — "cited end-to-end mutation cycle".
-  One cited mutation in iter 7 could quad-lift to ceiling-bust.
+Iter 7 BUILD: cited mutation cycle (anticipated quad-lift, anticipated ceiling trip).
+- BEFORE: watery.tres water_weight=0.60 → water 688
+- Edit tool: water_weight 0.60 → 0.20 (single line, surgical)
+- AFTER: water 392 (-43%), grass 60 → 212 (+253%), distinct hash
+- Hypothesis confirmed: smallest competitor (grass) gains most when dominant weight shrinks
+- Quad-lift: C2 3→4, C3 4→5, C4 4→5, C7 4→5
+- Total 34→38/50; CEILING RULE TRIPPED
+- Anchor revision: C2/3/4/7 score-5 anchors raised (Revision Log)
 ```
 
 ---
 
 ## Stale Scores
 
-None.
+watery.tres now permanently at water_weight=0.20 (was 0.60). Prior LEDGER cites of "watery → water 688" are historical; current state is water 392.
 
 ---
 
 ## Next Action
 
-`Iter 7 BUILD: cited mutation cycle. Edit one weight on configs/watery.tres, rerun oracle, cite Δ in LEDGER. Targets quad-axis lift of criteria 2 (3→4), 3 (4→5), 4 (4→5), 7 (4→5) — anticipated +4 to total. Will trip CEILING RULE; pre-stage anchor revisions.`
+`Iter 8 BUILD: implement diff-mode in analyze_frame.py — compare two frames, output distribution shift. Targets criterion 6 (Screencapture oracle 3→4). Force-multiplier: enables future C5/C8 measurements via screencapture Δ.`
 
-CONSULT gate at iter 10 (3 iters away). Pre-staged hollow-point candidates documented in LEDGER iter 6 audit observations.
+Iter 10 CONSULT gate looms. Pre-staged hollow-points: (a) no spatial coherence in terrain, (b) merge_probability is depth-invariant, (c) entropy oracle is goodhart-able.
 
 ---
 

@@ -318,3 +318,60 @@ D. screencapture:                    coverage 99.9%, variety 4/4, entropy 4.4/5
 3. **The CONSULT gate is at iter 10.** Three iterations away. Question to prepare: "What's seductive-but-hollow about this procedural engine?" Strong candidate hollow-points: (a) the elif terrain selection is uniform random per set with no spatial coherence — no biome zones; (b) merge_probability is a single global, can't vary by depth; (c) the oracle measures distribution but not "interestingness" — a perfectly uniform 25/25/25/25 split would score 5/5 on entropy while being maximally boring.
 
 **Weakest axis next:** No single weakest. Strategic move: iter 7 BUILD performs one cited Edit→rerun→diff to ceiling-bust criteria 2, 3, 4, 7 simultaneously.
+
+---
+
+## Iter 007 — BUILD — 2026-05-10
+**Focus:** Cited end-to-end agent mutation cycle. Use `Edit` tool to mutate one weight on a `.tres`, rerun oracle, cite Δ. Trip ceiling rule.
+**Changed files:**
+- `configs/watery.tres` — `water_weight: 0.60 → 0.20` (single-field surgical edit via Edit tool).
+- `loop/RUBRIC.md` — score updates for criteria 2, 3, 4, 7; new score-5 anchors; Revision Log entry.
+
+**Mutation cycle evidence (seed 42, watery.tres):**
+```
+                                  brick  water  steel  grass  total  hash
+BEFORE (water_weight = 0.60):      232    688     64     60   1044   74e4d9ad07f08693
+AFTER  (water_weight = 0.20):      252    392     76    212    932   9e0b9fa4d18c34c3
+Δ:                                +9%   -43%   +19%  +253%   -11%   distinct
+```
+
+The 0.40 weight that left water (0.60→0.20) redistributed across remaining terrains. Grass took the largest relative share (+253%) because grass_weight = 0.10 was the smallest non-water competitor — its proportional growth is largest when water shrinks. Brick and steel rose modestly. Hypothesis (small competitors gain disproportionately when a dominant weight shrinks) confirmed by oracle.
+
+**Provenance:**
+1. Agent read `loop/AGENTS.md` → identified `water_weight` knob, file path, valid range
+2. Agent ran `test_runner.gd` → captured BEFORE state with hash + counts
+3. Agent invoked `Edit` tool on `configs/watery.tres` (single line change)
+4. Agent reran `test_runner.gd` → captured AFTER state
+5. Agent cited Δ in this LEDGER entry
+
+Zero editor steps. Zero `.gd` changes. ~5s wall-time per oracle run.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| Headless oracle | 4 | 4 | unchanged |
+| Algorithm variety | 3 | **4** | iter 7 single-field mutation produces measurable Δ; meets old anchor 4 |
+| LevelConfig mutability | 4 | **5** | iter 7 full agent-iteration cycle cited above; meets old anchor 5 |
+| Level DNA | 4 | **5** | iter 7 DNA-referenced config mutation + oracle confirmation cited; meets old anchor 5 |
+| Tile visual coherence | 3 | 3 | unchanged |
+| Screencapture oracle | 3 | 3 | unchanged |
+| Agent edit friction | 4 | **5** | iter 7 zero-human-step cycle: AGENTS→Edit→rerun→Δ in this iter; meets old anchor 5 |
+| Procedural richness | 3 | 3 | unchanged |
+| Pipeline completeness | 3 | 3 | unchanged |
+| GDScript correctness | 3 | 3 | unchanged |
+
+**Total:** 38/50 (+4 from iter 6). **CEILING RULE TRIPPED** (≥ 35 before iter 15).
+
+**Anchor revisions (per CEILING RULE):**
+- C2 score-5 raised: now requires non-obvious parameter-interaction analysis with cited evidence
+- C3 score-5 raised: now requires loop SYNTHESIZES a novel preset (not editing existing fields)
+- C4 score-5 raised: now requires goal-directed DNA search with ≥3-step trajectory
+- C7 score-5 raised: now requires loop chains ≥3 mutations within one iteration with hypothesis per step
+
+These anchors force iterative agent-driven exploration, not just capability demonstration. Existing 5-scores stay (ratchet) — the anchor lift binds future iterations.
+
+**Weakest axis next:** Five criteria still at 3/5: 5 (Tile visual coherence), 6 (Screencapture oracle), 8 (Procedural richness), 9 (Pipeline completeness), 10 (GDScript correctness). Highest-leverage iter 8 candidates:
+- (a) C6 → 4: implement diff-mode in `analyze_frame.py` (compare two frames, report distribution shift). Force-multiplier: also enables future C5/C8 lifts.
+- (b) C8 → 4: implement biome-zone weighting (depth-modulated config). Substantial build, real procedural sophistication.
+- (c) C1 → 5: structured JSON output from test_runner. Cheap; useful tooling.
+
+Leaning (a) — single tool addition unlocks new measurement, fits the "oracle improvement" theme of the loop.

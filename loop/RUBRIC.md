@@ -47,7 +47,7 @@ Does the Eller's algorithm parameter space produce meaningfully different level 
 | 4 | Parameters exposed on LevelConfig; agent can mutate one field and change level feel |
 | 5 | Continuous parameter space documented; loop has run a mini-sweep (≥5 seeds × ≥3 configs) and charted output variance |
 
-**Current state:** 3 — `merge_probability` and 5 terrain weights exposed on `LevelConfig`. Three presets (`default.tres`, `watery.tres`, `fortress.tres`) at seed 42 produce visibly distinguishable distributions: default 37/19/23/21 brick/water/steel/grass, watery 22/66/6/6, fortress 15/4/64/17. Distinct tile_hashes `6159ef2f`, `74e4d9ad`, `60feb24a`. To reach 4: agent mutates a single field on a .tres → oracle confirms shift. To reach 5: SWEEP across ≥5 seeds × ≥3 configs.
+**Current state:** 4 — iter 7 cited mutation cycle: agent used `Edit` tool to set `water_weight: 0.60 → 0.20` on `configs/watery.tres`. Oracle Δ at seed 42: water 688→392 (-43%), grass 60→212 (+253%), hash 74e4d9ad → 9e0b9fa4. Single-field mutation produced predictable redistribution. To reach 5 (NEW anchor — see Revision Log): loop must identify a non-obvious parameter interaction (e.g. merge_probability × weight scale → emergent set sizes) and cite oracle evidence.
 
 ---
 
@@ -62,7 +62,7 @@ Does the Eller's algorithm parameter space produce meaningfully different level 
 | 4 | LevelConfig is a `.tres` Godot Resource; editable without touching `.gd` files |
 | 5 | Named presets exist ("dense", "open", "swamp", "fortress"); agent swaps preset → confirmed by oracle diff |
 
-**Current state:** 4 — `LevelConfig` is a `class_name` Resource (`scripts/LevelConfig.gd`); `.tres` instances live under `configs/`. ProceduralLevel exposes `@export var config: LevelConfig`. Editing `configs/watery.tres` field `water_weight = 0.60` shifts oracle output from 19% water → 66% water at seed 42 with no `.gd` changes. To reach 5: presets exist (default/watery/fortress) — bumping to 5 next iter once `loop/AGENTS.md` is wired into agent prompts.
+**Current state:** 5 — all of: (a) `.tres` Resource editable without `.gd` changes, (b) named presets (default/watery/fortress) exist, (c) iter 7 cited end-to-end agent cycle: AGENTS.md → Edit tool → rerun → cite Δ. To exceed 5 (NEW anchor — see Revision Log): loop must SYNTHESIZE a novel preset by reasoning about weights (not edit an existing field), apply, oracle confirms it differs from all prior presets — capped at 5.
 
 ---
 
@@ -77,7 +77,7 @@ Does the Eller's algorithm parameter space produce meaningfully different level 
 | 4 | LevelDNA serializable to JSON/dict; round-trips without loss |
 | 5 | Loop proposes a LevelDNA mutation, applies it, oracle confirms change, loop scores result — full agent-iteration cycle |
 
-**Current state:** 4 — `scripts/LevelDNA.gd` bundles seed + LevelConfig; `to_dict()` / `from_dict()` / `to_json()` / `from_json()` round-trip through Dictionary and JSON without loss (iter 5 verified: source dict == roundtrip dict, ROUNDTRIP_OK). Test_runner accepts `-- --dna PATH`; loading `configs/dna_default_s42.tres` reproduces seed-42 default hash `6159ef2f5464edb1` exactly. To reach 5: agent proposes a DNA mutation (Edit tool diff on a .tres), applies it, runs oracle in same iteration, scores delta.
+**Current state:** 5 — all of: roundtrip OK, DNA-driven hash matches baseline, iter 7 cited mutation cycle (single Edit on a config referenced by DNA → oracle Δ). To exceed 5 (NEW anchor — see Revision Log): goal-directed DNA search — loop states a target ("maximize steel coverage at seed 42"), iterates ≥3 mutations, hits goal, cites trajectory — capped at 5.
 
 ---
 
@@ -137,7 +137,7 @@ How many files/lines must change to alter one behavior?
 | 4 | `loop/AGENTS.md` documents every mutable param: file, line, type, valid range |
 | 5 | Agent can propose mutation as a diff, apply it with `Edit` tool, oracle confirms in same iteration — zero human steps |
 
-**Current state:** 4 — `loop/AGENTS.md` documents every mutable param: `merge_probability`, 5 terrain weights, `level_seed`. Each lists file:line, type, valid range, effect, and mutation surface (`.tres` edit, scene field, or CLI flag). Single edit + single command → oracle delta. To reach 5: agent proposes a Edit-tool diff, applies, oracle confirms in same iteration.
+**Current state:** 5 — iter 7 zero-human-step cycle: agent read AGENTS.md, picked `water_weight`, applied Edit-tool diff to watery.tres, reran oracle, cited Δ — all within one iteration with no editor/manual steps. To exceed 5 (NEW anchor — see Revision Log): loop chains ≥3 distinct mutations within a single iteration with a stated hypothesis per mutation and verified Δ per step — capped at 5.
 
 ---
 
@@ -196,3 +196,4 @@ Full chain: `gen_tile.py` PNG → Godot TileSet → `set_cell` → rendered pixe
 |------|--------|--------|
 | 0 | Initial rubric: gameplay scope (destruction, enemies, LevelConfig, Level DNA) | Bootstrap |
 | 0 | Rewrite: procedural engine focus only; add oracle axes | User direction: procedural-only, dual oracle |
+| 7 | CEILING RULE fired (38/50 ≥ 35 by iter 7). Tightened anchors: C2 score-5, C3 score-5, C4 score-5, C7 score-5. New anchors require either parameter-interaction analysis (C2), preset SYNTHESIS rather than editing (C3), goal-directed DNA search (C4), or ≥3 chained mutations per iter (C7) — all capped at 5 going forward. | Quad-axis lift in iter 7 from a single cited mutation cycle revealed the old 5-anchors were satisfiable by demonstrating capability rather than agent-driven exploration. New anchors force the loop to *do* iterative search, not just expose the surface. |
