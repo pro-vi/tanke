@@ -1049,3 +1049,45 @@ C1 (Headless oracle, JSON) implicitly enriched with 3 new fields (cc_count, cc_m
 User-look gate STILL OPEN. If it closes (user does playtest), reframes may stale several scores. Worth waiting.
 
 Lean (a) — extends the empirical map.
+
+---
+
+## Iter 023 — BUILD — 2026-05-10
+**Focus:** Try to beat `biome_balanced` on both `structure_lift` AND CC distribution. Strategy (a): biome with stronger endpoint contrast on opposing terrains (brick↔water 40%/10%) + moderate merge.
+**Changed files:**
+- `configs/balanced_brick.tres` (new) — brick 0.40 / steel 0.20 / grass 0.20 / water 0.10, p_merge 0.4
+- `configs/balanced_water.tres` (new) — brick 0.10 / steel 0.20 / grass 0.20 / water 0.40, p_merge 0.4 (mirror image of balanced_brick on the brick↔water axis)
+- `configs/biome_interleave.tres` (new) — surface=balanced_brick, deep=balanced_water, scale=14
+
+**Pre-commit prediction:** stronger endpoint contrast (30-point swings on brick and water) than biome_balanced (15-point on brick/steel) plus moderate merge → MORE row-correlated variation → BEAT biome_balanced on structure_lift, cc_max, cc_count.
+
+**Result (seed 42):**
+```
+                    distribution                most-dom   cc_count   cc_max   cc_avg   structure_lift
+biome_balanced       brick 26 water 23 steel 30 grass 21    30%       77         68     14.23    2.628×
+biome_interleave     brick 22 water 30 steel 25 grass 22    30%       71        176     15.83    2.609×
+                                                            (tied)    ✗ -6      ✗ +108  ✗ +1.6   ✗ -0.019
+```
+
+**FALSIFIED on all three predicted axes.** Stronger contrast did not produce stronger interleave; it produced **stratification**. With brick at 40% in the surface biome and water at 40% in the deep biome, each row-band has a near-dominant terrain that forms a giant blob. cc_max jumped to 176 (vs biome_balanced's 68 — over 2× larger giant region).
+
+**Architectural insight:** biome_balanced's gentle 15-point contrast (brick 40→20, steel 15→30) is in a *Goldilocks zone* — strong enough to add row correlation, gentle enough to keep every row from being dominated. The Pareto frontier on this axis is non-monotone: pushing contrast further past biome_balanced trades interleave for stratification.
+
+**This is the loop's second falsification** (iter 12 was the first; iter 14 the first re-prediction-and-verify after). Pattern holds: predictions about emergent procedural-engine behavior require careful experimental discipline, and falsifications routinely surface non-obvious dependencies.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| (all 11 unchanged) | — | — | — |
+
+**Total:** 49/55 — unchanged.
+
+biome_balanced may be a locally-optimal point on the diversity × structure_lift × cc_distribution Pareto frontier. Beating it requires a fundamentally different mechanism, not just parameter intensification.
+
+**Side observation:** biome_interleave's distribution is brick 22 / water 30 / steel 25 / grass 22 — most-dominant is water at 30%, even though I expected the high-water deep biome to push it more. The biome interpolates symmetrically (surface at t=0 has brick high, deep at t=1 has water high), so global counts average out to roughly equal. Even with extreme endpoints, the whole-screen distribution stays balanced. The disadvantage isn't dominance; it's *spatial* — every band stratifies because at any specific row, one terrain wins.
+
+**Weakest axis next:** Iter 24 candidates:
+- **(a)** OPPOSITE direction: DOWN the contrast — biome between two configs that differ only in steel/grass (both non-dominant terrains). Predict: lower structure_lift but lower cc_max too — different point on Pareto frontier, *not* a beat.
+- **(b)** Three-band biome (impl change to BiomeConfig: support `mid` config) — true non-monotone interpolation. Substantial but maybe necessary to escape stratification.
+- **(c)** WAIT for user-look feedback — gate has been open 3 iters. Whatever the user reports will reframe.
+
+Lean (c) — we've been climbing automated metrics for 3 iters since the user-look gate opened. The gate exists explicitly to anchor the loop in human perception. Continuing without it risks more falsifications of the kind that automated metrics can't catch.

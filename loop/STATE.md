@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 23
+iteration: 24
 preloop_complete: yes
 ```
 
@@ -83,24 +83,24 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 22 BUILD: connected-component flood-fill metric in test_runner.gd.
-Reports cc_count, cc_max, cc_avg. JSON schema enriched.
+Iter 23 BUILD: tried to beat biome_balanced — FALSIFIED on all axes.
 
-Survey (seed 42, post-Eller-fix):
-  fortress:        cc_count 32, cc_max 256 (giant blob), s_lift 1.751×
-  default:         cc_count 87, cc_max 140                s_lift 2.414×
-  biome_d→w:       cc_count 47, cc_max 124                s_lift 2.601×
-  balanced_steel:  cc_count 75, cc_max  96                s_lift 2.451×
-  watery:          cc_count 45, cc_max  88                s_lift 2.303×
-  biome_balanced:  cc_count 77, cc_max  68 (most frag)    s_lift 2.628×
+biome_interleave (balanced_brick ⇄ balanced_water, 30-point swings):
+  structure_lift  2.609×  (vs biome_balanced 2.628× — LOSS)
+  cc_max          176     (vs 68 — much WORSE)
+  cc_count        71      (vs 77 — slightly WORSE)
+  most-dom        30%     (tied)
 
-CC ranking is NEARLY OPPOSITE structure_lift ranking. The two metrics
-capture different architectural modes (blob vs interleave). Iter-20
-self-assessment #2 partly addressed — Goodhart on either single metric
-is harder when both must agree.
+Stronger contrast → stratification, not interleave. Each row-band has a
+near-dominant terrain (brick at top, water at bottom) → giant blob. The
+Pareto frontier on contrast is non-monotone; biome_balanced sits in a
+Goldilocks zone (15-point swing — strong enough to correlate, gentle
+enough to interleave).
 
-No score lift but rubric is now structurally harder to gimmick.
-Pre-commit prediction (CC ≠ s_lift ranking) confirmed.
+2nd loop falsification (iter 12 was 1st). Predictions about emergent
+procedural behavior continue to require experimental discipline.
+
+No score change. Total 49/55.
 ```
 
 ---
@@ -108,23 +108,23 @@ Pre-commit prediction (CC ≠ s_lift ranking) confirmed.
 ## Stale Scores
 
 None.
-USER-LOOK GATE STILL OPEN — 12 iters since human playtest.
+USER-LOOK GATE STILL OPEN — 13 iters dormant.
 
 ---
 
 ## Next Action
 
-`Iter 23 BUILD: try to construct an "interleave maximizer" config that
-beats biome_balanced on BOTH axes (s_lift higher AND cc_max lower /
-cc_count higher). Tests whether the new combined-axis has headroom.
-Strategies:
-  (a) biome with both endpoints near-balanced AND p_merge ≈ 0.5 (medium
-      sets favor interleave)
-  (b) biome with rapid depth_scale (e.g. 5) so transition is sharp
-  (c) three-config biome (impl change to BiomeConfig) — too much for one iter
-Lean (a). Cite predicted Δ on both metrics before measuring.`
+`Iter 24: WAIT for user-look feedback. The gate has been open 3 iters
+while the loop has run 3 metric-climbing BUILDs (CC metric, Eller fix,
+interleave-beat attempt). Continuing without human anchor risks more
+metric-blind falsifications.
 
-Alternative: WAIT for user-look feedback. Two iters open without movement.
+If no feedback by next firing, fallback BUILD candidates:
+  (a) OPPOSITE direction — lower-contrast biome (steel↔grass swap) to
+      sketch the other side of the Pareto frontier
+  (b) three-band biome (BiomeConfig refactor: surface/mid/deep)
+  (c) polish iter — typed GDScript pass on Level.gd, scripts/, configs/
+      to push C10 from 4 to 5 (anchor 5: typed throughout)`
 
 ---
 
