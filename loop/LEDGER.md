@@ -909,3 +909,31 @@ Logic and presentation are cleanly separated. The seed-42 default-config hash is
 Iter 20 deliverable: `creative-consults.md` second entry with frontier-model response + comparison to iter-10 self-consult. No score change expected (CONSULT mode); the value is course-correction.
 
 After iter 20: only criteria 1, 5 (4), 9 (4), and 10 (4) sit below 5. Three of those have well-defined level-5 anchors (JSON schema richness, no tile bleed at any seed, all 4 regen-able single-iter, typed GDScript throughout). The loop has clear runway.
+
+---
+
+## Iter 020 — CONSULT — 2026-05-10
+**Focus:** External agentify CONSULT (retry of iter-10 frozen-tab failure) + iter-20 user-look gate.
+**Changed files:**
+- `loop/creative-consults.md` — second consult entry, prompt summary, three iter-19 self-assessment items, user-look gate request.
+
+**External CONSULT status:** fired this iter via `agentify_query` with `key=consult-iter20-procedural`, `modeIntent=extended-pro`, `fireAndForget=true`. Tab pool was clear (iter 10 frozen tab from another session has cleared in the intervening hours). Response is async; iter 21 will read back and integrate.
+
+**Prompt to the external model included:**
+- 19-iter trajectory summary (architecture, score, hash anchor)
+- Iter-10 H1/H2/H3 hypotheses → iter-11-19 outcomes
+- Three NEW questions:
+  1. What's seductive-but-hollow NOW that wasn't visible at iter 10?
+  2. Is `structure_lift` real measure or Goodhart-shifted?
+  3. What should iter 21+ tackle that's NOT currently planned?
+
+**Three things I expect the model to surface (self-assessment, written before reading the response):**
+1. **The Eller's zero-length carryover bug** is parked. 10 iters since identification, no work. The bug generates topological islands; "Eller's algorithm" framing is partly cosmetic.
+2. **`structure_lift` is pair-counting, not structure-recognizing.** Could be Goodhart-shifted, not Goodhart-eliminated. Pair statistics could be matched by random-at-block-level + correct distribution.
+3. **No human has looked at the game in ~10 iterations.** All scoring derives from oracles. Distribution scores 4/5 and 5/5 should *feel* different but it's unverified.
+
+**User-look gate (pending — iter 20 explicit requirement):** asked the human pilot to run 3 seeds (default, biome_balanced, fortress) for ~5 minutes total and name what feels monotonous. These configs span structure_lift 1.529× → 2.388× → 2.522×; they should feel different if the metric is right. Reframes from the user are first-class evidence and may stale current scores.
+
+**No score changes this iter** (CONSULT mode generates direction). Total stays 49/55.
+
+**Weakest axis next:** Iter 21 = read-back the agentify CONSULT (poll status; if done, integrate). If model surfaces something I didn't predict, treat as a falsification of my self-assessment and act on it. If the model confirms my three predicted items, attack the Eller's invariant violation (highest-leverage parked work).

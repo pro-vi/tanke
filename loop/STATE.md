@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 20
+iteration: 21
 preloop_complete: yes
 ```
 
@@ -83,32 +83,36 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 19 BUILD: TileMap wrapper flatten — criterion 10 → 4.
-- 4 Node2D-as-TileMap wrappers removed; Layer0 children promoted to direct
-  TileMapLayer children of Tiles, renamed Brick/Steel/Grass/Water
-- Level.gd onready paths updated (4 lines)
-- PostToolUse hook caught the partial-edit state on first try (3rd time)
-- Hash anchor 6159ef2f5464edb1 PRESERVED — 4th confirmation logic untouched
-- Screencap variety 4/4; zero deprecation warnings in stderr grep
-- Criterion 10: 3 → 4. Total 48 → 49/55 (89.1%).
+Iter 20 CONSULT: external agentify retry FIRED, async pending.
+- Tab pool clear (iter-10 frozen tab released in intervening hours)
+- Prompt: 19-iter trajectory summary + 3 new H1/H2/H3 questions
+- creative-consults.md updated with prompt summary + 3 self-assessment items
+- USER-LOOK GATE OPEN per PROMPT.md: user requested to playtest 3 seeds
+  (default / biome_balanced / fortress) and name what feels monotonous
+- No score changes (CONSULT mode); total 49/55.
 ```
 
 ---
 
 ## Stale Scores
 
-None.
+None — but pending user-look feedback may stale criterion 8 (Procedural
+richness) at 4/5 if a human reports the levels feel monotonous despite
+the structure_lift metric variation.
 
 ---
 
 ## Next Action
 
-`Iter 20 = MANDATORY CONSULT per CONSULT SCHEDULE. Retry external agentify
-CONSULT that failed iter 10 (tab pool was frozen). Same H1/H2/H3 prompt
-PLUS context: the loop has gone through one full predict→falsify→refine→
-re-predict→verify cycle (iter 12 falsified merge_p hypothesis; iter 13
-refined metric; iter 14 confirmed; iter 18 found high+high quadrant).
-Worth external review. Deliverable: creative-consults.md second entry.`
+`Iter 21: poll agentify status for key 'consult-iter20-procedural'. If
+done, read response, integrate into creative-consults.md, treat any
+unpredicted item as a falsification of my self-assessment (act on it).
+If model confirms my 3 predicted items, attack the parked Eller's
+zero-length carryover bug (10 iters dormant, highest-leverage open seam).
+If still running, schedule re-poll and pick a different BUILD target
+(C1 → richer JSON, OR C5 → 5 via no-tile-bleed seam-check oracle).`
+
+USER-LOOK GATE OPEN — feedback at any time will reframe targets.
 
 ---
 
