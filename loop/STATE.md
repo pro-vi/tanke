@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 11
+iteration: 12
 preloop_complete: yes
 ```
 
@@ -49,7 +49,8 @@ tile_source_ids:
 | Procedural richness | 4 | iter 9 biome interp: visible top-vs-bottom gradient; water +20.8% Δ |
 | Pipeline completeness | 3 | gen_tile→import→TileSet→render chain verified iter 4 (brick_007) |
 | GDScript correctness | 3 | make test clean; test_runner clean across configs |
-| **Total** | **40/50** | +1 from iter 8; three 3-criteria remain (5/9/10); iter 10 = CONSULT |
+| 11. Spatial Coherence | 3 | iter 11 vert_persistence metric; cited 0.647/0.727/0.710/0.692 across configs |
+| **Total** | **43/55** | iter 11 added criterion 11; proportional score 78% (was 80% on /50) |
 
 ---
 
@@ -82,29 +83,28 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 10 CONSULT: self-reflective (external agentify blocked by frozen tab from another session).
-- creative-consults.md written with full H1/H2/H3 critique + Q1/Q2/Q3 answers
-- KEY FINDING: iter 2 weighted refactor regressed spatial structure (lost size-based gating)
-- KEY FINDING: oracle measures aggregate distribution, blind to architecture (texture vs spatial)
-- KEY FINDING: Eller's slice() may emit zero-length carryovers → topological islands
-- Meta-move surfaced: rubric is missing a criterion — Spatial Coherence
-- 5 priority action items recorded; iter 11 selected: META + BUILD a spatial-coherence oracle
-- No scores moved (CONSULT mode); total stays 40/50
+Iter 11 META + BUILD: criterion 11 added; vert_persistence metric implemented.
+- test_runner.gd builds 8px (col,row)→terrain grid; counts vertical adjacencies
+- Cited readings (seed 42): default 0.647, watery 0.727, fortress 0.710, biome 0.692
+- Biome lands at midpoint of its endpoints — interpolation reads structurally
+- Criterion 11 enters at 3/5 (cited values across 4 configs, biome predictive)
+- Rubric now /55 (11 criteria); proportional score 78% (was 80% on /50)
+- Honest direction trade: % score down, measurement instrument matches intent
 ```
 
 ---
 
 ## Stale Scores
 
-Criterion 8 (Procedural richness) at 4/5 may be soft — biome interp is real but doesn't add intra-row spatial structure. Score holds against current rubric; iter 11 will add a separate criterion that measures what's actually missing.
+None — no prior scores changed; criterion 11 is new evidence, not a re-score.
 
 ---
 
 ## Next Action
 
-`Iter 11 META+BUILD: extend RUBRIC with criterion 11 — Spatial Coherence; implement vertical-persistence metric in test_runner.gd (simplest spatial measure: per-column count of same-terrain row-adjacent pairs / total pairs). Score against default/biome/fortress/watery to anchor 1-5 levels. Honest direction trade: short-term total may drop; long-term measurement instrument matches intent.`
+`Iter 12 BUILD: cited mutation cycle on criterion 11. Hypothesis: raising merge_probability 0.333 → 0.7 should INCREASE vert_persistence (bigger Eller sets → more contiguous same-terrain). Edit a config field, run BEFORE/AFTER, cite Δ. Pushes criterion 11 → 4 if confirmed.`
 
-External CONSULT will retry iter 20 (same prompt) — agentify infrastructure should recover by then.
+External CONSULT retry: iter 20.
 
 ---
 

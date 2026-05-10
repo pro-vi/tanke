@@ -1,7 +1,9 @@
 # tanke — Loop Rubric (Procedural Engine Focus)
 
-10 criteria, 0–5 scale. Score > 2 requires citation (file:line or tool output excerpt).
-Rubric is a discovered artifact — revise anchors when a ceiling is hit.
+11 criteria (max /55), 0–5 scale. Score > 2 requires citation (file:line or tool output excerpt).
+Rubric is a discovered artifact — revise anchors when a ceiling is hit. Add
+criteria when the rubric proves blind (iter 11: criterion 11 added when
+CONSULT surfaced that no axis measured spatial structure).
 
 Gameplay features (destruction, enemies) are out of scope for this loop.
 They live on a future `feat/gameplay` branch.
@@ -202,6 +204,48 @@ Full chain: `gen_tile.py` PNG → Godot TileSet → `set_cell` → rendered pixe
 
 ---
 
+## 11. Spatial Coherence (0–5)
+
+Does the level have *architecture* — structure measurable beyond aggregate
+distribution? Anchor metric: **vertical persistence** = fraction of placed cells
+whose vertically-adjacent below cell carries the same terrain. Sampled at
+8px tilemap resolution. Computed in `loop/test_runner.gd:_collect()`.
+
+IID baseline (placement uncorrelated across rows): ~0.25–0.37 depending on
+weight distribution. Eller's carryover lifts above this floor.
+
+| Score | Anchor |
+|-------|--------|
+| 0 | No spatial-structure metric exists |
+| 1 | Metric implemented; no readings cited |
+| 2 | Metric values cited for ≥2 configs at fixed seed |
+| 3 | Metric meaningfully discriminates configs (≥3 distinct values cited; biome falls *between* its endpoints — predictive structure) |
+| 4 | Metric responds to a cited mutation cycle: agent edits a parameter expected to affect spatial coherence, oracle reports predicted Δ |
+| 5 | Spatial-coherence axis is independent of distribution axis: a config can score high on diversity AND high on coherence simultaneously (i.e., the engine produces architecturally distinct levels, not just uniform-vs-clumpy) |
+
+**Reference readings (iter 11, seed 42):**
+```
+default       vert_persistence 0.647   (628 / 970 same-terrain pairs)
+watery        vert_persistence 0.727   (570 / 784 same-terrain pairs)
+fortress      vert_persistence 0.710   (728 / 1026 same-terrain pairs)
+biome (d→w)   vert_persistence 0.692   (662 / 956 same-terrain pairs)
+```
+
+Watery and fortress both push high (single dominant terrain → contiguous runs).
+Default lower (more transitions, more diversity). Biome lands intermediate
+between its endpoints (default 0.647 → watery 0.727; biome at 0.692 ≈ midpoint
+0.687 — interpolation reads structurally too, not just at the count level).
+
+**Current state:** 3 — `loop/test_runner.gd` computes `vert_persistence` via
+8px-grid lookup; cited above for 4 configs (3 distinct + 1 biome that falls
+intermediately). To reach 4: cite a mutation cycle where one parameter edit
+produces a *predicted* Δ in vert_persistence (e.g. raising `merge_probability`
+from 0.333 → 0.7 should increase persistence). To reach 5: independent axis —
+need a config that's high diversity + high coherence (e.g. fortress is high
+coherence + low diversity; need the high+high quadrant filled).
+
+---
+
 ## Revision Log
 
 | Iter | Change | Reason |
@@ -209,3 +253,4 @@ Full chain: `gen_tile.py` PNG → Godot TileSet → `set_cell` → rendered pixe
 | 0 | Initial rubric: gameplay scope (destruction, enemies, LevelConfig, Level DNA) | Bootstrap |
 | 0 | Rewrite: procedural engine focus only; add oracle axes | User direction: procedural-only, dual oracle |
 | 7 | CEILING RULE fired (38/50 ≥ 35 by iter 7). Tightened anchors: C2 score-5, C3 score-5, C4 score-5, C7 score-5. New anchors require either parameter-interaction analysis (C2), preset SYNTHESIS rather than editing (C3), goal-directed DNA search (C4), or ≥3 chained mutations per iter (C7) — all capped at 5 going forward. | Quad-axis lift in iter 7 from a single cited mutation cycle revealed the old 5-anchors were satisfiable by demonstrating capability rather than agent-driven exploration. New anchors force the loop to *do* iterative search, not just expose the surface. |
+| 11 | Added criterion 11 — Spatial Coherence. Max total now /55 (was /50). | Iter 10 CONSULT identified that all existing oracles measure aggregate distribution but are blind to spatial structure. The loop was climbing measurements that don't measure what matters most. Adding this criterion is the loop editing its own measurement instrument — short-term percent-score drops, long-term direction matches intent. |

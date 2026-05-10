@@ -98,6 +98,33 @@ func _collect(level: Node) -> Dictionary:
 				fingerprint += "%s%d,%d;" % [prefix, int(child.position.x), int(child.position.y)]
 	var tile_hash: String = fingerprint.sha256_text()
 
+	# Vertical persistence: per cell, does the cell directly below carry the same
+	# terrain? Higher = more architectural structure (walls/runs persist). Lower
+	# = more chaotic (each row decorrelated from the next). Sampled at TileMapLayer
+	# resolution (8px per cell, the same grid set_cell uses).
+	var grid: Dictionary = {}
+	for cell in level.steelTileMap.get_used_cells():
+		grid[Vector2i(cell.x, cell.y)] = "steel"
+	for cell in level.grassTileMap.get_used_cells():
+		grid[Vector2i(cell.x, cell.y)] = "grass"
+	for child in level.get_children():
+		if child is StaticBody2D:
+			var col: int = int(child.position.x / 8)
+			var row: int = int(child.position.y / 8)
+			if child.has_node("Sprite2D"):
+				grid[Vector2i(col, row)] = "brick"
+			elif child.has_node("AnimatedSprite2D"):
+				grid[Vector2i(col, row)] = "water"
+	var vert_total: int = 0
+	var vert_same: int = 0
+	for k in grid:
+		var below: Vector2i = Vector2i(k.x, k.y + 1)
+		if grid.has(below):
+			vert_total += 1
+			if grid[below] == grid[k]:
+				vert_same += 1
+	var vert_persistence: float = (float(vert_same) / float(vert_total)) if vert_total > 0 else 0.0
+
 	return {
 		"seed_used": level.level_seed,
 		"brick": brick_count,
@@ -109,6 +136,9 @@ func _collect(level: Node) -> Dictionary:
 		"eller_max_size": max_size,
 		"tile_hash": tile_hash,
 		"total_terrain": brick_count + water_count + steel_cells + grass_cells,
+		"vert_persistence": vert_persistence,
+		"vert_pairs_same": vert_same,
+		"vert_pairs_total": vert_total,
 	}
 
 
@@ -153,6 +183,9 @@ func _print_report(r: Dictionary) -> void:
 	])
 	print("eller_sets: %d  avg_size: %.2f  max_size: %d" % [
 		r.eller_sets, r.eller_avg_size, r.eller_max_size
+	])
+	print("vert_persistence: %.3f  (%d / %d same-terrain pairs)" % [
+		r.vert_persistence, r.vert_pairs_same, r.vert_pairs_total
 	])
 	print("tile_hash: %s" % r.tile_hash.substr(0, 16))
 	if r.total_terrain == 0:

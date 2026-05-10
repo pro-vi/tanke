@@ -505,3 +505,44 @@ Both oracles agree on direction (water up ~20%, steel down ~27%). The biome inte
 **Scoring:** no scores moved this iter (CONSULT mode generates direction, not artifacts). Total stays at 40/50.
 
 **Weakest axis next:** Iter 11 — META + BUILD: extend RUBRIC with Spatial Coherence criterion 11; implement a basic spatial-coherence oracle metric (vertical persistence is simplest: count adjacent same-terrain pairs per column); cite reading on default and biome configs. Anchors should require this metric to actually MEASURE the thing, not just be present.
+
+---
+
+## Iter 011 — META + BUILD — 2026-05-10
+**Focus:** Add criterion 11 (Spatial Coherence) to RUBRIC and implement its first measurement (vertical-persistence). The loop edits its own measurement instrument.
+**Changed files:**
+- `loop/test_runner.gd` — `_collect()` now also builds an 8px-grid `(col,row) → terrain` map by reading both TileMapLayers (steel, grass) and StaticBody2D children (brick, water); counts vertical adjacencies (same / total) and reports `vert_persistence: float`. Print line added.
+- `loop/RUBRIC.md` — criterion 11 added with full anchors 0–5; reference readings cited; Revision Log updated; preamble bumped to "11 criteria (max /55)".
+
+**Metric definition:** `vert_persistence = same_terrain_vertical_pairs / total_vertical_pairs`. IID baseline ~0.25–0.37 depending on weight distribution; Eller's carryover lifts above this floor.
+
+**Readings (seed 42):**
+```
+config         vert_persistence   pairs (same/total)   tile_hash
+default        0.647              628 / 970            6159ef2f5464edb1
+watery         0.727              570 / 784            9e0b9fa4d18c34c3
+fortress       0.710              728 / 1026           60feb24a96c2161a
+biome (d→w)    0.692              662 / 956            35221010827d11ff
+```
+
+**Reading the data:** watery and fortress both peak (single dominant terrain creates long contiguous vertical runs). Default is lowest (most balanced distribution → most cross-row terrain transitions). Biome lands at 0.692 — almost exactly the midpoint of default (0.647) and watery (0.727). The interpolation reads structurally, not just at counts.
+
+**Important caveat:** the 0.65–0.73 range is narrow. The metric *does* discriminate, but doesn't shout. Future improvements: normalize against IID baseline (different weight distributions have different IID expectations) to expose structure-vs-distribution as independent axes. For now, raw value is honest.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| Headless oracle | 4 | 4 | unchanged (now reports vert_persistence too) |
+| Algorithm variety | 4 | 4 | unchanged |
+| LevelConfig mutability | 5 | 5 | unchanged |
+| Level DNA | 5 | 5 | unchanged |
+| Tile visual coherence | 3 | 3 | unchanged |
+| Screencapture oracle | 4 | 4 | unchanged |
+| Agent edit friction | 5 | 5 | unchanged |
+| Procedural richness | 4 | 4 | unchanged |
+| Pipeline completeness | 3 | 3 | unchanged |
+| GDScript correctness | 3 | 3 | unchanged |
+| **11. Spatial Coherence** | — | **3** | metric exists + cited for 4 configs + biome interp lands intermediate (predictive) |
+
+**Total:** 43/55 (was 40/50). As percentage: 78.2% vs prior 80.0%. Proportional score went *down* — exactly what should happen when a new axis enters at non-max. Honest direction trade.
+
+**Weakest axis next:** Push criterion 11 toward 4 in iter 12 by citing a *mutation cycle* where one edit produces a *predicted* Δ in `vert_persistence`. Hypothesis: raising `merge_probability` from 0.333 → 0.7 should *increase* persistence (bigger Eller sets → more contiguous same-terrain). If confirmed, criterion 11 lifts 3→4 and the new metric joins the loop's empirical toolkit.
