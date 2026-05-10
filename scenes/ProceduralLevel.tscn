@@ -55,6 +55,7 @@ script = ExtResource("2")
 position = Vector2(160, 232)
 limit_left = 0
 limit_right = 320
+limit_bottom = 240
 limit_smoothed = true
 position_smoothing_enabled = true
 
