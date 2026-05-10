@@ -40,6 +40,9 @@ func _ready():
 		_generate_level_perlin()
 
 	_replace_blocks()
+	camera.global_position = player.global_position
+	camera.reset_smoothing()
+	camera.force_update_scroll()
 
 func _process(_delta):
 	var player_pos = player.position

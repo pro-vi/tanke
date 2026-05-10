@@ -75,6 +75,7 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 3. No stored seed in ProceduralLevel — blocks Level DNA
 4. BrickBlock destruction — bullet impact TODOs in BrickBlock.gd
 5. Enemy tank AI not implemented
+6. World rebasing — Camera2D limit_top defaults to -10,000,000 (not infinite); infinite upward scroll will eventually hit it; needs chunk recycling / world origin rebase before approaching that bound
 
 ---
 
