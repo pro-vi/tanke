@@ -236,7 +236,7 @@ Default lower (more transitions, more diversity). Biome lands intermediate
 between its endpoints (default 0.647 → watery 0.727; biome at 0.692 ≈ midpoint
 0.687 — interpolation reads structurally too, not just at the count level).
 
-**Current state:** 4 — iter 14 cited mutation cycle with refined metric, predicted direction confirmed. Edit on `configs/biome_test_depth.tres`: `depth_scale: 14 → 100`. Predicted: weaker biome interpolation → less row-correlated variation → lower `structure_lift`. Result at seed 42: structure_lift dropped 2.464× → 2.236× (-9.2%), vert_persistence dropped 0.692 → 0.675 (-2.5%), all in the predicted direction. To reach 5: independent-axis demonstration — find or construct a config that scores high on both diversity AND structure_lift simultaneously (currently the rubric's "balanced + structured" quadrant is empty).
+**Current state:** 5 — iter 18 constructed `configs/biome_balanced.tres` (default ⇄ `balanced_steel.tres`, both endpoints with no terrain > 33%). Result at seed 42: distribution **brick 29% / water 17% / steel 30% / grass 24%** (most-dominant only 30%, all four in [17, 30] band → high diversity), `structure_lift = 2.522×` (highest of any tested config, above the prior champion biome_default_to_watery's 2.464×). The high-diversity AND high-structure_lift quadrant is now occupied. Spatial coherence is demonstrably independent of terrain concentration: a config can score high on diversity AND high on coherence simultaneously, which was the level-5 anchor's load-bearing claim. Side finding: `balanced_steel` flat alone (no biome, p_merge=0.4) already lifts structure_lift to 2.456× — moderate-merge balanced configs are productive even without depth-modulation.
 
 ---
 

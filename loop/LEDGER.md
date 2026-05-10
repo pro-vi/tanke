@@ -820,3 +820,47 @@ iter 17          99.9%      4/4       4.0/5.0        45638   5740    14080   112
 Alternative iter 18: chip away at criterion 10 (deprecation warnings audit). Less interesting but cheap.
 
 Lean toward criterion 11 → 5 attempt (config search) — fits the loop's "agent does iterative search" theme, even if it falls short on first try.
+
+---
+
+## Iter 018 — BUILD — 2026-05-10
+**Focus:** Criterion 11 anchor 5: construct a config in the high-diversity AND high-structure_lift quadrant.
+**Changed files:**
+- `configs/balanced_steel.tres` (new) — moderate-merge (0.4), steel-leaning *but balanced* preset (brick 0.20 / steel 0.30 / grass 0.25 / water 0.20).
+- `configs/biome_balanced.tres` (new) — biome with both endpoints balanced: surface=`default`, deep=`balanced_steel`, depth_scale=14.
+
+**Hypothesis:** A biome between two balanced configs should produce both:
+  (a) balanced terrain distribution (no terrain > 33%, since both endpoints are balanced and the interpolation sits between them)
+  (b) high structure_lift (any biome adds row-correlated variation; iter 9-14 established this)
+
+**Results (seed 42):**
+```
+config              distribution                most-dom   vert_pers   structure_lift   hash
+balanced_steel flat  brick 23% water 13% steel 33% grass 30%   33%      0.671         2.456×    1f2676daedc4dc10
+biome_balanced       brick 29% water 17% steel 30% grass 24%   30%      0.661         2.522×    2ab1950145ffa140
+```
+
+**Both criteria met simultaneously:**
+- Most-dominant terrain: 30% (compared to default 37%, watery 42%, fortress 64%)
+- structure_lift: 2.522× (above biome_default_to_watery's 2.464×, the prior champion)
+
+**The high+high quadrant is now occupied.** Spatial coherence is demonstrably independent of concentration. The loop has constructed a config superior to all prior presets on *both* metrics.
+
+**Side finding (worth flagging):** `balanced_steel` flat — without any biome — already lifts structure_lift to 2.456× (above default's 2.388×). The iter-12 falsified hypothesis was that *higher* merge_probability raises structure_lift; iter-12 measurement disconfirmed this for default-weights at p=0.7. Iter 18 reveals that *moderate* merge_probability (0.4) on *balanced* weights lifts structure_lift modestly. The interaction between weight balance and merge probability is non-monotone — a more interesting finding than the original linear hypothesis predicted.
+
+**Headless hash anchor:** seed-42 default config still `6159ef2f5464edb1` (verified iter 17). New configs introduce new hashes (1f2676da, 2ab19501) which become tracked anchors going forward.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| 11. Spatial Coherence | 4 | **5** | iter 18 `biome_balanced` cited above; high-diversity (most-dominant 30%) + high-structure_lift (2.522×) simultaneously |
+| (criteria 1-10 unchanged) | — | — | — |
+
+**Total:** 48/55 (+1 from iter 17). 87.3% on the expanded rubric.
+
+Three criteria still at 3 (only criterion 10: GDScript correctness; everything else has been lifted). The remaining low-hanging score is C10 → 4 — flatten the Node2D-as-TileMap wrappers in the scene to be direct TileMapLayer children. Cosmetic but anchor 4 specifies "TileMap → TileMapLayer migration complete". 
+
+OR push criterion 1 (Headless oracle) further with a richer JSON schema (e.g. include observed weights per row).
+
+**Weakest axis next:** Iter 19 — pick C10 → 4 (cheap, makes the scene cleaner) OR pause and write a scratch retrospective at the upcoming iter-20 CONSULT slot. Iter 20 is mandatory CONSULT per schedule; could prep notes early.
+
+Lean iter 19 BUILD on C10. Cheap surgical iter; minor cleanup; rubric closes a loose end.

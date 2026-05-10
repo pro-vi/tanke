@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 18
+iteration: 19
 preloop_complete: yes
 ```
 
@@ -49,8 +49,8 @@ tile_source_ids:
 | Procedural richness | 4 | iter 9 biome interp: visible top-vs-bottom gradient; water +20.8% Δ |
 | Pipeline completeness | 4 | iter 16 all 4 terrains regenerated via gen_tile + atlas swap; full-sheet chain |
 | GDScript correctness | 3 | make test clean; test_runner clean across configs |
-| 11. Spatial Coherence | 4 | iter 14 cycle: depth_scale 14→100 → structure_lift 2.464×→2.236× (predicted DOWN, confirmed) |
-| **Total** | **47/55** | +2 from iter 16; 85.5% on expanded rubric |
+| 11. Spatial Coherence | 5 | iter 18 biome_balanced: most-dom 30% + structure_lift 2.522× (high+high quadrant filled) |
+| **Total** | **48/55** | +1 from iter 17; 87.3% on expanded rubric |
 
 ---
 
@@ -83,39 +83,39 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 17 BUILD: gen_tile.py --from-sheet PATH. Recovery + overshoot.
-- Added extract_palette() reading top-4 frequent non-near-black colors
-- SHEET_MARGINS dict matches analyze_frame.py TILE_DEFS by construction
-- Regenerated all 4 variants from sprites_1.png; .import UIDs preserved
-- Screencap: coverage 99.9%, variety 4/4, entropy 4.0/5.0
-  (entropy BETTER than original baseline 3.9)
-- Headless hash 6159ef2f5464edb1 STILL preserved — third confirmation
-  that texture changes don't perturb game logic
-- Criterion 5: 2 → 4 (recovers iter-16 regression + lifts further).
-- Total 45 → 47/55 (85.5%).
+Iter 18 BUILD: high-diversity AND high-structure_lift quadrant filled.
+- Created configs/balanced_steel.tres (b 0.20/s 0.30/g 0.25/w 0.20, p_merge 0.4)
+- Created configs/biome_balanced.tres (default ⇄ balanced_steel)
+- biome_balanced @ seed 42:
+    distribution: brick 29% / water 17% / steel 30% / grass 24%
+    most-dominant: 30%   structure_lift: 2.522×
+  Strictly better than prior champion biome_default_to_watery (40% / 2.464×).
+- Side finding: balanced_steel flat alone → structure_lift 2.456× (>default 2.388×)
+  Moderate-merge balanced configs are productive even without biome.
+- Criterion 11: 4 → 5. Total 47 → 48/55 (87.3%).
+
+Anchor 5 of C11 explicitly required "Spatial-coherence axis is independent of
+distribution axis" — demonstrated.
 ```
 
 ---
 
 ## Stale Scores
 
-None — iter 16 regression resolved.
+None.
 
 ---
 
 ## Next Action
 
-`Iter 18 BUILD: criterion 11 anchor 5 attempt — find/construct config that's
-high diversity AND high structure_lift simultaneously. Currently:
-  - default: balanced (high diversity), structure_lift 2.388×
-  - watery/fortress: concentrated (low diversity), watery 2.36× / fortress 1.53×
-  - biome: medium-medium, structure_lift 2.464× (highest!)
-The "high+high" quadrant is empty. A config that maintains terrain balance
-WHILE creating structural runs would be a real architectural finding.
-Possible path: increase merge_probability slightly (0.5?) on a balanced
-config — large rooms but balanced types. Test prediction.`
+`Iter 19 BUILD: criterion 10 (GDScript correctness) 3 → 4. Anchor 4:
+"TileMap → TileMapLayer migration complete; zero deprecation warnings."
+Flatten the Node2D-as-TileMap wrappers in ProceduralLevel.tscn (e.g.
+"BrickTileMap" Node2D containing "Layer0" TileMapLayer) into direct
+TileMapLayer children of Tiles. Update Level.gd onready paths.
+Verify with godot --headless --quit and grep for warnings.`
 
-External CONSULT retry: iter 20 (2 iters away).
+External CONSULT retry: iter 20 (1 iter away — prep notes after iter 19).
 
 ---
 
