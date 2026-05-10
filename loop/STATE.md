@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 3
+iteration: 4
 preloop_complete: yes
 ```
 
@@ -46,10 +46,10 @@ tile_source_ids:
 | Tile visual coherence | 3 | 4/4 palettes render; all configs visually correct |
 | Screencapture oracle | 3 | analyze_frame.py classifies by palette; entropy 3.9 |
 | Agent edit friction | 4 | `loop/AGENTS.md` documents all 7 mutable params |
-| Procedural richness | 2 | 4 types reliable; awaiting multi-seed SWEEP for variance |
+| Procedural richness | 3 | 6-seed sweep: per-terrain variance 40–63% (>20% threshold met) |
 | Pipeline completeness | 2 | set_cell correct; PIL→TileSet path unexercised |
 | GDScript correctness | 3 | make test clean; test_runner clean across configs |
-| **Total** | **31/50** | +11 from iter 1; ceiling check at 35 |
+| **Total** | **32/50** | +1 from iter 2; ceiling check at 35 |
 
 ---
 
@@ -82,29 +82,24 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 2 BUILD: LevelConfig as Resource (.tres).
-- LevelConfig.gd with merge_probability + 5 terrain weights + sample_terrain()
-- 3 .tres presets: default / watery / fortress
-- _pave_set rewritten as weighted sample → tilemap dispatch
-- ProceduralStep accepts merge_probability through _init
-- test_runner.gd accepts -- --config PATH
-- AGENTS.md documents all 7 mutable params
-- Quad-axis lift: criteria 2 (0→3), 3 (0→4), 7 (1→4), 8 (1→2). Total 20→31.
+Iter 3 SWEEP: 6 seeds × default config.
+- Per-terrain range/mean variance: brick 49.6%, water 40.6%, steel 62.9%, grass 41.7%
+- All > 20% threshold; criterion 8 → 3
+- 6/6 hashes unique (no collisions)
+- Total 31 → 32/50; under 35 ceiling
 ```
 
 ---
 
 ## Stale Scores
 
-None. Old seed-42 baseline (brick 56%/grass 28%/water 11%/steel 5%, hash 619cb88f) was a modular-arithmetic artifact — replaced with weighted baseline (37/19/23/21, hash 6159ef2f).
+None.
 
 ---
 
 ## Next Action
 
-`Iter 3 SWEEP: ≥5 seeds × default config — measure inter-seed variance, score Procedural Richness criterion 8. If <20% variance, follow with BUILD to add structural variation (biome zones / Perlin overlay).`
-
-Approaching ceiling rule (35/50). If iter 3 lands above 35, raise rubric score-4/5 anchors before iter 4.
+`Iter 4 BUILD: exercise PIL→TileSet pipeline. Generate brick variant via gen_tile.py, import as TileSet atlas source, hot-swap brick terrain to use it, screenshot to confirm render, write ASSET-MANIFEST entry. Targets criterion 9 (Pipeline completeness 2→3).`
 
 ---
 

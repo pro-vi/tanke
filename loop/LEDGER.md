@@ -129,3 +129,52 @@ Distribution score lifted from 3.0 (modular) → 3.9 (weighted) — measurable i
 
 **Total:** 31/50 (+11 from iter 1)
 **Weakest axis next:** Procedural richness (criterion 8) at 2/5. Run SWEEP mode: ≥5 seeds × default config, capture variance per terrain. If variance >20% → score 3 cited.
+
+---
+
+## Iter 003 — SWEEP — 2026-05-10
+**Focus:** Multi-seed inter-run variance for criterion 8 (Procedural richness).
+**Changed files:**
+- `loop/RUBRIC.md` — criterion 8 anchor populated with sweep evidence (2→3).
+
+**Sweep grid:** 6 seeds × default config.
+**Oracle output (per seed, default config):**
+```
+seed |  brick  water  steel  grass | total | tile_hash
+-----|------------------------------|-------|------------------
+   1 |   452    196    136    264  | 1048  | 0aded5a0114553fe
+   7 |   636    132    132    220  | 1120  | c84ffe3c54fc2385
+  42 |   400    200    244    228  | 1072  | 6159ef2f5464edb1
+ 100 |   452    208    176    268  | 1104  | 093a8480b363b53d
+ 314 |   468    188    156    280  | 1092  | 0a9566bc23172e84
+ 999 |   444    200    224    180  | 1048  | f6a961b83245754f
+```
+
+**Variance summary (n=6):**
+```
+terrain | min  | max  | mean  | stdev | range/mean (%)
+--------|------|------|-------|-------|---------------
+brick   |  400 |  636 | 475.3 |  82.0 |  49.6
+water   |  132 |  208 | 187.3 |  27.9 |  40.6
+steel   |  132 |  244 | 178.0 |  46.6 |  62.9
+grass   |  180 |  280 | 240.0 |  37.7 |  41.7
+```
+
+All four terrains exceed the 20% threshold. 6/6 seeds → 6 unique hashes (no collisions). Criterion 8 lifted 2→3.
+
+| Criterion | Score | Evidence |
+|-----------|-------|----------|
+| Headless oracle | 4 | unchanged |
+| Algorithm variety | 3 | unchanged |
+| LevelConfig mutability | 4 | unchanged |
+| Level DNA | 3 | unchanged; sweep reaffirmed 6 unique hashes |
+| Tile visual coherence | 3 | unchanged |
+| Screencapture oracle | 3 | unchanged |
+| Agent edit friction | 4 | unchanged |
+| Procedural richness | 3 | sweep cited above; per-terrain variance 40–63% |
+| Pipeline completeness | 2 | unchanged |
+| GDScript correctness | 3 | unchanged |
+
+**Total:** 32/50 (+1 from iter 2). Under 35/50 ceiling — anchors hold.
+
+**Weakest axis next:** Pipeline completeness (criterion 9) at 2/5 — exercise the PIL→TileSet path. Generate a tile variant via `gen_tile.py`, import it as a TileSet atlas source, hot-swap one terrain to use the generated PNG, screenshot, confirm the new asset rendered. That's the level 3 anchor: "PIL-generated tile PNG imported into TileSet and used in game — cite ASSET-MANIFEST entry".

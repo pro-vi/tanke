@@ -154,7 +154,7 @@ How varied do levels feel across seeds and configs?
 | 4 | Biome-like zones: level character shifts as player scrolls deeper |
 | 5 | A playtest of 3 seeds at 3 configs produces 9 clearly distinct level feelings — documented with oracle output + screencaptures |
 
-**Current state:** 2 — 4 terrain types reliably appear in every config. Default config: 37/19/23/21 (brick/water/steel/grass). Distribution still feels "uniform random" within a config — no biome zones, no along-axis variation. To reach 3: SWEEP ≥5 seeds × default config and verify ≥20% variance in at least one terrain.
+**Current state:** 3 — SWEEP iter 3 across 6 seeds (1, 7, 42, 100, 314, 999) × default config: per-terrain range/mean variance brick 49.6%, water 40.6%, steel 62.9%, grass 41.7%. All four exceed the 20% threshold. 6/6 seeds produced distinct `tile_hash` values. To reach 4: implement biome-like zones — level character shifts as player scrolls deeper (e.g. depth-modulated weights, region noise overlay).
 
 ---
 
