@@ -472,3 +472,36 @@ Both oracles agree on direction (water up ~20%, steel down ~27%). The biome inte
 1. Spatial coherence is *only* on the depth axis — there's no horizontal banding, no "rooms", no walls following the maze. The Eller's algorithm output is decorrelated from the procedural texture beneath it.
 2. The oracle measures distribution but not "interestingness". A perfectly uniform 25/25/25/25 split would max the entropy score while being maximally boring. Goodhart risk.
 3. `merge_probability` only affects horizontal connectivity, not vertical. The level structure is implicitly row-by-row independent on the vertical axis (only Eller's vertical carry-overs link rows).
+
+---
+
+## Iter 010 — CONSULT — 2026-05-10
+**Focus:** Per CONSULT SCHEDULE. Frontier-model query on H1 (spatial decorrelation), H2 (oracle goodhart), H3 (algorithmic depth).
+**Changed files:**
+- `loop/creative-consults.md` (new) — full self-consult write-up.
+
+**Infrastructure:** External agentify CONSULT attempted, blocked by `tab_busy` (frozen 12-hour-old query in another session locked the tab pool; closing 5 stale tabs didn't recover). Loop policy: don't block on external services. Fell back to self-reflective CONSULT, marked as such in `creative-consults.md`. Will retry external at iter 20.
+
+**Findings:**
+1. **H1 is *worse* than I framed**: iter 2's weighted refactor REMOVED the size-based gating that the iter-0 modular arithmetic had (steel needed size 2-3, water size ≤6). That's a regression on spatial structure that no oracle caught — because no oracle measures spatial structure.
+2. **H2 confirmed**: entropy oracle peaks at uniform 25/25/25/25 = boring. The iter 8 *diff* oracle is closer to "interestingness" than entropy. Should rename "distribution" → "diversity" for honesty.
+3. **H3 half-right**: Eller's carryover *does* contribute structure (vertical persistence via `verts`), but the carryover slice `randi() % cells.size()` can produce zero — meaning sets get stranded as topological islands. Classical Eller's requires ≥1 vertical carry per set. The current impl is generating *quasi-mazes*, not mazes.
+
+**Q1 — what's seductive-but-hollow:** the dual oracle. Two measurements that "agree on direction" feel robust, but both measure *aggregate distribution* not *spatial structure*. 90% concentric brick rings vs 90% scattered brick noise score identically on every current oracle. The loop is blind to architecture.
+
+**Q2 — agent-friendly?** It passes "single-edit measurable Δ" (iter 7). It fails "name what was done" (no derived semantics like "swampiness" map to LevelConfig fields) and "search heuristic" (loop has no signal for which parameter to nudge next). Honest verdict: an excellent renamed config file, not yet a search space.
+
+**Q3 — embarrassing to a researcher:** the `cells.slice(0, randi() % cells.size())` zero-length slice that violates Eller's invariant. Generates topological islands with no surfacing to oracle or player.
+
+**Action items (high → low):**
+1. Add **spatial-coherence oracle** (Moran's I, connected-component size, vertical persistence) to break the entropy Goodhart.
+2. **Condition `_pave_set` on set size/shape** — restore the lost iter-0 signal as `weights_by_size: Dictionary[int, Dictionary]` on LevelConfig.
+3. Expose `vertical_carry_probability` (or `vertical_merge_count_max`) — make vertical structure tunable.
+4. **Audit zero-length carryovers** — fix or expose as `allow_islands: bool`.
+5. Rename oracle "distribution" → "diversity"; add separate "interestingness" axis.
+
+**Meta-move surfaced:** the rubric itself is missing a criterion — *Spatial Coherence / Architecture*. Even maxing all 10 current criteria leaves H1/H3 unaddressed. CEILING RULE permits adding criteria. **Iter 11 candidate: add criterion 11 (Spatial Coherence) to RUBRIC, score 0/5 initially.** This trades short-term raw score for direction. Honest move.
+
+**Scoring:** no scores moved this iter (CONSULT mode generates direction, not artifacts). Total stays at 40/50.
+
+**Weakest axis next:** Iter 11 — META + BUILD: extend RUBRIC with Spatial Coherence criterion 11; implement a basic spatial-coherence oracle metric (vertical persistence is simplest: count adjacent same-terrain pairs per column); cite reading on default and biome configs. Anchors should require this metric to actually MEASURE the thing, not just be present.

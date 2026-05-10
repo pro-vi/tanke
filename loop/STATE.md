@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 10
+iteration: 11
 preloop_complete: yes
 ```
 
@@ -82,29 +82,29 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 9 BUILD: biome-zone weighting (criterion 8 anchor 4).
-- BiomeConfig.gd: surface + deep LevelConfigs interpolated over depth_scale rows
-- biome_default_to_watery.tres: full transition over visible 14-row screen
-- ProceduralLevel.gd: _active_config(row) helper; refactored generate/pave to per-row config
-- TANKE_BIOME env override added; test_runner --biome flag added
-- Hook caught forward-ref bug after partial edit — pattern: define helpers before call sites
-- Headless: water +20% / steel -26%, hash 6159ef2f → 35221010
-- Screencap diff: water +20.8% / steel -27.1%, shift_detected: True
-- Both oracles agree on direction; flat-default hash 6159ef2f preserved (no regression)
-- Criterion 8: 3 → 4. Total 39 → 40/50.
+Iter 10 CONSULT: self-reflective (external agentify blocked by frozen tab from another session).
+- creative-consults.md written with full H1/H2/H3 critique + Q1/Q2/Q3 answers
+- KEY FINDING: iter 2 weighted refactor regressed spatial structure (lost size-based gating)
+- KEY FINDING: oracle measures aggregate distribution, blind to architecture (texture vs spatial)
+- KEY FINDING: Eller's slice() may emit zero-length carryovers → topological islands
+- Meta-move surfaced: rubric is missing a criterion — Spatial Coherence
+- 5 priority action items recorded; iter 11 selected: META + BUILD a spatial-coherence oracle
+- No scores moved (CONSULT mode); total stays 40/50
 ```
 
 ---
 
 ## Stale Scores
 
-None.
+Criterion 8 (Procedural richness) at 4/5 may be soft — biome interp is real but doesn't add intra-row spatial structure. Score holds against current rubric; iter 11 will add a separate criterion that measures what's actually missing.
 
 ---
 
 ## Next Action
 
-`Iter 10 = CONSULT mode (per CONSULT SCHEDULE). Frontier-model query on 3 pre-staged hollow-points: (1) spatial coherence is only depth-axis — no rooms / walls / horizontal banding; (2) entropy oracle is goodhart-able toward uniform-uninteresting; (3) merge_probability has no vertical effect. Write to loop/creative-consults.md.`
+`Iter 11 META+BUILD: extend RUBRIC with criterion 11 — Spatial Coherence; implement vertical-persistence metric in test_runner.gd (simplest spatial measure: per-column count of same-terrain row-adjacent pairs / total pairs). Score against default/biome/fortress/watery to anchor 1-5 levels. Honest direction trade: short-term total may drop; long-term measurement instrument matches intent.`
+
+External CONSULT will retry iter 20 (same prompt) — agentify infrastructure should recover by then.
 
 ---
 
