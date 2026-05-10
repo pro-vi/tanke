@@ -591,3 +591,49 @@ AFTER  (0.700):           0.700       3        6.67       17      356   148   35
 Lean (1) for iter 13 — cheapest, immediately revealing. Then (2) for iter 14 to expose structure-vs-concentration as independent axes. Both feed back into criterion 11 anchors and may surface that 11 should split into "Spatial coherence (block-edge)" and "Spatial coherence (carryover)".
 
 **Falsification value:** this iter is the LOOP's first empirical disconfirmation. Up through iter 11, every cited mutation produced the predicted direction. The metric refinement work (iter 13+) wouldn't have been on the queue at all without this miss. Confirms the loop has measurement honesty.
+
+---
+
+## Iter 013 — BUILD — 2026-05-10
+**Focus:** Refine `vert_persistence` per iter 12's diagnosis. Add (a) `above_floor` (subtract 0.5 block-floor) and (b) `structure_lift` (normalize against observed IID baseline).
+**Changed files:**
+- `loop/test_runner.gd` — `_collect()` now also computes `iid_expected = Σ p_i²` from observed terrain counts and reports `vert_above_floor`, `vert_iid_expected`, `vert_structure_lift`. Print line added.
+
+**Refined metric survey (seed 42):**
+```
+config              vert_persistence  iid_expected  structure_lift  above_floor
+default             0.647             0.271         2.388×          0.295
+watery              0.727             0.308         2.357×          0.454
+fortress            0.710             0.464         1.529×          0.419   ← lowest lift
+biome (d→w)         0.692             0.281         2.464×          0.385   ← highest lift
+test_p_merge=0.7    0.628             0.274         2.291×          0.256
+```
+
+**Three findings the raw metric was hiding:**
+
+1. **Fortress's apparent high coherence was concentration, not structure.** Raw `vert_persistence` 0.710 looked good. After IID normalization it drops to 1.53× — the *lowest* of all configs. Steel-domination inflates IID such that "two random pairs both being steel" is more likely than the *actual* same-terrain rate. Fortress is structurally LESS coherent than balanced configs.
+
+2. **Default ≈ watery in structural lift (2.39× ≈ 2.36×).** Watery's higher raw persistence was concentration. Once that's normalized out, the two configs look nearly identical structurally.
+
+3. **Biome interpolation creates structure beyond either endpoint.** Default flat: 2.388×. Watery flat: 2.357×. Biome (default → watery): **2.464×**. Higher than either endpoint. Depth-modulated row-to-row terrain shift IS adding structural lift, not just shifting distribution. This is the most encouraging finding — it confirms that the iter-9 biome work was real architecture, not just cosmetic.
+
+**Cited mutation cycle revisited (iter 12 data, refined metric):**
+```
+test_p_merge: 0.333 → 0.700
+  vert_persistence    0.647 → 0.628   (-2.9%)
+  structure_lift      2.388× → 2.291× (-4.1%)
+  Direction:          DOWN (still opposite original prediction)
+```
+
+The refined metric tells the same story (still falsified) but with sharper resolution: the structural drop is larger when you control for concentration. So bigger Eller sets really do REDUCE per-cell vertical structural lift, even when concentration is normalized out. Likely cause: the per-set independent terrain sampling means bigger sets concentrate within-row but don't carry vertical structure proportionally.
+
+| Criterion | Prior | New | Evidence |
+|-----------|-------|-----|----------|
+| (criteria 1-10 unchanged) | — | — | — |
+| 11. Spatial Coherence | 3 | **3** | refined metric implemented + surveyed; mutation cycle direction still wrong; awaiting NEW cycle with predicted+confirmed Δ |
+
+**Total:** 43/55 — unchanged.
+
+**Weakest axis next:** Iter 14 — design a cycle the refined metric WILL respond to in the predicted direction. Best candidate: **biome enable/disable cycle**. Prediction: enabling biome (vs flat default) increases `structure_lift` because depth-modulation adds vertical correlation. Already supported by today's survey (default 2.388× vs biome 2.464×, +3.2%) but not run as a proper before/after on a single test fixture. Run it as a proper cited cycle to lift criterion 11 → 4.
+
+Alternative iter 14 path: tackle the highest-leverage 3-criterion (5/9/10) by another route. But pushing 11 → 4 with a confirmed-direction cycle gives the loop its first re-prediction-and-verify after a falsification — a meaningful epistemic milestone.

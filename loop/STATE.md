@@ -4,7 +4,7 @@
 
 ```
 phase: build
-iteration: 13
+iteration: 14
 preloop_complete: yes
 ```
 
@@ -83,36 +83,42 @@ sets in elif chain before steel/grass/water checks fire. First loop task: fix.
 ## Last Action
 
 ```
-Iter 12 BUILD: HYPOTHESIS FALSIFIED — and that's a good thing.
-- Created configs/test_p_merge.tres (initially identical to default)
-- Edit tool: merge_probability 0.333 → 0.7 (single-line surgical)
-- BEFORE: vert_persistence 0.647, eller_sets=15, avg_size=1.33
-- AFTER:  vert_persistence 0.628, eller_sets=3,  avg_size=6.67  (sets grew 5×)
-- Predicted UP, got DOWN slightly. Set mechanics worked perfectly; metric
-  doesn't measure what I named it.
-- DIAGNOSIS: vert_persistence has a 0.5 "block floor" from the 2x2 paving;
-  what's above the floor measures concentration (which terrain dominates),
-  not pure spatial structure. Iter 10 H2 (Goodhart) bleeding through.
-- Honest score: criterion 11 stays 3/5 (predicted direction wrong).
-- The loop's first empirical disconfirmation. Confirms measurement honesty.
+Iter 13 BUILD: vert_persistence refined with two new derived metrics.
+- vert_above_floor = (vp - 0.5) / 0.5
+- vert_structure_lift = vp / iid_expected (Σ p_i² over observed distribution)
+Survey (seed 42):
+  default     structure_lift 2.388×    (balanced)
+  watery      structure_lift 2.357×    (water-heavy concentration)
+  fortress    structure_lift 1.529×    ← LOWEST despite huge sets
+  biome       structure_lift 2.464×    ← HIGHEST (more than its endpoints!)
+  high p_merge structure_lift 2.291×   (still slightly down from default)
+
+3 findings unmasked:
+  1. Fortress's high raw persistence was concentration; structurally weakest
+  2. Default ≈ watery on structure once concentration is normalized
+  3. Biome creates MORE structure than either flat endpoint — real architecture
+     from depth-modulation, not just count-shifting
+
+Iter 12 falsification holds under refined metric (now -4.1% vs -2.9% raw).
+Bigger Eller sets really do reduce per-cell structural lift.
+Criterion 11 stays 3/5 (no new mutation cycle with confirmed direction).
 ```
 
 ---
 
 ## Stale Scores
 
-None — but criterion 11 reading needs a refined metric to be trustable as
-a structure measure.
+None.
 
 ---
 
 ## Next Action
 
-`Iter 13 BUILD: refine vert_persistence. Options ranked by leverage:
-  (1) subtract 0.5 block floor → "above-floor coherence", normalized 0-1
-  (2) normalize against IID baseline (decouples from concentration)
-  (3) sample at block level (every-other), avoid the floor entirely
-Pick (1) for iter 13 — cheapest reveal. Plan (2) for iter 14.`
+`Iter 14 BUILD: biome enable/disable as proper cited mutation cycle. Prediction
+(refined): enabling biome on a level should INCREASE structure_lift vs flat
+default (today's survey supports this: 2.388 → 2.464, +3.2%). Run as
+single-fixture before/after with the Edit tool. If predicted Δ confirmed,
+criterion 11 lifts 3 → 4 — the loop's first re-prediction after a falsification.`
 
 External CONSULT retry: iter 20.
 

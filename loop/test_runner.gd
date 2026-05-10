@@ -125,6 +125,27 @@ func _collect(level: Node) -> Dictionary:
 				vert_same += 1
 	var vert_persistence: float = (float(vert_same) / float(vert_total)) if vert_total > 0 else 0.0
 
+	# Refined coherence metrics (iter 13):
+	# 1. above_floor: subtracts the 0.5 floor that the 2x2 block paving guarantees.
+	#    Raw persistence range ~[0.5, 1.0]; above_floor maps to [0, 1].
+	# 2. iid_expected: P(two random placed cells share terrain) given the OBSERVED
+	#    distribution. Computed from terrain counts directly (not config weights),
+	#    so it reflects what actually got placed including biome interp.
+	# 3. structure_lift: vert_persistence / iid_expected. > 1.0 means vertical
+	#    pairs are MORE correlated than random; < 1.0 means LESS. Decouples
+	#    spatial structure from concentration (a uniform 25/25/25/25 distribution
+	#    has IID 0.25; a steel-dominant 60/15/15/10 has IID 0.42).
+	var total_for_iid: int = brick_count + water_count + steel_cells + grass_cells
+	var iid_expected: float = 0.0
+	if total_for_iid > 0:
+		var p_b := float(brick_count) / float(total_for_iid)
+		var p_w := float(water_count) / float(total_for_iid)
+		var p_s := float(steel_cells) / float(total_for_iid)
+		var p_g := float(grass_cells) / float(total_for_iid)
+		iid_expected = p_b * p_b + p_w * p_w + p_s * p_s + p_g * p_g
+	var above_floor: float = max(0.0, (vert_persistence - 0.5) / 0.5)
+	var structure_lift: float = (vert_persistence / iid_expected) if iid_expected > 0.0 else 0.0
+
 	return {
 		"seed_used": level.level_seed,
 		"brick": brick_count,
@@ -139,6 +160,9 @@ func _collect(level: Node) -> Dictionary:
 		"vert_persistence": vert_persistence,
 		"vert_pairs_same": vert_same,
 		"vert_pairs_total": vert_total,
+		"vert_above_floor": above_floor,
+		"vert_iid_expected": iid_expected,
+		"vert_structure_lift": structure_lift,
 	}
 
 
@@ -186,6 +210,9 @@ func _print_report(r: Dictionary) -> void:
 	])
 	print("vert_persistence: %.3f  (%d / %d same-terrain pairs)" % [
 		r.vert_persistence, r.vert_pairs_same, r.vert_pairs_total
+	])
+	print("vert_above_floor: %.3f   iid_expected: %.3f   structure_lift: %.3fx" % [
+		r.vert_above_floor, r.vert_iid_expected, r.vert_structure_lift
 	])
 	print("tile_hash: %s" % r.tile_hash.substr(0, 16))
 	if r.total_terrain == 0:
