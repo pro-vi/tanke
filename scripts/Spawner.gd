@@ -69,7 +69,7 @@ func _is_blocked(pos: Vector2) -> bool:
 		return false
 	var params: PhysicsPointQueryParameters2D = PhysicsPointQueryParameters2D.new()
 	params.position = pos
-	params.collision_mask = 1  # Environment layer (terrain + BrickBlock + WaterBlock)
+	params.collision_mask = 513  # Environment (1) + Water (512); both block tank traversal
 	var results: Array = space_state.intersect_point(params, 1)
 	return results.size() > 0
 

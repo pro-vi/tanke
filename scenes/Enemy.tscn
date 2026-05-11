@@ -9,7 +9,7 @@ size = Vector2(14, 14)
 
 [node name="Enemy" type="CharacterBody2D"]
 collision_layer = 8
-collision_mask = 1
+collision_mask = 513
 script = ExtResource("2")
 bullet_scene = ExtResource("3")
 bullet_target_mask = 3

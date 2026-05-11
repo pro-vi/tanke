@@ -4,7 +4,7 @@
 
 ```
 phase: loop
-iteration: 7
+iteration: 8
 preloop_complete: yes
 playtest_requested_iter: 5
 playtest_completed_iter: 6
@@ -126,24 +126,25 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 7 BUILD complete. Enemy refactor (Battle City direction):
-- Enemy.gd: 4-dir grid AI matching PlayerTank model. direction_commit_time
-  0.8s prevents oscillation. Wall-collision → perpendicular alternate;
-  if both blocked → reverse. Snap to grid 8 on turn.
-- Enemy fire: Bullet.gd start() now accepts target_mask. Enemy bullets
-  use mask=3 (Env+Player). Enemy.gd fires every 1.5s in facing direction;
-  initial cooldown randomized to stagger volleys. bullet_scene wired in
-  Enemy.tscn → Bullet.tscn.
-- Spawner.gd: top-edge spawn (random x, y = player.y - 144) replacing
-  radial. H5 #2 wall-rejection retained.
-- Caught/fixed mid-iter: stranded spawn_distance reference in
-  ProceduralLevel.tscn (parse error after script export removal).
-- Verified: make test exit 0, godot --quit exit 0, oracle tile_hash
-  f873ae60ee3c420c… unchanged. 12s deterministic run shows spawner
-  ticking every 2s with successful spawns at seed 42.
-- Scores: unchanged at 9/50. Refactor is real but feel-criterion
-  anchors deferred to iter-9 playtest.
-Next: iter 8 BUILD — bullet/terrain (brick break, water pass, muzzle).
+Iter 8 BUILD complete. Bullet/terrain (Battle City direction part 2):
+- BrickBlock.gd: max_hp=1, take_damage queue_frees brick. Bullet's
+  body_entered already calls take_damage (iter-2 work); destruction is
+  automatic once method exists.
+- Bullets-over-water via synchronized 3-file collision-layer changes:
+  * WaterBlock.tscn collision_layer 513 → 512 (Water-only; removed
+    Environment bit 1)
+  * Enemy.tscn collision_mask 1 → 513 (Environment + Water, must still
+    block enemies from water)
+  * Spawner.gd _is_blocked mask 1 → 513 (won't spawn on water either)
+- Final collision graph: bullet mask 9 (Env+Enemy) excludes water layer
+  512 → bullets pass water; tank mask 513 (Env+Water) still blocked.
+- Muzzle: sprites_0.png is 16px per frame (verified via PIL: 256/16=16);
+  muzzle (7,0) was 1px INSIDE sprite edge — read as off-center. Fixed
+  to (8,0) = sprite-edge exactly.
+- Verified: make test exit 0, oracle tile_hash f873ae60ee3c420c…
+  unchanged. Substrate intact iters 1-8.
+- Scores unchanged at 9/50. Multiple anchors poised to lift on iter-9.
+Next: iter 9 PLAYTEST — mandatory user-look gate.
 ```
 
 ---
@@ -155,6 +156,42 @@ None (new loop).
 ---
 
 ## Next Action (current, replacing iter-7 plan that was just shipped)
+
+`Iter 9 PLAYTEST (mandatory user-look gate, paired iter-7 + iter-8 changes):
+  - Pre-mortem to PRE-MORTEMS.md — must include H2-RULE
+    independently observable claims about user playtest report
+  - Verify build runs: make test clean, godot --quit exit 0
+  - Capture run config (deltas since iter-5 playtest):
+    * Enemy grid AI: 4-dir cardinal, direction_commit_time=0.8s
+    * Enemy fire: bullets every 1.5s in facing direction, mask=3 (hits player + env)
+    * Spawn: top-edge (y = player.y - 144), random x ∈ [4, 316]
+    * Brick walls: destructible (1 hit per 8×8 cell)
+    * Water: bullets pass over, tanks blocked
+    * Muzzle: aligned with sprite edge (8, 0)
+  - Output to user: "Please play one F5 run (~1-2 min). Specifically
+    observe these SEVEN things, focused on whether iter-7/8 fixes work:
+    1. ENEMIES — grid-aligned 4-dir motion like the player? Or still
+       skiing diagonally?
+    2. ENEMIES SHOOT — do enemies fire bullets at you?
+    3. SPAWN POSITION — enemies appear from above (top of screen),
+       not random around you?
+    4. BRICK WALLS — can you destroy brick walls by shooting them?
+    5. WATER — do bullets pass over water now (not blocked at water
+       edge)?
+    6. MUZZLE — do bullets now start visually aligned with the tank
+       (not off-center)?
+    7. ANY OTHER — what felt off / surprising / broken?"
+  - AWAIT user response. No scheduled retry per PROMPT §7.
+  - Halt rule: if 3 subsequent iters pass without user playtest
+    response (iter 12), write HALTED.md and stop.
+  - On response: iter 10 evaluates the claims, logs falsifications,
+    scores update (multiple anchors poised to lift — crit 6, crit 8,
+    crit 2, crit 1 → 5). Iter 10 is also CONSULT iter per PROMPT
+    §"CONSULT SCHEDULE" (iter 10/20/30) — combine with playtest eval.`
+
+---
+
+## Previous Next Action (iter 8 — shipped iter 8)
 
 `Iter 8 BUILD — Bullet/terrain (Battle City direction part 2):
   - Pre-mortem (H2 RULE: ≥1 independently observable claim about

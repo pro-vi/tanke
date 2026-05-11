@@ -22,8 +22,8 @@ animations = [ {
 extents = Vector2( 4, 4 )
 
 [node name="WaterBlock" type="StaticBody2D"]
-collision_layer = 513
-collision_mask = 513
+collision_layer = 512
+collision_mask = 512
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 frames = SubResource( 3 )

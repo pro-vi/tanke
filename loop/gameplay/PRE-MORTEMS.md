@@ -265,4 +265,43 @@ Secondary: AUDIT may not change Crit 6 score because the user did NOT
 report enemies stuck, but also did NOT report basic pathfinding — Pro's
 H3 critique stands.
 
+**Post-iter evaluation (iter 6):** All 4 H2-RULE claims landed. Scores
+unchanged at 9/50. Iter 7+ plans documented. Pro consult work shipped.
+
+---
+
+## Iter 007 — BUILD (enemy refactor)
+
+(Pre-mortem and post-eval inlined into the iter-7 LEDGER entry rather
+than here; documented in commit message and LEDGER. Going forward iter
+entries in this file are short.)
+
+H2-RULE claims:
+1. make test clean post-refactor → LANDED (after spawn_distance hotfix)
+2. Oracle hash unchanged → LANDED
+3-5. iter-9 playtest claims (no "skiing", enemies fire, no "spawn out of
+nowhere") → DEFERRED to iter 9
+
+---
+
+## Iter 008 — BUILD (bullet/terrain)
+
+Going in, biggest expected miss: bullet-over-water fix needs synchronized
+changes across 3 files (WaterBlock.tscn layer, Enemy.tscn mask, Spawner.gd
+reachability mask). If I miss one (especially Enemy mask), enemies walk
+through water — regression worse than the bug. Secondary risk: muzzle
+centering — wrong about sprite size.
+
+H2-RULE claims:
+1. `make test` exit 0 clean post-changes. **LANDED.**
+2. Oracle `tile_hash f873ae60ee3c420c…` unchanged. **LANDED.**
+3. iter-9 playtest: user reports bullets travel over water. DEFERRED.
+4. iter-9 playtest: user reports breaking brick walls. DEFERRED.
+5. iter-9 playtest: user does NOT say "off center" again. DEFERRED.
+
+Mid-iter check: looked up actual sprite size (256/16 = 16px per frame).
+Muzzle at (7, 0) was 1px INSIDE the sprite edge (sprite half-width = 8).
+Fix: muzzle (7,0) → (8,0) = sprite edge exactly. Visual fix grounded in
+measured sprite dimensions, not a guess.
+
 ---

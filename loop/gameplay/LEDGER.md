@@ -822,3 +822,100 @@ before removing the export. Lesson informs future refactors.
   given iter-6 just had user response.
 
 ---
+
+## Iter 008 — BUILD — bullet/terrain (Battle City direction part 2)
+
+**Mode:** BUILD
+**Focus:** D (brick destructibility) + E (bullets over water) + F (muzzle centering). Three of three remaining user-surfaced gaps from iter-5 playtest.
+**Date:** 2026-05-11
+**Pre-mortem:** PRE-MORTEMS.md iter 008 — 5 H2-RULE claims (2 binary-now LANDED, 3 deferred to iter 9)
+
+### Actions
+
+**D. `scripts/BrickBlock.gd` — brick destructibility:**
+- Added `@export max_hp: int = 1` (Battle City: 1 hit destroys an 8×8 cell)
+- `take_damage(amount)` decrements hp, `queue_free` on lethal
+- Bullet's `_on_body_entered` already calls `body.take_damage(damage)` if
+  the body has the method (iter-2 work) — brick destruction is automatic
+  once the method exists.
+
+**E. Bullets-over-water — synchronized collision-layer changes across 3 files:**
+- `scenes/WaterBlock.tscn`: collision_layer 513 → **512** (layer 10 = Water
+  only; removed Environment layer 1)
+- `scenes/Enemy.tscn`: collision_mask 1 → **513** (Environment + Water;
+  tanks must still be blocked by water)
+- `scripts/Spawner.gd` `_is_blocked`: mask 1 → **513** (Spawner shouldn't
+  place enemies on water either)
+- Final collision graph:
+  - Bullet mask 9 = layer 1 (Env) + layer 8 (Enemy). Does NOT include
+    layer 10 (Water → value 512). **Bullets pass over water.** ✓
+  - PlayerTank mask 513, Enemy mask 513 — both include layer 10. Tanks
+    still blocked by water. ✓
+  - Spawner reachability mask 513 — Spawner still won't place enemies
+    on water OR walls. ✓
+
+**F. `scenes/PlayerTank.tscn` muzzle centering:**
+- Looked up actual sprite size: sprites_0.png is 256×288 with hframes=16
+  → 16px per frame. PlayerTank sprite is 16×16, half-width 8.
+- Muzzle position (7, 0) → **(8, 0)** = exactly at sprite edge along
+  facing direction. Previously was 1px inside the sprite — read as
+  "off-center" per user playtest.
+
+### Substrate freeze check
+
+- `LevelConfig.gd`, `BiomeConfig.gd`, `LevelDNA.gd`, `ProceduralStep.gd`,
+  `ProceduralLevel.gd`, `tools/*.py`, `loop/test_runner.gd`,
+  `configs/*.tres` — **untouched**.
+- H1 tripwire (gameplay siblings in ProceduralLevel.tscn): no new
+  additions this iter; count stays at 1 (Spawner).
+
+### Verification
+
+- `godot --headless --path . --quit` → exit 0 (carryover UID warning)
+- `make test` (120-frame runtime) → exit 0, no errors
+- Reachability oracle at seed 42: tile_hash unchanged
+  (`f873ae60ee3c420c57cdef5762acdad857b1a763ec50b76db80971ef4503e797`).
+  Substrate intact through 8 iters of gameplay BUILD.
+
+### Scores
+
+| Criterion | Iter 7 | Iter 8 | Δ | Notes |
+|-----------|--------|--------|---|-------|
+| 1. Core loop | 4 | 4 | – | Anchor 5 needs first-run-without-instruction |
+| 2. Spawn | 1 | 1 | – | Anchor 2 needs varying intervals |
+| 3. HP | 2 | 2 | – | Anchor 3 needs HP bar (have text) |
+| 6. Enemy variety | 1 | 1 | – | Anchor 5 (no stuck) deferred to iter 9 |
+| 8. Visual feedback | 0 | 0 | – | Brick destruction IS feedback but anchor 1 specifies "hit flashes one color"; conservative read keeps it at 0 pending iter-9 user reaction |
+| Others | – | – | – | – |
+| **Total** | **9** | **9** | **0** | No inflation; multiple anchors poised to lift on iter-9 playtest |
+
+### Pre-mortem evaluation
+
+H2-RULE claims #1 (make test clean) and #2 (oracle hash) LANDED.
+Claims #3-5 deferred to iter 9 playtest (no "doesn't travel over water"
+report, user reports brick breaking, no "off center" report).
+
+Biggest expected miss (synchronized 3-file water collision change): all
+3 edits landed cleanly, verified by make test pass. The pre-mortem
+specifically called this out as the highest-risk piece; preemptive
+attention paid off. This is a different mode than iter-2/iter-3 where I
+predicted "external user observation falsifies me" — here I predicted
+"the wiring is error-prone" and used the prediction to bound my own
+attention.
+
+### Files touched
+
+- Modified: `scripts/BrickBlock.gd` (take_damage), `scenes/WaterBlock.tscn`
+  (collision_layer), `scenes/Enemy.tscn` (collision_mask),
+  `scripts/Spawner.gd` (reachability mask), `scenes/PlayerTank.tscn`
+  (muzzle pos), PRE-MORTEMS.md, STATE.md, LEDGER.md.
+
+### Schedule
+
+- Iter 9 = mandatory PLAYTEST (user-look gate). Per PROMPT "every 3 iters
+  after iter 5" cadence, iter 8 was technically due — iter 9 is one iter
+  slipped to accumulate iter-7 AND iter-8 work into a single playtest.
+- ScheduleWakeup 240s for iter 9. At iter-9 wake: build verify, output
+  playtest prompt, AWAIT user.
+
+---

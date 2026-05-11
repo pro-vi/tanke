@@ -27,7 +27,7 @@ script = ExtResource( 3 )
 shape = SubResource( 1 )
 
 [node name="Muzzle" type="Marker2D" parent="."]
-position = Vector2( 7, 0 )
+position = Vector2( 8, 0 )
 
 [node name="GunTimer" type="Timer" parent="."]
 [connection signal="timeout" from="GunTimer" to="." method="_on_GunTimer_timeout"]
