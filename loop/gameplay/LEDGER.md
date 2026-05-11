@@ -1916,3 +1916,83 @@ Designed for lighter cadence. Two questions covering the LOAD-BEARING iter predi
 - ScheduleWakeup 240s
 
 ---
+
+## Iter 025 — CONSULT (Pro tab_busy) → SELF-CONSULT
+
+**Mode:** CONSULT attempted; agentify failure → SELF-CONSULT fallback per FALSIFICATION 001 lesson
+**Focus:** validate iter-24 Heavy state machine; plan iter-26 Light split; status-check iter-33 prediction; META sprint review
+**Date:** 2026-05-11
+**Tag declaration:** `[STRUCTURE]` only (process iter)
+
+### Consult failure
+
+Fired `tanke-iter-25-validate` query → `max_tabs_reached`. Closed 3 stale tabs (consult-19, blog-cn-curation, blog-cn-curation-2). Retried → `tab_busy` x2. agentify_tabs showed 9 alive — under cap. Couldn't diagnose. Engine-loop precedent (iter 10/20 consult failures) → fallback to self-pre-mortem-in-writing. See `creative-consults.md` for failure entry.
+
+### Self-consult H1-H5
+
+**H1 Heavy adequacy (HOLDS conditional):** State machine implements Pro Consult 004 H2 recipe. Hysteresis math: player speed 32 px/s × 0.4s min_dwell = 12.8px lateral movement, just past axis_tolerance=12 — tuned to player's escape velocity. Likely failure: heavy_gate band 60% Heavy → simultaneous AIM_FIRE creates bullet wall. Mitigation flag: lower Heavy weight 60→40% if iter-33 playtest reports "too many bullets."
+
+**H2 Light split iter 26 (Option C wins):** Of three options (A speed↑+fire↓ stats-only; B lateral direction; C commit-to-lane longer):
+- A doesn't make role distinction — stat-tweak trap Pro warned against
+- B feels weird-AI ("doesn't chase me")
+- C closest to Pro's "lane-invader that advances aggressively, fires rarely"
+
+Implementation: extend Light's `direction_commit_time` 0.8s→3.0s, reduce `fire_cooldown` 1.5s→3.5s, add vertical-axis bias in `_choose_direction_toward_player` (prefer UP/DOWN when distance ≈ equal). Player learns to dodge by exiting Light's committed lane.
+
+**H3 META status (partially half-solved):** Heavy AIM_FIRE breaks on player perpendicular movement → player ascends. But heavy_gate band 60% Heavy creates simultaneous-alignment pressure. Concrete test (deferred to iter-31 CAPABILITY): log player ascent rate per band; iter-33 verifies rate stays positive in heavy_gate.
+
+**H4 iter-33 prediction (still load-bearing):** "User will stop to clear enemies more often than they push upward through danger." Heavy AIM_FIRE incentivizes (kill = -1 threat) even if not forcing. Iter 26 Light commit-to-lane may help by making Light skippable.
+
+**H5 anti-cargo-cult on iter-24 lift:** Honest test — recipe-to-code is 1:1, anchor wording "code-citable behavioral split, not stat-tweak" is met. Falsification test for iter 33: if user says "Heavy and Light feel the same except Heavy is slower" → F005, anchor 2 revert.
+
+### Revised sprint plan (META rec from self-consult)
+
+Cuts:
+- DROP iter 31 death-summary as separate iter (Pro v4 said "cheapest only"; DEPTH+TIME on HUD; kills counter is 10 lines → fold into polish)
+- COMBINE AUDIT iters
+
+Adds:
+- iter 31 = CAPABILITY mode (PROMPT §3) — extend test_runner.gd with ascender metrics (spawn rate per band, ascent rate)
+
+Revised:
+| Iter | Mode | Focus |
+|------|------|-------|
+| 26 | BUILD | Light split (Option C — commit-to-lane) |
+| 27 | BUILD | Per-band encounter rules + stall pressure tuning |
+| 28 | BUILD | META mitigation: forward-only enemies OR threats-from-behind + small AUDIT |
+| 29 | CONSULT (retry Pro at iter 29 — better odds tabs cleaner) |
+| 30 | BUILD | Polish + kills counter HUD addition |
+| 31 | CAPABILITY | Extend test_runner.gd with ascent metrics |
+| 32 | BUILD | Final playtest prep |
+| 33 | PLAYTEST |
+
+### Substrate freeze check
+
+- No code changes. Pure process iter.
+- Substrate intact (tile_hash f873ae60ee3c420c… last verified iter 24).
+
+### Verification
+
+- No build changes; make test exit 0 (carryover from iter 24)
+
+### Scores
+
+| Criterion | Iter 24 | Iter 25 | Δ |
+|-----------|---------|---------|---|
+| All | unchanged | unchanged | – |
+| **Total** | **16** | **16** | **0** | `[STRUCTURE]` process iter |
+
+### Pre-mortem evaluation
+
+H2 RULE v2 self-deception detector applied throughout self-consult. Discipline holds without Pro present.
+
+### Files touched
+
+- Modified: `loop/gameplay/creative-consults.md` (Consult-25-failed entry), `loop/gameplay/PRE-MORTEMS.md` (iter 025 self-consult), `loop/gameplay/LEDGER.md` (this entry), `loop/gameplay/STATE.md`
+
+### Schedule
+
+- Iter 26 BUILD Light commit-to-lane per self-consult Option C.
+- ScheduleWakeup 240s.
+
+---

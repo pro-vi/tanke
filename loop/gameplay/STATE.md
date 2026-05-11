@@ -4,16 +4,16 @@
 
 ```
 phase: loop
-iteration: 24
+iteration: 25
 preloop_complete: yes
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 next_playtest_due_iter: 33
-consult_cadence: every 5 iters (iter 20 → Consult 004 ADOPTED, 25 next, 30)
-sprint_phase: bands+behaviors (iter 24 Heavy split shipped)
+consult_cadence: every 5 iters (20 ADOPTED, 25 FAILED→self-consult, 29 retry)
+sprint_phase: bands+behaviors (iter 24 Heavy split shipped, iter 26 Light split next)
 pending_consult: none
-load_bearing_problem: combat verbs vs ascender verbs (Pro META) — addressed partially by Heavy AIM_FIRE pause
-h2_rule_version: v2 (iter 23) — STRUCTURE/FEEL/MIXED tag mandatory
+load_bearing_problem: combat verbs vs ascender verbs — partially addressed Heavy AIM_FIRE
+h2_rule_version: v2 (iter 23)
 playtest_template: loop/gameplay/playtest-template.md
 ```
 
@@ -131,6 +131,27 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
+Iter 25 CONSULT attempt FAILED (agentify tab_busy after closing 3 stale
+tabs) → SELF-CONSULT fallback per FALSIFICATION 001 lesson.
+
+Self-consult H1-H5 + META in LEDGER iter 025. Key conclusions:
+- Heavy state machine adequacy: HOLDS conditional; flag heavy_gate 60%
+  Heavy as potential bullet-wall risk
+- Light split iter 26: Option C (commit-to-lane, dir_commit 3s,
+  fire 3.5s, vertical bias)
+- iter-33 prediction still load-bearing
+- Sprint plan revised: drop iter-31 death-summary as separate iter
+  (fold kills counter into polish); ADD iter-31 CAPABILITY (extend
+  test_runner with ascender metrics); CONSULT retry pushed to iter 29.
+
+Scores unchanged at 16/50 (process iter).
+
+Next: iter 26 BUILD Light commit-to-lane.
+```
+
+(Previous content)
+
+```
 Iter 24 BUILD complete. Heavy CHASE/AIM_FIRE state machine:
 - Enemy.gd refactored: enum State {CHASE, AIM_FIRE}, enemy_type
   export, _heavy_tick + _light_tick dispatch in _physics_process
@@ -158,6 +179,33 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 26 BUILD — Light commit-to-lane behavioral split:
+  - Pre-mortem with H2 RULE v2 tag declaration
+  - Tag: [STRUCTURE-DEFERRED → iter 33] for crit 6 anchor 2 reinforcement
+    (anchor 2 already met iter 24 via Heavy state machine; Light split
+    is reinforcement, not new anchor)
+  - Enemy.gd Light branch (in _light_tick) changes:
+    * direction_commit_time effectively extended for Light (override per-
+      type via Spawner enemy.set?). Or add Light-specific @export
+      light_direction_commit_time = 3.0
+    * fire_cooldown for Light → 3.5s (currently 1.5s default; Spawner sets
+      from ENEMY_TYPES so update Light entry)
+    * _choose_direction_toward_player for Light: add vertical bias —
+      if absf(dx) and absf(dy) within 20% of each other, prefer vertical
+      direction. Otherwise unchanged.
+  - Update Spawner.gd ENEMY_TYPES["Light"] fire_cooldown 1.5 → 3.5
+  - Verify make test + oracle
+  - Score: no new anchor lift (crit 6 stays at 2 — Light split reinforces
+    existing role distinction). But the split DOES make the role
+    distinction more LEGIBLE which strengthens [STRUCTURE-DEFERRED] tag.
+  - Commit; ScheduleWakeup 240s
+
+Iter 27 BUILD = per-band encounter rules + stalling pressure tuning.`
+
+---
+
+## Previous Next Action (iter 24 — iter 25 attempted, fell back to self-consult)
 
 `Iter 25 CONSULT (per cadence — every 5 iters):
   - Pre-mortem H2 RULE v2 tagged

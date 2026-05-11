@@ -686,6 +686,26 @@ Self-deception detector: Would Pro reword anchor 2 again? My split implements Pr
 
 ---
 
+## Iter 025 — CONSULT (FAILED) → SELF-CONSULT
+
+**Tag declaration:** `[STRUCTURE]` only (process, no anchor lifts).
+
+Pre-mortem: Fire iter-25 Pro consult per user's 5-iter cadence. If agentify works, read iter 26.
+
+**Actual:** Agentify returned `max_tabs_reached` then `tab_busy` (3 retries across 3 different keys). Engine-loop iter-10/20 precedent: external CONSULT failure → self-pre-mortem-in-writing fills the role. Self-consult output documented in LEDGER iter 025.
+
+Self-consult conclusions:
+- H1 Heavy adequacy: HOLDS conditional; flag heavy_gate band 60% Heavy as potential "too many bullets" issue
+- H2 Light split iter 26: Option C (commit-to-lane: dir_commit 3s, fire 3.5s, vertical bias) wins
+- H3 META status: partially half-solved
+- H4 iter-33 prediction: still load-bearing
+- H5 anti-cargo-cult: iter-24 anchor met under [STRUCTURE-DEFERRED]; falsification test = "Heavy/Light feel same except slower"
+- META: drop iter-31 death-summary (fold kills counter into iter-32 polish), add iter-31 CAPABILITY (extend test_runner with ascender metrics)
+
+**Post-iter:** Self-consult applied H2 RULE v2 self-deception detector throughout. No score change. Revised sprint plan installed in STATE.md.
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

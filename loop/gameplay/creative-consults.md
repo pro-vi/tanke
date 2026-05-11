@@ -244,6 +244,20 @@ This is iter-12+ work. Iter 11 = base + template-stamping start.
 
 ---
 
+## Consult attempt iter 25 — FAILED (tab_busy after max_tabs_reached) → SELF-CONSULT
+
+**Trigger:** Iter 25 is per the user's 5-iter consult cadence. Fired `tanke-iter-25-validate` query.
+
+**Failure mode:** First call returned `max_tabs_reached` (agentify cap, 12 tabs). Closed 3 stale non-tanke tabs (`consult-19`, `blog-cn-curation`, `blog-cn-curation-2`). Retried; got `tab_busy` even though target tab key didn't exist. Tried fresh key; still `tab_busy`. agentify_tabs showed 9 tabs alive — under the 12 cap — but the default tab's `lastUsedAt` was very recent suggesting some background operation. Couldn't determine root cause.
+
+**Precedent:** FALSIFICATION 001 lesson + engine-loop iter-10/20 history: when external CONSULT fails, **self-pre-mortem-in-writing** fills the role. This is the third external-consult failure across the project (engine-loop x2 + iter 25). Pattern: agentify is reliable when it works, but failure mode requires fallback to self-consult.
+
+**Self-consult output:** See LEDGER iter 025 entry for full H1-H5 self-answers and revised sprint plan.
+
+**Lesson:** When agentify fails mid-cadence, default to self-consult and document the failure here. Don't retry endlessly. The H2 RULE v2 discipline (STRUCTURE/FEEL tags) substitutes for Pro's "would they reword the anchor?" check — I can apply the self-deception detector without Pro present.
+
+---
+
 ## Consult 004 — Iter 20 — GPT-Pro extended thinking — CREATIVE STEERING
 
 **When:** Fired iter 20 (2026-05-11), returned in iter 22 (durationMs 358561 ~6 min)
