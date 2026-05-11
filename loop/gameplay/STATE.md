@@ -4,7 +4,7 @@
 
 ```
 phase: loop
-iteration: 1
+iteration: 2
 preloop_complete: yes
 ```
 
@@ -43,54 +43,60 @@ procedural generation logic). Add new configs/scripts/scenes as needed.
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
-| 1. Core loop closes | 2 | Bullet system fixed iter 1; collisions register on terrain. Capped — feel criterion needs playtest for >2. |
-| 2. Spawn / wave system | 0 | No enemies yet |
+| 1. Core loop closes | 2 | Bullet system fixed iter 1; bullets hit enemies iter 2. Anchor 3 (death) needs HP. Capped — feel criterion needs playtest for >2. |
+| 2. Spawn / wave system | 1 | Iter 2: fixed-rate spawner, random angle around player |
 | 3. HP + death model | 0 | No HP system |
 | 4. XP + level-up flow | 0 | No XP |
 | 5. Upgrade variety | 0 | No upgrades |
-| 6. Enemy variety | 0 | No enemies |
+| 6. Enemy variety | 1 | Iter 2: one chaser type, naive move-and-slide |
 | 7. Run pacing | 0 | No run structure |
 | 8. Visual feedback / juice | 0 | None |
 | 9. UI / UX | 0 | No HUD |
 | 10. Build distinctness | 0 | No builds |
-| **Total** | **2/50** | Iter 1 lifted criterion 1 off the floor |
+| **Total** | **4/50** | Iter 2 +2 (enemies online) |
 
 ---
 
-## Open seams (iter 2+ priorities)
+## Open seams (iter 3+ priorities)
 
-1. ~~**Bullet system broken.**~~ ✓ Fixed iter 1. Open follow-up:
-   playtest at iter 5 will validate the bullet actually visibly travels and
-   despawns at runtime (only code-verified so far). Visual juice (impact
-   spark, muzzle flash) deferred to a later iter when bullets actually
-   collide with enemies (more rewarding signal source).
+1. ~~**Bullet system broken.**~~ ✓ Fixed iter 1. Real visual validation
+   still pending iter-5 playtest.
 
-2. **No enemies.** Iter-2 work — `scenes/Enemy.tscn`, `scripts/Enemy.gd`,
-   basic chaser AI. Gives bullets a visible target and creates the threat
-   side of the core loop. Lifts criterion 2 (spawn) and 6 (enemy variety).
+2. ~~**No enemies.**~~ ✓ Iter 2: chaser + spawner online. Open runtime
+   risks (predicted iter-2 pre-mortem): (a) enemies stuck on walls via
+   naive move-and-slide, no pathfinding; (b) spawn positions occasionally
+   land in BFS-unreachable pockets (~33% of map). Both deferred to iter 5
+   playtest for falsification.
 
 3. **No HP system.** PlayerTank.gd has no HP variable; no damage handling.
-   Foundational for criterion 3 and for "death ends run" of criterion 1.
+   Iter-3 work. Unblocks crit 1 anchor 3 (HP/death) and crit 3.
 
-4. **No HUD.** No CanvasLayer with HP/XP/timer.
+4. **No HUD.** No CanvasLayer. Likely seeds in iter 3 alongside HP
+   (text-only HP display = crit 9 anchor 1).
 
-5. **No XP / level-up.** Major iter-3+ work.
+5. **No XP / level-up.** Major iter-4+ work. Foundational for crit 4 + 5.
 
-6. **No upgrade pool.** Foundational for criterion 5.
+6. **No upgrade pool.** Foundational for criterion 5 and 10.
+
+7. **No death/restart flow.** Once HP exists, need "you died" state with
+   restart. Crit 1 anchor 4 + crit 3 anchor 3.
 
 ---
 
 ## Last Action
 
 ```
-Iter 1 BUILD complete. Bullet system fixed:
-- Moved Bullet.gd repo root → scripts/Bullet.gd (typed GDScript)
-- Migrated Bullet.tscn format 2 → 3 (extents → size, ext_resource syntax)
-- Added body_entered handler so terrain StaticBody2Ds despawn bullets
-- collision_mask=1 hits Environment; speed=120 px/s, lifetime=2s
-Headless boot clean; oracle unchanged (tile_hash f873ae60…, playable: true).
-Criterion 1: 0 → 2 (capped without playtest). Total 2/50.
-Next: iter 2 BUILD — enemies (gives bullets a visible target, lifts crit 2+6).
+Iter 2 BUILD complete. Enemies + Spawner online:
+- scripts/Enemy.gd: CharacterBody2D chaser, move_and_slide toward player
+- scripts/Spawner.gd: scene-resident, 2s fixed interval, random angle 120px
+  from player, max 20 alive
+- scenes/Enemy.tscn: collision_layer=8, mask=1; sprite from sprites_0.png frame=16
+- scenes/ProceduralLevel.tscn: added Spawner node (only the .gd is frozen)
+- scripts/Bullet.gd: _on_body_entered calls take_damage on hit
+- scenes/Bullet.tscn: mask 1 → 9 (Environment + Enemy)
+Headless boot clean; oracle byte-identical to baseline.
+Criteria 2 → 1, 6 → 1; crit 1 holds at 2. Total 4/50.
+Next: iter 3 BUILD — HP/death system (unlocks crit 1 anchor 3, lifts crit 3).
 ```
 
 ---
@@ -103,21 +109,24 @@ None (new loop).
 
 ## Next Action
 
-`Iter 2 BUILD — Enemies (basic chaser):
+`Iter 3 BUILD — HP + minimal HUD:
   - Pre-mortem to PRE-MORTEMS.md
-  - DIAGNOSE: weakest axes are criteria 2, 3, 4, 5, 6, 7, 8, 9, 10 all at 0/5.
-    Pick criterion 2 (Spawn) + 6 (Enemy variety) — both lift with one BUILD,
-    and enemies create a visible target for iter-1's bullet collisions.
-  - Write scripts/Enemy.gd: CharacterBody2D, move_toward(player), collision
-    with bullet → queue_free, collision with player → no damage yet (HP iter)
-  - Write scenes/Enemy.tscn: format 3, sprite frame from existing sprite sheet,
-    CollisionShape2D, collision_layer = 8 (Enemy), mask = 1 + 4 (Environment + Bullet)
-  - Write scripts/Spawner.gd or inline into ProceduralLevel: spawn 1 enemy per
-    N seconds at off-camera positions. Start with fixed rate (anchor 1 of crit 2).
-  - Make sure Bullet collision mask includes layer 8 (Enemy) so bullets stop on hit
-    — update scenes/Bullet.tscn collision_mask 1 → 1+8 = 9
-  - Headless smoke + oracle re-check
-  - Score (target: crit 2 → 1, crit 6 → 1; crit 1 holds at 2)
+  - DIAGNOSE: weakest axes are criteria 3, 4, 5, 7, 8, 9, 10 at 0/5.
+    Pick crit 3 (HP/death) + crit 9 (UI) — pair because HP needs display
+    to register as "feedback". Also unblocks crit 1 anchor 3 (player has
+    HP, can die).
+  - PlayerTank.gd: add max_hp/hp vars, take_damage(amount), death state.
+    On death: emit died signal, queue_free or set a "dead" flag.
+  - Add HitBox area (or use body_entered on PlayerTank's CharacterBody)
+    so enemies passing over the player deal damage. Cooldown timer to
+    prevent every-frame damage.
+  - Enemy.gd: on touching player (overlap or body_entered) → call player.take_damage(1)
+  - Minimal HUD: CanvasLayer with HP label. Text-only (crit 9 anchor 1).
+  - Death: show "YOU DIED" + "[R] restart" label. R reloads scene.
+  - Headless smoke + oracle re-check (oracle is tile-only; should still
+    match f873ae60…).
+  - Score: crit 3 → 2 (numeric HP, takes damage), crit 1 → 3 (HP+death,
+    capped at 3 without playtest — feel criterion), crit 9 → 1
   - Commit; ScheduleWakeup 240s`
 
 ---

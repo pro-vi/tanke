@@ -184,3 +184,114 @@ visibly move and visibly despawn? Code says yes; user eyes will tell.
 - PLAYTEST gate remains iter 5
 
 ---
+
+## Iter 002 — BUILD — Enemies + Spawner
+
+**Mode:** BUILD
+**Focus:** criteria 2 (spawn) + 6 (enemy variety) — first enemies in the world; also gives bullets a real target
+**Date:** 2026-05-10
+**Pre-mortem:** PRE-MORTEMS.md iter 002 (predicted crit 2 → 1, crit 6 → 1, crit 1 holds at 2, boot/oracle clean; runtime miss = enemies stuck on walls)
+
+### Diagnose
+
+Weakest axes: 9 criteria still at 0/5. Picked crit 2 (Spawn) + crit 6
+(Enemy variety) — both lift with one BUILD because enemies need spawning
+to exist, and a spawned chaser gives bullets a visible target validating
+iter-1's collision-register claim. HP/death/XP can't move until enemies
+exist (you need something to kill). So crit-2+6 is the right unblock.
+
+### Actions
+
+1. Wrote `scripts/Enemy.gd` (typed, CharacterBody2D):
+   - `@export var speed: float = 24.0` (under PlayerTank's 32 so player
+     can outrun)
+   - `@export var max_hp: int = 1`
+   - `_player` resolved via `get_tree().get_root().find_child("PlayerTank")`
+   - `_physics_process` does `velocity = to_player.normalized() * speed;
+     move_and_slide()` — naive chaser, no pathfinding
+   - `take_damage(amount)` decrements hp, `queue_free` on death
+2. Wrote `scenes/Enemy.tscn` (format 3, 14×14 collision box):
+   - CharacterBody2D with `collision_layer=8` (Enemy), `collision_mask=1`
+     (Environment) so they push against walls
+   - Sprite2D using `img/sprites_0.png`, vframes=18 hframes=16, `frame=16`
+     (row 2 col 0 — enemy tank from Battle City sprite sheet)
+3. Wrote `scripts/Spawner.gd` (Node2D, scene-resident):
+   - `@export enemy_scene: PackedScene`, `spawn_interval=2.0s`,
+     `max_enemies=20`, `spawn_distance=120` px
+   - `_ready` creates a child Timer (autostart) — self-contained, no scene
+     wiring needed beyond the export
+   - On timeout: pick random angle around player, instantiate enemy at
+     `player.global_position + Vector2(spawn_distance, 0).rotated(angle)`,
+     `add_child` under the level (sibling of player)
+   - Tracks `_enemies_alive` via `tree_exited` signal so cap respects deaths
+4. Added Spawner to `scenes/ProceduralLevel.tscn` (substrate freeze
+   compliant — only the .gd is frozen; .tscn nodes can be added):
+   - `[node name="Spawner" type="Node2D" parent="."]` with
+     `enemy_scene = ExtResource(Enemy.tscn)`, all four export defaults
+5. Bullet collision upgrade:
+   - `scripts/Bullet.gd:25-28`: `_on_body_entered` now calls
+     `body.take_damage(damage)` if the body has that method
+   - `scenes/Bullet.tscn:11`: `collision_mask = 1 → 9` (Environment +
+     Enemy layer 8 = 1+8 = 9)
+
+### Substrate freeze check
+
+- `LevelConfig.gd`, `BiomeConfig.gd`, `LevelDNA.gd`, `ProceduralStep.gd`,
+  `ProceduralLevel.gd`, all `tools/*.py`, `loop/test_runner.gd`,
+  `configs/*.tres` — **untouched**.
+- `ProceduralLevel.tscn` modified (added Spawner node + 2 ext_resources);
+  not in the freeze list (only the .gd is).
+
+### Verification
+
+- `godot --headless --path . --quit` → exit 0, clean. One carryover
+  cosmetic UID warning for Bullet.gd (Godot's UID cache stale from iter 1's
+  move; resolves on next editor open).
+- Reachability oracle (seed 42): byte-identical to iter 0/1 baseline —
+  `playable: true, reachable_cells: 804, rows_climbed: 29, tile_hash:
+  f873ae60ee3c420c57cdef5762acdad857b1a763ec50b76db80971ef4503e797`.
+  Spawner/Enemy are runtime entities; oracle measures generated tiles.
+
+### Scores
+
+| Criterion | Iter 1 | Iter 2 | Δ | Citation |
+|-----------|--------|--------|---|----------|
+| 1. Core loop closes | 2 | 2 | – | No HP/death yet; anchor 3 unreachable |
+| 2. Spawn / wave system | 0 | **1** | +1 | Fixed-rate spawner, random angle around player. `scripts/Spawner.gd:11-30`, `scenes/ProceduralLevel.tscn:91-96` |
+| 3. HP + death model | 0 | 0 | – | Player has no HP |
+| 4. XP + level-up flow | 0 | 0 | – | – |
+| 5. Upgrade variety | 0 | 0 | – | – |
+| 6. Enemy variety + behavior | 0 | **1** | +1 | One chaser type, naive move-and-slide AI. `scripts/Enemy.gd:14-19`, `scenes/Enemy.tscn:9-13`. Anchor 1. |
+| 7. Run pacing | 0 | 0 | – | – |
+| 8. Visual feedback / juice | 0 | 0 | – | – |
+| 9. UI / UX | 0 | 0 | – | – |
+| 10. Build distinctness | 0 | 0 | – | – |
+| **Total** | **2** | **4** | **+2** | |
+
+### Pre-mortem evaluation
+
+All four falsifiable predictions landed exactly. No falsifications. The
+real-runtime miss (enemies stuck on walls / spawn in unreachable pockets)
+is unverified by automated tests — iter-5 playtest is the falsification
+mechanism.
+
+### Files touched
+
+- Created: `scripts/Enemy.gd`, `scripts/Spawner.gd`, `scenes/Enemy.tscn`
+- Modified: `scripts/Bullet.gd` (take_damage on body hit),
+  `scenes/Bullet.tscn` (mask 1→9), `scenes/ProceduralLevel.tscn`
+  (Spawner node + 2 ext_resources, load_steps 15→17),
+  `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/STATE.md`,
+  `loop/gameplay/LEDGER.md`
+
+### Schedule
+
+- Iter 3 candidate = BUILD: HP/death system. PlayerTank + HP, enemy-on-touch
+  damage, death triggers run-over state with restart. Lifts crit 3 from 0
+  to ~2 (numeric HP, takes damage on collision) and crit 1 from 2 to 3
+  (anchor 3 unlocks: player has HP, takes damage, can die). Also probably
+  needs a minimal HUD (text-only HP) which seeds crit 9 at 1.
+- ScheduleWakeup 240s (BUILD cadence per PROMPT §7)
+- PLAYTEST mandatory at iter 5 (3 iters away)
+
+---

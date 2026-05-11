@@ -25,4 +25,41 @@ Falsifiable predictions:
 3. Reachability oracle at seed 42 unchanged: `playable: true`, `tile_hash
    f873ae60ee3c420c…` (Bullet changes don't touch tile placement).
 
+**Post-iter evaluation:** All three predictions landed exactly. Crit 1 = 2.
+Boot clean (one harmless UID cache warning). Oracle byte-identical. No
+falsifications. Real runtime risk (bullet visibly moves, despawns) deferred
+to iter 5 playtest.
+
+---
+
+## Iter 002 — BUILD (Enemies + Spawner)
+
+Going in, I expect this iter's biggest miss to be: the simple chaser AI
+(`move_toward(player)` via `move_and_slide`) gets enemies stuck against
+the procedural maze walls — they path-straight into a brick/steel wall and
+slide along it forever instead of routing around. Iter 5 playtest will
+show enemies piling up at the nearest wall between them and the player,
+never engaging. Secondary risk: spawn positions land in unreachable cells
+(the maze has ~33% non-terrain but with disconnected pockets the BFS
+reaches 804 cells of 1200 total — meaning ~33% of spawn points are walled
+off from the player). Either way, criterion 6 (enemy variety + behavior)
+caps at 1 — the anchor-5 "they don't get stuck" is exactly the predicted
+miss.
+
+Falsifiable predictions:
+1. Criterion 2 (spawn) lands at 1 — fixed-rate, random-angle spawn is
+   between anchor 1 (single location) and anchor 2 (varying intervals).
+   Conservative: 1.
+2. Criterion 6 (enemy variety) lands at 1 — single chaser type, no
+   pathfinding. Anchor 1 exactly.
+3. Criterion 1 (core loop) stays at 2 — bullets can now hit enemies but
+   no HP/death system yet, so anchor 3 ("player has HP, takes damage, can
+   die") is unreachable.
+4. Headless boot clean; oracle unchanged.
+
+**Post-iter evaluation:** All four predictions landed. Crit 2 = 1, crit 6 = 1,
+crit 1 held at 2, boot/oracle clean. The predicted runtime miss (enemies
+stuck on walls / spawn in unreachable pockets) is unverified — needs
+iter-5 playtest to confirm or falsify.
+
 ---

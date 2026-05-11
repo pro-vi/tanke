@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Texture2D" uid="uid://p8x1cyxdqfu0" path="res://img/sprites_1.png" id="1"]
 [ext_resource type="Script" uid="uid://cyo8ns4520b78" path="res://scripts/ProceduralLevel.gd" id="2"]
@@ -8,6 +8,8 @@
 [ext_resource type="Texture2D" uid="uid://dqcyr7h1gwsw3" path="res://img/grass_007.png" id="6"]
 [ext_resource type="Texture2D" uid="uid://dg7td6i6nfwni" path="res://img/water_007.png" id="7"]
 [ext_resource type="Resource" path="res://configs/playable.tres" id="8"]
+[ext_resource type="Script" path="res://scripts/Spawner.gd" id="9"]
+[ext_resource type="PackedScene" path="res://scenes/Enemy.tscn" id="10"]
 
 [sub_resource type="TileSetAtlasSource" id="SteelSrc"]
 texture = ExtResource("5")
@@ -87,3 +89,10 @@ tile_set = SubResource("GrassSet")
 
 [node name="Water" type="TileMapLayer" parent="Tiles"]
 tile_set = SubResource("WaterSet")
+
+[node name="Spawner" type="Node2D" parent="."]
+script = ExtResource("9")
+enemy_scene = ExtResource("10")
+spawn_interval = 2.0
+max_enemies = 20
+spawn_distance = 120.0
