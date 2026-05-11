@@ -4,17 +4,17 @@
 
 ```
 phase: loop
-iteration: 23
+iteration: 24
 preloop_complete: yes
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 next_playtest_due_iter: 33
-consult_cadence: every 5 iters (iter 20 → Consult 004 ADOPTED iter 22, 25 next, 30)
-sprint_phase: bands+behaviors (iters 23-30, post-Consult-004 reprioritization)
+consult_cadence: every 5 iters (iter 20 → Consult 004 ADOPTED, 25 next, 30)
+sprint_phase: bands+behaviors (iter 24 Heavy split shipped)
 pending_consult: none
-load_bearing_problem: combat verbs (stop-face-fire) vs ascender verbs (keep moving up) — Pro META
-h2_rule_version: v2 (iter 23) — STRUCTURE/FEEL/MIXED tag mandatory on score-lift citations
-playtest_template: loop/gameplay/playtest-template.md (2-question format, target 1-per-5-iters cadence post-33)
+load_bearing_problem: combat verbs vs ascender verbs (Pro META) — addressed partially by Heavy AIM_FIRE pause
+h2_rule_version: v2 (iter 23) — STRUCTURE/FEEL/MIXED tag mandatory
+playtest_template: loop/gameplay/playtest-template.md
 ```
 
 ---
@@ -69,12 +69,12 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 | 3. HP + death model | 2 | Iter 3 HurtBox + HP shown; anchor 3 needs HP bar |
 | 4. Depth feedback + ascent pressure (was XP) | **2** | Iter 15 playtest cite "feels like a run" satisfies anchor 2 (DEPTH+TIME live update) |
 | 5. Forward survivability (was Upgrade variety) | **1** | Iter 12 anchor 1 met: fire-while-moving + spawn-ahead-of-velocity = enemies don't reliably block ascent |
-| 6. Enemy variety | **1** | REVERTED iter 22 per Pro Consult 004 H3: stricter anchor 2 requires role distinction not stat distinction. Stats-only Light/Heavy doesn't meet. Behavioral split lands iters 24/26 to re-earn 2. |
+| 6. Enemy variety | **2** | Iter 24 [STRUCTURE-DEFERRED → iter 33]: Heavy CHASE/AIM_FIRE state machine + Light naive chaser = role distinction. Pro Consult 004 H2 recipe verbatim. Feel verification at iter-33 playtest. |
 | 7. Compulsion loop (was Run pacing) | 0 | Needs playtest |
 | 8. Visual feedback / juice | **2** | Iter 19 player hit-flash + iter 21 enemy death yellow burst (anchor 2) |
 | 9. UI / UX | 1 | Iter 3 text HUD; iter 11 added DEPTH/TIME labels |
 | 10. Run summary + replayability (was Build distinctness) | **1** | Anchor 1 met retroactively iter 3 (YOU DIED + R) |
-| **Total** | **15/50** | Iter 22 -1 (crit 6 revert per Pro Consult 004 stricter anchor) |
+| **Total** | **16/50** | Iter 24 +1 (crit 6 re-earned via behavioral split [STRUCTURE-DEFERRED]) |
 
 ---
 
@@ -131,21 +131,22 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 23 AUDIT complete. /meta nat-13 structural fixes installed:
-- Diagnosis: loop has parity drift — anchor-citation model diverges
-  from feel-delivery model; iter-22 score revert was the symptom.
-- H2 RULE v2: STRUCTURE / FEEL / MIXED / STRUCTURE-DEFERRED tags
-  mandatory on every score-lift citation. Feel-criteria >2 require
-  [FEEL] or [MIXED]. Self-deception detector before commit.
-- Retroactive tagging: iters 19, 21 = [STRUCTURE] (visual juice
-  feel-impact unverified); iter 22 = [STRUCTURE-DEFERRED → iter 26].
-- New playtest-template.md: 2-question format, target <30s user time,
-  enables 1-per-5-iter playtest cadence post-33.
-- make test exit 0, oracle f873ae60ee3c420c… unchanged.
-- Scores: unchanged at 15/50 (process iter).
+Iter 24 BUILD complete. Heavy CHASE/AIM_FIRE state machine:
+- Enemy.gd refactored: enum State {CHASE, AIM_FIRE}, enemy_type
+  export, _heavy_tick + _light_tick dispatch in _physics_process
+- Heavy CHASE: locomotes like Light + LOS check → AIM_FIRE
+- Heavy AIM_FIRE: stop, face_player, fire 2-shot burst at 0.25s
+  interval, 0.8s cooldown, exit on lost-LOS after 0.4s min dwell
+- _player_in_line_of_sight: cardinal alignment <12px off-axis, <80px range
+- Spawner passes enemy.set("enemy_type", type_data.name) on spawn
+- Light unchanged (naive chase + 1.5s fire_cooldown)
+- Verified: make test exit 0, oracle f873ae60ee3c420c… unchanged
+- Crit 6 1 → 2 [STRUCTURE-DEFERRED → iter 33]. Total 15 → 16/50.
 
-Next: iter 24 BUILD Heavy behavioral split (corridor-denier) with
-STRUCTURE/FEEL tagging discipline applied.
+Pro Consult 004 H2 recipe ("corridor-denier that pauses and fires
+bursts") implemented verbatim.
+
+Next: iter 25 CONSULT — validate Heavy state machine + plan iter 26.
 ```
 
 ---
@@ -157,6 +158,29 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 25 CONSULT (per cadence — every 5 iters):
+  - Pre-mortem H2 RULE v2 tagged
+  - Fire /agentify with current state (post-iter-24 Heavy state machine).
+    Questions:
+    1. Heavy CHASE/AIM_FIRE state machine — does the BEHAVIORAL split
+       map to anchor 2's role-distinction intent? Are there obvious
+       gaps (e.g., LOS proxy is naive)?
+    2. iter-26 Light behavioral split ("lane-invader, advances
+       aggressively, fires rarely"). Best impl approach?
+    3. Per Pro v4 META (combat verbs vs ascender verbs): does Heavy
+       AIM_FIRE partially address this (player can dodge if they
+       keep moving — Heavy must align then commit to a 0.8s pause)?
+       Or does it INTENSIFY the contradiction (player must stop to
+       not get hit by burst, breaking ascender flow)?
+    4. Status check: load-bearing iter-33 prediction still right?
+  - fireAndForget, read iter 26.
+
+Iter 26 BUILD = Light behavioral split + Pro Consult 005 integration.`
+
+---
+
+## Previous Next Action (iter 23 — shipped iter 24)
 
 `Iter 24 BUILD — Heavy behavioral split (corridor-denier state machine):
   - Pre-mortem (H2 RULE v2): tag declaration upfront. Expected tag for

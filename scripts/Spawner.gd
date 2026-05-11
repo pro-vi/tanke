@@ -234,6 +234,7 @@ func _telegraph_then_spawn(pos: Vector2) -> void:
 	var enemy: Node2D = enemy_scene.instantiate()
 	# Apply enemy type stats BEFORE add_child so _ready sees the right values
 	var type_data: Dictionary = _pick_enemy_type()
+	enemy.set("enemy_type", type_data.name)  # iter 24: behavioral switch in Enemy.gd
 	enemy.set("sprite_base_frame", type_data.base_frame)
 	enemy.set("speed", type_data.speed)
 	enemy.set("max_hp", type_data.max_hp)

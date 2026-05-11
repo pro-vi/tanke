@@ -665,6 +665,27 @@ Tag pre-declaration for iter 23: This iter expects to earn NO score lifts. All w
 
 ---
 
+## Iter 024 — BUILD — Heavy behavioral split (CHASE/AIM_FIRE state machine)
+
+**Tag declaration (H2 RULE v2):** Expected to earn crit 6 anchor 2 lift, tag `[STRUCTURE-DEFERRED → iter 33]`. Feel verification deferred to playtest where user describes Light/Heavy as behaviorally distinct.
+
+Going in, biggest expected miss: LOS check via "roughly same row or column" is discrete; without hysteresis Heavy oscillates CHASE/AIM_FIRE every frame near alignment threshold. Mitigated via `aim_fire_min_dwell=0.4s` requiring state dwell before exit.
+
+H2-RULE claims:
+1. Spawner passes `enemy_type` to enemy on spawn — code → LANDED
+2. Enemy.gd CHASE/AIM_FIRE state machine for Heavy — code → LANDED
+3. AIM_FIRE stops movement, faces player, fires 2-shot burst — code → LANDED (`_heavy_aim_fire_tick`)
+4. Light unchanged (naive chase) — code → LANDED (`_light_tick` extracted from prior `_physics_process`)
+5. (iter-33 playtest) User describes Light/Heavy behaviorally distinct — [FEEL] deferred
+6. make test exit 0 — LANDED
+7. Oracle hash unchanged — LANDED
+
+Self-deception detector: Would Pro reword anchor 2 again? My split implements Pro Consult 004 H2's verbatim recipe ("corridor-denier that pauses and fires bursts"). Pro shouldn't reword. Anchor holds under [STRUCTURE-DEFERRED].
+
+**Post-iter:** 6 of 7 binary-now LANDED (5 deferred to iter-33 playtest per H2 RULE v2 tag). Crit 6 1 → 2 [STRUCTURE-DEFERRED → iter 33]. Total 15 → 16.
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

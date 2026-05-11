@@ -1847,3 +1847,72 @@ Designed for lighter cadence. Two questions covering the LOAD-BEARING iter predi
 - ScheduleWakeup 240s.
 
 ---
+
+## Iter 024 — BUILD — Heavy CHASE/AIM_FIRE state machine
+
+**Mode:** BUILD (Pro Consult 004 H2 implementation)
+**Focus:** crit 6 anchor 2 — code-citable behavioral split between Light (naive chaser) and Heavy (corridor-denier with state machine)
+**Date:** 2026-05-11
+**Tag declaration:** `[STRUCTURE-DEFERRED → iter 33]` — code-citable now, feel-verification at playtest
+
+### Actions
+
+`scripts/Enemy.gd` refactored:
+- New `enum State { CHASE, AIM_FIRE }` + `@export enemy_type: String = "Light"` (set by Spawner per type)
+- Exports for Heavy params: `aim_fire_range=80px`, `aim_fire_axis_tolerance=12px` (~1.5 cells), `aim_fire_min_dwell=0.4s` (hysteresis), `burst_count=2`, `burst_interval=0.25s`, `aim_fire_cooldown_between_bursts=0.8s`
+- New state vars: `_state`, `_state_time`, `_burst_remaining`, `_burst_timer`
+- `_physics_process` dispatches: Heavy → `_heavy_tick(delta)` / Light → `_light_tick(delta)`
+- `_light_tick`: existing chase + per-cooldown fire (preserved verbatim from pre-iter-24)
+- `_heavy_tick`: `match _state` dispatching CHASE/AIM_FIRE
+- `_heavy_chase_tick`: Light's chase locomotion + LOS check → AIM_FIRE; fires on cooldown
+- `_heavy_aim_fire_tick`: velocity=0, face_player, fire burst (burst_remaining bullets at burst_interval), then cooldown then refresh OR exit if player out of LOS after min_dwell
+- `_enter_aim_fire`: state=AIM_FIRE, reset state_time + burst_remaining
+- `_face_player`: pick cardinal direction toward player (dx vs dy axis); update sprite frame; no grid snap (Heavy is stationary while aiming)
+- `_player_in_line_of_sight`: `|dy| < axis_tolerance AND |dx| < range` (horizontal alignment) OR symmetric vertical case
+
+`scripts/Spawner.gd`:
+- `_telegraph_then_spawn` adds `enemy.set("enemy_type", type_data.name)` before add_child
+
+### Behavior summary
+
+- **Light** (70% spawn weight, no behavioral change): chase player on grid, fire every 1.5s, slide on collision via perpendicular alternates.
+- **Heavy** (30% spawn weight, new):
+  - CHASE mode: locomotes like Light (slower per stat: speed=14) BUT continuously checks LOS to player
+  - On LOS (player aligned within ~1.5 cells off-axis AND ≤80px range): transition to AIM_FIRE
+  - AIM_FIRE: stop, face player, fire burst of 2 bullets 0.25s apart
+  - After burst: 0.8s cooldown; if player still aligned → refresh burst; if player breaks LOS → CHASE
+  - 0.4s minimum dwell prevents single-frame flicker through alignment
+
+### Substrate freeze check
+
+- All frozen scripts untouched. Modified only Enemy.gd + Spawner.gd.
+- No .tscn edits. H1 tripwire: 1. Unchanged.
+
+### Verification
+
+- `make test` exit 0
+- Reachability oracle at seed 42: `tile_hash f873ae60ee3c420c…` unchanged. Substrate intact iters 1-24.
+- 15s headless run (warmup band only — Light spawns 100%): no errors. Heavy state machine not exercised in stationary test because Heavy doesn't spawn until depth 8 (first_push band onward). Iter-33 playtest will verify Heavy behavior visually.
+
+### Scores
+
+| Criterion | Iter 23 | Iter 24 | Δ | Citation |
+|-----------|---------|---------|---|----------|
+| 6. Enemy variety + behavior | 1 | **2** | +1 | `[STRUCTURE-DEFERRED → iter 33]` — Anchor 2 met via code-citable behavioral split. `Enemy.gd:_heavy_tick` (state machine CHASE/AIM_FIRE) + `Enemy.gd:_light_tick` (naive chase). Pro Consult 004 H2 recipe implemented. Feel verification at iter-33 playtest where user describes the two types as behaviorally distinct. |
+| Others | unchanged | unchanged | – | – |
+| **Total** | **15** | **16** | **+1** | First [STRUCTURE-DEFERRED] lift under H2 RULE v2 |
+
+### Pre-mortem evaluation
+
+5 of 5 binary-now LANDED in-iter (build verified, oracle verified, no parse errors, structure cite-able). Feel lift deferred to iter-33 playtest per H2 RULE v2.
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd` (major refactor — state machine + Light/Heavy split), `scripts/Spawner.gd` (pass enemy_type to spawned enemy), `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/LEDGER.md`, `loop/gameplay/STATE.md`
+
+### Schedule
+
+- Iter 25 = CONSULT (per cadence + PROMPT §10/20/30 — iter 25 is intermediate, not on official 10/20/30, but user's 5-iter directive applies). Fire /agentify to validate Heavy state machine + plan iter 26+.
+- ScheduleWakeup 240s
+
+---
