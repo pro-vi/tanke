@@ -23,20 +23,20 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 39 → 60)
-iteration: 39
+phase: SPRINT (iter 40 → 60)
+iteration: 40
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
-sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized iter 39 → iter 60 PLAYTEST"
+sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"
 last_completed_playtest_iter: 38 (Heavy wind-up: user cite "yeah ok that works for now")
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
-consult_cadence: adaptive — 20 ADOPTED, 25 FAILED→self-consult, 29 ADOPTED, planned 45 (mid-sprint), 55 (pre-playtest)
-ai_intelligence_stage: Stage 1 VISION + wind-up telegraph + slower fire pacing. Movement still omniscient.
-falsifications_closed: F007 (water iter 37), F005-v2 (Heavy wind-up iter 38), F006/F008 (no complaint after 2 playtests — soft-closed iter 39)
-falsifications_pending_playtest: (none open)
+consult_cadence: adaptive — last 29, planned 45 (mid-sprint), 55 (pre-playtest)
+ai_intelligence_stage: Stage 1 VISION + wind-up telegraph. Movement still omniscient. 3rd type Fast (iter 40) — harassment rusher, no AI state (BC-baseline behavior on top of vertical bias).
+falsifications_closed: F007, F005-v2, F006, F008
+falsifications_pending_playtest: crit 6 anchor 3 [STRUCTURE] lift falsification clause (iter 60: if user does NOT distinguish Fast from Light/Heavy → revert 3→2)
 mandatory_playtest_iter: 60
-halt_iter_if_no_response: 63 (= 60 + 3)
-score: 20/50 (unchanged; crit 6 STRUCTURE-DEFERRED → [FEEL]-confirmed at 2/5 anchor 2; no numeric lift)
+halt_iter_if_no_response: 63
+score: 21/50 (iter 40 +1 [STRUCTURE] crit 6 2→3 — 3 distinct types: Light lane-invader / Heavy paused-aim corridor-denier / Fast continuous-fire harasser)
 ```
 
 ---
@@ -91,12 +91,12 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 | 3. HP + death model | 2 | Iter 3 HurtBox + HP shown; anchor 3 needs HP bar |
 | 4. Depth feedback + ascent pressure (was XP) | **2** | Iter 15 playtest cite "feels like a run" satisfies anchor 2 (DEPTH+TIME live update) |
 | 5. Forward survivability (was Upgrade variety) | **1** | Iter 12 anchor 1 met: fire-while-moving + spawn-ahead-of-velocity = enemies don't reliably block ascent |
-| 6. Enemy variety | **2** | Iter 24 [STRUCTURE-DEFERRED → iter 33]: Heavy CHASE/AIM_FIRE state machine + Light naive chaser = role distinction. Pro Consult 004 H2 recipe verbatim. Feel verification at iter-33 playtest. |
+| 6. Enemy variety | **3** | Iter 40 [STRUCTURE] anchor 3: 3 types with distinct movement AND firing patterns — Light (lane-invader, 3.5s rare fire, 3s lane-commit) / Heavy (paused-aim corridor-denier, 0.45s wind-up + telegraph + burst, vision-gated) / Fast (continuous-fire harasser, 1.0s fire while moving, no aim, no LOS check). Falsification clause iter 60: if user does NOT distinguish Fast → revert 3→2. |
 | 7. Compulsion loop (was Run pacing) | 0 | Needs playtest |
 | 8. Visual feedback / juice | **2** | Iter 19 player hit-flash + iter 21 enemy death yellow burst (anchor 2) |
 | 9. UI / UX | 1 | Iter 3 text HUD; iter 11 added DEPTH/TIME labels |
 | 10. Run summary + replayability (was Build distinctness) | **1** | Anchor 1 met retroactively iter 3 (YOU DIED + R) |
-| **Total** | **20/50** | Iter 34 +3 (crit 7 anchor 3 [FEEL] — 5-runs-unprompted) |
+| **Total** | **21/50** | Iter 40 +1 crit 6 [STRUCTURE] (3rd enemy type Fast unlocks anchor 3) |
 
 ---
 

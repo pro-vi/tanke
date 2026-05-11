@@ -984,7 +984,42 @@ H2-RULE claims:
 2. F005-v2 + F006 + F008 closures cited correctly per v2 PROMPT falsification protocol
 3. crit 6 stays at 2/5 per anchor 3's "3+ types" structural lock — no rationalization lift
 
-**Post-iter:** [filled at iter-40 start]
+**Post-iter (iter 40 start):** All 3 claims landed. Iter 40 unlocks the structural lock by ADDING a 3rd enemy type.
+
+---
+
+## Iter 040 — BUILD — 3rd enemy type "Fast" (harassment rusher)
+
+Tag: `[STRUCTURE]` for crit 6 anchor 3 lift, with iter-60 [FEEL] falsification clause.
+
+Diagnose: weakest axis with clean unlock is crit 6 at 2/5. Anchor 3 requires "Three+ types with distinct movement AND firing patterns (e.g., chaser-rusher / corridor-denier-pauser / line-of-sight-snapper)." Adding a 3rd type with role distinction from Light (lane-invader) and Heavy (corridor-denier) is the cleanest structural lift available.
+
+Going in, biggest expected miss: **sprite_base_frame=16 lands on a non-tank graphic** in sprites_1.png — user reports "the third one looks weird" at iter 60. Mitigation: visual inspection deferred (can't view atlas headless); if wrong, iter 41 picks a different frame. Secondary risk: Fast's harassment-fire pattern feels indistinguishable from Light's lane-invade in early bands where Light dominates.
+
+Design:
+- **Fast role**: harassment rusher. Continuous fire while moving (no state machine, no aim, no telegraph). Fires in current facing direction every 1.0s.
+- **Distinct movement**: speed 32 (vs Light 24, Heavy 14); direction_commit_time 0.8 (vs Light 3.0, Heavy 0.8) — turns aggressively toward player.
+- **Distinct firing**: continuous 1.0s rate, single shot, no aim adjustment, no LOS check (just blasts in facing direction). vs Light 3.5s single | Heavy 0.45s wind-up + burst-of-2 + 1.2s cooldown.
+- **Battlefield role**: pressure player to keep dodging while Light/Heavy do their thing. Player can't hide behind walls because Fast doesn't aim — it sprays.
+
+Band placement:
+- warmup (0-8): Light 1.0 (no Fast — preserve onboarding)
+- first_push (8-20): Light 0.6, Heavy 0.2, Fast 0.2 (variety introduced)
+- heavy_gate (20-40): Light 0.25, Heavy 0.5, Fast 0.25 (Heavy band-marker + Fast harass)
+- rush (40+): Light 0.25, Heavy 0.15, Fast 0.6 (Fast-dominant harassment phase)
+
+H2-RULE claims (3):
+1. **[STRUCTURE]** Crit 6 lifts 2 → 3 via anchor 3 (3+ types with distinct movement AND firing). Code citation: scripts/Enemy.gd `_fast_tick` + Spawner.gd ENEMY_TYPES["Fast"].
+2. Build verified: make test exit 0, godot --headless --quit-after 60 clean.
+3. Substrate intact: scripts/ProceduralLevel.gd untouched; H1 tripwire unchanged at 2.
+
+Falsification clause (iter 60 playtest):
+- If user does NOT spontaneously distinguish Fast from Light/Heavy ("there's a quick one" / "they spray" / similar), revert crit 6 to 2/5.
+- If user reports "third one looks weird" or "what was that", iter 61 fixes sprite_base_frame.
+
+Self-deception check (Pro reword test): if I showed Pro "I added a 3rd enemy with continuous fire vs Light's rare fire vs Heavy's burst" + RUBRIC.md crit 6 anchor 3, would they grant 2 → 3 [STRUCTURE]? YES — the anchor's e.g. list ("chaser-rusher / corridor-denier-pauser / line-of-sight-snapper") literally describes the configuration. Lift defensible.
+
+**Post-iter:** [filled at iter 41]
 
 ---
 

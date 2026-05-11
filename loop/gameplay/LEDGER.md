@@ -2836,3 +2836,105 @@ No code changes this iter (META). All frozen scripts untouched.
 - Plan revisited each iter; this is roadmap not contract
 
 ---
+
+## Iter 040 — BUILD — 3rd enemy type "Fast" (harassment rusher)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** **21/50** (was 20; +1 crit 6 [STRUCTURE])
+
+Diagnose: crit 6 = 2/5 is the cleanest structural lift available. Anchor 3
+requires "Three+ types with distinct movement AND firing patterns." Adding
+a 3rd type with role distinction from Light (lane-invader) and Heavy
+(corridor-denier) unlocks anchor 3.
+
+### Fast — harassment rusher (new 3rd type)
+
+**Distinct movement**: speed 32 (vs Light 24, Heavy 14); direction_commit_time
+0.8 (vs Light 3.0, Heavy 0.8). Aggressive vertical-bias direction choice with
+1.5× horizontal threshold (vs Light's 2.0×). Turns aggressively toward
+player.
+
+**Distinct firing**: continuous 1.0s fire while moving — no state machine,
+no aim adjustment, no telegraph, no LOS check. Fires in current facing
+direction. Distinguishing feel: player can't hide behind walls from Fast
+because it sprays in motion direction, not aimed at player.
+
+**Battlefield role**: pressure player to dodge incoming while Light/Heavy
+play their roles. Fills the "rush phase" of late depth — `rush` band at
+depth 40+ now has Fast 0.6 (dominant), with Fast as `guarantee_first_type`
+band-marker (signals rush phase begins with harassment, not lane-invader).
+
+### Band weights updated
+
+- warmup (0-8): Light 1.0 (no change — preserve onboarding)
+- first_push (8-20): Light 0.6, Heavy 0.2, **Fast 0.2** (variety introduced)
+- heavy_gate (20-40): Light 0.25, Heavy 0.5, **Fast 0.25** (Fast harasses while Heavy denies)
+- rush (40+): Light 0.25, Heavy 0.15, **Fast 0.6** (Fast-dominant harassment phase; guarantee_first_type = Fast)
+
+### Code changes
+
+**scripts/Spawner.gd** (~12 lines):
+- Added Fast entry to ENEMY_TYPES (base_frame=16, speed=32, fire_cooldown=1.0, direction_commit_time=0.8)
+- Updated DEPTH_BANDS type_weights for all 4 bands
+- rush band guarantee_first_type "Light" → "Fast"
+
+**scripts/Enemy.gd** (~50 lines):
+- Replaced `if/else` enemy_type branch in `_physics_process` with match
+- Added `_fast_tick(delta)` — locomotion + collision-fallback + continuous fire
+- Added `_choose_direction_fast()` — 1.5× horizontal threshold (more eager turn-to-player than Light's 2.0×)
+
+### Sprite frame risk
+
+sprite_base_frame=16 chosen without visual inspection (can't view PNG
+headless). If iter 60 user reports "third one looks weird" / "what was
+that" → iter 61 picks different frame. Frame 16 is between Light at 8
+and Heavy at 32, likely a 3rd tank variant in sprites_1.png.
+
+### Score
+
+| Criterion | Before | After | Δ | Citation |
+|-----------|--------|-------|---|----------|
+| 6. Enemy variety | 2 | **3** | +1 | `[STRUCTURE]` anchor 3 ("3+ types with distinct movement AND firing patterns"). Code citations: Spawner.gd ENEMY_TYPES (3 entries), Enemy.gd `_fast_tick`/`_heavy_tick`/`_light_tick`. Distinct firing patterns: Light (3.5s single, no aim), Heavy (0.45s wind-up + burst, vision-gated), Fast (1.0s continuous, no aim, no LOS). |
+| **Total** | **20** | **21** | **+1** | |
+
+**Falsification clause (per v2 §Step 5 — non-feel crit allows [STRUCTURE] with falsification clause):**
+- If user iter-60 playtest does NOT spontaneously distinguish Fast from Light/Heavy ("there's a quick one" / "they spray" / similar role-distinction language) → revert crit 6 to 2/5.
+- If user reports "third one looks weird" or "what was that" → iter 61 fixes sprite_base_frame.
+
+**Self-deception check** (Pro reword test): if I showed Pro "added a 3rd
+enemy with continuous fire vs Light's rare-fire vs Heavy's burst-with-aim"
++ RUBRIC.md anchor 3, would they grant 2 → 3? **YES** — the anchor's e.g.
+list ("chaser-rusher / corridor-denier-pauser / line-of-sight-snapper")
+literally matches the 3 roles now implemented.
+
+### Substrate freeze check
+
+- Hard substrate scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- H1 tripwire unchanged at 2 (Spawner + Walls)
+- Hash anchor `f873ae60ee3c420c…` unchanged
+- Soft substrate touched: Spawner.gd + Enemy.gd (per v2 §SUBSTRATE FREEZE
+  soft-substrate list)
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0, no warnings
+- Score-cited behavior preserved (Light + Heavy unchanged; only branch
+  added)
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd`, `scripts/Enemy.gd`
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s (BUILD mode per v2 §Step 7)
+- Iter 41 BUILD likely targets crit 8 (visual juice — bullet impact spark,
+  screen shake) or crit 9 (UI/UX — best-depth tracker, depth milestone HUD)
+- 19 iters remaining in sprint window before iter 60 PLAYTEST
+
+---

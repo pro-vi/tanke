@@ -39,6 +39,19 @@ const ENEMY_TYPES: Array = [
 		"fire_cooldown": 0.8,
 		"direction_commit_time": 0.8,
 	},
+	# iter 40: 3rd type "Fast" — harassment rusher. Continuous fire while
+	# moving (no state machine, no aim, no telegraph). Distinct from Light
+	# (rare-fire lane-invader) and Heavy (paused-aim corridor-denier).
+	# Unlocks crit 6 anchor 3 ("3+ types with distinct movement AND firing").
+	{
+		"name": "Fast",
+		"weight": 0.0,  # band-overridden; never spawned via fallback weight
+		"base_frame": 16,
+		"speed": 32.0,
+		"max_hp": 1,
+		"fire_cooldown": 1.0,
+		"direction_commit_time": 0.8,
+	},
 ]
 
 # Ascent director (iter 22 scaffold; iter 27 adds per-band max_alive +
@@ -53,7 +66,7 @@ const DEPTH_BANDS: Array = [
 	{
 		"name": "warmup",
 		"depth_max": 8,
-		"type_weights": {"Light": 1.0, "Heavy": 0.0},
+		"type_weights": {"Light": 1.0, "Heavy": 0.0, "Fast": 0.0},
 		"interval_mult": 1.25,
 		"max_alive": 4,  # onboarding density
 		"guarantee_first_type": null,
@@ -61,7 +74,7 @@ const DEPTH_BANDS: Array = [
 	{
 		"name": "first_push",
 		"depth_max": 20,
-		"type_weights": {"Light": 0.7, "Heavy": 0.3},
+		"type_weights": {"Light": 0.6, "Heavy": 0.2, "Fast": 0.2},  # iter 40: introduce Fast
 		"interval_mult": 1.0,
 		"max_alive": 10,
 		"guarantee_first_type": null,
@@ -69,7 +82,7 @@ const DEPTH_BANDS: Array = [
 	{
 		"name": "heavy_gate",
 		"depth_max": 40,
-		"type_weights": {"Light": 0.4, "Heavy": 0.6},
+		"type_weights": {"Light": 0.25, "Heavy": 0.5, "Fast": 0.25},  # iter 40: Fast harasses while Heavy denies
 		"interval_mult": 0.85,
 		"max_alive": 8,  # fewer but heavier — denial pressure
 		"guarantee_first_type": "Heavy",  # band-marker
@@ -77,10 +90,10 @@ const DEPTH_BANDS: Array = [
 	{
 		"name": "rush",
 		"depth_max": 9999,
-		"type_weights": {"Light": 0.85, "Heavy": 0.15},
+		"type_weights": {"Light": 0.25, "Heavy": 0.15, "Fast": 0.6},  # iter 40: Fast-dominant harassment phase
 		"interval_mult": 0.7,
 		"max_alive": 16,
-		"guarantee_first_type": "Light",  # signal the rush phase
+		"guarantee_first_type": "Fast",  # iter 40: signal the rush phase with harassment, not lane-invader
 	},
 ]
 

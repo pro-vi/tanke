@@ -68,10 +68,10 @@ func _physics_process(delta: float) -> void:
 	_fire_timer -= delta
 	_direction_timer -= delta
 
-	if enemy_type == "Heavy":
-		_heavy_tick(delta)
-	else:
-		_light_tick(delta)
+	match enemy_type:
+		"Heavy": _heavy_tick(delta)
+		"Fast": _fast_tick(delta)
+		_: _light_tick(delta)
 
 	_update_forest_hide()
 
@@ -104,6 +104,53 @@ func _light_tick(delta: float) -> void:
 	if _fire_timer <= 0.0:
 		_fire()
 		_fire_timer = fire_cooldown
+
+
+# Fast (iter 40): harassment rusher. Continuous fire while moving — no state
+# machine, no aim adjustment, no telegraph, no LOS check. Fires in current
+# facing direction every fire_cooldown=1.0s. Distinct from Light's rare-fire
+# lane-commit and Heavy's paused-aim wind-up. Player can't safely hide behind
+# walls from Fast because it sprays in motion direction rather than aiming.
+# Speed 32 (highest) + direction_commit_time 0.8 = turns aggressively.
+func _fast_tick(delta: float) -> void:
+	if _direction_timer <= 0.0:
+		_choose_direction_fast()
+		_direction_timer = direction_commit_time
+
+	var dir_vec: Vector2 = _direction_vector(direction)
+	velocity = dir_vec * speed
+	var collision: KinematicCollision2D = move_and_collide(velocity * delta)
+	if collision:
+		var alternates: Array = _perpendicular(direction)
+		alternates.shuffle()
+		for alt in alternates:
+			if _try_step(_direction_vector(alt) * speed * delta):
+				_turn_to(alt)
+				_direction_timer = direction_commit_time
+				return
+		_turn_to(_opposite(direction))
+		_direction_timer = direction_commit_time
+		return
+
+	if _fire_timer <= 0.0:
+		_fire()
+		_fire_timer = fire_cooldown
+
+
+# Fast variant of direction choice: aggressive vertical bias. Turns to face
+# player more often than Light's |dx| > 2× |dy| threshold — Fast uses
+# 1.5× threshold, snapping into the player's horizontal lane more eagerly.
+func _choose_direction_fast() -> void:
+	if _player == null:
+		return
+	var to_player: Vector2 = _player.global_position - global_position
+	var new_dir: int
+	if absf(to_player.x) > absf(to_player.y) * 1.5:
+		new_dir = Constants.Dir.R if to_player.x > 0 else Constants.Dir.L
+	else:
+		new_dir = Constants.Dir.D if to_player.y > 0 else Constants.Dir.U
+	if new_dir != direction:
+		_turn_to(new_dir)
 
 
 # Light variant of direction choice: vertical bias. Light prefers U/D
