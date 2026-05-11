@@ -2206,3 +2206,43 @@ Together they encode "stalling has costs" without forcing the player to clear (p
 - ScheduleWakeup 240s.
 
 ---
+
+## Iter 029 — CONSULT retry (fire-and-forget succeeded)
+
+**Mode:** CONSULT (per cadence retry after iter-25 tab_busy)
+**Focus:** validate iter 24-28 work; plan iter 30-32 polish + CAPABILITY; check META resolution status
+**Date:** 2026-05-12
+
+### Actions
+
+Fired `tanke-iter-29-revalidate` agentify query. Success: queryId returned, 7 of 9 context files inlined (99481/100000 char budget; RUBRIC.md + STATE.md omitted but LEDGER carries equivalent). fireAndForget=true.
+
+Asked Pro:
+- H1 Light split adequacy (iter 26 commit-to-lane)
+- H2 below-spawn risk (iter 28 threats-from-behind)
+- H3 META resolution status (iters 27+28 together)
+- H4 sprint plan remaining (iter 30-32)
+- H5 anti-cargo-cult check on iter 27 crit 2 lift
+- META: what's the SINGLE missing thing for iter-33 ascent-feel test
+
+### Substrate freeze check
+
+- No code changes. Pure CONSULT iter.
+
+### Verification
+
+- No build changes; make test exit 0 carryover.
+
+### Scores
+
+| Criterion | Iter 28 | Iter 29 | Δ |
+|-----------|---------|---------|---|
+| All | unchanged | unchanged | – |
+| **Total** | **17** | **17** | **0** | `[STRUCTURE]` consult iter |
+
+### Schedule
+
+- Iter 30 = read Pro + BUILD per direction (default: polish + kills counter HUD)
+- ScheduleWakeup 240s
+
+---

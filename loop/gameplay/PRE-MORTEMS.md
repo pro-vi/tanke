@@ -764,6 +764,24 @@ H2-RULE claims:
 
 ---
 
+## Iter 029 — CONSULT retry (succeeded fire)
+
+Tag: `[STRUCTURE]` only (process iter).
+
+Pre-mortem: Iter 25 failed agentify due to tab_busy. Iter 29 retry. Fire fired successfully (key=tanke-iter-29-revalidate, 7/9 context files inlined, 99K char budget).
+
+H2-RULE claims:
+1. Agentify_query returns success — LANDED (queryId returned)
+2. Pro response readable by iter 30 — DEFERRED
+3. Pro names ≥1 insight not in PRE-MORTEMS — DEFERRED
+4. Pro re-confirms or revises META mitigation status — DEFERRED
+
+If Pro returns by iter 30, integrate. If Pro fails again → self-consult fallback per iter 25 precedent.
+
+**Post-iter:** Fire succeeded. Iter 30 reads response.
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

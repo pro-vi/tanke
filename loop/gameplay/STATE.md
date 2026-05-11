@@ -4,15 +4,15 @@
 
 ```
 phase: loop
-iteration: 28
+iteration: 29
 preloop_complete: yes
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 next_playtest_due_iter: 33
-consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 retry
-sprint_phase: META mitigation shipped (iter 27 graduated stall + iter 28 below-spawn)
-pending_consult: none
-load_bearing_problem: combat verbs vs ascender verbs — addressed via stall pressure + below-spawn; iter-33 playtest verifies
+consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 fired
+sprint_phase: META mitigation shipped; iter 29 consult pending read
+pending_consult: tanke-iter-29-revalidate (read iter 30)
+load_bearing_problem: combat verbs vs ascender verbs — addressed; iter-33 verifies
 h2_rule_version: v2 (iter 23)
 ```
 
@@ -130,6 +130,22 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
+Iter 29 CONSULT retry SUCCEEDED. Fired tanke-iter-29-revalidate agentify
+query. fireAndForget. 7/9 files inlined, 99K context. Asked:
+- H1 Light split adequacy
+- H2 below-spawn risk
+- H3 META resolution status
+- H4 sprint plan remaining
+- H5 anti-cargo-cult on crit 2 lift
+- META: single missing thing for iter-33 ascent-feel test
+
+Score unchanged at 17/50.
+Iter 30 reads Pro response.
+```
+
+(Previous)
+
+```
 Iter 28 BUILD complete. META mitigation — threats-from-behind:
 - Spawner.gd: new exports stall_below_spawn_after=8s,
   below_spawn_cooldown=6s, spawn_bottom_edge_offset=8px
@@ -236,6 +252,22 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 30 BUILD — Read Pro consult response, integrate, then polish:
+  - agentify_status / read_page for key tanke-iter-29-revalidate
+  - Append Consult 005 to creative-consults.md
+  - If Pro adopts existing plan: BUILD kills counter HUD (10 lines, fold
+    into polish iter) + any small Pro-recommended polish
+  - If Pro redirects: plan accordingly
+  - Score iter 30 honestly per H2 RULE v2 tags
+  - Commit; ScheduleWakeup 240s
+
+Iter 31 CAPABILITY: extend test_runner.gd with ascender metrics if Pro
+endorses; else swap to additional gameplay polish.`
+
+---
+
+## Previous Next Action (iter 28 — iter 29 shipped)
 
 `Iter 29 CONSULT (retry after iter-25 failure, per 5-iter cadence):
   - Tab cleanup if max_tabs_reached recurs (close tanke-iter-2-secondopinion
