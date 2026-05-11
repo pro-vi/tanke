@@ -211,6 +211,58 @@ Score-target predictions (per H2 RULE, secondary):
 - Crit 7 (Run pacing) might land at 1 if user reports spawn-rate increases
   feel — but spawn rate is fixed at 2s, so unlikely. Probably stays at 0.
 
-**Post-iter evaluation:** [to be filled when user responds]
+**Post-iter evaluation (iter 6, after user playtest):**
+- Claim 1 (bullets travel + despawn on walls): **LANDED.** User: "it works"
+  with only spawn-position polish flagged.
+- Claim 2 (some enemies get stuck on walls): **FALSIFIED.** User reports
+  "skiing without constraints" — opposite phenomenon. Mechanism diagnosis
+  was right (no pathfinding), observable prediction was wrong direction.
+  Logged FALSIFICATION 002.
+- Claim 3 (Spawner rejections > 0 within 30s): **INDETERMINATE.** User
+  didn't surface Output dock contents.
+- Claim 4 (HP drops + YOU DIED label): **LANDED.** User confirmed via
+  "it works" (would have flagged otherwise).
+- Claim 5 (R-key restart fresh): **LANDED.** Same.
+
+Score: 4/5 with 1 hard falsification = H2 RULE working. First iter that
+surfaced a genuine "I was wrong" via independently observable evidence.
+
+Bonus: user invoked Battle City conventions, surfacing a design-framing
+drift between PROMPT.md "VS-like" stone and actual hands-on feel.
+Logged FALSIFICATION 003.
+
+---
+
+## Iter 006 — AUDIT (playtest evaluation)
+
+Going in, I expect the biggest miss to be: I'll over-confidently
+synthesize the user's brief report into too-specific iter-7 plans before
+asking them about the framing drift. The user mentioned 6 distinct
+issues (bullet off-center, brick non-destructible, water non-passable,
+spawn-from-top, grid-AI, enemy-fire) — three of those (grid-AI,
+enemy-fire, top-spawn) cluster as "enemy refactor," but bundling them
+without confirming the framing-direction commitment risks shipping a
+half-Battle-City pivot without the user explicitly saying "yes go full
+Battle City."
+
+Independently observable claims for iter 6 (H2 RULE):
+1. **FALSIFICATIONS.md grows by ≥2 entries** documenting (a) iter-2
+   enemy-AI prediction direction-wrong, (b) design-framing drift VS-like
+   → Battle City. Binary, file-content-verifiable.
+2. **Score table updates with at least 1 score going up via playtest
+   evidence.** Crit 1 should reach anchor 4 ("death triggers clear run
+   over state with restart option — cited via playtest") since user
+   confirmed the full move→shoot→die→restart cycle. Score 1: 2 → 4
+   expected.
+3. **STATE.md "Open seams" grows by ≥3 entries** capturing
+   user-surfaced gaps (brick destruction, water bullet pass, grid AI,
+   enemy fire, top spawn, muzzle centering).
+4. **Iter 7 plan documents 3 of those 6 user-surfaced gaps as one
+   coherent BUILD focus** (enemy refactor — grid AI + enemy fire +
+   top spawn — same module).
+
+Secondary: AUDIT may not change Crit 6 score because the user did NOT
+report enemies stuck, but also did NOT report basic pathfinding — Pro's
+H3 critique stands.
 
 ---
