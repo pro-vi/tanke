@@ -90,6 +90,13 @@ const DEPTH_BANDS: Array = [
 # stall_time = stall_full_pressure_at → mult = stall_min_multiplier (capped)
 @export var stall_full_pressure_at: float = 12.0  # seconds for full pressure
 @export var stall_min_multiplier: float = 0.4  # floor (max 2.5× spawn rate)
+# META mitigation (iter 28, per Pro Consult 004 META: threats-from-behind):
+# When player has stalled past stall_below_spawn_after, NEXT spawn comes
+# from below viewport (pushes player upward via fear-of-encirclement).
+# Rate-limited so it doesn't dominate every spawn cycle.
+@export var stall_below_spawn_after: float = 8.0  # seconds of stall before below-spawn enabled
+@export var below_spawn_cooldown: float = 6.0  # min seconds between below-spawns
+@export var spawn_bottom_edge_offset: float = 8.0  # px below viewport bottom (telegraph stays visible)
 
 var _player: Node2D
 var _camera: Camera2D
@@ -107,6 +114,8 @@ var _ascent_velocity: float = 0.0  # rows/sec, positive = ascending
 var _stall_time: float = 0.0
 var _last_band_name: String = ""  # log when band changes
 var _band_first_spawn_pending: bool = false  # iter 27: trigger guarantee_first_type on band entry
+var _last_below_spawn_time: float = -1000.0  # iter 28: timestamp of last below-spawn (running seconds)
+var _elapsed_time: float = 0.0  # iter 28: accumulator since spawner ready
 
 # Counters for iter-4 pre-mortem prediction #2 (rejections per 10 ticks).
 var spawns_total: int = 0
@@ -126,6 +135,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if _player == null or not is_instance_valid(_player):
 		return
+	_elapsed_time += delta  # iter 28
 	_update_ascent_velocity(delta)
 	_update_stall_time(delta)
 
@@ -213,21 +223,26 @@ func _try_spawn() -> void:
 		print("[spawner] tick %d: spawns=%d rejections=%d alive=%d/%d%s depth=%d band=%s ascent=%.2f stall=%.1fs interval=%.2fs stallMult=%.2f" % [ticks_total, spawns_total, rejections_total, _enemies_alive, band_cap, cap_marker, _max_depth_reached, band.name, _ascent_velocity, _stall_time, _current_spawn_interval(), _current_stall_multiplier()])
 
 
-# Compute spawn position: at the EFFECTIVE viewport top (just inside the
-# screen edge), scaled further up by current ascent velocity so faster
-# ascent gets earlier warning. Uses Camera2D.get_screen_center_position()
-# which accounts for limit_bottom clamping; raw _camera.global_position.y
-# can lie when the camera is clamped against limit_bottom (iter-14 bug).
+# Compute spawn position. Top-edge by default (iter 12+). iter 28: if
+# player has stalled past threshold AND below_spawn_cooldown has elapsed,
+# THIS spawn comes from BELOW viewport — threats-from-behind per Pro
+# Consult 004 META. Threats-from-behind incentivizes player to keep
+# moving up to escape encirclement.
 func _find_valid_spawn() -> Variant:
 	var camera_center_y: float = _player.global_position.y
 	if _camera != null and is_instance_valid(_camera):
 		camera_center_y = _camera.get_screen_center_position().y
-	var screen_top: float = camera_center_y - _viewport_half_height
-	# rows-ahead lookahead: at 0 velocity → spawn at screen top + small offset
-	# (enemy visible "driving in"); at N rows/sec → N * lookahead_seconds rows
-	# further up (off-screen, gives player advance warning).
-	var lookahead_px: float = maxf(0.0, _ascent_velocity) * 16.0 * ascent_lookahead_seconds
-	var spawn_y: float = screen_top + spawn_top_edge_offset - lookahead_px
+	var use_below: bool = _should_spawn_below()
+	var spawn_y: float
+	if use_below:
+		# Just below viewport bottom; enemy ascends toward player from behind.
+		var screen_bottom: float = camera_center_y + _viewport_half_height
+		spawn_y = screen_bottom + spawn_bottom_edge_offset
+		_last_below_spawn_time = _elapsed_time
+	else:
+		var screen_top: float = camera_center_y - _viewport_half_height
+		var lookahead_px: float = maxf(0.0, _ascent_velocity) * 16.0 * ascent_lookahead_seconds
+		spawn_y = screen_top + spawn_top_edge_offset - lookahead_px
 	for i in max_spawn_attempts:
 		var x: float = randf_range(map_x_margin, map_width - map_x_margin)
 		var candidate: Vector2 = Vector2(x, spawn_y)
@@ -235,6 +250,17 @@ func _find_valid_spawn() -> Variant:
 			continue
 		return candidate
 	return null
+
+
+# iter 28: should this spawn come from below the player? Yes when:
+# (1) player has stalled past stall_below_spawn_after seconds AND
+# (2) below_spawn_cooldown has elapsed since last below-spawn.
+func _should_spawn_below() -> bool:
+	if _stall_time < stall_below_spawn_after:
+		return false
+	if _elapsed_time - _last_below_spawn_time < below_spawn_cooldown:
+		return false
+	return true
 
 
 func _is_blocked(pos: Vector2) -> bool:

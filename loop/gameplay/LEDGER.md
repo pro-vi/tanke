@@ -2136,3 +2136,73 @@ Self-deception check: would Pro reword anchor 2 of crit 2 if shown this code? An
 - ScheduleWakeup 240s.
 
 ---
+
+## Iter 028 — BUILD — META mitigation: threats-from-behind
+
+**Mode:** BUILD (Pro Consult 004 META option b — threats-from-behind for stalled players)
+**Focus:** When player has stalled past threshold, next spawn comes from BELOW viewport, pushing player upward via fear-of-encirclement
+**Date:** 2026-05-12
+**Tag declaration:** `[STRUCTURE-DEFERRED → iter 33]` for crit 4 anchor 4 reinforcement
+
+### Actions
+
+`scripts/Spawner.gd`:
+- New exports:
+  - `stall_below_spawn_after: float = 8.0` (stall threshold for below-spawn eligibility)
+  - `below_spawn_cooldown: float = 6.0` (min seconds between below-spawns)
+  - `spawn_bottom_edge_offset: float = 8.0` (px below viewport bottom)
+- New state: `_last_below_spawn_time` (running timestamp), `_elapsed_time` (accumulator)
+- `_process` accumulates `_elapsed_time`
+- New `_should_spawn_below()` returns true when stall + cooldown both satisfied
+- `_find_valid_spawn` branches on `_should_spawn_below`:
+  - True → spawn at `camera_center_y + viewport_half_height + bottom_offset` (just below viewport)
+  - False → top-edge default (iter 12 + iter 15 path)
+- On below-spawn, `_last_below_spawn_time = _elapsed_time` (start cooldown)
+
+### Behavior summary
+
+- Player ascending normally: spawns from top edge (iter 12 lookahead applies)
+- Player stalls 4-8s: spawn rate ramps up via graduated stall mult (iter 27)
+- Player stalls 8s+: NEXT spawn comes from BELOW (iter 28), then 6s cooldown, then potentially another if still stalled
+- Telegraph (yellow ColorRect 0.5s) still fires at the below-spawn position — visible to player
+
+This is the META mitigation per Pro Consult 004:
+- "rewards for maintaining upward motion" → graduated stall mult (iter 27) accelerates spawns when stopped
+- "threats from behind" → iter 28 below-spawn
+
+Together they encode "stalling has costs" without forcing the player to clear (player can ascend out of trouble).
+
+### Substrate freeze check
+
+- All frozen scripts untouched. Modified only Spawner.gd.
+- No .tscn edits. H1 tripwire: 1. Unchanged.
+
+### Verification
+
+- `make test` exit 0
+- Reachability oracle: `tile_hash f873ae60ee3c420c…` unchanged. Substrate intact iters 1-28.
+- 25s stationary headless: warmup band cap=4 blocks spawns past initial 4, so below-spawn code path not exercised in this scenario. Runtime verification deferred to iter-33 playtest (player will move and ascend past warmup, exercising below-spawn under sustained stall).
+
+### Scores
+
+| Criterion | Iter 27 | Iter 28 | Δ | Citation |
+|-----------|---------|---------|---|----------|
+| 4. Depth feedback + ascent pressure | 2 | 2 | – | Anchor 4 ("Stalling at one depth produces visible pressure") code-citable now via graduated stall + below-spawn, but anchor wording has "playtest cited 'I felt pushed up'" qualifier — [FEEL] required for >2. Stays at 2 [STRUCTURE-DEFERRED → iter 33]. |
+| Others | unchanged | unchanged | – | – |
+| **Total** | **17** | **17** | **0** | Reinforces existing tag, no new anchor |
+
+### Pre-mortem evaluation
+
+5 of 6 binary-now LANDED. iter-33 playtest will verify if below-spawn feels fair (telegraph visible) or unfair (gotcha shots).
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd` (below-spawn path + state + exports)
+- Modified: `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/LEDGER.md`, `loop/gameplay/STATE.md`
+
+### Schedule
+
+- Iter 29 CONSULT retry (per cadence + iter-25 failure recovery). Different topic from iter 25: validate iter 27-28 work + plan iter 30 polish + iter 31 CAPABILITY.
+- ScheduleWakeup 240s.
+
+---

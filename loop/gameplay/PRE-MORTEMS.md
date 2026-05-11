@@ -744,6 +744,26 @@ H2-RULE claims:
 
 ---
 
+## Iter 028 — BUILD — META mitigation: threats-from-behind
+
+Tag: `[STRUCTURE-DEFERRED → iter 33]` reinforcing crit 4 anchor 4 (stalling visible pressure). No new lift.
+
+Going in, biggest expected miss: below-spawn might feel UNFAIR — player gets shot in the back without anticipating. Mitigation: existing telegraph (yellow ColorRect 0.5s) fires at the below-spawn position; rate-limited 1-per-6s.
+
+H2-RULE claims:
+1. New exports stall_below_spawn_after + below_spawn_cooldown + spawn_bottom_edge_offset — code → LANDED
+2. _find_valid_spawn uses below-position when stalled+cooldown-ready — code → LANDED
+3. Rate-limited via _last_below_spawn_time + below_spawn_cooldown — code → LANDED
+4. (iter-33) User reports enemies appearing below when stalling — [FEEL] deferred
+5. make test exit 0 — LANDED
+6. Oracle hash unchanged — LANDED
+
+5 of 6 binary-now LANDED. Runtime below-spawn path not exercised in stationary headless (warmup cap blocks all post-4 spawns); iter-33 playtest verifies.
+
+**Post-iter:** Score unchanged at 17. Pro Consult 004 META combat-vs-ascender tension partially addressed: graduated stall (iter 27) + threats-from-behind (iter 28) together discourage stopping.
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

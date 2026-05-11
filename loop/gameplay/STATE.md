@@ -4,15 +4,15 @@
 
 ```
 phase: loop
-iteration: 27
+iteration: 28
 preloop_complete: yes
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 next_playtest_due_iter: 33
 consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 retry
-sprint_phase: bands+behaviors (iters 22/24/26/27 shipped)
+sprint_phase: META mitigation shipped (iter 27 graduated stall + iter 28 below-spawn)
 pending_consult: none
-load_bearing_problem: combat verbs vs ascender verbs — addressed by iter 28 META mit
+load_bearing_problem: combat verbs vs ascender verbs — addressed via stall pressure + below-spawn; iter-33 playtest verifies
 h2_rule_version: v2 (iter 23)
 ```
 
@@ -130,6 +130,25 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
+Iter 28 BUILD complete. META mitigation — threats-from-behind:
+- Spawner.gd: new exports stall_below_spawn_after=8s,
+  below_spawn_cooldown=6s, spawn_bottom_edge_offset=8px
+- New _should_spawn_below() gates on stall + cooldown
+- _find_valid_spawn branches: if eligible, spawn at camera_bottom +
+  offset (below viewport); else top-edge default
+- _last_below_spawn_time tracks for cooldown
+- Combined with iter-27 graduated stall: stalling now costs
+  (faster spawns + occasional spawn-from-behind) → Pro v4 META
+  "rewards for maintaining upward motion" + "threats from behind"
+- Verified: make test exit 0, oracle f873ae60ee3c420c… unchanged
+- Score unchanged at 17/50 (reinforces crit 4 anchor 4 [STRUCTURE-
+  DEFERRED → iter 33])
+Next: iter 29 CONSULT retry.
+```
+
+(Previous)
+
+```
 Iter 27 BUILD complete. Per-band encounter rules + graduated stall:
 - DEPTH_BANDS: each band has max_alive cap (warmup 4, first_push 10,
   heavy_gate 8, rush 16) + guarantee_first_type (heavy_gate=Heavy,
@@ -217,6 +236,23 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 29 CONSULT (retry after iter-25 failure, per 5-iter cadence):
+  - Tab cleanup if max_tabs_reached recurs (close tanke-iter-2-secondopinion
+    etc. as stale)
+  - Fire /agentify with:
+    1. iter 27-28 work review (graduated stall + below-spawn)
+    2. Light commit-to-lane validation (iter 26)
+    3. Plan iter 30-32 polish + CAPABILITY + playtest prep
+    4. Re-check iter-33 prediction
+  - If agentify fails again → self-consult
+  - fireAndForget, read iter 30
+
+Iter 30 = polish + kills counter HUD + read consult response`
+
+---
+
+## Previous Next Action (iter 27 — iter 28 shipped)
 
 `Iter 28 BUILD — META mitigation (combat vs ascender tension):
   - Pre-mortem H2 RULE v2 tag declaration
