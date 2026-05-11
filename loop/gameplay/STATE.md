@@ -23,19 +23,20 @@
 ## Phase
 
 ```
-phase: AWAITING_USER_PLAYTEST
-iteration: 38
+phase: SPRINT (iter 39 → 60)
+iteration: 39
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
-playtest_requested_iter: 38
-last_completed_playtest_iter: 37 (PARTIAL — water FIXED ✓; F005-v2 Heavy still rapid-fires on LOS)
+sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized iter 39 → iter 60 PLAYTEST"
+last_completed_playtest_iter: 38 (Heavy wind-up: user cite "yeah ok that works for now")
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
-consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 ADOPTED, 40 next
-ai_intelligence_stage: Stage 1 VISION + wind-up telegraph (iter 38). Movement still omniscient.
-falsifications_closed: F007 (water iter 37)
-falsifications_pending_playtest: F005-v2 (Heavy reaction-time + telegraph + slower fire pacing), F006, F008
-halt_iter_if_no_response: 41
-score: 20/50
+consult_cadence: adaptive — 20 ADOPTED, 25 FAILED→self-consult, 29 ADOPTED, planned 45 (mid-sprint), 55 (pre-playtest)
+ai_intelligence_stage: Stage 1 VISION + wind-up telegraph + slower fire pacing. Movement still omniscient.
+falsifications_closed: F007 (water iter 37), F005-v2 (Heavy wind-up iter 38), F006/F008 (no complaint after 2 playtests — soft-closed iter 39)
+falsifications_pending_playtest: (none open)
+mandatory_playtest_iter: 60
+halt_iter_if_no_response: 63 (= 60 + 3)
+score: 20/50 (unchanged; crit 6 STRUCTURE-DEFERRED → [FEEL]-confirmed at 2/5 anchor 2; no numeric lift)
 ```
 
 ---

@@ -962,7 +962,29 @@ H2-RULE claims (3, narrower):
 
 If 1 lands without 2: tuning was right. If 1+2 both land: 0.45s too long, iter 39 trims to 0.3s. If neither lands: still feels instant, iter 39 increases to 0.6s + bigger telegraph.
 
-**Post-iter:** [filled when user responds]
+**Post-iter (user iter 38 response):** Claim 1 LANDED via "yeah ok that works for now." Claims 2 + 3 not explicitly addressed but implicit in mild approval (not "too passive", not "couldn't see telegraph"). F005-v2 closes.
+
+---
+
+## Iter 039 — META — Sprint authorization + 3-F-closure batch
+
+Tag: `[STRUCTURE]` process iter.
+
+Trigger: user directive iter 38 ("lets schedule the next playtest in loop 60") + 3 falsifications resolved by user playtest non-complaints.
+
+Going in, biggest expected miss: scoring crit 6 lift to 3 because Heavy now has reactable wind-up. **Self-deception check (Pro reword test):** if I showed Pro "user said 'yeah ok that works for now' after wind-up fix" + RUBRIC.md crit 6 anchor 3 ("Three+ types with distinct movement AND firing patterns"), would they grant 2→3 lift? NO — we have 2 enemy types, not 3+. Anchor 3 is structurally locked. Holding at 2/5, promoting STRUCTURE-DEFERRED → [FEEL].
+
+Sprint roadmap (iter 40-59, 20 iters, target weakest criteria for iter-60 playtest):
+- Likely focus areas (from rubric): crit 4 (encounter beats / pacing), crit 8 (visual juice), crit 9, crit 10, crit 6 unlock-to-3 requires NEW enemy type
+- Adaptive consult cadence: planned iters 45 + 55
+- Mid-sprint AUDIT iter ~50
+
+H2-RULE claims:
+1. Sprint authorization documented and propagates to STATE.md, LEDGER, halt rule
+2. F005-v2 + F006 + F008 closures cited correctly per v2 PROMPT falsification protocol
+3. crit 6 stays at 2/5 per anchor 3's "3+ types" structural lock — no rationalization lift
+
+**Post-iter:** [filled at iter-40 start]
 
 ---
 

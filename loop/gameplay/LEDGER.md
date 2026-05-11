@@ -2767,3 +2767,72 @@ behavior, can plan dodges, can use cover.
 - If user reports "Heavy now too passive" → iter 40 lowers to 0.3s
 
 ---
+
+## Iter 039 — META — Sprint authorization + 3-F-closure batch
+
+**Mode:** META (per v2 PROMPT — process / structural-discipline iter)
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 20/50 (unchanged — META iters do not lift scores per v2)
+
+**Trigger:** User directive iter 38: "yeah ok that works for now. lets
+schedule the next playtest in loop 60." → sprint authorization (v2 USER-LOOK
+PROTOCOL §Sprint authorization) + 3 falsifications closed by playtest cites.
+
+### F-closures
+
+1. **F005-v2 CLOSED** — user cite "yeah ok that works for now" after iter-38
+   wind-up + telegraph + slower-fire ship. Heavy reactability verified
+   structurally and via mild user approval. Crit 6 anchor 2 promoted from
+   `[STRUCTURE-DEFERRED → iter 33]` to `[FEEL]`-confirmed. No numeric lift
+   because anchor 3 ("3+ enemy types with distinct movement AND firing")
+   is structurally locked — we have only 2 types (Heavy + Light).
+
+2. **F006 SOFT-CLOSED** — original "tanks/player drift off map" complaint
+   (iter 33). Iter 35 walls fix. Two subsequent playtests (iter 37 water,
+   iter 38 Heavy) — no border-drift mention. Cite-prediction: a still-broken
+   map edge would be top-of-mind. Resolved. Re-open if iter 60 surfaces it.
+
+3. **F008 SOFT-CLOSED** — original "enemies spawn behind me" (iter 33).
+   Iter 35 raised stall_below_spawn_after 8→12s, cooldown 6→10s. Two
+   playtests without below-spawn complaint. `[run]` summary instrumentation
+   (iter 31) still active to catch regressions.
+
+### Sprint setup (per v2 USER-LOOK PROTOCOL)
+
+- **Window**: iter 40-59 inclusive (20 iters)
+- **Mandatory PLAYTEST**: iter 60
+- **Halt rule**: iter 63 if no response (60 + 3)
+- **Halt-rule suspension**: v2 ANTI-PATTERN — "Treat many BUILDs without
+  score change as stall in a sprint." Suspended through iter 60.
+- **Consult sub-cadence**: planned iters 45 + 55 (mid-sprint + pre-playtest)
+- **Mid-sprint AUDIT**: planned iter ~50 (re-score all 10 criteria with
+  current evidence)
+
+### Sprint roadmap (target weakest criteria; details TBD per iter)
+
+| Focus | Rubric link | Direction |
+|-------|-------------|-----------|
+| Encounter beats / pacing | crit 4 | depth-band guarantee enemies, stall-pressure pulses, telegraph beats |
+| Visual juice | crit 8 | screen shake, bullet impact spark, kill flash, damage text |
+| 3rd enemy type | crit 6 → 3 unlock | unlocks crit 6 anchor 3 (3+ types). Possible: "Fast" line-rusher OR "Sniper" pause-aim variant |
+| Run scoring / death feedback | crit 9, 10 | depth milestones, run history, "best depth" persistent record |
+
+### Verification
+
+No code changes this iter (META). All frozen scripts untouched.
+- `make test` exit 0 (carryover from iter 38)
+- Substrate hash anchor `f873ae60ee3c420c…` unchanged
+
+### Files touched
+
+- Modified: `loop/gameplay/{STATE,FALSIFICATIONS,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 120s (META mode per v2 §Step 7)
+- Iter 40 first BUILD of sprint — likely target crit 4 or crit 8 (lowest
+  feel anchors, biggest playtest-cite leverage)
+- Plan revisited each iter; this is roadmap not contract
+
+---

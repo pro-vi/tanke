@@ -182,6 +182,32 @@ direction), since they're the loop's user-look authority.
 
 This gives the player a ~0.45s readable window to either break LOS (slip behind a wall) or commit to a perpendicular dodge. Per `.research/battle-city-ai.md` Stage 1 design intent: vision-based AI must be REACTABLE; instant-fire on acquisition reproduces the iter-24 "too smart" feel even with vision gating.
 
+**RESOLVED (user iter 38 playtest cite):** "yeah ok that works for now." Heavy AI reactability passes. F005 lineage closes. Promoted crit 6 STRUCTURE-DEFERRED → [FEEL]-confirmed at anchor 2 (no numeric lift; anchor 3 requires 3+ enemy types, we have 2).
+
+---
+
+## Falsification 006 — RESOLVED iter 39 (soft-closed, no complaint after 2 playtests)
+
+**Original prediction (iter 12+):** Map borders contain player/enemies without drift.
+
+**Original contradiction (user iter 33):** Tanks driving off map edges.
+
+**Iter 35 fix:** Invisible StaticBody2D walls at x=-4, x=324, RectangleShape2D size 8×8000, layer 1.
+
+**Resolution iter 39:** Two subsequent playtests (iter 37 water-focused, iter 38 Heavy-focused) — user did not re-mention border drift. Per cite-prediction discipline: if user were still hitting borders, that would be a top-of-mind complaint. SOFT-CLOSED. Re-open if iter 60 playtest surfaces edge-drift again.
+
+---
+
+## Falsification 008 — RESOLVED iter 39 (soft-closed, no complaint after 2 playtests)
+
+**Original prediction (iter 28):** Below-spawn fires only after sustained intentional stall.
+
+**Original contradiction (user iter 33):** "enemies still can spawn behind me."
+
+**Iter 35 fix:** Raised stall_below_spawn_after 8→12s, below_spawn_cooldown 6→10s.
+
+**Resolution iter 39:** Two subsequent playtests — no below-spawn complaint. SOFT-CLOSED. Re-open if iter 60 playtest surfaces "spawned behind me" again, or if `[run]` summary shows below-spawn count rising during normal play (instrumentation from iter 31 still active).
+
 ---
 
 ## Falsification 008 — iter 34 — Below-spawn fires when not intentionally stalling
