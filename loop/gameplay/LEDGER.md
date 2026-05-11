@@ -2586,3 +2586,115 @@ Full ladder + GDScript implementation snippets in `.research/battle-city-ai.md`.
 - Iter 36 PLAYTEST (per "every 3 iters post-iter-33" cadence — though user override "15 iters min" applied iter 18-32; back to normal cadence now that one playtest happened iter 33).
 
 ---
+
+## Iter 035 — BUILD — F005-F008 fixes (Heavy vision-cone, walls, water, stall threshold)
+
+**Mode:** BUILD
+**Date:** 2026-05-10
+**Branch:** `exp/godot4-loop`
+**Score:** 20/50 (unchanged — fixes pending playtest verification)
+
+Iter-33 user playtest produced 4 falsifications (F005-F008). Iter 35 ships
+all four root-cause fixes:
+
+- **F005** Heavy vision-cone: replaced omniscient `_player_in_line_of_sight`
+  with forward cone check (dot-product against direction vector + lateral
+  tolerance) + optional raycast through env layer for wall blockage. Movement
+  direction-picking in CHASE still omniscient — flagged for iter 37 if user
+  reports.
+- **F006** Map walls: invisible StaticBody2D pair (LeftWall x=-4, RightWall
+  x=324) added to ProceduralLevel.tscn. RectangleShape2D size 8×8000, layer 1.
+  H1 tripwire 1→2 sibling gameplay nodes (Spawner + Walls).
+- **F007** Water: migrated WaterBlock.tscn format 2→3, explicit `size =
+  Vector2(8,8)` on shape, collision_layer=512, AnimatedSprite2D w/
+  sprite_frames + autoplay.
+- **F008** Below-spawn: stall_below_spawn_after 8→12s, below_spawn_cooldown
+  6→10s.
+
+### Verification
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0, no warnings
+- Substrate frozen scripts untouched ✓
+
+### Schedule
+- Iter 36 PLAYTEST (mandatory) — 2-question prompt covering all 4 fixes
+- Halt iter 39 if no response
+
+---
+
+## Iter 036 — PLAYTEST request (verify F005-F008)
+
+**Mode:** PLAYTEST
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 20/50 (unchanged — awaiting user)
+
+2-question prompt issued covering F005 (Heavy AI feel) and F006/F007/F008
+quick checks. STATE phase = AWAITING_USER_PLAYTEST.
+
+**User response (same day):** "i can somehow sill drive through water...."
+
+→ F007 STILL BROKEN. Other three fixes untested.
+
+---
+
+## Iter 037 — BUILD — F007 root-cause fix (water TileMapLayer physics)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 20/50 (unchanged — fix pending re-playtest)
+
+### Diagnosis (iter-37)
+
+User playtest iter 36 falsified F007 fix. Root-cause investigation:
+
+1. **Water is painted via `waterTileMap.set_cell()` in
+   `scripts/ProceduralLevel.gd:130`** — i.e., a TileMapLayer, NOT WaterBlock
+   instances. Iter 35's WaterBlock.tscn rewrite was dead code.
+2. **`WaterSet` TileSet had NO `physics_layer_0`** — water tiles had zero
+   collision body. Steel/Brick TileSets DO have physics_layer_0 + polygon.
+3. **PlayerTank instance in ProceduralLevel.tscn overrode `collision_mask = 1`**
+   — even with water collision present, the level-scene override would have
+   stripped layer 512 from the player's mask. Base PlayerTank.tscn correctly
+   has mask=513; the instance override silently masked the base value.
+
+### Fix (3 surgical changes to ProceduralLevel.tscn)
+
+1. `WaterSrc` (TileSetAtlasSource): added
+   `0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4,-4,4,-4,4,4,-4,4)`
+2. `WaterSet` (TileSet): added `physics_layer_0/collision_layer = 512`
+3. PlayerTank instance: `collision_mask = 1` → `collision_mask = 513`
+
+Enemy already had mask=513 from iter 18, so enemies-vs-water collision will
+also activate automatically.
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0, clean output (no TileSet validation warnings)
+- Substrate frozen scripts untouched ✓
+- ProceduralLevel.tscn is gameplay-substrate edit — H1 tripwire unchanged at
+  2 sibling gameplay nodes (Spawner + Walls). TileSet physics is substrate
+  enrichment not a new node.
+
+### Files touched
+
+- Modified: `scenes/ProceduralLevel.tscn` (3 lines)
+- Modified: `loop/gameplay/FALSIFICATIONS.md` (F007 root cause + lesson)
+- Modified: `loop/gameplay/STATE.md`, `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/LEDGER.md`
+
+### Schedule
+
+- Iter 38 = re-PLAYTEST (water specifically + carry-over F005/F006/F008 confirmations)
+- Halt iter 40 if no response
+
+### Lesson logged (FALSIFICATIONS.md)
+
+When a fix targets a `.tscn` file, verify the file is actually used at
+runtime — `grep` for instantiation sites first. Iter 35 spent build-budget
+on WaterBlock.tscn that the game never loads. Compounding: scene-instance
+property overrides silently mask base-scene values without warnings, so the
+"PlayerTank.tscn has mask=513" check was misleading evidence.
+
+---

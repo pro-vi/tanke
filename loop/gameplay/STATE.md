@@ -4,15 +4,15 @@
 
 ```
 phase: AWAITING_USER_PLAYTEST
-iteration: 36
+iteration: 37
 preloop_complete: yes
-playtest_requested_iter: 36
-last_completed_playtest_iter: 33
+playtest_requested_iter: 37
+last_completed_playtest_iter: 36 (PARTIAL — user reported F007 STILL BROKEN; F005/F006/F008 untested)
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 ADOPTED, 40 next
-ai_intelligence_stage: Stage 1 VISION shipped (Heavy firing gated). Movement still omniscient — may need iter 37 if user reports.
-falsifications_pending_playtest: F005/F006/F007/F008
-halt_iter_if_no_response: 39
+ai_intelligence_stage: Stage 1 VISION shipped (Heavy firing gated). Movement still omniscient.
+falsifications_pending_playtest: F005/F006/F008 + F007-v2 (root-cause fix shipped iter 37)
+halt_iter_if_no_response: 40
 score: 20/50
 ```
 

@@ -928,6 +928,23 @@ H2-RULE claims:
 
 5 H2-RULE claims deferred to user response.
 
+**Post-iter (user iter 36 playtest response):** PARTIAL — user reported "i can somehow still drive through water." F007 NOT FIXED. Other three (F005/F006/F008) untested in this response. Claim 3 FALSIFIED. F007 reopened with root-cause analysis (see FALSIFICATIONS.md F007 update iter 37).
+
+---
+
+## Iter 037 — BUILD (F007 root-cause fix)
+
+Tag: `[STRUCTURE]` collision-system iter.
+
+Going in, biggest expected miss: even after fixing the WaterSet physics + PlayerTank mask, water still doesn't block because some other path is wrong — e.g., the procedural-gen runs at z=999 with tiles not actually painted on the visible TileMapLayer, or the WaterSrc polygon points are wrong format for Godot 4.6.2 (was previously `points` not `polygon`), or `WaterSet.tile_size = (8,8)` mismatches `texture_region_size` somehow, or `WaterTileMap` is a child but `Tiles` parent has a transform offsetting it.
+
+H2-RULE claims (3, narrower):
+1. User reports "water blocks me now" — verifies F007-v2 fix
+2. User does NOT report a NEW collision bug (e.g. getting stuck on water mid-block, or bullet now colliding with water tiles when previous behavior was pass-through)
+3. Headless boot remains clean (no TileSet validation warnings about physics_layer)
+
+Build verification: `make test` exit 0 ✓, `godot --headless --quit-after 60` exit 0 with no errors/warnings ✓.
+
 **Post-iter:** [filled when user responds]
 
 ---

@@ -155,6 +155,12 @@ direction), since they're the loop's user-look authority.
 
 **Action:** Iter 35 BUILD: re-grep WaterBlock.tscn for collision_layer; trace Level.gd `_replace_blocks` for water replacement path; verify with a runtime test. Likely a small fix once root-cause identified.
 
+**Root cause CONFIRMED iter 37 (user playtest iter 36):** Water is painted via `waterTileMap.set_cell()` (TileMapLayer in ProceduralLevel.tscn), NOT via WaterBlock.tscn instances. Iter 35's WaterBlock.tscn rewrite was dead code — never instantiated. The actual `WaterSet` TileSet had NO `physics_layer_0` defined, so water tiles had zero collision. Compounding: PlayerTank instance in ProceduralLevel.tscn overrode `collision_mask = 1`, stripping water layer (512) from the player's mask even if water had collision.
+
+**Iter 37 fix:** Added `physics_layer_0/collision_layer = 512` to WaterSet + polygon points `PackedVector2Array(-4,-4,4,-4,4,4,-4,4)` to WaterSrc. Changed PlayerTank instance `collision_mask = 1` → `513`. Enemy already had mask 513 from before. Headless boot clean.
+
+**Lesson:** When a fix targets a `.tscn` file, verify the file is actually used at runtime — `grep` for instantiation sites first. The base PlayerTank.tscn correctly had mask=513 but the level-scene override silently stripped it; instance overrides on scenes mask base values without warning.
+
 ---
 
 ## Falsification 008 — iter 34 — Below-spawn fires when not intentionally stalling
