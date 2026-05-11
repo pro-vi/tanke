@@ -414,3 +414,32 @@ Secondary score predictions: scores likely unchanged (forest-hide isn't a new en
 **Post-iter evaluation:** All 3 binary-now claims LANDED. Steel indestructibility verified architecturally (Steel TileMapLayer cells have no take_damage; bullets just despawn against them — correct BC behavior, no code change needed). Forest hide implemented for both player and enemies via `_update_forest_hide` polling Grass TileMapLayer for cell occupancy. Iter 13 ships BC parity without rubric-anchor lift — exactly the Pro-v2-shaped iter.
 
 ---
+
+## Iter 014 — PLAYTEST (paired iter-10/11/12/13)
+
+Going in, biggest expected miss: too many compounded changes since iter 9 (4 BUILD iters). User report may conflate effects; hard to attribute specific observations to specific iters. Secondary risk: the gameplay loop's emergent feel from interaction effects (e.g., stalling pressure × forest hide × velocity-scaled spawn) might create unexpected dynamics neither I nor Pro v2 anticipated.
+
+H2-RULE independently observable claims (reference-language predictions per Pro v2 H4):
+
+1. **User uses "climbing" / "ascent" / "going up" / "depth"** unprompted about the run (verifies the roguelike-ascender stone landed in actual feel; Pro v2 META: "first-time player says... 'this is Battle City, but new'" — the "new" should be the climb).
+2. **User mentions DEPTH counter or comments on it** in some form. (Verifies iter-11 HUD utility.)
+3. **User does NOT say "skiing" / "diagonal"** about enemy motion. (Closes FALSIFICATION 002.)
+4. **User does NOT say "off center"** about bullets. (Closes iter-9 muzzle complaint.)
+5. **User reports brick destruction working** when shooting brick walls. (BC truth-table.)
+6. **User reports bullets passing over water** vs. water blocking before. (BC truth-table.)
+7. **User reports forest/grass concealment** ("disappeared in bush" / "hid in grass" / "alpha changed"). (BC truth-table.)
+8. **User reports steel walls surviving bullets** while bricks break (asymmetric BC truth).
+9. **User notices stalling pressure** — "more enemies when I stopped" / "felt pushed up." (Verifies iter-12 stalling mechanic.)
+10. **User reports compulsion signal** — wanting to retry after dying. (Verifies the roguelike loop is forming.)
+
+Predict 6-8 of 10 land. <5 = serious gap; >8 = exceeded.
+
+Score-target predictions (secondary, per Pro v2 H4):
+- Crit 4 anchor 4 (stalling pressure cited via playtest) → might lift to 4 if claim 9 lands
+- Crit 5 anchor 2 ("climb rate observable") → might lift to 2 if claim 1 lands
+- Crit 6 anchor 5 ("they don't get stuck" cited via playtest) → might lift to 5 if user doesn't complain about enemy AI
+- Crit 8 (visual juice) — telegraph + forest-hide alpha + brick destruction = anchor 1 candidate (some feedback exists)
+- Crit 1 anchor 5 (first-run-without-instruction) — UNREACHABLE this playtest (I gave 10 questions)
+- Total potential: 12 → 15-17 depending on which claims land
+
+---

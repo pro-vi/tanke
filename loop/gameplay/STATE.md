@@ -3,12 +3,13 @@
 ## Phase
 
 ```
-phase: loop
-iteration: 13
+phase: AWAITING_USER_PLAYTEST
+iteration: 14
 preloop_complete: yes
+playtest_requested_iter: 14
 last_completed_playtest_iter: 10
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
-next_playtest_due_iter: 14
+halt_iter_if_no_response: 17
 ```
 
 ---
@@ -125,20 +126,16 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 13 BUILD complete. BC terrain truth:
-- Forest hide: PlayerTank + Enemy both poll Grass TileMapLayer each
-  physics frame. When on a grass cell, sprite.modulate.a = 0.3
-  (concealed). Off grass: alpha = 1.0. BC convention.
-- Steel indestructibility: verified architecturally — Steel cells are
-  TileMapLayer (no take_damage method). Bullet body_entered calls
-  take_damage only if has_method, so bullets stop at steel without
-  destroying it. Correct BC behavior since iter 8; no code change.
-- Verified: make test exit 0, oracle tile_hash f873ae60ee3c420c…
-  unchanged. 188 grass cells in playable.tres seed-42 level → plenty
-  of opportunity for forest hide.
-- Scores: unchanged at 12/50. BC parity work; Pro v2 framing says
-  "progress = defect removal not system existence."
-Next: iter 14 PLAYTEST — first user-look on the new ascender stone.
+Iter 14 PLAYTEST request issued. AWAITING USER. First user-look on
+the new roguelike-ascender stone. Compounded deltas iter 10-13:
+- Readability fixes (muzzle, enemy sprite rotation/frame, spawn off-screen)
+- Roguelike-ascender stone + DEPTH/TIME HUD
+- Spawn-ahead-of-velocity + stalling pressure + telegraph
+- Forest hide + steel indestructibility (BC terrain truth)
+
+10 H2-RULE reference-language claims pending user report. Halt rule
+fires iter 17 if no response.
+Build verified (make test + headless exit 0; no carryover warnings).
 ```
 
 ---
@@ -150,6 +147,38 @@ None (new loop).
 ---
 
 ## Next Action
+
+`AWAITING user playtest response.
+
+On response (iter 15):
+  - Read user report
+  - Evaluate 10 H2-RULE reference-language claims (LANDED / FALSIFIED / INDETERMINATE)
+  - Log falsifications to FALSIFICATIONS.md
+  - Update scores per RUBRIC.md anchors using playtest evidence:
+    * Crit 4 anchor 4 ("stalling produces visible pressure") if user
+      mentions more spawns when stopped
+    * Crit 5 anchor 2 ("climb rate observable") if user mentions
+      ascending / climbing
+    * Crit 6 anchor 5 ("they don't get stuck") if no AI complaint
+    * Crit 8 anchor 1 (some hit-flash/feedback) if user mentions any
+      visual feedback effect
+  - Per PROMPT §3, iter 15 is also AUDIT cycle (every 5 iters).
+    Combine playtest eval with full rescore.
+  - Plan iter 16 BUILD targeting whatever surfaces:
+    * If "boring/not pushed" → iter 16 = better stalling pressure
+      (e.g., descending fog, telegraphed warning) OR scrolling-screen
+      mechanic
+    * If "too hard" → iter 16 = balance tuning
+    * If "I want a [BC mechanic missing]" → iter 16 = add that
+      mechanic (likely power-ups or enemy types)
+  - Update PRE-MORTEMS.md iter-14 post-eval
+
+If no user response by end-of-iter-17: write HALTED.md per PROMPT
+§"USER-LOOK PROTOCOL" halt rule; stop.`
+
+---
+
+## Previous Next Action (iter 14 — shipped as this iter's playtest prompt)
 
 `Iter 14 PLAYTEST (first user-look on the roguelike-ascender stone):
   - Pre-mortem (H2 RULE: reference-language predictions per Pro v2 H4)

@@ -1225,3 +1225,77 @@ Full Pro v1 + Pro v2 transcripts in `loop/gameplay/creative-consults.md` Consult
 - ScheduleWakeup 240s for iter 14.
 
 ---
+
+## Iter 014 — PLAYTEST — first user-look on roguelike-ascender stone
+
+**Mode:** PLAYTEST (AWAIT per PROMPT §7)
+**Focus:** falsify or confirm 10 H2-RULE reference-language predictions covering all iter-10/11/12/13 deltas
+**Date:** 2026-05-11
+**Pre-mortem:** PRE-MORTEMS.md iter 014 — 10 H2-RULE reference-language claims
+
+### Build verification
+
+- `godot --headless --path . --quit` → exit 0 clean (no warnings; UID fix from iter-9 commit c95ea7c is invisible now)
+- `make test` (120-frame ProceduralLevel.tscn runtime) → exit 0 no errors
+
+### Deltas since iter-9 playtest (THE BIG ONE — 4 BUILD iters compounded)
+
+Iter 10 (4 readability fixes):
+- PlayerTank initial body rotation matches direction U
+- Enemy stops rotating body; sprite frame changes per direction instead
+- Enemy uses frame=12 / sprite_base_frame=8 (distinct from yellow player)
+- Spawn position relative to camera (not player) so off-screen above viewport
++ FIX (commit c95ea7c): dropped UID from Bullet.tscn ext_resource so editor attaches script reliably
+
+Iter 11 (framing + HUD):
+- PROMPT.md "stone" rewritten: "A roguelike vertical tank ascender with Battle City combat feel."
+- RUBRIC.md crits 4/5/7/10 renamed to roguelike-ascender axes (Depth feedback, Forward survivability, Compulsion loop, Run summary).
+- PlayerTank HUD: DEPTH (rows ascended) + TIME (M:SS) top-right
+
+Iter 12 (spawn behavior):
+- Spawner Timer→accumulator (live interval modulation)
+- Ascent velocity tracking via EMA smoothing
+- Spawn position scales with velocity (faster ascent = spawn further ahead)
+- Stalling pressure: velocity < 0.3 rows/s for >4s → spawn_interval × 0.5
+- Telegraph: 8×4 yellow ColorRect at spawn position for 0.5s before enemy spawns
+
+Iter 13 (BC terrain truth):
+- Forest hide: tank sprite alpha 0.3 when on Grass cell, 1.0 otherwise (both player + enemies)
+- Steel indestructibility: verified architecturally (no code change — Steel TileMapLayer has no take_damage)
+
+### Run config (current state)
+
+| Param | Value | Source |
+|-------|-------|--------|
+| Main scene | scenes/ProceduralLevel.tscn | project.godot |
+| Level config | configs/playable.tres | ProceduralLevel.tscn |
+| Player max_hp | 3 | PlayerTank.gd |
+| Player speed | 32 px/s | PlayerTank.gd |
+| Player iframes | 0.6s | PlayerTank.gd |
+| Bullet speed | 120 px/s | Bullet.gd |
+| Bullet lifetime | 2s | Bullet.gd |
+| Enemy speed | 24 px/s | Enemy.gd |
+| Enemy fire cooldown | 1.5s | Enemy.gd |
+| Enemy max_hp | 1 | Enemy.gd |
+| Spawn interval (idle) | 2.0s | Spawner.gd |
+| Spawn interval (stalled) | 1.0s | Spawner.gd × stall_interval_multiplier |
+| Stall threshold | 0.3 rows/s for 4s | Spawner.gd |
+| Spawn lookahead per row/s | 1.5s | Spawner.gd |
+| Telegraph lead time | 0.5s | Spawner.gd |
+| Forest alpha | 0.3 (hidden) / 1.0 (visible) | PlayerTank.gd + Enemy.gd |
+| Controls | WASD/arrows + Space + R | – |
+
+### Halt rule
+
+Per PROMPT §USER-LOOK: 3 iters of unfulfilled PLAYTEST request → halt at iter 17 with `loop/gameplay/HALTED.md`.
+
+### Files touched
+
+- Modified: loop/gameplay/PRE-MORTEMS.md (iter-14 entry with 10 H2-RULE claims), loop/gameplay/STATE.md (phase AWAITING_USER, iter 14), loop/gameplay/LEDGER.md (this entry)
+
+### Schedule
+
+- **No ScheduleWakeup.** AWAIT per PROMPT §7.
+- On user response: iter 15 = AUDIT (evaluate 10 claims + log falsifications + update scores). PROMPT §3 also calls AUDIT every 5 iters — iter 15 is on-cycle.
+
+---
