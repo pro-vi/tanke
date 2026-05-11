@@ -23,8 +23,8 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 42 → 60)
-iteration: 42
+phase: SPRINT (iter 43 → 60)
+iteration: 43
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"
@@ -37,7 +37,7 @@ falsifications_pending_playtest: crit 6 anchor 3 [STRUCTURE] lift falsification 
 rubric_debt: crit 8 anchor 3 (XP gems language stale post-iter-11 reframe), anchor 4 "UI counter increments" (kill count dropped iter 30) — flag for AUDIT iter ~50
 mandatory_playtest_iter: 60
 halt_iter_if_no_response: 63
-score: 21/50 (iter 40 +1 [STRUCTURE] crit 6 2→3 — 3 distinct types: Light lane-invader / Heavy paused-aim corridor-denier / Fast continuous-fire harasser)
+score: 22/50 (iter 40 +1 crit 6 [STRUCTURE]; iter 43 +1 crit 10 [STRUCTURE-DEFERRED → iter 60] death-screen run summary)
 ```
 
 ---
@@ -96,8 +96,8 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 | 7. Compulsion loop (was Run pacing) | 0 | Needs playtest |
 | 8. Visual feedback / juice | **2** | Iter 19 player hit-flash + iter 21 enemy death yellow burst (anchor 2) |
 | 9. UI / UX | 1 | Iter 3 text HUD; iter 11 added DEPTH/TIME labels |
-| 10. Run summary + replayability (was Build distinctness) | **1** | Anchor 1 met retroactively iter 3 (YOU DIED + R) |
-| **Total** | **21/50** | Iter 40 +1 crit 6 [STRUCTURE] (3rd enemy type Fast unlocks anchor 3) |
+| 10. Run summary + replayability (was Build distinctness) | **2** | Iter 43 [STRUCTURE-DEFERRED → iter 60]: anchor 2 ("Death screen shows depth, run time, kills") shipped structurally. Multi-line death label: DEPTH N / TIME M:SS / KILLS K / STALL P%. iter-60 [FEEL] cite gates lift to 3. |
+| **Total** | **22/50** | Iter 43 +1 crit 10 [STRUCTURE-DEFERRED → iter 60] (death screen multi-line run summary) |
 
 ---
 

@@ -206,8 +206,6 @@ func _die() -> void:
 	_dead = true
 	sprite.stop()
 	velocity = Vector2.ZERO
-	if _death_label != null:
-		_death_label.visible = true
 	# iter 31: ascender run summary on death (Pro Consult 005 H4)
 	var depth: int = int(maxf(0.0, (_start_y - _min_y_reached) / 16.0))
 	var t: int = int(_run_time)
@@ -217,7 +215,16 @@ func _die() -> void:
 	var stall_pct: float = 0.0
 	if _run_time > 0.0:
 		stall_pct = 100.0 * _stall_time_total / _run_time
-	print("[run] depth=%d time=%d:%02d ascent_rate=%.2f rows/s stall_total=%.1fs (%.0f%%)" % [depth, t / 60, t % 60, ascent_rate, _stall_time_total, stall_pct])
+	# iter 43: kills lookup from Spawner sibling (best-effort)
+	var kills: int = 0
+	var spawner: Node = get_parent().get_node_or_null("Spawner")
+	if spawner != null and "enemies_killed" in spawner:
+		kills = int(spawner.enemies_killed)
+	print("[run] depth=%d time=%d:%02d kills=%d ascent_rate=%.2f rows/s stall_total=%.1fs (%.0f%%)" % [depth, t / 60, t % 60, kills, ascent_rate, _stall_time_total, stall_pct])
+	# iter 43: render run summary on death label (anchor 2 structural ship)
+	if _death_label != null:
+		_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nSTALL %d%%\n\n[R] RESTART" % [depth, t / 60, t % 60, kills, int(stall_pct)]
+		_death_label.visible = true
 	died.emit()
 
 
@@ -260,7 +267,8 @@ func _setup_hud() -> void:
 	canvas.add_child(_hp_label)
 	_death_label = Label.new()
 	_death_label.name = "DeathLabel"
-	_death_label.position = Vector2(96, 96)
+	# iter 43: position raised to make room for multi-line run summary
+	_death_label.position = Vector2(96, 72)
 	_death_label.text = "YOU DIED\n[R] RESTART"
 	_death_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.3))
 	_death_label.visible = false

@@ -140,6 +140,10 @@ var ticks_total: int = 0
 # iter 31: ascender-metric instrumentation (Pro Consult 005 H4)
 var spawn_origin_top: int = 0
 var spawn_origin_below: int = 0
+# iter 43: death-screen summary counter. Incremented when any enemy
+# tree_exits (i.e., gets queue_free'd by take_damage hp<=0 or other paths).
+# Used by PlayerTank._die() to render death-screen kill count.
+var enemies_killed: int = 0
 
 
 func _ready() -> void:
@@ -396,3 +400,4 @@ func _get_type_by_name(type_name: String) -> Dictionary:
 
 func _on_enemy_freed() -> void:
 	_enemies_alive -= 1
+	enemies_killed += 1  # iter 43: death-screen summary counter

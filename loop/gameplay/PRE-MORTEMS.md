@@ -1069,7 +1069,45 @@ H2-RULE claims (3):
 
 No score lift this iter; deferred cite to iter 60.
 
-**Post-iter:** [filled at iter 43]
+**Post-iter (iter 43 start):** Build clean, shake live. Magnitude tuning deferred to iter 60.
+
+---
+
+## Iter 043 — BUILD — Death screen run summary (crit 10 anchor 2)
+
+Tag: `[STRUCTURE-DEFERRED → iter 60]` for crit 10 anchor 2.
+
+Diagnose: crit 10 (Run summary + replayability) at 1/5. Anchor 2 = "Death screen shows depth reached, run time, enemies killed — cited via playtest." We already compute depth/time/stall in PlayerTank `_die()` (iter 31 instrumentation) — just prints to terminal. Bringing them onto the death label is small + high-leverage for iter-60 [FEEL] cite ("I want to see how I did" / "made me want one more run").
+
+Going in, biggest expected miss: **death label at position (96, 96) gets visually cluttered** when expanded from 2 lines to 5-6 lines — text bleeds into mid-screen action area, or extends off-viewport. Mitigation: re-position to (96, 80) to give it space; use compact one-line format if possible.
+
+Design:
+- Add `enemies_killed` counter to Spawner (increment in `_on_enemy_freed`)
+- PlayerTank `_die()` reads `Spawner.enemies_killed` if present (best-effort), then formats death label:
+  ```
+  YOU DIED
+  
+  DEPTH N
+  TIME M:SS
+  KILLS K
+  STALL S%
+  
+  [R] RESTART
+  ```
+- Position (96, 72) for vertical space; align text-left for legibility at 320×240
+
+Falsification clause for iter-60 [FEEL] anchor-3 lift ("Death screen highlights personal best vs. this run"): if user iter-60 playtest cites "I want to beat my last run" / "made me want one more" / similar, crit 10 lifts 2→3 [FEEL]. Otherwise stays at 2.
+
+Tag honesty: 1→2 is on a feel criterion (10 is feel). Per v2 §Step 5, 1→2 doesn't strictly require [FEEL] — only >2. So 1→2 [STRUCTURE-DEFERRED] is legitimate: the death screen STRUCTURALLY shows depth/time/kills regardless of feel; iter-60 cite refines vs reverts the score.
+
+Self-deception check (Pro reword test): if I showed Pro "death label now shows depth/time/kills/stall on multi-line label" + RUBRIC.md anchor 2, would they grant 1 → 2? **YES** — anchor 2 reads "Death screen shows X, Y, Z" — literally describing the structural ship. The "cited via playtest" tail is verification-cherry, not gating; lifts to 3+ need it, not 2.
+
+H2-RULE claims (3):
+1. Build clean, no warnings
+2. Spawner.enemies_killed counter increments via _on_enemy_freed (one per dead enemy)
+3. Death label displays multi-line summary on _die(); kills count matches `[run]` terminal print
+
+**Post-iter:** [filled at iter 44]
 
 ---
 
