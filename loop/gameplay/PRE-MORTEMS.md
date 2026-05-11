@@ -844,6 +844,23 @@ H2-RULE claims:
 
 ---
 
+## Iter 033 — PLAYTEST request (mandatory user-look gate)
+
+**Tag:** `[STRUCTURE]` (process iter; user response drives iter 34+).
+
+Going in, biggest expected miss: user picks "clear enemies" or "survive in place" instead of "keep climbing" → META still broken → iter 35-37 deepen mit (maybe a third META mitigation — skippable band, or forward-only enemy).
+
+H2-RULE claims:
+1. STATE.md phase → AWAITING_USER_PLAYTEST — file
+2. Playtest prompt issued to user — chat
+3. No ScheduleWakeup (AWAIT) — execution
+4. **LOAD-BEARING per Pro v5 H3:** user picks "keep climbing" in slot 1 OR uses ascent-language ("climb"/"ascend"/"depth"/"upward") unprompted in slot 2. Falsified if "clear enemies" / "survive in place" / no ascent language.
+5. Secondary: user notices the [run] Output-dock line — bonus quantitative artifact.
+
+**Post-iter:** [filled when user responds]
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

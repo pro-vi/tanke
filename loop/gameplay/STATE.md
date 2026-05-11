@@ -3,17 +3,15 @@
 ## Phase
 
 ```
-phase: loop
-iteration: 32
+phase: AWAITING_USER_PLAYTEST
+iteration: 33
 preloop_complete: yes
+playtest_requested_iter: 33
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
-next_playtest_due_iter: 33 (now ready to issue)
 consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 ADOPTED (Consult 005)
-sprint_phase: all 15-iter sprint work done; iter 33 issues playtest
-pending_consult: none
-load_bearing_problem: META mitigated; iter-33 verifies via language-based test
-h2_rule_version: v2 (iter 23)
+load_bearing_iter33_test: per Pro v5 H3, "user picks 'keep climbing' OR uses ascent-language unprompted = META resolved"
+halt_iter_if_no_response: 36
 ```
 
 ---
@@ -128,6 +126,31 @@ on direction change, muzzle may not align visually with sprite center.
 ---
 
 ## Last Action
+
+```
+Iter 33 PLAYTEST request issued. AWAITING USER.
+Halt rule iter 36 if no response.
+
+2-question playtest prompt:
+1. LOAD-BEARING (Pro v5 H3 META test): "What did the game seem to want
+   you to do — clear enemies, survive in place, or keep climbing?"
+2. WILDCARD: "Anything off/surprising/broken?"
+3. BONUS: paste [run] line from Output dock if seen
+
+Sprint (iters 18-32) complete:
+- Visual juice: hit-flash + enemy death particle
+- Identity: PROMPT/RUBRIC reframed to roguelike-ascender + DEPTH/TIME HUD
+- Spawn: ascent director (DEPTH_BANDS) + graduated stall + below-spawn
+  threats-from-behind + visible telegraphs (red below, yellow top)
+- Enemy variety: Heavy CHASE/AIM_FIRE state machine + Light commit-to-lane
+- Polish: depth milestone flash (green pulse every 10 rows)
+- Instrumentation: [run] summary + spawn origin distribution
+
+Score 17/50 (+3 over iter 17 baseline; iter-22 rubric tightening -1
+makes current 17 honest 17, not pre-tightening 18).
+```
+
+(Previous)
 
 ```
 Iter 32 prep complete. Final pre-playtest verification:
@@ -318,6 +341,28 @@ None (new loop).
 ---
 
 ## Next Action
+
+`AWAITING user playtest response.
+
+On response (iter 34):
+  - Evaluate 5 H2-RULE claims (especially load-bearing slot-1 META test)
+  - Log FALSIFICATIONS for any miss (iter-22-style scoring honesty)
+  - Update scores per RUBRIC.md anchors using playtest evidence
+    * Multiple anchors poised under [STRUCTURE-DEFERRED] — feel-criterion
+      lifts unlocked: crit 4 anchor 4 (stalling pressure), crit 6
+      anchor 5 (no stuck), crit 7 (compulsion), crit 8 ≥1 (visual feel)
+  - Parse [run] line if user pastes it — ascent_rate + stall_total
+    correlate with feel reports
+  - Plan iter 35 BUILD per outcome
+  - PROMPT §"CONSULT SCHEDULE" iter 10/20/30 — iter 33 is 33; next
+    scheduled CONSULT at iter 40 (post-playtest)
+
+If no response by iter 36: write HALTED.md per PROMPT §"USER-LOOK PROTOCOL"
+halt rule; stop.`
+
+---
+
+## Previous Next Action (iter 32 — iter 33 shipped)
 
 `Iter 33 — Issue playtest request:
   - Pre-mortem (H2 RULE v2 tag declaration for the load-bearing iter-33
