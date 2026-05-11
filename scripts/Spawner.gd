@@ -3,10 +3,10 @@ extends Node2D
 @export var enemy_scene: PackedScene
 @export var spawn_interval: float = 2.0
 @export var max_enemies: int = 20
-@export var spawn_distance: float = 120.0
 @export var max_spawn_attempts: int = 8
 @export var map_x_margin: float = 4.0
 @export var map_width: float = 320.0
+@export var viewport_top_offset: float = 144.0  # player.y - this = top of viewport - 24px margin
 
 var _player: Node2D
 var _enemies_alive: int = 0
@@ -36,27 +36,24 @@ func _on_timer_timeout() -> void:
 	var spawn_pos: Variant = _find_valid_spawn()
 	if spawn_pos == null:
 		rejections_total += 1
-		if ticks_total % 10 == 0:
-			print("[spawner] tick %d: spawns=%d rejections=%d" % [ticks_total, spawns_total, rejections_total])
-		return
-	var enemy: Node2D = enemy_scene.instantiate()
-	enemy.global_position = spawn_pos
-	enemy.tree_exited.connect(_on_enemy_freed)
-	get_parent().add_child(enemy)
-	_enemies_alive += 1
-	spawns_total += 1
-	if ticks_total % 10 == 0:
-		print("[spawner] tick %d: spawns=%d rejections=%d" % [ticks_total, spawns_total, rejections_total])
+	else:
+		var enemy: Node2D = enemy_scene.instantiate()
+		enemy.global_position = spawn_pos
+		enemy.tree_exited.connect(_on_enemy_freed)
+		get_parent().add_child(enemy)
+		_enemies_alive += 1
+		spawns_total += 1
+	if ticks_total % 5 == 0:
+		print("[spawner] tick %d: spawns=%d rejections=%d alive=%d" % [ticks_total, spawns_total, rejections_total, _enemies_alive])
 
 
-# Returns a Vector2 if a valid position was found, null otherwise.
-# Validity = on-map (x within margins) AND not inside a layer-1 collider.
+# Top-edge spawn: random x along map width, y just above viewport top.
+# Validity = not inside a layer-1 collider.
 func _find_valid_spawn() -> Variant:
+	var spawn_y: float = _player.global_position.y - viewport_top_offset
 	for i in max_spawn_attempts:
-		var angle: float = randf() * TAU
-		var candidate: Vector2 = _player.global_position + Vector2(spawn_distance, 0).rotated(angle)
-		if candidate.x < map_x_margin or candidate.x > (map_width - map_x_margin):
-			continue
+		var x: float = randf_range(map_x_margin, map_width - map_x_margin)
+		var candidate: Vector2 = Vector2(x, spawn_y)
 		if _is_blocked(candidate):
 			continue
 		return candidate

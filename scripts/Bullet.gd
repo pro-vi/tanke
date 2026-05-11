@@ -9,10 +9,12 @@ var velocity: Vector2 = Vector2.ZERO
 @onready var _lifetime_timer: Timer = $LifeTimeTimer
 
 
-func start(pos: Vector2, dir: int) -> void:
+func start(pos: Vector2, dir: int, target_mask: int = -1) -> void:
 	position = pos
 	rotation = Constants.dir_to_rotation(dir)
 	velocity = Vector2(1, 0).rotated(rotation) * float(speed)
+	if target_mask >= 0:
+		collision_mask = target_mask
 	_lifetime_timer.wait_time = lifetime
 	_lifetime_timer.start()
 

@@ -95,4 +95,3 @@ script = ExtResource("9")
 enemy_scene = ExtResource("10")
 spawn_interval = 2.0
 max_enemies = 20
-spawn_distance = 120.0

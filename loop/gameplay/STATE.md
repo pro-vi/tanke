@@ -4,11 +4,12 @@
 
 ```
 phase: loop
-iteration: 6
+iteration: 7
 preloop_complete: yes
 playtest_requested_iter: 5
 playtest_completed_iter: 6
 design_direction: battle_city (user playtest signal — see FALSIFICATION 003)
+next_playtest_due_iter: 9
 ```
 
 ---
@@ -125,19 +126,24 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 6 AUDIT complete. User playtest evaluated:
-- Claim 1 (bullets): LANDED ("it works"; off-center polish flagged)
-- Claim 2 (enemies stuck): FALSIFIED — "skiing without constraints",
-  opposite phenomenon. FALSIFICATION 002 logged.
-- Claim 3 (rejections > 0): INDETERMINATE — user didn't surface dock
-- Claim 4 (HP/death): LANDED
-- Claim 5 (R restart): LANDED
-- Design-framing drift surfaced: user invokes Battle City conventions,
-  not VS-like. FALSIFICATION 003 logged. Default for iters 7+: follow
-  Battle City direction per user playtest signal.
-- Crit 1 lifted 2 → 4 via playtest cite (anchor 4 met). Total 7 → 9/50.
-- 6 new open seams added from user report.
-Next: iter 7 BUILD — enemy refactor (grid AI + enemy fire + top spawn).
+Iter 7 BUILD complete. Enemy refactor (Battle City direction):
+- Enemy.gd: 4-dir grid AI matching PlayerTank model. direction_commit_time
+  0.8s prevents oscillation. Wall-collision → perpendicular alternate;
+  if both blocked → reverse. Snap to grid 8 on turn.
+- Enemy fire: Bullet.gd start() now accepts target_mask. Enemy bullets
+  use mask=3 (Env+Player). Enemy.gd fires every 1.5s in facing direction;
+  initial cooldown randomized to stagger volleys. bullet_scene wired in
+  Enemy.tscn → Bullet.tscn.
+- Spawner.gd: top-edge spawn (random x, y = player.y - 144) replacing
+  radial. H5 #2 wall-rejection retained.
+- Caught/fixed mid-iter: stranded spawn_distance reference in
+  ProceduralLevel.tscn (parse error after script export removal).
+- Verified: make test exit 0, godot --quit exit 0, oracle tile_hash
+  f873ae60ee3c420c… unchanged. 12s deterministic run shows spawner
+  ticking every 2s with successful spawns at seed 42.
+- Scores: unchanged at 9/50. Refactor is real but feel-criterion
+  anchors deferred to iter-9 playtest.
+Next: iter 8 BUILD — bullet/terrain (brick break, water pass, muzzle).
 ```
 
 ---
@@ -148,7 +154,55 @@ None (new loop).
 
 ---
 
-## Next Action
+## Next Action (current, replacing iter-7 plan that was just shipped)
+
+`Iter 8 BUILD — Bullet/terrain (Battle City direction part 2):
+  - Pre-mortem (H2 RULE: ≥1 independently observable claim about
+    iter-9 playtest result)
+
+  D. Brick destructibility:
+     - BrickBlock.gd: add @export max_hp: int = 1 (Battle City: 1 hit)
+     - take_damage(amount) decrements hp, queue_free on 0
+     - Bullet.gd already calls body.take_damage if has_method, so brick
+       death is automatic once take_damage exists
+     - Optional: hit-flash via modulate tween (crit 8 anchor 1)
+  E. Bullets over water:
+     - Either: WaterBlock.collision_layer 513 → 512 (remove layer 1)
+       — but then tanks can drive through water too. Bad.
+     - Better: use a dedicated layer for "bullet-blockable" vs
+       "tank-blockable". Layer 10 (Water) is already named for water in
+       project.godot. Set WaterBlock layer to 1024 only (no layer 1).
+       Bullet mask=9 doesn't include 1024 → passes over water. Tank
+       mask=513 includes 1+512=513 — wait 1024 not 512.
+     - Let me re-read project.godot layer_names:
+       2d_physics/layer_1="Environment"
+       2d_physics/layer_2="Player"
+       2d_physics/layer_10="Water"
+       So layer 10 = value 1<<9 = 512. WaterBlock layer 513 = 1+512.
+       Tank mask 513 = layer 1 + layer 10. Tank blocked by water (via
+       layer 10) AND environment (via layer 1).
+     - Plan: WaterBlock layer 513 → 512 (remove layer 1). Tank mask 513
+       still includes layer 10 (water=512) → tank still blocked. Bullet
+       mask 9 doesn't include 512 → bullet passes water. ✓
+  F. Muzzle centering:
+     - PlayerTank.tscn: Muzzle position Vector2(7, 0) → Vector2(8, 0)
+       or align with sprite center. Test visually (deferred to playtest)
+     - Or: compute muzzle offset in PlayerTank.gd _fire() relative to
+       sprite center, ignoring scene-set Marker2D position.
+
+  - Headless smoke + oracle re-check (substrate)
+  - Score predictions: crit 1 → 5 maybe (Battle City full feel),
+    crit 8 → 1 (brick hit-flash visible), crit 1 anchor 5 still capped
+    without playtest. Honest: crit 8 → 1, others unchanged till iter 9.
+  - Commit; ScheduleWakeup 240s
+  - Iter 9 = PLAYTEST (user-look gate, requesting playtest of iters
+    7+8 changes)
+
+H1 tripwire: 0 new gameplay siblings in ProceduralLevel.tscn. Count: 1.`
+
+---
+
+## Previous Next Action (iter 7 — shipped iter 7)
 
 `Iter 7 BUILD — Enemy refactor (Battle City direction):
   - Pre-mortem (H2 RULE: ≥1 independently observable claim about user
