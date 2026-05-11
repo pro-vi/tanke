@@ -3192,3 +3192,99 @@ Lifts past 2 (anchors 3-5) need playtest cite.
 - 16 sprint iters remaining
 
 ---
+
+## Iter 044 — BUILD — Persistent best-depth tracker
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 22/50 (unchanged — `[STRUCTURE-DEFERRED → iter 60]` for crit 10
+anchor 3 path)
+
+Diagnose: crit 10 at 2/5 (iter 43 lift). Anchor 3 = "Death screen highlights
+personal best vs. this run — cited via playtest." Set up structural piece:
+BEST depth tracked persistently across sessions + visible on death screen.
+iter-60 playtest [FEEL] cite gates 2 → 3 lift.
+
+### Code (scripts/PlayerTank.gd, +~35 lines)
+
+- New const `_STATS_CFG_PATH = "user://stats.cfg"`
+- `_load_best_depth() -> int` — ConfigFile.load with explicit error-code
+  check. ERR_FILE_NOT_FOUND treated as no prior best (returns 0).
+  Other errors print warning + return 0 (defensive against corruption).
+- `_save_best_depth(d: int)` — re-loads first (preserve future keys),
+  writes "run/best_depth", saves.
+- `_die()` now:
+  1. Computes depth/time/kills/stall (carried from iter 43)
+  2. Loads prior best
+  3. Compares; if `depth > prior_best`, saves new best
+  4. Conditional death-label line:
+     - `* NEW BEST!  (was N)` if this run > prior
+     - `BEST N` otherwise (prior best displayed)
+
+### Death label final format
+
+```
+YOU DIED
+
+DEPTH N
+TIME M:SS
+KILLS K
+STALL P%
+[* NEW BEST!  (was N) | BEST N]
+
+[R] RESTART
+```
+
+The `*` chosen (not `★`) for guaranteed ASCII compatibility — Godot 4 Label
+renders Unicode but ASCII guarantees pixelfont compatibility at 320×240.
+
+### Why ConfigFile (not raw FileAccess)
+
+ConfigFile section/key API matches the eventual stats expansion (best_time,
+best_kills, runs_completed, etc. all live in same file). Idiomatic Godot 4.
+Re-load before save preserves any other keys that haven't been written by
+this version yet — forward-compatible.
+
+### Score
+
+Unchanged at 22/50. `[STRUCTURE-DEFERRED → iter 60]` for crit 10 anchor 3
+("Death screen highlights personal best vs. this run — cited via playtest").
+Lift to 3/5 gated on iter-60 [FEEL] cite ("I want to beat my last run" /
+similar replayability language).
+
+### Self-deception check
+
+If I showed Pro "death screen shows BEST + NEW BEST marker when run > prior"
++ anchor 3, would they grant 2 → 3 [STRUCTURE]? **NO** — anchor 3 explicitly
+requires "cited via playtest." Holding 2/5 honestly with deferred tag.
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0, no warnings
+- ConfigFile API verified per Godot 4.6.2 docs (ERR_FILE_NOT_FOUND is the
+  expected first-run path)
+- First-run path: cfg.load returns ERR_FILE_NOT_FOUND → return 0 → display
+  "BEST 0" until first non-zero run beats it
+
+### Substrate freeze check
+
+- Hard scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- H1 tripwire unchanged at 2
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd`
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 45 = CONSULT (planned in iter-39 sprint roadmap: "adaptive cadence,
+  planned 45 mid-sprint, 55 pre-playtest"). Mid-sprint Pro review on
+  current trajectory + iter-60 playtest readiness.
+- 15 sprint iters remaining
+
+---

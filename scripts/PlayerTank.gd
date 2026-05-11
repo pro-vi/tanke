@@ -221,11 +221,47 @@ func _die() -> void:
 	if spawner != null and "enemies_killed" in spawner:
 		kills = int(spawner.enemies_killed)
 	print("[run] depth=%d time=%d:%02d kills=%d ascent_rate=%.2f rows/s stall_total=%.1fs (%.0f%%)" % [depth, t / 60, t % 60, kills, ascent_rate, _stall_time_total, stall_pct])
-	# iter 43: render run summary on death label (anchor 2 structural ship)
+	# iter 44: persistent best-depth tracking
+	var prior_best: int = _load_best_depth()
+	var is_new_best: bool = depth > prior_best
+	if is_new_best:
+		_save_best_depth(depth)
+	# iter 43: render run summary on death label (iter 44: + BEST line)
 	if _death_label != null:
-		_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nSTALL %d%%\n\n[R] RESTART" % [depth, t / 60, t % 60, kills, int(stall_pct)]
+		var best_line: String
+		if is_new_best:
+			best_line = "\n* NEW BEST!  (was %d)" % prior_best
+		else:
+			best_line = "\nBEST %d" % prior_best
+		_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nSTALL %d%%%s\n\n[R] RESTART" % [depth, t / 60, t % 60, kills, int(stall_pct), best_line]
 		_death_label.visible = true
 	died.emit()
+
+
+# iter 44: persistent best-depth via ConfigFile at user://stats.cfg.
+# First-run path: ConfigFile.load returns ERR_FILE_NOT_FOUND → treat as 0.
+# Other errors: print warning and treat as 0 (defensive — corruption should
+# not block UI).
+const _STATS_CFG_PATH: String = "user://stats.cfg"
+
+func _load_best_depth() -> int:
+	var cfg: ConfigFile = ConfigFile.new()
+	var err: int = cfg.load(_STATS_CFG_PATH)
+	if err == OK:
+		return int(cfg.get_value("run", "best_depth", 0))
+	if err != ERR_FILE_NOT_FOUND:
+		push_warning("[stats] ConfigFile.load err=%d (treating as no prior best)" % err)
+	return 0
+
+
+func _save_best_depth(d: int) -> void:
+	var cfg: ConfigFile = ConfigFile.new()
+	# Re-load to preserve any other future keys
+	cfg.load(_STATS_CFG_PATH)
+	cfg.set_value("run", "best_depth", d)
+	var err: int = cfg.save(_STATS_CFG_PATH)
+	if err != OK:
+		push_warning("[stats] ConfigFile.save err=%d" % err)
 
 
 func _handle_restart_input() -> void:

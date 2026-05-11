@@ -23,8 +23,8 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 43 → 60)
-iteration: 43
+phase: SPRINT (iter 44 → 60)
+iteration: 44
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"

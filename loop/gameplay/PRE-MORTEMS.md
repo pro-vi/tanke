@@ -1107,7 +1107,47 @@ H2-RULE claims (3):
 2. Spawner.enemies_killed counter increments via _on_enemy_freed (one per dead enemy)
 3. Death label displays multi-line summary on _die(); kills count matches `[run]` terminal print
 
-**Post-iter:** [filled at iter 44]
+**Post-iter (iter 44 start):** Build clean, multi-line death label live. Score 22/50.
+
+---
+
+## Iter 044 — BUILD — Persistent best-depth tracker
+
+Tag: `[STRUCTURE-DEFERRED → iter 60]` for crit 10 anchor 3 path (no score lift; anchor 3 is feel-criterion >2, requires [FEEL] cite per v2 §Step 5).
+
+Diagnose: crit 10 at 2/5 (iter 43 lift). Anchor 3 = "Death screen highlights personal best vs. this run — cited via playtest." Setting up the structural piece (BEST tracked persistently + visible on death screen) primes iter-60 playtest cite for "I want to beat my last run" / "made me want one more."
+
+Going in, biggest expected miss: **`user://` write/load fails silently on first run** (no file exists) — ConfigFile.load returns Error code, and naive code path treats as best=0 even for repeat runs after first crash. Mitigation: explicit error-code check; if load fails with FILE_NOT_FOUND, treat best as 0; for other errors print warning.
+
+Design:
+- `user://stats.cfg` ConfigFile with section "run", key "best_depth"
+- `_load_best_depth()` helper — handles missing-file case
+- `_save_best_depth(d)` helper — writes if d > existing best
+- `_die()` calls load → compare → save (when higher) → render death label
+
+Death label format:
+```
+YOU DIED
+
+DEPTH N
+TIME M:SS
+KILLS K
+STALL P%
+★ NEW BEST!   (only if this run > prior best)
+or
+BEST B        (otherwise, showing prior best)
+
+[R] RESTART
+```
+
+H2-RULE claims (3):
+1. Build clean: make test + headless --quit-after 60 both exit 0
+2. ConfigFile load/save works first-run + on repeated runs (verified via headless flow if possible, else by code inspection)
+3. Death label shows BEST line (either NEW BEST or BEST N) in all paths
+
+No score lift this iter (anchor 3 deferred to iter 60). Crit 10 stays at 2/5.
+
+**Post-iter:** [filled at iter 45]
 
 ---
 
