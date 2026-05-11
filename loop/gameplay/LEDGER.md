@@ -541,3 +541,69 @@ longer count as "real" predictions.
   prompt and halt the wakeup chain pending user response.
 
 ---
+
+## Iter 005 — PLAYTEST — mandatory user-look gate
+
+**Mode:** PLAYTEST (AWAIT per PROMPT §7)
+**Focus:** falsify or confirm the 5 independently observable claims accumulated across iters 1-4
+**Date:** 2026-05-11
+**Pre-mortem:** PRE-MORTEMS.md iter 005 — 5 H2-RULE independently observable claims
+
+### Build verification (PROMPT §USER-LOOK step 1)
+
+- `godot --headless --path . --quit` → exit 0, clean (only carryover cosmetic UID warning)
+- `make test` (120 frames runtime test of ProceduralLevel.tscn) → exit 0, no errors
+- Build is ready for user playtest.
+
+### Run config captured (PROMPT §USER-LOOK step 2)
+
+| Param | Value | Source |
+|-------|-------|--------|
+| Main scene | `scenes/ProceduralLevel.tscn` | `project.godot:14` (set iter 0) |
+| Level config | `configs/playable.tres` | `ProceduralLevel.tscn:58` |
+| Biome | none | unset |
+| Seed | random per launch | `ProceduralLevel.gd:35-38` (TANKE_SEED unset) |
+| Player max_hp | 3 | `PlayerTank.gd:11` |
+| Player speed | 32 px/s | `PlayerTank.gd:5` |
+| Player damage_iframes | 0.6s | `PlayerTank.gd:12` |
+| Bullet speed | 120 px/s | `Bullet.gd:3` |
+| Bullet lifetime | 2.0s | `Bullet.gd:5` |
+| Bullet damage | 1 | `Bullet.gd:4` |
+| Enemy speed | 24 px/s | `Enemy.gd:3` |
+| Enemy max_hp | 1 | `Enemy.gd:4` |
+| Spawn interval | 2.0s | `Spawner.gd:4` |
+| Max enemies | 20 | `Spawner.gd:5` |
+| Spawn distance | 120 px | `Spawner.gd:6` |
+| Max spawn attempts | 8 | `Spawner.gd:7` |
+| Controls | WASD/arrows = move, Space = fire, R (post-death) = restart | – |
+
+Last known good substrate baseline (seed 42): `tile_hash f873ae60ee3c420c…`,
+`reachable_cells 804`, `rows_climbed 29`, `playable: true`. Note: seed is
+random per launch, so user's seed will differ and substrate hash will
+differ. Oracle baseline applies only to deterministic seed 42 runs.
+
+### Playtest prompt (PROMPT §USER-LOOK step 3)
+
+Output to user as a chat message in this turn. AWAIT user response. No
+ScheduleWakeup.
+
+### Halt rule
+
+Per PROMPT §"USER-LOOK PROTOCOL": if user does not respond within 3
+subsequent iters of this PLAYTEST request being logged (iters 6, 7, 8),
+the loop **halts**. `loop/gameplay/HALTED.md` is written with the open
+question.
+
+### Files touched
+
+- Modified: `loop/gameplay/PRE-MORTEMS.md` (iter-5 entry, 5 H2-RULE
+  claims), `loop/gameplay/STATE.md` (phase: AWAITING USER, iteration: 5),
+  `loop/gameplay/LEDGER.md` (this entry)
+
+### Schedule
+
+- **No ScheduleWakeup.** AWAIT per PROMPT §7.
+- On user response: iter 6 evaluates the 5 claims, falsifications logged
+  to FALSIFICATIONS.md, scores updated.
+
+---

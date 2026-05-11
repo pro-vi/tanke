@@ -3,9 +3,10 @@
 ## Phase
 
 ```
-phase: loop
-iteration: 4
+phase: AWAITING_USER_PLAYTEST
+iteration: 5
 preloop_complete: yes
+playtest_requested_iter: 5
 ```
 
 ---
@@ -107,28 +108,16 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 ## Last Action
 
 ```
-Iter 4 AUDIT complete. GPT-Pro consult integrated:
-- H1 (substrate freeze .tscn exemption): "too convenient" — installed
-  H1 TRIPWIRE (≤3 gameplay siblings inside ProceduralLevel.tscn before
-  mandatory refactor). Current count: 1 (Spawner).
-- H2 (rubric theater): "self-grading convergence" — installed H2 RULE
-  in PRE-MORTEMS.md: ≥1 independently observable falsifiable claim per
-  pre-mortem. Iter-4 pre-mortem itself shipped 4 such claims; 3 landed,
-  1 deferred to iter-5 playtest.
-- H5 #2 (off-map/inside-wall spawns): patched Spawner.gd with
-  rejection sampling (max_spawn_attempts=8) using PhysicsDirectSpaceState2D
-  intersect_point against collision_mask=1 (Environment). Counters
-  exposed via debug print every 10 ticks for iter-5 playtest verification.
-- H5 #1 (bullet self-collision): Pro WRONG — PlayerTank is layer 2,
-  not 1; Bullet mask=9 doesn't include layer 2. Logged FALSIFICATION 001.
-- AUDIT re-score: 7/50 unchanged (Pro work was substrate discipline,
-  not gameplay feature).
-- Oracle re-check: tile_hash f873ae60ee3c420c… matches iter-0 baseline.
-  Substrate integrity verified across iters 1-4.
-- Headless boot exit 0 clean.
-- Created creative-consults.md and FALSIFICATIONS.md (per-file
-  bookkeeping artifacts per PROMPT §CONSULT/§USER-LOOK).
-Next: iter 5 PLAYTEST (mandatory user-look gate).
+Iter 5 PLAYTEST request issued. AWAITING USER.
+Build verified (godot --quit exit 0, make test clean). Run config
+captured in LEDGER iter 005. User-facing playtest prompt output to chat;
+5 independently observable claims (per H2 RULE) waiting on user report:
+1. Bullets visibly travel + despawn on walls
+2. Some enemies get stuck on walls
+3. Output dock shows [spawner] rejections > 0 within 30s
+4. HP drops on enemy contact + death triggers YOU DIED label
+5. R-key restart returns to fresh state
+No ScheduleWakeup. Halt rule fires if no response by iter 8.
 ```
 
 ---
@@ -141,29 +130,21 @@ None (new loop).
 
 ## Next Action
 
-`Iter 5 PLAYTEST (mandatory user-look gate per PROMPT §USER-LOOK):
-  - Pre-mortem to PRE-MORTEMS.md — must include ≥1 independently
-    observable falsifiable claim per H2 RULE
-  - Verify build runs: godot --headless --quit exit 0
-  - Capture run config: seed (random per launch), config=playable.tres,
-    spawn_interval=2.0s, max_enemies=20, spawn_distance=120, max_hp=3,
-    damage_iframes=0.6s, max_spawn_attempts=8
-  - Output to user: "Please play one F5 run (~1-2 min). Specifically
-    observe these THREE things and report:
-    1. BULLETS: Press space. Do bullets visibly travel forward and
-       disappear when they hit a wall? Or are they invisible / stuck /
-       persistent?
-    2. ENEMIES: Do enemies move toward you? Do any get stuck on walls
-       and never reach you? About how many actually engage vs. get
-       stuck?
-    3. SPAWNS: Look at the Output dock. Do you see "[spawner] tick N:
-       spawns=X rejections=Y" lines every ~20 seconds? Is Y > 0?
-    Also: anything else that felt off / broken / surprising."
-  - AWAIT user response. No scheduled retry per PROMPT §7.
-  - Halt rule: if 3 subsequent iters pass without user playtest
-    response, write loop/gameplay/HALTED.md and stop.
-  - On user response: iter 6 morphs to BUILD targeting whatever the
-    playtest surfaced as most broken (likely enemy AI per H3 critique).`
+`AWAITING user playtest response.
+
+On response (iter 6):
+  - Read user report
+  - For each of the 5 independently observable claims, mark
+    LANDED / FALSIFIED / INDETERMINATE
+  - Append FALSIFICATIONS.md entries for any falsified claim
+  - Update score table per RUBRIC.md anchors using playtest evidence
+    (feel-criterion >2 now unlocked for criteria the user validated)
+  - Plan iter 7 BUILD targeting whichever broken thing was most
+    surprising (priority: blockers > feel-criterion improvements >
+    additional features)
+
+If no user response by end-of-iter-8 (3 iters later): write HALTED.md per
+PROMPT §"USER-LOOK PROTOCOL" halt rule; stop.`
 
 ---
 

@@ -167,4 +167,50 @@ critique acknowledged):
 - Most likely outcome: scores unchanged (7/50), with H1/H2/H5 #2 fixes
   shipped as substrate-discipline work without affecting rubric
 
+**Post-iter evaluation:** 3 of 4 H2-RULE claims landed (oracle hash exact,
+headless exit 0, Pro H5 #1 false); 4th (Spawner rejections > 0) properly
+deferred to iter 5 playtest. Scores held at 7/50. Pro consult artifacts
+shipped to creative-consults.md and FALSIFICATIONS.md.
+
+---
+
+## Iter 005 — PLAYTEST (mandatory user-look gate)
+
+Going in, I expect the biggest miss to be: enemies get stuck on walls.
+The iter-2 pre-mortem predicted this and Pro's H3 critique reinforced it
+("don't pretend playtest is needed to discover this"). Less expected but
+possible: the dynamic HurtBox doesn't fire `body_entered` for some
+Godot-4 timing reason I haven't anticipated (HP never drops), or
+`set_rotation` on PlayerTank rotates the muzzle in a way that makes bullets
+visually wrong.
+
+Independently observable claims for iter 5 (H2 RULE — user's playtest
+report is the sole falsification authority):
+
+1. **Bullets visibly travel forward when space pressed; visibly despawn on
+   wall contact.** Falsified by: user sees stationary/invisible/persistent
+   bullets, or bullets pass through walls.
+2. **Some enemies get stuck on walls** — user observes at least one
+   enemy piling up at a wall rather than reaching them. Falsified by:
+   user reports all enemies engage cleanly OR no enemies at all.
+3. **Output dock shows `[spawner] tick N: spawns=X rejections=Y` lines
+   with Y > 0** within 30+ seconds of play. Falsified by: Y stays 0
+   (means H5 #2 patch is overcautious, or no walls hit by 8-attempt
+   sample).
+4. **HP drops on enemy contact; death triggers "YOU DIED [R] RESTART"
+   label.** Falsified by: HP stays 3 forever even with enemies touching
+   player, OR death doesn't show the label.
+5. **R-key (after release-then-press) reloads the scene to a fresh
+   state.** Falsified by: R does nothing, OR restarts instantly without
+   debounce, OR scene state leaks across reloads.
+
+Score-target predictions (per H2 RULE, secondary):
+- Crit 1 → 3 if user confirms full core loop (move → shoot → take damage
+  → die → restart). Otherwise holds at 2.
+- Crit 6 → ? (depends on user observation of enemy AI quality)
+- Crit 7 (Run pacing) might land at 1 if user reports spawn-rate increases
+  feel — but spawn rate is fixed at 2s, so unlikely. Probably stays at 0.
+
+**Post-iter evaluation:** [to be filled when user responds]
+
 ---
