@@ -4,7 +4,7 @@
 
 ```
 phase: loop
-iteration: 3
+iteration: 4
 preloop_complete: yes
 ```
 
@@ -34,6 +34,18 @@ Active scene config: `configs/playable.tres`
 Substrate freeze rule per `PROMPT.md`: do not modify `LevelConfig`,
 `BiomeConfig`, `LevelDNA`, `ProceduralStep`, `ProceduralLevel` (the
 procedural generation logic). Add new configs/scripts/scenes as needed.
+
+**H1 tripwire (added iter 4 per GPT-Pro consult — see creative-consults.md):**
+the literal-reading defense for `scenes/ProceduralLevel.tscn` ("only the
+.gd is frozen") is *too convenient*. Per Pro: "the active procedural scene
+is still the substrate fixture. Adding gameplay systems directly into it
+blurs engine substrate and gameplay layer — the iter-28 failure mode in
+softer form." Adopted stance: **≤3 gameplay-only sibling nodes** may live
+inside ProceduralLevel.tscn before a mandatory refactor to either (a) a
+`GameplayLayer` Node2D child that contains them all, or (b) a parent
+scene `scenes/GameplayLevel.tscn` that instances ProceduralLevel.tscn.
+Current count: 1 (Spawner). HurtBox + HUD are dynamic-in-PlayerTank and
+don't count against this tripwire. Tripwire trigger likely iter 5-7.
 
 ---
 
@@ -95,23 +107,28 @@ procedural generation logic). Add new configs/scripts/scenes as needed.
 ## Last Action
 
 ```
-Iter 3 BUILD complete. HP + HUD + death/restart:
-- PlayerTank.gd: max_hp=3, damage_iframes=0.6, hp_changed/died signals,
-  take_damage with iframe gate, _die freezes player + shows death label,
-  R-restart with debounce (must release then press)
-- Dynamic HurtBox Area2D (mask=8, layer=0, 12×12) created in _ready —
-  avoids editing PlayerTank.tscn (still format=2)
-- Dynamic HUD CanvasLayer with HP %d/%d label + hidden YOU DIED [R]
-  RESTART label, all created in _ready
-- Enemy.gd: add_to_group("enemy") so HurtBox detects via group check
-Headless boot clean (carryover Bullet.gd UID warning, harmless).
-Crit 3 → 2, crit 9 → 1; crit 1 holds at 2 (feel-criterion playtest cap).
-Total 7/50.
-
-Pending external evidence: agentify GPT-Pro consult (key
-tanke-iter-2-secondopinion) was still mid-flight at commit. Iter 4 starts
-by reading the response; integrates material critique if any.
-Next: iter 4 AUDIT — read Pro response, re-score with oracle re-check.
+Iter 4 AUDIT complete. GPT-Pro consult integrated:
+- H1 (substrate freeze .tscn exemption): "too convenient" — installed
+  H1 TRIPWIRE (≤3 gameplay siblings inside ProceduralLevel.tscn before
+  mandatory refactor). Current count: 1 (Spawner).
+- H2 (rubric theater): "self-grading convergence" — installed H2 RULE
+  in PRE-MORTEMS.md: ≥1 independently observable falsifiable claim per
+  pre-mortem. Iter-4 pre-mortem itself shipped 4 such claims; 3 landed,
+  1 deferred to iter-5 playtest.
+- H5 #2 (off-map/inside-wall spawns): patched Spawner.gd with
+  rejection sampling (max_spawn_attempts=8) using PhysicsDirectSpaceState2D
+  intersect_point against collision_mask=1 (Environment). Counters
+  exposed via debug print every 10 ticks for iter-5 playtest verification.
+- H5 #1 (bullet self-collision): Pro WRONG — PlayerTank is layer 2,
+  not 1; Bullet mask=9 doesn't include layer 2. Logged FALSIFICATION 001.
+- AUDIT re-score: 7/50 unchanged (Pro work was substrate discipline,
+  not gameplay feature).
+- Oracle re-check: tile_hash f873ae60ee3c420c… matches iter-0 baseline.
+  Substrate integrity verified across iters 1-4.
+- Headless boot exit 0 clean.
+- Created creative-consults.md and FALSIFICATIONS.md (per-file
+  bookkeeping artifacts per PROMPT §CONSULT/§USER-LOOK).
+Next: iter 5 PLAYTEST (mandatory user-look gate).
 ```
 
 ---
@@ -124,25 +141,29 @@ None (new loop).
 
 ## Next Action
 
-`Iter 4 AUDIT (with Pro-consult integration):
-  - Pre-mortem to PRE-MORTEMS.md
-  - FIRST: agentify_status + agentify_read_page for key
-    tanke-iter-2-secondopinion. Read GPT-Pro critique of H1-H5.
-  - If Pro response surfaces material issues:
-    - Substrate-freeze critique (H1) — re-read META-RETRO §"What survives";
-      either retract Spawner-in-tscn pattern or document why it's distinct
-    - Pre-mortem credibility (H2) — restructure pre-mortems to predict
-      something the *external evidence* (playtest, Pro) decides, not just
-      my own scoring
-    - Naive enemy AI (H3) — if Pro suggests a 30-line cheap fix, evaluate
-    - Iter-3 scope (H4) — already shipped; learn for next iter
-    - Silent bugs (H5) — patch any identified critical bug pre-iter-5
-  - Re-run reachability oracle for discipline (should still match
-    f873ae60ee3c420c…)
-  - Re-score all 10 criteria with fresh eyes
-  - Update LEDGER iter 4 with AUDIT findings
-  - Commit; ScheduleWakeup 240s
-  - Iter 5 = mandatory PLAYTEST (user-look gate)`
+`Iter 5 PLAYTEST (mandatory user-look gate per PROMPT §USER-LOOK):
+  - Pre-mortem to PRE-MORTEMS.md — must include ≥1 independently
+    observable falsifiable claim per H2 RULE
+  - Verify build runs: godot --headless --quit exit 0
+  - Capture run config: seed (random per launch), config=playable.tres,
+    spawn_interval=2.0s, max_enemies=20, spawn_distance=120, max_hp=3,
+    damage_iframes=0.6s, max_spawn_attempts=8
+  - Output to user: "Please play one F5 run (~1-2 min). Specifically
+    observe these THREE things and report:
+    1. BULLETS: Press space. Do bullets visibly travel forward and
+       disappear when they hit a wall? Or are they invisible / stuck /
+       persistent?
+    2. ENEMIES: Do enemies move toward you? Do any get stuck on walls
+       and never reach you? About how many actually engage vs. get
+       stuck?
+    3. SPAWNS: Look at the Output dock. Do you see "[spawner] tick N:
+       spawns=X rejections=Y" lines every ~20 seconds? Is Y > 0?
+    Also: anything else that felt off / broken / surprising."
+  - AWAIT user response. No scheduled retry per PROMPT §7.
+  - Halt rule: if 3 subsequent iters pass without user playtest
+    response, write loop/gameplay/HALTED.md and stop.
+  - On user response: iter 6 morphs to BUILD targeting whatever the
+    playtest surfaced as most broken (likely enemy AI per H3 critique).`
 
 ---
 

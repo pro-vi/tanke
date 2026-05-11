@@ -100,4 +100,71 @@ commit. This iter therefore has a built-in falsification surface that's
 not my own work product — first iter where falsification can come from
 external evidence, not just my own scoring.
 
+**Post-iter evaluation:** Predictions 1-5 all landed mechanically. Pro
+consult returned post-commit; H1, H2, H5 #2 all surfaced material
+critique; H5 #1 was actually false (Pro lacked PlayerTank.tscn). See
+iter-4 LEDGER + creative-consults.md.
+
+---
+
+## H2 RULE — pre-mortems must include independently observable claims
+
+Per GPT-Pro H2 critique (consult key tanke-iter-2-secondopinion): "'I
+predicted score X and then assigned score X' is not a real prediction; it
+is rubric theater." Going forward, every iter's pre-mortem **must contain
+at least one independently observable falsifiable claim** — a claim whose
+truth-value is set by code behavior, oracle output, automated test, or
+playtest user reaction, NOT by my own scoring.
+
+Examples (good):
+- "First kill occurs within 20 seconds in a scripted sim"
+- "No spawned enemy begins inside a solid tile (oracle-verifiable)"
+- "Headless boot adds a parse error" (binary outcome, exit code)
+- "User reaction to enemy AI includes the word 'stuck'" (playtest text)
+
+Examples (bad — rubric theater):
+- "Criterion N lands at K/5" (I'm the scorer)
+- "I will integrate the consult" (I'm the executor)
+- "Total score increases by ≥X" (still my scoring)
+
+Score predictions may continue but are secondary. Falsifications come from
+independently observable claims only.
+
+---
+
+## Iter 004 — AUDIT (Pro consult integration)
+
+Going in, I expect this iter's biggest miss to be: rectifying H2 (rubric
+theater) while still committing rubric theater inside *this* pre-mortem.
+The temptation is to write "iter 4 will fix the Spawner and AUDIT will
+land scores at X" — but those are still my decisions. The real
+independently observable test of H2-rectification is: does my next
+pre-mortem (iter 5) contain at least one claim the playtest can falsify
+without my involvement?
+
+Falsifiable predictions (independently observable):
+1. **Oracle re-check returns tile_hash f873ae60ee3c420c…** exact match.
+   Any deviation = silent substrate breakage from iter-3 dynamic-node
+   additions. Binary, oracle-verifiable.
+2. **Spawner post-patch will reject ≥1 candidate position per 10 spawn
+   ticks** when player is near map center (seed 42, run for 30s). To
+   verify: I'd need a counter in Spawner.gd or a Print on rejection.
+   This requires a CAPABILITY mini-add. If I don't add the counter, this
+   claim is unverifiable — flag it.
+3. **Headless boot stays exit 0** with the Spawner reachability check
+   added. Binary.
+4. **Pro response H5 #1 (bullet self-collision via shared layer 1)
+   was wrong** — PlayerTank.tscn shows `collision_layer=2`, not 1. Bullet
+   mask = 9 = 1|8 does not include 2, so no self-hit possible. This is
+   already verified by reading PlayerTank.tscn:12; flag as FALSIFICATION
+   of Pro's claim.
+
+Score-target predictions (secondary, rubric-theater-adjacent — Pro
+critique acknowledged):
+- AUDIT may LOWER crit 1 or crit 3 if I find I was generous (Pro's H5 #2
+  spawn-in-walls issue means some "enemies present" might not actually
+  reach the player; if anchor wording rules out broken AI, scores adjust)
+- Most likely outcome: scores unchanged (7/50), with H1/H2/H5 #2 fixes
+  shipped as substrate-discipline work without affecting rubric
+
 ---

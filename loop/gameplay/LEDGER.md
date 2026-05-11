@@ -409,3 +409,135 @@ Real falsification risks (deferred):
 - PLAYTEST mandatory at iter 5 (2 iters away — that's when the user F5s)
 
 ---
+
+## Iter 004 — AUDIT — Pro consult integration
+
+**Mode:** AUDIT (with embedded BUILD: Spawner reachability patch)
+**Focus:** integrate GPT-Pro consult findings, install H2 RULE (independently observable pre-mortems), patch Spawner per H5 #2, document substrate-freeze tripwire per H1
+**Date:** 2026-05-11
+**Pre-mortem:** PRE-MORTEMS.md iter 004 — first iter with 4 independently observable falsifiable claims (NOT just score predictions)
+
+### Pro consult outcome
+
+Full consult in `loop/gameplay/creative-consults.md` Consult 001.
+Summary:
+| H | Pro verdict | My verdict | Action |
+|---|-------------|------------|--------|
+| H1 — substrate freeze .tscn exemption | **BREAKS** ("too convenient", soft iter-28 failure mode) | Material — partial adopt | Added H1 tripwire to STATE.md substrate baseline section (≤3 gameplay siblings before mandatory refactor) |
+| H2 — pre-mortem credibility | **BREAKS** ("rubric theater", "self-grading convergence") | Material — fully adopt | Added H2 RULE to PRE-MORTEMS.md: ≥1 independently observable claim per pre-mortem |
+| H3 — naive enemy AI | HOLDS (with cheap-lift suggestions) | Hold; one suggestion (spawn-only-on-reachable) merged into H5 #2 fix | – |
+| H4 — iter-3 scope | **BREAKS** (3 specific bug predictions) | Already addressed in iter 3 (HurtBox, no queue_free, raw key) | Validation that iter-3 pattern was right |
+| H5 #1 — bullet self-collision | **BREAKS** ("nastiest 30-sec bug") | **WRONG — Pro lacked PlayerTank.tscn in context** | FALSIFICATION #001 logged |
+| H5 #2 — off-map/inside-wall spawns | **BREAKS** | TRUE — adopting | Spawner.gd patch |
+| H5 #3 — enemies see layer 1 as player | **BREAKS** | WRONG (Enemy mask=1 Environment, player layer=2) | Logged in consult evaluation |
+| H5 timer-race | HOLDS | Hold | – |
+
+### Actions taken (in order)
+
+1. **H2 RULE installed** (PRE-MORTEMS.md): every iter pre-mortem must
+   contain ≥1 independently observable falsifiable claim. Iter-4
+   pre-mortem ships with 4 such claims.
+2. **`creative-consults.md` created** with full Pro response,
+   per-hypothesis evaluation, and 3 lessons.
+3. **`FALSIFICATIONS.md` created** with Falsification 001: Pro's H5 #1
+   bullet-self-collision claim was wrong because PlayerTank.tscn was not
+   in `contextPaths`. PlayerTank.tscn:12-13 has `collision_layer=2`,
+   `collision_mask=513`; Bullet mask=9=1|8 does not include 2; no self-hit
+   possible. Lesson: include all relevant .tscn files in consult context.
+4. **`scripts/Spawner.gd` patched** (H5 #2 fix):
+   - New `_find_valid_spawn()` does rejection sampling up to
+     `max_spawn_attempts=8`.
+   - Each candidate must satisfy: `map_x_margin ≤ x ≤ map_width - margin`
+     AND `_is_blocked()` returns false.
+   - `_is_blocked()` uses `PhysicsDirectSpaceState2D.intersect_point`
+     with `collision_mask=1` (Environment) — catches both Steel
+     TileMapLayer cells AND BrickBlock/WaterBlock StaticBody2D instances.
+   - Counters `spawns_total, rejections_total, ticks_total` added.
+   - Debug print every 10 ticks for iter-5 playtest verification of
+     pre-mortem prediction #2.
+5. **H1 tripwire installed** in STATE.md substrate baseline section.
+   Current sibling count: 1 (Spawner). Mandatory refactor at >3.
+6. **Reachability oracle re-run** at seed 42: `tile_hash
+   f873ae60ee3c420c57cdef5762acdad857b1a763ec50b76db80971ef4503e797`,
+   identical to iter-0 baseline. Substrate integrity verified across 3
+   iters of gameplay BUILD work.
+7. **Headless boot post-Spawner-patch**: exit 0, clean (carryover
+   cosmetic UID warning for Bullet.gd, harmless).
+
+### AUDIT re-score (fresh evidence)
+
+| Criterion | Iter 3 | Iter 4 (AUDIT) | Δ | Notes |
+|-----------|--------|----------------|---|-------|
+| 1. Core loop closes | 2 | 2 | 0 | Feel criterion playtest rule unchanged. Anchor 3 in code; >2 needs iter-5 playtest. |
+| 2. Spawn / wave system | 1 | 1 | 0 | Reachability rejection improves quality but doesn't shift anchor. Still anchor 1 (fixed rate). To reach anchor 2 needs varying intervals. |
+| 3. HP + death model | 2 | 2 | 0 | Anchor 2 exact, unchanged. |
+| 4. XP + level-up flow | 0 | 0 | 0 | – |
+| 5. Upgrade variety | 0 | 0 | 0 | – |
+| 6. Enemy variety + behavior | 1 | 1 | 0 | Naive chaser unchanged. Pro confirmed "score 1 is honest." |
+| 7. Run pacing | 0 | 0 | 0 | – |
+| 8. Visual feedback / juice | 0 | 0 | 0 | – |
+| 9. UI / UX | 1 | 1 | 0 | – |
+| 10. Build distinctness | 0 | 0 | 0 | – |
+| **Total** | **7** | **7** | **0** | AUDIT preserves total — Pro work was substrate discipline, not gameplay |
+
+No upward inflation. No downward correction needed (Pro's H5 #1
+hypothetical self-hit was wrong; nothing else surfaces a score-relevant
+regression). Honest 7/50.
+
+### Pre-mortem evaluation (with H2 RULE applied)
+
+Independently observable claims for iter 4:
+1. **Oracle re-check returns tile_hash f873ae60ee3c420c…** → **LANDED**
+   (verified via oracle re-run).
+2. **Spawner post-patch will reject ≥1 candidate position per 10 spawn
+   ticks** → **DEFERRED to iter-5 playtest** (verifiable via the debug
+   print at ticks_total % 10). If iter-5 playtest output shows
+   `rejections=0` after 30+ ticks with player in mid-map, claim is
+   falsified.
+3. **Headless boot stays exit 0** with Spawner reachability check
+   added → **LANDED** (verified post-patch).
+4. **Pro H5 #1 (bullet self-collision) was wrong** → **LANDED**
+   (verified by reading PlayerTank.tscn:12; logged FALSIFICATION 001).
+
+3/4 landed (75%). Claim 2 properly deferred — first iter with a real
+unresolved-at-commit prediction, not retroactive self-grading. H2 RULE
+working as intended.
+
+Secondary score predictions (rubric-theater-acknowledged): scores
+unchanged at 7/50 — matches what I predicted. But per H2 RULE these no
+longer count as "real" predictions.
+
+### Files touched
+
+- Created: `loop/gameplay/creative-consults.md`,
+  `loop/gameplay/FALSIFICATIONS.md`
+- Modified: `scripts/Spawner.gd` (reachability rejection + counters),
+  `loop/gameplay/PRE-MORTEMS.md` (H2 RULE + iter-4 entry),
+  `loop/gameplay/STATE.md` (H1 tripwire + status updates),
+  `loop/gameplay/LEDGER.md` (this entry)
+
+### Schedule
+
+- Iter 5 candidate = **PLAYTEST** (mandatory user-look gate per PROMPT
+  §"USER-LOOK PROTOCOL" and §3 mode table).
+- Build deliverable: verify build runs, capture run config, output to
+  user: "Please play one run. Specifically observe: [3 specific things].
+  Report what felt off."
+- Three specific observations to ask user to make (drawn from open
+  pre-mortem predictions across iters 1-4):
+  1. **Bullet visibly travels and despawns hitting walls** (iter-1
+     prediction): falsifies "bullets work" if user sees stationary or
+     ghost bullets.
+  2. **Enemies engage the player vs. getting stuck on walls** (iter-2
+     prediction H3 critique): falsifies naive AI sufficiency if user
+     reports enemies pile up at the nearest wall.
+  3. **Spawner debug prints show non-zero rejections** (iter-4 prediction
+     #2): falsifies H5 #2 fix relevance if rejections=0 throughout the
+     run.
+- Iter 5 is AWAIT mode (per PROMPT: "PLAYTEST = AWAIT until user response,
+  no scheduled retry"). Halt rule activates if no user response within 3
+  subsequent iters.
+- ScheduleWakeup 240s for iter 5; on iter-5 wake, output the PLAYTEST
+  prompt and halt the wakeup chain pending user response.
+
+---
