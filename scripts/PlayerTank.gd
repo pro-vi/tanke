@@ -11,10 +11,14 @@ signal died
 @export var damage_iframes: float = 0.6
 @export var forest_hidden_alpha: float = 0.3
 @export var forest_visible_alpha: float = 1.0
+# Hit flash (iter 19) — red pulse on damage + alternating blink during iframes
+@export var hit_flash_color: Color = Color(1.6, 0.3, 0.3, 1.0)
 
 @onready var sprite: Sprite2D = $Sprite2D
 
 var _grass_tilemap: TileMapLayer = null
+var _flash_tween: Tween = null
+var _is_flashing: bool = false
 
 var direction: int = Constants.Dir.U
 var grid: Vector2 = Vector2(4, 4)  # minimum grid size to snap to when turning
@@ -120,6 +124,34 @@ func take_damage(amount: int) -> void:
 	hp_changed.emit(hp, max_hp)
 	if hp <= 0:
 		_die()
+	else:
+		_start_hit_flash()
+
+
+# Visual damage cue (iter 19): bright red pulse + alternating alpha blink
+# during the iframe window. Suppresses forest_hide for the duration so the
+# flash isn't masked by grass concealment.
+func _start_hit_flash() -> void:
+	if _flash_tween != null and _flash_tween.is_valid():
+		_flash_tween.kill()
+	_is_flashing = true
+	_flash_tween = create_tween()
+	# Red pulse (saturated red, brief)
+	_flash_tween.tween_property(sprite, "modulate", hit_flash_color, 0.0)
+	_flash_tween.tween_interval(0.08)
+	# Iframe blink — 3 cycles of dimmed/normal (~0.48s)
+	for i in 3:
+		_flash_tween.tween_property(sprite, "modulate", Color(1.0, 1.0, 1.0, 0.4), 0.08)
+		_flash_tween.tween_property(sprite, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.08)
+	# Restore: forest_hide will resume on next physics frame
+	_flash_tween.tween_callback(_end_hit_flash)
+
+
+func _end_hit_flash() -> void:
+	_is_flashing = false
+	# Reset modulate to white; _update_forest_hide will set alpha next frame
+	if sprite != null:
+		sprite.modulate = Color.WHITE
 
 
 func _die() -> void:
@@ -209,7 +241,7 @@ func _update_run_hud() -> void:
 # BC forest convention: tank is concealed (low alpha) when standing on a grass
 # cell. Grass tilemap has no collision; tanks drive freely over it.
 func _update_forest_hide() -> void:
-	if _grass_tilemap == null or sprite == null:
+	if _is_flashing or _grass_tilemap == null or sprite == null:
 		return
 	var local_pos: Vector2 = _grass_tilemap.to_local(global_position)
 	var cell: Vector2i = _grass_tilemap.local_to_map(local_pos)

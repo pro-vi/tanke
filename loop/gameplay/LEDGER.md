@@ -1554,3 +1554,46 @@ Each consult iter (20/25/30) lets user steer if direction drifts. AUDIT iters (2
 - No playtest until iter 33 minimum.
 
 ---
+
+## Iter 019 — BUILD — Player hit-flash + iframe blink
+
+**Mode:** BUILD (Phase A visual juice, iter 19/23)
+**Focus:** crit 8 anchor 1 — "Hit flashes one color"
+
+### Actions
+
+`scripts/PlayerTank.gd`:
+- Added `@export hit_flash_color: Color = Color(1.6, 0.3, 0.3, 1.0)` (over-saturated red)
+- State: `_flash_tween: Tween`, `_is_flashing: bool`
+- `take_damage` non-lethal → call `_start_hit_flash()`
+- `_start_hit_flash` Tween sequence:
+  - Set sprite.modulate to flash_color (instant)
+  - 0.08s interval
+  - Loop 3×: dim to alpha 0.4 (0.08s) → restore alpha 1.0 (0.08s)
+  - Callback `_end_hit_flash` resets modulate to white
+- Total flash duration ~0.56s ≈ damage_iframes (0.6s) — visible iframe window
+- `_update_forest_hide` early-return if `_is_flashing` — prevents alpha-write collision
+
+### Verification
+
+- `make test` exit 0
+- Oracle at seed 42: `tile_hash f873ae60ee3c420c…` unchanged
+- Substrate intact iters 1-19
+
+### Scores
+
+| Criterion | Iter 18 | Iter 19 | Δ |
+|-----------|---------|---------|---|
+| 8. Visual feedback / juice | 0 | **1** | +1 |
+| **Total** | **14** | **15** | **+1** |
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd`, `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/LEDGER.md`, `loop/gameplay/STATE.md`
+
+### Schedule
+
+- Iter 20 = CONSULT (PROMPT §10/20/30 + user's 5-iter cadence)
+- ScheduleWakeup 240s
+
+---

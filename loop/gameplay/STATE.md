@@ -4,11 +4,11 @@
 
 ```
 phase: loop
-iteration: 18
+iteration: 19
 preloop_complete: yes
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
-next_playtest_due_iter: 33  (user override: no playtest before iter 33)
+next_playtest_due_iter: 33
 consult_cadence: every 5 iters (iter 20, 25, 30)
 sprint_phase: A (visual juice, iters 19-23)
 ```
@@ -67,10 +67,10 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 | 5. Forward survivability (was Upgrade variety) | **1** | Iter 12 anchor 1 met: fire-while-moving + spawn-ahead-of-velocity = enemies don't reliably block ascent |
 | 6. Enemy variety | **2** | Iter 16: Light + Heavy types (70/30 weighted) — distinct sprite, speed, HP, fire cooldown. Anchor 2 BC-aligned. |
 | 7. Compulsion loop (was Run pacing) | 0 | Needs playtest |
-| 8. Visual feedback / juice | 0 | None |
+| 8. Visual feedback / juice | **1** | Iter 19: player hit-flash red + iframe blink Tween |
 | 9. UI / UX | 1 | Iter 3 text HUD; iter 11 added DEPTH/TIME labels |
 | 10. Run summary + replayability (was Build distinctness) | **1** | Anchor 1 met retroactively iter 3 (YOU DIED + R) |
-| **Total** | **14/50** | Iter 16 +1 (crit 6 anchor 2 — second enemy type) |
+| **Total** | **15/50** | Iter 19 +1 (crit 8 anchor 1 — hit flash) |
 
 ---
 
@@ -127,21 +127,16 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 18 AUDIT complete. User said "looks alright, goodjob, do at least
-15 iters before asking me for any playtest. every 5 iter, may /agentify
-for creative input."
+Iter 19 BUILD complete. Player hit-flash + iframe blink:
+- PlayerTank.gd: take_damage (non-lethal) → _start_hit_flash() Tween:
+  red pulse (0.08s) → 3× dim/normal blink cycles (0.48s) → restore.
+  Total ~0.56s matches damage_iframes window.
+- _update_forest_hide gated on _is_flashing to prevent alpha-write
+  collision with the tween.
+- Verified: make test exit 0, oracle tile_hash f873ae60ee3c420c… unchanged.
+- Crit 8 (Visual feedback) 0 → 1 (anchor 1 hit-flash). Total 14 → 15/50.
 
-Iter-17 implicit eval: 3 H2-RULE LANDED (two types, no middle spawn,
-sprite OK), 2 INDETERMINATE (stalling, compulsion). F004 closed.
-
-Sprint plan (iters 19-32) installed:
-- Phase A (19-23): visual juice — hit flash, enemy death, brick break
-- Phase B (24-28): roguelike depth — death screen, run-best, kill counter
-- Phase C (29-32): combat depth — third enemy type, power-up
-- AUDIT cycles at 23, 28; CONSULT at 20, 25, 30
-- Iter 33: paired playtest
-
-Scores unchanged at 14/50. Next: iter 19 BUILD player hit-flash.
+Next: iter 20 CONSULT (PROMPT §10/20/30, user's 5-iter cadence).
 ```
 
 ---
@@ -153,6 +148,34 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 20 CONSULT (PROMPT §"CONSULT SCHEDULE" iter 10/20/30 + user's 5-iter cadence):
+  - Pre-mortem (H2 RULE — claims about Pro's response language)
+  - Fire /agentify with current state, ask for creative direction.
+  - Questions:
+    1. What's seductive-but-hollow about the current 15/50 playable thing?
+       (Pro v1 question from PROMPT §CONSULT SCHEDULE — reframed for
+       roguelike-ascender stone)
+    2. Is the iter-16 enemy variety (Light/Heavy) doing real work, or is
+       it cosmetic distinction? What would make the two types FEEL
+       different beyond stats?
+    3. Crit 6 anchor 2 wording "chaser + ranged-shooter" is VS-style.
+       BC-aligned reading was used. Should rubric be reworded to
+       fast/light + slow/heavy?
+    4. What's the highest-leverage feature for iters 21-32 (before next
+       playtest)? Options on my plan: enemy death particles, brick
+       destruction visuals, death-screen run summary, run-best persist,
+       kill counter on HUD, third enemy type, power-up prototype.
+  - Inline all relevant files (PROMPT.md, RUBRIC.md, STATE.md, LEDGER iter
+    16-19, FALSIFICATIONS.md, ALL .gd scripts, ALL .tscn scenes per
+    F001 lesson). Lesson F001: include .tscn for collision-related q's.
+  - fireAndForget: true. Read response in iter 21.
+
+Iter 21+ adjusts per Pro's response.`
+
+---
+
+## Previous Next Action (iter 19 — shipped)
 
 `Iter 19 BUILD — Player hit-flash + iframe blink (visual juice):
   - Pre-mortem (H2 RULE — claims about iter-33 playtest, not immediate)

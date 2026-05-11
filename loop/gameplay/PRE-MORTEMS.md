@@ -550,6 +550,21 @@ Major risk: 15 iters without playtest = lots of code drift, harder to root-cause
 
 ---
 
+## Iter 019 — BUILD — Player hit-flash + iframe blink
+
+Going in, biggest expected miss: tween writes to `sprite.modulate` collide with `_update_forest_hide`'s per-physics-frame `sprite.modulate.a` writes. Needed `_is_flashing` flag.
+
+H2-RULE claims:
+1. (iter-33) User reports "tank flashes red when hit" — reference language
+2. (iter-33) User reports iframe blink visible
+3. make test exit 0 — Binary → LANDED
+4. Oracle tile_hash unchanged — Binary → LANDED
+5. Tween/forest_hide non-collision — code-citable via `_is_flashing` gate in `_update_forest_hide` → LANDED
+
+**Post-iter:** 3 binary-now LANDED. Crit 8 0 → 1 (anchor 1 code-cited). 2 deferred to iter-33 playtest.
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.
