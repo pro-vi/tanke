@@ -6,11 +6,13 @@ extends Node2D
 @export var max_spawn_attempts: int = 8
 @export var map_x_margin: float = 4.0
 @export var map_width: float = 320.0
-@export var viewport_top_offset: float = 144.0  # player.y - this = top of viewport - 24px margin
+@export var top_off_screen_margin: float = 24.0  # spawn this many px above viewport top
 
 var _player: Node2D
+var _camera: Camera2D
 var _enemies_alive: int = 0
 var _timer: Timer
+var _viewport_half_height: float = 120.0
 
 # Counters for iter-4 pre-mortem prediction #2 (rejections per 10 ticks).
 var spawns_total: int = 0
@@ -20,6 +22,8 @@ var ticks_total: int = 0
 
 func _ready() -> void:
 	_player = get_parent().get_node_or_null("PlayerTank")
+	_camera = get_parent().get_node_or_null("Camera2D")
+	_viewport_half_height = float(ProjectSettings.get_setting("display/window/size/viewport_height", 240)) * 0.5
 	_timer = Timer.new()
 	_timer.wait_time = spawn_interval
 	_timer.autostart = true
@@ -47,10 +51,15 @@ func _on_timer_timeout() -> void:
 		print("[spawner] tick %d: spawns=%d rejections=%d alive=%d" % [ticks_total, spawns_total, rejections_total, _enemies_alive])
 
 
-# Top-edge spawn: random x along map width, y just above viewport top.
-# Validity = not inside a layer-1 collider.
+# Top-edge spawn: random x along map width, y just above the *camera*'s
+# visible viewport top (NOT the player's position — camera may be clamped
+# by limit_bottom so player-relative offset can land on-screen).
+# Validity = not inside a layer-1 OR layer-10 collider.
 func _find_valid_spawn() -> Variant:
-	var spawn_y: float = _player.global_position.y - viewport_top_offset
+	var reference_y: float = _player.global_position.y
+	if _camera != null and is_instance_valid(_camera):
+		reference_y = _camera.global_position.y
+	var spawn_y: float = reference_y - _viewport_half_height - top_off_screen_margin
 	for i in max_spawn_attempts:
 		var x: float = randf_range(map_x_margin, map_width - map_x_margin)
 		var candidate: Vector2 = Vector2(x, spawn_y)

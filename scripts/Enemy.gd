@@ -7,12 +7,18 @@ extends CharacterBody2D
 @export var bullet_scene: PackedScene
 @export var bullet_target_mask: int = 3  # Environment (1) + Player (2)
 @export var grid: float = 8.0  # half-cell snap on turn
+# Visual: which sprite-sheet base frame for this enemy + per-direction frame offsets.
+# Order follows Constants.Dir enum (L=0, D=1, U=2, R=3).
+# Sprite layout per row: U(0,1), L(2,3), D(4,5), R(6,7) — matches TankSprite.gd.
+@export var sprite_base_frame: int = 8   # row 0 col 8 — white enemy tank, distinct from yellow player
+@export var sprite_dir_offsets: Array[int] = [2, 4, 0, 6]
 
 var hp: int = max_hp
 var direction: int = Constants.Dir.D  # start facing down (comes from top)
 var _player: Node2D
 var _fire_timer: float = 0.0
 var _direction_timer: float = 0.0
+@onready var _sprite: Sprite2D = $Sprite2D
 
 
 func _ready() -> void:
@@ -21,7 +27,7 @@ func _ready() -> void:
 	_player = get_tree().get_root().find_child("PlayerTank", true, false)
 	_fire_timer = randf() * fire_cooldown  # stagger initial volleys
 	_choose_direction_toward_player()
-	rotation = Constants.dir_to_rotation(direction)
+	_update_sprite_for_direction()
 
 
 func _physics_process(delta: float) -> void:
@@ -75,8 +81,13 @@ func _choose_direction_toward_player() -> void:
 
 func _turn_to(new_dir: int) -> void:
 	direction = new_dir
-	rotation = Constants.dir_to_rotation(direction)
+	_update_sprite_for_direction()
 	global_position = global_position.snapped(Vector2(grid, grid))
+
+
+func _update_sprite_for_direction() -> void:
+	if _sprite != null and direction < sprite_dir_offsets.size():
+		_sprite.frame = sprite_base_frame + sprite_dir_offsets[direction]
 
 
 func _try_step(motion: Vector2) -> bool:

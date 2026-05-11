@@ -25,6 +25,7 @@ var _death_label: Label
 
 func _ready() -> void:
 	hp = max_hp
+	rotation = Constants.dir_to_rotation(direction)
 	_setup_hurtbox()
 	_setup_hud()
 	hp_changed.emit(hp, max_hp)

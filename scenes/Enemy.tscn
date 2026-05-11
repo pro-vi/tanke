@@ -18,7 +18,7 @@ bullet_target_mask = 3
 texture = ExtResource("1")
 vframes = 18
 hframes = 16
-frame = 16
+frame = 12
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("1")
