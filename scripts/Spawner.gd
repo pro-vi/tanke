@@ -94,8 +94,8 @@ const DEPTH_BANDS: Array = [
 # When player has stalled past stall_below_spawn_after, NEXT spawn comes
 # from below viewport (pushes player upward via fear-of-encirclement).
 # Rate-limited so it doesn't dominate every spawn cycle.
-@export var stall_below_spawn_after: float = 8.0  # seconds of stall before below-spawn enabled
-@export var below_spawn_cooldown: float = 6.0  # min seconds between below-spawns
+@export var stall_below_spawn_after: float = 12.0  # iter 35 (F008): raised 8→12 to reduce false-positive below-spawns during slow navigation
+@export var below_spawn_cooldown: float = 10.0  # iter 35 (F008): raised 6→10 to reduce frequency
 @export var spawn_bottom_edge_offset: float = 8.0  # px below viewport bottom (telegraph stays visible)
 
 var _player: Node2D

@@ -889,6 +889,30 @@ H2-RULE claims:
 
 ---
 
+## Iter 035 — BUILD — F005-F008 fixes + Heavy vision-cone Stage 1
+
+Tag declaration: `[STRUCTURE]` for F006/F007/F008 bug fixes; `[STRUCTURE-DEFERRED → iter 36]` for Heavy vision-cone (anchor 2 reinforcement, already at 2).
+
+Going in, biggest expected miss: WaterBlock.tscn format-2 migration might silently fail OR the bug was somewhere else entirely. Iter-36 playtest will tell.
+
+H2-RULE claims:
+1. F006 map walls: Walls Node2D + 2 StaticBody2D (LeftWall/RightWall) added to ProceduralLevel.tscn, env layer 1, WallShape RectangleShape2D(8, 8000) — code → LANDED
+2. F007 WaterBlock format=2 → format=3 with explicit size=(8,8) and `autoplay` on AnimatedSprite2D — code → LANDED
+3. F005 Heavy vision-cone replacing omniscient LOS: forward-dot + lateral-perpendicular + raycast through env layer 1 — code → LANDED
+4. F008 stall threshold raised 8→12s, cooldown 6→10s — code → LANDED
+5. make test exit 0 — LANDED
+6. Oracle hash unchanged — LANDED
+7. (iter-36 playtest) User reports Heavy more dodgeable / less cheaty — [FEEL] deferred
+8. (iter-36 playtest) User confirms water blocks / tanks stay in map — [FEEL] deferred
+
+6/8 binary-now LANDED. 2 deferred to iter-36 playtest.
+
+H2 RULE v2 self-deception check: would Pro reword anchor 2 of crit 6 if shown the iter-35 raycast-based vision? My Heavy is now LESS smart than iter-24 (genuine regression). Pro v5 H1 said iter-24 holds "but fragile" — iter-35 makes it less fragile by REMOVING the cheaty omniscience. Crit 6 anchor 2 wording "code-citable behavioral split, not stat-tweak" — Heavy still behaviorally distinct from Light (vision-cone + AIM_FIRE state machine vs Light's vertical-bias commit-to-lane chaser). Anchor holds.
+
+**Post-iter:** 6/8 LANDED. Iter 36 mandatory PLAYTEST verifies feel-impact of all 4 fixes.
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

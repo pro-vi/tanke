@@ -4,17 +4,14 @@
 
 ```
 phase: loop
-iteration: 34
+iteration: 35
 preloop_complete: yes
 last_completed_playtest_iter: 33
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 ADOPTED, 40 next (PROMPT §10/20/30)
-ai_intelligence_stage: per user iter-33 directive — "vision first, transmission second"
-  Stage 0 dumb (Light: close)
-  Stage 1 vision+raycast (Heavy: iter 35 target)
-  Stage 2 transmission (future iter ~38)
-research_artifact: .research/battle-city-ai.md
-falsifications_open: F005 (Heavy too smart), F006 (map border drift), F007 (water bug), F008 (below-spawn trigger drift)
+ai_intelligence_stage: Stage 1 VISION shipped (Heavy iter 35: cone + raycast). Stage 0 Light close. Stage 2 transmission future iter ~38.
+research_artifact: .research/battle-city-ai.md (referenced iter 35)
+falsifications_closed_pending_playtest: F005 (Heavy vision-cone), F006 (map walls), F007 (water format-3), F008 (stall threshold raise) — iter-36 verifies
 score: 20/50
 ```
 
@@ -130,6 +127,40 @@ on direction change, muzzle may not align visually with sprite center.
 ---
 
 ## Last Action
+
+```
+Iter 35 BUILD complete. F005-F008 fixes + Heavy vision-cone Stage 1.
+
+F005 Heavy vision-cone:
+  Enemy.gd _player_in_line_of_sight rewritten. Vision = cardinal forward
+  cone (forward_dist > 0, lateral < 12px, range < 80px) + raycast through
+  env layer 1 (no x-ray through walls). Heavy must FACE player AND have
+  clear LOS. Per .research/battle-city-ai.md Stage 1.
+
+F006 Map walls:
+  scenes/ProceduralLevel.tscn: new Walls Node2D + LeftWall/RightWall
+  StaticBody2D at x=-4, x=324, layer=1, shape RectangleShape2D(8, 8000).
+  H1 tripwire: 2 siblings (Spawner + Walls), under cap of 3.
+
+F007 Water collision:
+  scenes/WaterBlock.tscn format=2 → format=3 with explicit
+  RectangleShape2D size=(8,8). Hypothesis: format-2 auto-migration
+  silently failed; explicit format-3 is robust.
+
+F008 Below-spawn threshold raise:
+  Spawner.gd stall_below_spawn_after 8→12s, below_spawn_cooldown 6→10s.
+  Conservative tweak; real rows-per-N-sec fix deferred if user still
+  complains.
+
+Verified: make test exit 0, oracle f873ae60ee3c420c… unchanged.
+Substrate intact iters 1-35.
+
+Score unchanged at 20/50. Iter-36 PLAYTEST verifies feel.
+
+Next: iter 36 mandatory PLAYTEST.
+```
+
+(Previous)
 
 ```
 Iter 34 AUDIT complete. User played 5 lives unprompted → "good" +
@@ -371,6 +402,29 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 36 PLAYTEST (mandatory; verifies F005-F008):
+  - Pre-mortem H2 RULE v2 tag declaration
+  - Verify build (make test + headless boot)
+  - Compose 2-question prompt per template, focused on:
+    * Slot 1: Heavy AI behavior — does it now feel like Heavy needs to
+      SEE you to shoot (vision cone + walls block)? Or still cheaty?
+    * Slot 2: Water blocks now? Tanks stay in map?
+  - Bonus: [run] line for quant correlation
+  - AWAIT user response. Halt rule iter 39.
+
+If user reports Heavy still cheaty → F005 fix didn't land properly,
+debug raycast / cone math
+If user confirms F005-F008 closed → F005 anchor reinforces crit 6
+under [FEEL] cite ("Heavy needs to see me"). Crit 6 might go 2 → 3
+(third+ types — except we don't have third type yet... wait, anchor
+sequence requires 3+ types, so crit 6 caps at 2 until iter 37+ adds
+third type).
+If user surfaces new bugs → iter 37 fixes.`
+
+---
+
+## Previous Next Action (iter 34 → iter 35 shipped)
 
 `Iter 35 BUILD — Critical fixes + Heavy vision-cone Stage 1:
   - Pre-mortem H2 RULE v2 tag declaration

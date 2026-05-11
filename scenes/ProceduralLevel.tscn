@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Texture2D" uid="uid://p8x1cyxdqfu0" path="res://img/sprites_1.png" id="1"]
 [ext_resource type="Script" uid="uid://cyo8ns4520b78" path="res://scripts/ProceduralLevel.gd" id="2"]
@@ -55,6 +55,9 @@ texture_region_size = Vector2i(8, 8)
 tile_size = Vector2i(8, 8)
 sources/0 = SubResource("WaterSrc")
 
+[sub_resource type="RectangleShape2D" id="WallShape"]
+size = Vector2(8, 8000)
+
 [node name="ProceduralLevel" type="Node2D"]
 script = ExtResource("2")
 config = ExtResource("8")
@@ -89,6 +92,24 @@ tile_set = SubResource("GrassSet")
 
 [node name="Water" type="TileMapLayer" parent="Tiles"]
 tile_set = SubResource("WaterSet")
+
+[node name="Walls" type="Node2D" parent="."]
+
+[node name="LeftWall" type="StaticBody2D" parent="Walls"]
+position = Vector2(-4, -1000)
+collision_layer = 1
+collision_mask = 0
+
+[node name="LeftWallShape" type="CollisionShape2D" parent="Walls/LeftWall"]
+shape = SubResource("WallShape")
+
+[node name="RightWall" type="StaticBody2D" parent="Walls"]
+position = Vector2(324, -1000)
+collision_layer = 1
+collision_mask = 0
+
+[node name="RightWallShape" type="CollisionShape2D" parent="Walls/RightWall"]
+shape = SubResource("WallShape")
 
 [node name="Spawner" type="Node2D" parent="."]
 script = ExtResource("9")

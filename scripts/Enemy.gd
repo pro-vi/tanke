@@ -19,8 +19,13 @@ enum State { CHASE, AIM_FIRE }
 @export var forest_visible_alpha: float = 1.0
 # Behavioral split (iter 24)
 @export var enemy_type: String = "Light"  # "Light" or "Heavy"
-@export var aim_fire_range: float = 80.0  # max distance for LOS aim
-@export var aim_fire_axis_tolerance: float = 12.0  # ~1.5 cells off-axis
+@export var aim_fire_range: float = 80.0  # max distance for LOS aim (vision cone)
+@export var aim_fire_axis_tolerance: float = 12.0  # cone lateral tolerance (px)
+# iter 35 (F005, per .research/battle-city-ai.md Stage 1): vision is now
+# CARDINAL-FORWARD-CONE + RAYCAST through env layer. Heavy must FACE the
+# player AND have unobstructed LOS to enter AIM_FIRE. Authentic-BC tactical
+# play: player can hide behind brick walls, peek out, hide again.
+@export var vision_blocked_by_env: bool = true  # raycast obstruction check
 @export var aim_fire_min_dwell: float = 0.4  # hysteresis floor before exit
 @export var burst_count: int = 2
 @export var burst_interval: float = 0.25
@@ -207,15 +212,36 @@ func _face_player() -> void:
 		_update_sprite_for_direction()
 
 
-# Heavy LOS proxy: player roughly aligned on row or column AND within range.
+# iter 35 (F005): Heavy vision check = CARDINAL FORWARD CONE in facing direction
+# + RAYCAST obstruction through env layer. Replaces iter-24 omniscient LOS
+# (which read raw player.global_position with no wall check — "too smart" per
+# user iter-33 playtest). Per .research/battle-city-ai.md Stage 1.
 func _player_in_line_of_sight() -> bool:
 	if _player == null:
 		return false
-	var dx: float = _player.global_position.x - global_position.x
-	var dy: float = _player.global_position.y - global_position.y
-	var horizontal: bool = absf(dy) < aim_fire_axis_tolerance and absf(dx) < aim_fire_range
-	var vertical: bool = absf(dx) < aim_fire_axis_tolerance and absf(dy) < aim_fire_range
-	return horizontal or vertical
+	var dir_vec: Vector2 = _direction_vector(direction)
+	var to_player: Vector2 = _player.global_position - global_position
+	# Project onto facing direction. Require positive forward distance + within range.
+	var forward_dist: float = to_player.dot(dir_vec)
+	if forward_dist <= 0.0 or forward_dist > aim_fire_range:
+		return false
+	# Perpendicular component (cone lateral). 90° rotation of dir_vec.
+	var perp: Vector2 = Vector2(-dir_vec.y, dir_vec.x)
+	var lateral_dist: float = absf(to_player.dot(perp))
+	if lateral_dist > aim_fire_axis_tolerance:
+		return false
+	# Raycast: any env-layer body between us blocks vision.
+	if vision_blocked_by_env:
+		var space_state: PhysicsDirectSpaceState2D = get_world_2d().direct_space_state
+		if space_state != null:
+			var query: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(
+				global_position, _player.global_position, 1  # env layer (mask)
+			)
+			query.exclude = [get_rid()]  # exclude self
+			var hit: Dictionary = space_state.intersect_ray(query)
+			if not hit.is_empty():
+				return false  # wall between us
+	return true
 
 
 # BC forest convention: enemy is concealed (low alpha) when on a grass cell.
