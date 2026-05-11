@@ -1044,7 +1044,32 @@ H2-RULE claims (3):
 
 Falsification clause for iter 60 [FEEL] lift: if user playtest at iter 60 does NOT cite "feels punchy" / "looks good when bullets hit" / similar visual-juice language, the structural work was insufficient and crit 8 stays at 2.
 
-**Post-iter:** [filled at iter 42]
+**Post-iter (iter 42 start):** Build clean, sparks + hit-flash live. Heavy telegraph priority preserved per code inspection.
+
+---
+
+## Iter 042 — BUILD — Camera shake on player damage
+
+Tag: `[STRUCTURE-DEFERRED → iter 60]` for crit 8 anchor 4 reinforcement.
+
+Diagnose: crit 8 = 2/5 feel criterion. Iter 41 shipped impact spark + hit-flash; anchor 4's "Camera shake on damage" piece completes the structural pair. Same deferred-cite story: no score lift today, iter 60 playtest decides.
+
+Going in, biggest expected miss: **shake magnitude poorly tuned** — either 3px too subtle to register at 320×240 native scale, OR too violent (player loses spatial reference during the iframe window when they need to dodge). Mitigation: 3px is ~1% viewport, decay over 0.25s = brief; if iter 60 user reports "shake too much" / "couldn't see during shake", iter 61 tunes down. Secondary risk: Camera2D `limit_smoothed=true` + `position_smoothing_enabled=true` might also smooth `offset` changes, dampening the shake into mush.
+
+Design:
+- 5 randomized offset kicks with decaying amplitude (3.0 → 0)
+- Total duration 0.25s + 0.05s snap-to-zero restore
+- Only fires on non-kill damage (same gate as `_start_hit_flash`)
+- Camera2D.offset is independent of Camera2D.position (the RemoteTransform2D on PlayerTank drives position, leaving offset free)
+
+H2-RULE claims (3):
+1. Build clean: make test exit 0, headless --quit-after 60 clean
+2. Camera offset returns to (0, 0) after shake (no drift after damage)
+3. Shake observable in headless logs OR via offset-tween mechanics being valid Godot 4 API
+
+No score lift this iter; deferred cite to iter 60.
+
+**Post-iter:** [filled at iter 43]
 
 ---
 

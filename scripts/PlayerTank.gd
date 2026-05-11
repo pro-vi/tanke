@@ -13,11 +13,18 @@ signal died
 @export var forest_visible_alpha: float = 1.0
 # Hit flash (iter 19) — red pulse on damage + alternating blink during iframes
 @export var hit_flash_color: Color = Color(1.6, 0.3, 0.3, 1.0)
+# Camera shake (iter 42) — kicks Camera2D.offset on non-kill damage. Independent
+# of Camera2D.position which is driven by PlayerTank's RemoteTransform2D.
+@export var screen_shake_magnitude: float = 3.0  # px at 320×240
+@export var screen_shake_duration: float = 0.25
+@export var screen_shake_steps: int = 5
 
 @onready var sprite: Sprite2D = $Sprite2D
 
 var _grass_tilemap: TileMapLayer = null
 var _flash_tween: Tween = null
+var _shake_tween: Tween = null
+var _camera: Camera2D = null
 var _is_flashing: bool = false
 
 var direction: int = Constants.Dir.U
@@ -53,6 +60,7 @@ func _ready() -> void:
 	_min_y_reached = _start_y
 	_last_y_for_velocity = _start_y  # iter 31: instrumentation seed
 	_grass_tilemap = get_tree().get_root().find_child("Grass", true, false) as TileMapLayer
+	_camera = get_parent().get_node_or_null("Camera2D") as Camera2D
 	_setup_hurtbox()
 	_setup_hud()
 	hp_changed.emit(hp, max_hp)
@@ -145,6 +153,7 @@ func take_damage(amount: int) -> void:
 		_die()
 	else:
 		_start_hit_flash()
+		_start_screen_shake()
 
 
 # Visual damage cue (iter 19): bright red pulse + alternating alpha blink
@@ -171,6 +180,26 @@ func _end_hit_flash() -> void:
 	# Reset modulate to white; _update_forest_hide will set alpha next frame
 	if sprite != null:
 		sprite.modulate = Color.WHITE
+
+
+# Camera shake (iter 42) — randomized Camera2D.offset kicks with decaying
+# amplitude, ending in snap-to-zero restore. Independent of position smoothing
+# because we tween `offset`, not `position`. RemoteTransform2D on PlayerTank
+# drives Camera2D.position; offset is undriven and free to animate.
+func _start_screen_shake() -> void:
+	if _camera == null:
+		return
+	if _shake_tween != null and _shake_tween.is_valid():
+		_shake_tween.kill()
+	_shake_tween = create_tween()
+	var step_dur: float = screen_shake_duration / float(screen_shake_steps)
+	for i in screen_shake_steps:
+		var t: float = float(i) / float(maxi(screen_shake_steps - 1, 1))
+		var amp: float = screen_shake_magnitude * (1.0 - t)
+		var offset: Vector2 = Vector2(randf_range(-amp, amp), randf_range(-amp, amp))
+		_shake_tween.tween_property(_camera, "offset", offset, step_dur)
+	# Restore to (0,0) — fast snap so the camera doesn't drift after damage
+	_shake_tween.tween_property(_camera, "offset", Vector2.ZERO, 0.05)
 
 
 func _die() -> void:

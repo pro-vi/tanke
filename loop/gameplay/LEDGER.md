@@ -3031,3 +3031,73 @@ Score remains 21/50.
 - 18 sprint iters remaining
 
 ---
+
+## Iter 042 — BUILD — Camera shake on player damage (anchor 4 structural pair)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 21/50 (unchanged — `[STRUCTURE-DEFERRED → iter 60]`)
+
+Completes the iter-41 structural pair for crit 8 anchor 4 ("Camera shake on
+damage; bullet impact spark; UI counter increments"). Two of three pieces
+now shipped (UI counter remains rubric debt — kill count dropped iter 30).
+
+### Code (scripts/PlayerTank.gd)
+
+- New `@export`s: `screen_shake_magnitude=3.0`, `screen_shake_duration=0.25`,
+  `screen_shake_steps=5`
+- `_ready()` resolves `_camera = get_parent().get_node_or_null("Camera2D")`
+- `take_damage` non-kill branch now calls `_start_screen_shake()` after
+  `_start_hit_flash()`
+- `_start_screen_shake()` — 5 randomized offset kicks with decaying
+  amplitude (3.0 → 0) via Tween, ending with 0.05s snap-to-zero restore so
+  the camera doesn't drift after damage
+
+### Why offset (not position)
+
+`Camera2D.position` is driven by `RemoteTransform2D` on PlayerTank. Tweening
+position would fight the RemoteTransform updates and snap back next frame.
+`Camera2D.offset` is independent — undriven, free to animate. This is the
+clean approach for shake when the camera follows via RemoteTransform2D.
+
+### Magnitude tuning
+
+3px at 320×240 viewport = 1% screen width. Subtle but registerable at
+native scale. If iter-60 user reports "shake too much" / "couldn't see
+during shake", iter 61 tunes down. If too subtle ("didn't notice"), iter
+61 bumps to 4-5px.
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0, no warnings
+- Tween chain: 5 sequential `tween_property` + 1 restore tween. Sequential
+  by default (no `set_parallel` here).
+- Camera2D.offset is a known property — Godot 4 docs confirm.
+
+### Score
+
+Unchanged at 21/50. `[STRUCTURE-DEFERRED → iter 60]` for crit 8 anchor 4
+feel cite.
+
+### Substrate freeze check
+
+- Hard scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- H1 tripwire unchanged at 2
+- Hash anchor `f873ae60ee3c420c…` unchanged
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd`
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 43 likely shifts to crit 9/10 (UI/UX + death summary) for variety —
+  death screen showing depth/time/stall is high iter-60 cite leverage
+- 17 sprint iters remaining
+
+---
