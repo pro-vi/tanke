@@ -805,6 +805,26 @@ DROPPED FROM ITER 30 (per Pro v5 H4): kills counter HUD. Would teach wrong objec
 
 ---
 
+## Iter 031 — CAPABILITY (light) — Ascender metric instrumentation
+
+Tag: `[STRUCTURE]` instrumentation only.
+
+Going in, biggest expected miss: spawn_origin counters reset on scene reload (per-run state). Not a problem for iter-33 single-run analysis but limits cross-run insight. Acceptable scope.
+
+H2-RULE claims:
+1. PlayerTank tracks `_stall_time_total` cumulative — code → LANDED
+2. PlayerTank `_die()` prints `[run] depth=N time=M:SS ascent_rate=R rows/s stall_total=S (P%)` — code → LANDED
+3. Spawner tracks `spawn_origin_top` + `spawn_origin_below` — code → LANDED (15s headless: `spawns=4 (top=3 below=1)`)
+4. Spawner debug print includes origin counts — code → LANDED
+5. make test exit 0 — LANDED
+6. Oracle hash unchanged — LANDED
+
+6/6 binary-now LANDED. Substrate freeze respected — no test_runner.gd refactor; instrumentation lives in existing PlayerTank/Spawner scripts.
+
+**Post-iter:** All LANDED. Score 17/50 unchanged. Iter-33 playtest can now correlate user-reported feel with quantitative metrics.
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

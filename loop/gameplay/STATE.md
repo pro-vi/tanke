@@ -4,15 +4,15 @@
 
 ```
 phase: loop
-iteration: 30
+iteration: 31
 preloop_complete: yes
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 next_playtest_due_iter: 33
 consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 ADOPTED (Consult 005)
-sprint_phase: ascent-legibility polish complete (iter 30)
+sprint_phase: instrumentation complete (iter 31); iter 32 playtest prep
 pending_consult: none
-load_bearing_problem: META mitigated; readable upward intent now cued via depth milestones + visible below-warning
+load_bearing_problem: META mitigated; iter-33 verifies via language-based test
 h2_rule_version: v2 (iter 23)
 ```
 
@@ -128,6 +128,25 @@ on direction change, muzzle may not align visually with sprite center.
 ---
 
 ## Last Action
+
+```
+Iter 31 CAPABILITY complete. Ascender metric instrumentation:
+- PlayerTank: _stall_time_total cumulative; _die() prints
+  [run] depth=N time=M:SS ascent_rate=R rows/s stall_total=S (P%)
+- Spawner: spawn_origin_top + spawn_origin_below counters
+- Debug print enriched: spawns=N (top=A below=B)
+- Substrate freeze respected — test_runner.gd untouched; instrumentation
+  in existing PlayerTank/Spawner scripts
+- 15s headless verified: spawn origin distribution captured correctly
+  (top=3 below=1 when stall > 8s threshold + cooldown)
+- Run-summary line fires on death (won't show in stationary headless;
+  appears in iter-33 actual playtest)
+
+Score unchanged at 17/50.
+Next: iter 32 playtest prep (compose 2-question prompt per iter-23 template).
+```
+
+(Previous)
 
 ```
 Iter 30 BUILD complete. Pro Consult 005 ascent legibility redirect:
@@ -277,6 +296,30 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 32 — Final playtest prep:
+  - Pre-mortem (H2 RULE v2): tag declaration
+  - Verify build: make test + godot --headless --quit both exit 0
+  - Capture run config delta since iter-17 playtest (~14 iters of work)
+  - Compose iter-33 playtest prompt per 2-question template
+    (loop/gameplay/playtest-template.md):
+    * Slot 1 LOAD-BEARING: per Pro Consult 005 H3 — language-based test:
+      "What did the game seem to want you to do — clear enemies, survive
+      in place, or keep climbing? Answer in your own words."
+    * Slot 2 WILDCARD: "Anything off, surprising, or broken?"
+  - Don't add more features per Pro v5: "Do not add a new enemy, power-up,
+    death summary, economy, upgrade system, or terrain feature before
+    iter 33."
+  - Commit; ScheduleWakeup 240s
+  - Iter 33: PLAYTEST request issued to user, AWAIT response
+
+H2-RULE prediction for iter 32: I'll be tempted to ship "one more
+polish" instead of just preparing the playtest. Resist. Iter 32 = pure
+prep + no new features.`
+
+---
+
+## Previous Next Action (iter 30 — iter 31 shipped)
 
 `Iter 31 CAPABILITY — Extend test_runner.gd with ASCENDER metrics:
   - Pre-mortem H2 RULE v2: [STRUCTURE] tagged (oracle-test instrumentation).

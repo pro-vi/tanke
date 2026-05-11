@@ -124,6 +124,9 @@ var _pending_below_telegraph_pos: Vector2 = Vector2.INF
 var spawns_total: int = 0
 var rejections_total: int = 0
 var ticks_total: int = 0
+# iter 31: ascender-metric instrumentation (Pro Consult 005 H4)
+var spawn_origin_top: int = 0
+var spawn_origin_below: int = 0
 
 
 func _ready() -> void:
@@ -223,7 +226,7 @@ func _try_spawn() -> void:
 			spawns_total += 1
 	if ticks_total % 5 == 0:
 		var cap_marker: String = " CAP" if cap_hit else ""
-		print("[spawner] tick %d: spawns=%d rejections=%d alive=%d/%d%s depth=%d band=%s ascent=%.2f stall=%.1fs interval=%.2fs stallMult=%.2f" % [ticks_total, spawns_total, rejections_total, _enemies_alive, band_cap, cap_marker, _max_depth_reached, band.name, _ascent_velocity, _stall_time, _current_spawn_interval(), _current_stall_multiplier()])
+		print("[spawner] tick %d: spawns=%d (top=%d below=%d) rejections=%d alive=%d/%d%s depth=%d band=%s ascent=%.2f stall=%.1fs interval=%.2fs stallMult=%.2f" % [ticks_total, spawns_total, spawn_origin_top, spawn_origin_below, rejections_total, _enemies_alive, band_cap, cap_marker, _max_depth_reached, band.name, _ascent_velocity, _stall_time, _current_spawn_interval(), _current_stall_multiplier()])
 
 
 # Compute spawn position. Top-edge by default (iter 12+). iter 28: if
@@ -334,6 +337,11 @@ func _telegraph_then_spawn(pos: Vector2) -> void:
 	enemy.tree_exited.connect(_on_enemy_freed)
 	parent_node.add_child(enemy)
 	_enemies_alive += 1
+	# iter 31: origin distribution counter
+	if _pending_below_spawn:
+		spawn_origin_below += 1
+	else:
+		spawn_origin_top += 1
 
 
 # Weighted random selection from ENEMY_TYPES, weighted by the current

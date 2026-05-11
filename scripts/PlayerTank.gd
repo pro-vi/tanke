@@ -38,6 +38,12 @@ var _time_label: Label
 # iter 30: depth milestone flash (Pro Consult 005 META — ascent legibility)
 var _last_milestone_depth: int = 0
 @export var depth_milestone_step: int = 10
+# iter 31: ascender-metric instrumentation (Pro Consult 005 H4)
+var _stall_time_total: float = 0.0  # cumulative seconds with ascent_velocity < threshold
+var _last_y_for_velocity: float = 0.0
+var _ascent_velocity_player: float = 0.0  # smoothed rows/sec, player-side estimate
+@export var stall_velocity_threshold: float = 0.3  # rows/sec; matches Spawner.stall_threshold
+@export var velocity_ema_alpha_player: float = 2.0
 
 
 func _ready() -> void:
@@ -45,6 +51,7 @@ func _ready() -> void:
 	rotation = Constants.dir_to_rotation(direction)
 	_start_y = global_position.y
 	_min_y_reached = _start_y
+	_last_y_for_velocity = _start_y  # iter 31: instrumentation seed
 	_grass_tilemap = get_tree().get_root().find_child("Grass", true, false) as TileMapLayer
 	_setup_hurtbox()
 	_setup_hud()
@@ -66,6 +73,15 @@ func _physics_process(delta: float) -> void:
 		_min_y_reached = global_position.y
 	_update_run_hud()
 	_update_forest_hide()
+	# iter 31: ascender-metric instrumentation
+	if delta > 0.0:
+		var dy_rows: float = (_last_y_for_velocity - global_position.y) / 16.0
+		var instant: float = dy_rows / delta
+		var a: float = clampf(velocity_ema_alpha_player * delta, 0.0, 1.0)
+		_ascent_velocity_player = lerpf(_ascent_velocity_player, instant, a)
+		_last_y_for_velocity = global_position.y
+		if _ascent_velocity_player < stall_velocity_threshold:
+			_stall_time_total += delta
 
 	var input_vector: Vector2 = Vector2()
 
@@ -163,6 +179,16 @@ func _die() -> void:
 	velocity = Vector2.ZERO
 	if _death_label != null:
 		_death_label.visible = true
+	# iter 31: ascender run summary on death (Pro Consult 005 H4)
+	var depth: int = int(maxf(0.0, (_start_y - _min_y_reached) / 16.0))
+	var t: int = int(_run_time)
+	var ascent_rate: float = 0.0
+	if _run_time > 0.0:
+		ascent_rate = float(depth) / _run_time
+	var stall_pct: float = 0.0
+	if _run_time > 0.0:
+		stall_pct = 100.0 * _stall_time_total / _run_time
+	print("[run] depth=%d time=%d:%02d ascent_rate=%.2f rows/s stall_total=%.1fs (%.0f%%)" % [depth, t / 60, t % 60, ascent_rate, _stall_time_total, stall_pct])
 	died.emit()
 
 

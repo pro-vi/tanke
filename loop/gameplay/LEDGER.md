@@ -2324,3 +2324,64 @@ Self-deception check (H2 RULE v2): would Pro reword any anchor if shown this cod
 - ScheduleWakeup 240s.
 
 ---
+
+## Iter 031 — CAPABILITY (light) — Ascender metric instrumentation
+
+**Mode:** CAPABILITY (Pro Consult 005 H4 — ASCENDER metrics only, not kill counts)
+**Focus:** Instrument runtime data so iter-33 playtest can correlate user-reported feel with quantitative measurements
+**Date:** 2026-05-12
+**Tag:** `[STRUCTURE]`
+
+### Substrate freeze decision
+
+PROMPT.md says `loop/test_runner.gd` is frozen but can be "extend[ed] with new metrics if needed; don't refactor." test_runner.gd is one-shot post-generation — extending it to run a SIMULATED gameplay loop would be a refactor. Instead, iter 31 instruments the existing PlayerTank + Spawner scripts (already running during F5 gameplay) with the requested metrics. Lighter scope, same outcome for iter-33 playtest analysis.
+
+### Actions
+
+**`scripts/PlayerTank.gd`:**
+- State: `_stall_time_total: float`, `_last_y_for_velocity: float`, `_ascent_velocity_player: float`
+- Exports: `stall_velocity_threshold = 0.3`, `velocity_ema_alpha_player = 2.0` (matches Spawner constants)
+- `_physics_process`: EMA-smoothed player ascent_velocity, accumulates `_stall_time_total` when below threshold
+- `_die()`: prints `[run] depth=N time=M:SS ascent_rate=R rows/s stall_total=S (P%)` — iter-33 user sees this in Output dock on death
+
+**`scripts/Spawner.gd`:**
+- State: `spawn_origin_top: int`, `spawn_origin_below: int`
+- Increment on successful spawn (in `_telegraph_then_spawn`), branched by `_pending_below_spawn` flag
+- Debug print now: `spawns=N (top=A below=B)` showing origin distribution
+
+### Substrate freeze check
+
+- All frozen scripts untouched. `loop/test_runner.gd` NOT modified. Modified only PlayerTank.gd + Spawner.gd.
+- No .tscn edits. H1 tripwire: 1. Unchanged.
+
+### Verification
+
+- `make test` exit 0
+- Reachability oracle: `tile_hash f873ae60ee3c420c…` unchanged. Substrate intact iters 1-31.
+- 15s headless with stationary player triggers below-spawn (stall_time > 8s + cooldown):
+  - `[spawner] tick 5: spawns=4 (top=3 below=1) ...`
+  - origin distribution counter verified working
+  - `[run]` line doesn't fire in headless (no enemies hit player → no death) but will fire on iter-33 actual playtest
+
+### Scores
+
+| Criterion | Iter 30 | Iter 31 | Δ |
+|-----------|---------|---------|---|
+| All | unchanged | unchanged | – |
+| **Total** | **17** | **17** | **0** | `[STRUCTURE]` instrumentation; no rubric anchor satisfied |
+
+### Pre-mortem evaluation
+
+6 of 6 binary-now LANDED. Iter-33 playtest can now produce quantitative artifact (single `[run]` line on death) + per-tick spawn-origin distribution for correlation with user-reported feel.
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd` (stall instrumentation + die summary), `scripts/Spawner.gd` (origin counters + enriched print)
+- Modified: `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/LEDGER.md`, `loop/gameplay/STATE.md`
+
+### Schedule
+
+- Iter 32 = final playtest prep. Verify build (make test, godot --quit). Compose iter-33 playtest prompt using 2-question template from `loop/gameplay/playtest-template.md`. Per Pro v5 H3, the load-bearing question is language-based: "What did the game seem to want you to do: clear enemies, survive in place, or keep climbing?"
+- ScheduleWakeup 240s.
+
+---
