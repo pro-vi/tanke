@@ -919,3 +919,67 @@ attention.
   playtest prompt, AWAIT user.
 
 ---
+
+## Iter 009 — PLAYTEST — paired iter-7 + iter-8 changes
+
+**Mode:** PLAYTEST (AWAIT per PROMPT §7)
+**Focus:** falsify or confirm 7 H2-RULE claims covering iter-7 (grid AI / enemy fire / top spawn) and iter-8 (brick destruction / water pass / muzzle centering) deltas
+**Date:** 2026-05-11
+**Pre-mortem:** PRE-MORTEMS.md iter 009 — 7 H2-RULE claims including 1 secondary balance-risk
+
+### Build verification
+
+- `godot --headless --path . --quit` → exit 0 clean (carryover UID warning)
+- `make test` (120-frame ProceduralLevel.tscn runtime) → exit 0 no errors
+
+### Deltas since iter-5 playtest
+
+| Subsystem | Iter 5 | Iter 9 |
+|-----------|--------|--------|
+| Enemy motion | Naive `move_and_slide` toward player (continuous, "skiing") | 4-dir grid: cardinal axis toward player, 0.8s direction-commit, perpendicular alternate on wall collision, snap-to-grid 8 on turn |
+| Enemy fire | None (contact damage only) | Bullets every 1.5s in facing direction; mask=3 (Env+Player), staggered initial cooldown |
+| Spawn pattern | Random angle 120px around player | Top-edge: random x ∈ [4, 316], y = player.y - 144 |
+| Bricks | Indestructible (bullets despawn on hit) | Destructible (1 hit per 8×8 cell) |
+| Water | Blocks bullets (collision layer 1) | Layer 512 only; bullets pass over, tanks blocked |
+| Muzzle | (7, 0) = 1px inside sprite edge | (8, 0) = exactly at sprite edge |
+
+### Run config (unchanged from iter 5 unless noted)
+
+| Param | Value |
+|-------|-------|
+| Main scene | `scenes/ProceduralLevel.tscn` |
+| Level config | `configs/playable.tres` |
+| Seed | random per launch |
+| Player max_hp | 3 |
+| Player speed | 32 px/s |
+| Bullet speed | 120 px/s |
+| Bullet lifetime | 2.0s |
+| Enemy speed | 24 px/s |
+| Enemy max_hp | 1 |
+| Enemy fire_cooldown | 1.5s (NEW iter 7) |
+| Spawn interval | 2.0s |
+| Max enemies | 20 |
+| Direction commit time | 0.8s (NEW iter 7) |
+| Controls | WASD/arrows = move, Space = fire, R = restart |
+
+### Halt rule
+
+Per PROMPT §USER-LOOK: 3 iters of unfulfilled PLAYTEST request → halt
+at iter 12 with `loop/gameplay/HALTED.md`.
+
+### Files touched
+
+- Modified: `loop/gameplay/PRE-MORTEMS.md` (iter-9 entry with 7 H2-RULE
+  claims), `loop/gameplay/STATE.md` (phase AWAITING_USER, iter 9),
+  `loop/gameplay/LEDGER.md` (this entry)
+
+### Schedule
+
+- **No ScheduleWakeup.** AWAIT per PROMPT §7.
+- On user response: iter 10 = AUDIT + CONSULT (per PROMPT
+  §"CONSULT SCHEDULE" iter 10/20/30). Evaluate 7 H2-RULE claims, log
+  falsifications, update scores. Per "What's seductive-but-hollow about
+  the gameplay so far?" consult question — this is the first iter where
+  enough gameplay exists to consult on.
+
+---

@@ -304,4 +304,42 @@ Muzzle at (7, 0) was 1px INSIDE the sprite edge (sprite half-width = 8).
 Fix: muzzle (7,0) → (8,0) = sprite edge exactly. Visual fix grounded in
 measured sprite dimensions, not a guess.
 
+**Post-iter evaluation:** Both binary claims LANDED (make test, oracle).
+Synchronized 3-file water collision change predicted as highest risk;
+landed cleanly. Pre-mortem-as-attention-bounder pattern worked.
+
+---
+
+## Iter 009 — PLAYTEST (paired iter-7 + iter-8 changes)
+
+Going in, biggest expected miss: difficulty spike. Iter 5 enemies were
+slow chasers with no fire — basically harmless. Now enemies have grid AI
++ fire every 1.5s. With max_enemies=20 and ~13 bullets/s at saturation,
+player HP=3 may die in 5-10s. User might report "too hard." That'd flag
+a balance gap for iter 10.
+
+H2-RULE independently observable claims (user playtest is sole authority):
+1. User does NOT use "skiing" / "without constraints" / "diagonal" to
+   describe enemy motion. Falsified by recurrence.
+2. User reports enemies firing bullets. Falsified by no mention.
+3. User does NOT say "out of nowhere" / "random around me." Falsified by
+   recurrence.
+4. User confirms brick destruction by bullets. Falsified by "bricks still
+   unbreakable."
+5. User confirms bullets pass over water. Falsified by "still blocked at
+   water."
+6. User does NOT say "off center" for bullets. Falsified by recurrence.
+7. (Secondary, balance risk) User reports difficulty acceptable — not
+   "I die immediately." Falsified by "too hard / can't play."
+
+Score-target predictions (secondary, H2-RULE-acknowledged):
+- Crit 6: 1 → 2 (chaser+ranged-shooter, anchor 2). Possible jump to 5 if
+  user cites "they don't get stuck."
+- Crit 1: stays at 4 (anchor 5 still needs first-run-without-instruction;
+  I keep giving instructions).
+- Crit 2: stays at 1 (intervals fixed, not varying).
+- Crit 7: maybe 1 (top-edge spawn creates pressure direction).
+- Crit 8: maybe 1 (brick destruction = some feedback).
+- Total: 9 → 11-13 if anchors land.
+
 ---

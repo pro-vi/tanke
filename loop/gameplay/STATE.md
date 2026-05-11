@@ -3,13 +3,13 @@
 ## Phase
 
 ```
-phase: loop
-iteration: 8
+phase: AWAITING_USER_PLAYTEST
+iteration: 9
 preloop_complete: yes
-playtest_requested_iter: 5
-playtest_completed_iter: 6
-design_direction: battle_city (user playtest signal — see FALSIFICATION 003)
-next_playtest_due_iter: 9
+playtest_requested_iter: 9
+last_completed_playtest_iter: 6
+design_direction: battle_city
+halt_iter_if_no_response: 12
 ```
 
 ---
@@ -126,25 +126,17 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 8 BUILD complete. Bullet/terrain (Battle City direction part 2):
-- BrickBlock.gd: max_hp=1, take_damage queue_frees brick. Bullet's
-  body_entered already calls take_damage (iter-2 work); destruction is
-  automatic once method exists.
-- Bullets-over-water via synchronized 3-file collision-layer changes:
-  * WaterBlock.tscn collision_layer 513 → 512 (Water-only; removed
-    Environment bit 1)
-  * Enemy.tscn collision_mask 1 → 513 (Environment + Water, must still
-    block enemies from water)
-  * Spawner.gd _is_blocked mask 1 → 513 (won't spawn on water either)
-- Final collision graph: bullet mask 9 (Env+Enemy) excludes water layer
-  512 → bullets pass water; tank mask 513 (Env+Water) still blocked.
-- Muzzle: sprites_0.png is 16px per frame (verified via PIL: 256/16=16);
-  muzzle (7,0) was 1px INSIDE sprite edge — read as off-center. Fixed
-  to (8,0) = sprite-edge exactly.
-- Verified: make test exit 0, oracle tile_hash f873ae60ee3c420c…
-  unchanged. Substrate intact iters 1-8.
-- Scores unchanged at 9/50. Multiple anchors poised to lift on iter-9.
-Next: iter 9 PLAYTEST — mandatory user-look gate.
+Iter 9 PLAYTEST request issued. AWAITING USER.
+Build verified (make test exit 0, godot --quit exit 0). 7 H2-RULE
+independently observable claims pending user playtest report:
+1. Enemy motion no longer "skiing"
+2. Enemies fire bullets
+3. Spawn from top edge, not "out of nowhere"
+4. Brick walls destructible by bullets
+5. Bullets pass over water
+6. Bullets NOT "off center"
+7. (balance) Difficulty acceptable, not "I die immediately"
+Halt rule: iter 12 if no response.
 ```
 
 ---
@@ -155,7 +147,38 @@ None (new loop).
 
 ---
 
-## Next Action (current, replacing iter-7 plan that was just shipped)
+## Next Action
+
+`AWAITING user playtest response.
+
+On response (iter 10):
+  - Read user report
+  - For each of 7 H2-RULE claims, mark LANDED / FALSIFIED / INDETERMINATE
+  - Append FALSIFICATIONS.md entries for any falsified claim
+  - Update score table per RUBRIC.md anchors using playtest evidence
+  - Iter 10 is also CONSULT iter per PROMPT §"CONSULT SCHEDULE"
+    (iters 10/20/30). Three permanent questions:
+    1. What's seductive-but-hollow about the gameplay so far?
+    2. Is the upgrade system creating distinct builds, or just stacking
+       numbers? (N/A yet — no upgrades; reframe to enemy variety?)
+    3. What would a Vampire Survivors player find embarrassing about
+       this in a 5-min run?
+  - Decision at iter 10: fire external CONSULT (GPT-Pro via agentify)
+    OR write self-pre-mortem-in-writing per FALSIFICATION 001 lesson
+    (always send all .tscn files in contextPaths). Engine-loop history:
+    external consult failed 2x; loop now has 1 success (iter 4 consult)
+    + 1 wrong-claim case (Pro lacking PlayerTank.tscn). Net: external
+    is worth trying with better context.
+  - Plan iter 11 BUILD targeting whichever broken thing surfaces from
+    playtest (likely balance fixes per H2 RULE claim #7) OR consult
+    findings.
+
+If no user response by end-of-iter-12 (3 iters later): write HALTED.md
+per PROMPT §"USER-LOOK PROTOCOL" halt rule; stop.`
+
+---
+
+## Previous Next Action (iter 9 — shipped as this iter's playtest prompt)
 
 `Iter 9 PLAYTEST (mandatory user-look gate, paired iter-7 + iter-8 changes):
   - Pre-mortem to PRE-MORTEMS.md — must include H2-RULE
