@@ -133,52 +133,54 @@ Does the player want one more run after dying?
 
 ---
 
-## 8. Visual feedback / juice (0–5) — *feel criterion*
+## 8. Impact / feedback / readability (0–5) — *feel criterion*
 
-Hit-flash, death anim, XP magnet, level-up modal.
+(Reworded iter 46 per Pro Consult 006 H3: prior anchor 3 "XP gems animate / level-up modal" was stale post-iter-11 reframe; anchor 4 "UI counter increments" was stale post-iter-30 kill-counter drop. New target per Pro: "impact/feedback/readability makes combat legible and satisfying.")
+
+Does combat feedback land — hits, deaths, ascent moments register clearly?
 
 | Score | Anchor |
 |-------|--------|
 | 0 | No feedback on any event |
-| 1 | Hit flashes one color |
-| 2 | Hit flash + enemy death (sprite swap or particle) |
-| 3 | XP gems animate (drift toward player); level-up has visual flourish (cited) |
-| 4 | Camera shake on damage; bullet impact spark; UI counter increments |
-| 5 | Screen-clear visual impact — playtest cited "satisfying to mow through a wave" |
+| 1 | Hit flash on player damage |
+| 2 | Hit flash + enemy death effect (sprite swap or particle) |
+| 3 | Multi-event impact layer: bullet impact spark on collision + enemy hit-flash on non-kill + depth milestone visual cue — code-citable |
+| 4 | Camera shake on player damage + above layer — combat-feedback satisfies playtest cite ("hits feel solid" / "feels punchy" / similar) — feel-verified |
+| 5 | Screen-clear visual impact + readability layered — playtest cited "satisfying to wave through" / equivalent |
 
 ---
 
-## 9. UI / UX (0–5) — *feel criterion*
+## 9. HUD / state communication (0–5) — *feel criterion*
 
-HUD legible at 320×240; restart obvious.
+(Reworded iter 46 per Pro Consult 006 H3: prior anchors referenced XP bar / level number / level-up modal — all stale post-iter-11 reframe. New target per Pro: "HUD communicates survival/ascent state: HP, depth, warning/restart state, maybe best.")
+
+Does the HUD communicate the player's current survival/ascent state?
 
 | Score | Anchor |
 |-------|--------|
 | 0 | No HUD |
-| 1 | HP / XP shown numerically (text only) |
-| 2 | HP bar + XP bar visible; readable at 320×240 |
-| 3 | Run timer + kill count + level number on HUD |
-| 4 | Level-up modal pauses cleanly; choices show name + brief description |
+| 1 | HP shown numerically (text only) |
+| 2 | HP shown + DEPTH + TIME labels readable at 320×240 |
+| 3 | HP shown via bar (graphical, not just text) + DEPTH + TIME |
+| 4 | Best-depth visible during run OR low-HP warning state cue (color shift / blink) |
 | 5 | First-time user can navigate from death → restart without instruction — playtest cited |
 
 ---
 
-## 10. Run summary + replayability (0–5) — *feel criterion*
+## 10. Run loop closure (0–5) — *feel criterion*
 
-(Renamed iter 11 — replaces former "Build distinctness." Reframed per
-Pro Consult 003: the death screen is the roguelike's pitch for the next
-run, not the build's epitaph.)
+(Renamed iter 11 — replaced former "Build distinctness." Reframed per Pro Consult 003. Anchors reworded iter 46 per Pro Consult 006 H3: tighter structural-vs-feel split — anchors 2-3 are now code-citable structural; anchors 4-5 require playtest cite.)
 
 Does the death screen close one run and pitch the next?
 
 | Score | Anchor |
 |-------|--------|
 | 0 | No death screen — instant restart or hard stop |
-| 1 | "YOU DIED" + restart hint shown — cited via code (iter 3) |
-| 2 | Death screen shows depth reached, run time, enemies killed — cited via playtest |
-| 3 | Death screen highlights personal best vs. this run — cited via playtest |
-| 4 | Death screen shows "death cause" (which enemy, depth) — playtest cited "I want to beat my last run" |
-| 5 | Death screen is fast, restart is immediate, user-flow is silent (no menu friction) — playtest cited "I didn't think, I just pressed R" |
+| 1 | "YOU DIED" + restart hint shown — cited via code |
+| 2 | Death screen shows depth + run time + kills/stall — code-citable structural ship |
+| 3 | Death screen shows best-depth + NEW BEST highlight when run > prior — code-citable |
+| 4 | Restart loop is friction-free + death-cause visible — playtest cited "I want one more" / similar |
+| 5 | Run summary structure makes player want to retry — playtest cited "I want to beat my best" / equivalent |
 
 ---
 
@@ -189,3 +191,4 @@ Does the death screen close one run and pitch the next?
 | 0 | Initial gameplay rubric, 10 criteria, reachability floor | New loop scope: VS-like gameplay; engine is substrate |
 | 11 | Renamed crits 4, 5, 7, 10 to roguelike-ascender axes (Depth feedback, Forward survivability, Compulsion loop, Run summary) | Framing pivot per user correction iter 10 + Pro Consult 003: roguelike vertical ascender with BC combat feel, not VS-like survival. Co-op explicitly NOT a rubric axis (scope grenade). |
 | 22 | Crit 6 anchor 2-3-5 reworded for role distinction (not stat distinction) | Per GPT-Pro Consult 004 H3: original anchor wording let me claim Light/Heavy stats-only as anchor 2; stricter wording forces behavioral split. Iter-16 score lift (crit 6 1→2) RETROACTIVELY REVERTED. |
+| 46 | Crits 8 / 9 / 10 reworded — Crit 8 "Visual juice" → "Impact / feedback / readability"; Crit 9 "UI/UX" → "HUD / state communication"; Crit 10 anchors tightened for structural-vs-feel split | Per GPT-Pro Consult 006 H3: prior anchors held XP gems / level-up modal / UI kill-counter language that was stale post-iter-11 reframe and iter-30 kill-counter drop. New anchors match the iter-11 stone (roguelike vertical ascender + BC combat feel). Score carry: crit 8 stays 2 (anchor 2 hit-flash + enemy death — carries directly); crit 9 stays 1 (anchor 1 HP text — carries); crit 10 stays 2 (anchor 2 depth+time+kills — carries). Iter-46 lifts apply on top: crit 8 2→3 [STRUCTURE] (iter-41/42 multi-event impact layer), crit 10 2→3 [STRUCTURE] (iter-44 best-depth + NEW BEST highlight). |

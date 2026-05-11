@@ -1173,7 +1173,34 @@ H2-RULE claims:
 2. Response read at iter 46 (240s wakeup); adoption logged in creative-consults.md as Consult 006
 3. At least 1 of H1-H5 is broken by Pro, triggering iter-46+ direction adjustment
 
-**Post-iter:** [filled at iter 46 after response read]
+**Post-iter (iter 46):** ALL 3 H2-RULE claims LANDED. Pro broke H1 + H2 (2 of 5), held H3-H5. Sprint trajectory redirected: rubric rename iter 46 + Heavy LKP iter 47-48 + depth landmarks iter 49-50. See creative-consults.md Consult 006 ADOPTED block.
+
+---
+
+## Iter 046 — META — Rubric rename per Pro Consult 006 + sprint replan
+
+Tag: `[STRUCTURE]` (META iter — process / rubric maintenance).
+
+Trigger: Pro Consult 006 H3 hold ("do the rename now, not iter 50"). Pro proposed new headings for crits 8/9/10 + structural-vs-feel anchor split.
+
+Going in, biggest expected miss: **score lift from rename is mistaken for "earned" lift** rather than rubric-debt-correction. Per cite-prediction discipline: if I showed Pro the new anchors + the iter-41-44 ships, would they grant 2→3 on crit 8 and crit 10? Pro literally proposed this framing as "clear the target." But conservatism is warranted — I'm scoring my own ships against my own (Pro-inspired but my-written) anchors. Mitigation: chose anchor wording tightly (anchor 3 requires MULTI-EVENT layer, not single piece; anchor 4 still requires [FEEL] for crit 8).
+
+Sprint replan (iter 46-60):
+- iter 46 (this iter): META rubric rename + sprint replan
+- iter 47-48: BUILD Heavy LKP de-omniscience (Pro primary recommendation)
+- iter 49-50: BUILD depth pressure landmarks (Pro secondary recommendation)
+- iter 51-54: BUILD whatever surfaces
+- iter 55: CONSULT 007 pre-playtest
+- iter 56-59: tune/polish based on Consult 007
+- iter 60: PLAYTEST (4-5 question diagnostic tour)
+- iter 63: halt-rule deadline if no playtest response
+
+H2-RULE claims (3):
+1. RUBRIC.md crit 8/9/10 reworded; Revision Log entry filed naming Consult 006 source
+2. Score lifts applied: crit 8 2→3 [STRUCTURE], crit 10 2→3 [STRUCTURE]; crit 9 stays at 1 (anchor 3 HP bar not shipped)
+3. Self-deception check: I am NOT lifting beyond what the new anchors literally describe. Anchor 3 for crit 8 requires MULTI-EVENT impact layer (spark + flash + milestone); iter 41 + iter 30 ship satisfies. Anchor 3 for crit 10 requires best-depth + NEW BEST highlight; iter 44 ship satisfies.
+
+**Post-iter:** [filled at iter 47]
 
 ---
 

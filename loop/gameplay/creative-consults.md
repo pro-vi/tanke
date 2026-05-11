@@ -455,6 +455,46 @@ Asked Pro to lead with "breaks because" / "holds because" per H, then recommend 
 
 ### Status
 
-PENDING (fired iter 45, response expected iter 46). Adoption decision and lessons logged after read.
+ADOPTED (read iter 46; 80s gen, Pro Extended Thinking).
+
+### Pro response synthesis
+
+| H | Verdict | Pro's lead-in (paraphrased) |
+|---|---------|------------------------------|
+| H1 | **BREAKS** | "Yes, you are over-juicing the wrong layer. Sparks, shake, summary, best-depth are good presentation scaffolding but not independently strong enough to carry three deferred [FEEL] citations unless iter-60 player spontaneously notices them as part of a coherent loop." Brittle: one lukewarm playtest collapses crits 8/10 to "visible polish exists." |
+| H2 | **BREAKS** | "Heavy omniscient movement is not fine; it is just not the loudest problem anymore. Pursuit behavior is part of the stealth/peek/cover verb. If Heavy always chooses toward raw player position, the player cannot meaningfully lose it, bait it, route around it, or exploit walls except at the firing moment." |
+| H3 | **HOLDS** | "Rubric debt is now actively distorting build choices. Do the rename now, not at iter 50, because 46-59 planning depends on what the anchors actually mean." Proposed: Crit 8 → "impact/feedback/readability"; Crit 9 → "HUD communicates survival/ascent state"; Crit 10 → "run loop closure". |
+| H4 | **HOLDS** | "Ascent loop is still thinner than the shipped polish suggests. Enemy differentiation on paper but player verbs sound mostly like 'drive upward, shoot, dodge,' not 'scout, choose route, bait Heavy, break LOS, decide push or clear.' Missing layer: pressure/choice mechanic." |
+| H5 | **HOLDS** | "Standard 2-question playtest will under-sample. Use 4-5 diagnostic questions tied to specific rubric axes + one forced choice." |
+
+### Pro's sharp recommendations
+
+1. **PRIMARY: Heavy de-omniscience (LKP + search behavior).** Heavy chases last known player position, pauses/searches when LOS lost, reacquires on LOS/proximity. Directly attacks hollow-loop risk. Adopted iter 47-48 BUILD.
+2. **SECONDARY: Depth pressure landmarks.** Every N vertical chunks, recognizable "gate room" or "danger pocket" with milestone callout. Authored ascent beats. Adopted iter 49-50 BUILD.
+
+### Adoption decisions
+
+**Iter 46 (this iter):**
+- ADOPT H3 hold: rubric rename via v2 §Reframe protocol. RUBRIC.md crits 8/9/10 reworded. Revision Log entry filed. Score lifts: crit 8 2→3, crit 10 2→3 [STRUCTURE].
+- ADOPT H5 hold: iter-60 playtest will use 4-5 question diagnostic tour.
+
+**Iter 47-48:** ADOPT primary — Heavy LKP de-omniscience.
+
+**Iter 49-50:** ADOPT secondary — depth pressure landmarks.
+
+**Iter 51-54:** BUILD as surfaces (HP bar, Light/Fast sharpening, audio stubs, Heavy tuning).
+
+**Iter 55:** CONSULT 007 pre-playtest.
+
+**Iter 56-59:** tune/polish per Consult 007.
+
+**Iter 60:** PLAYTEST 4-5 question diagnostic tour (per Pro H5 template).
+
+### Lessons
+
+1. **Pro's "breaks because"/"holds because" surfaces hard truths quickly.** H1 break ("over-juicing the wrong layer") was the most useful single sentence — broke a 5-iter trajectory and redirected iter 46-59.
+2. **Rubric debt actively distorts citations.** Pro's call to rename mid-sprint (not at AUDIT 50) was right because all 46-59 planning was hostage to what crit 8/9/10 actually meant.
+3. **"Seductive but hollow" was answered: yes.** The visual juice tier is decoration over thin combat verb. Pro's fix is decision-quality (LKP, landmarks), not more polish.
+4. **CONSULT mid-sprint pays off when budget is right.** 5 BUILDs in, 14 to go, was the right moment — early enough to redirect, late enough to have concrete progress.
 
 ---
