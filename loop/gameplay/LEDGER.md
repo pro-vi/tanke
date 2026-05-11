@@ -295,3 +295,117 @@ mechanism.
 - PLAYTEST mandatory at iter 5 (3 iters away)
 
 ---
+
+## Iter 003 — BUILD — HP + HUD + death/restart
+
+**Mode:** BUILD
+**Focus:** crit 3 (HP/death) + crit 9 (text HUD); structural anchor 3 of crit 1 (HP/death in code; playtest rule keeps crit 1 capped at 2)
+**Date:** 2026-05-11
+**Pre-mortem:** PRE-MORTEMS.md iter 003 (predicted crit 3 → 2, crit 9 → 1, crit 1 holds at 2 per feel-criterion playtest rule; identified HurtBox layer/mask + restart debounce as likely silent bugs)
+
+**Built-in falsification surface:** Mid-iter, an external GPT-Pro
+consultation (key `tanke-iter-2-secondopinion`, fired end-of-iter-2 via
+agentify) was still pending (~2.5 min into its run) when this commit
+landed. Pre-mortem predicts: if Pro's response surfaces material critique
+of H1-H5 (substrate-freeze interpretation, pre-mortem credibility, naive
+enemy AI, iter-3 scope, silent bugs), iter 4 will integrate. This is the
+first iter with an external evidence channel that can falsify the loop's
+own scoring.
+
+### Diagnose
+
+Crit 3 (HP) at 0/5; crit 9 (UI) at 0/5. Picked both because HP needs HUD
+to register as "feedback" — they're foundational pair. Also unblocks crit
+1 anchor 3 structurally (even though playtest rule caps crit 1 at 2).
+Decision: dynamic HurtBox + dynamic HUD created from PlayerTank.gd `_ready`
+— avoids editing PlayerTank.tscn (still format=2; could risk Bullet-style
+migration churn if touched).
+
+### Actions
+
+1. `scripts/PlayerTank.gd` extended:
+   - `@export max_hp: int = 3, damage_iframes: float = 0.6`
+   - `signal hp_changed(new_hp, max_hp)`, `signal died`
+   - `take_damage(amount)` with iframe gate, emits `hp_changed`, calls
+     `_die()` on hp ≤ 0
+   - `_die()` sets `_dead`, stops sprite, zeros velocity, shows death
+     label, emits `died`
+   - `_physics_process` returns early if `_dead`, only processes restart
+     input
+   - `_handle_restart_input()` uses `Input.is_physical_key_pressed(KEY_R)`
+     with `_restart_armed` debounce (must release R then press to trigger
+     reload; prevents instant-restart if R was already held at death)
+   - `_setup_hurtbox()` creates child Area2D with collision_layer=0
+     (doesn't push), collision_mask=8 (Enemy), 12×12 RectangleShape2D;
+     wired to `_on_hurtbox_body_entered` checking `body.is_in_group("enemy")`
+   - `_setup_hud()` creates child CanvasLayer with "HP %d/%d" label and a
+     hidden death label; connects `hp_changed` to update the label
+2. `scripts/Enemy.gd`: added `add_to_group("enemy")` in `_ready` so the
+   HurtBox detection works.
+
+### Substrate freeze check
+
+- All five frozen scripts and the test_runner untouched.
+- No .tscn edits this iter (HurtBox + HUD are dynamic in _ready) —
+  PlayerTank.tscn (still format=2) avoided to dodge migration risk.
+
+### Verification
+
+- `godot --headless --path . --quit` → exit 0, clean (same cosmetic UID
+  carryover warning for Bullet.gd, harmless).
+- No oracle re-check needed (no tile-affecting changes; oracle measures
+  generated tile grid, not runtime entities). Last green: tile_hash
+  f873ae60ee3c420c…, playable: true, reachable_cells: 804.
+
+### Scores
+
+| Criterion | Iter 2 | Iter 3 | Δ | Citation |
+|-----------|--------|--------|---|----------|
+| 1. Core loop closes | 2 | 2 | – | Anchor 3 in code (`PlayerTank.gd:107-117` take_damage + die); feel criterion playtest rule caps at 2 |
+| 2. Spawn / wave system | 1 | 1 | – | unchanged |
+| 3. HP + death model | 0 | **2** | +2 | Anchor 2 exact: damage on collision via dynamic HurtBox `PlayerTank.gd:128-140`; HP numerically shown `PlayerTank.gd:148-149`. Not a feel criterion. |
+| 4. XP + level-up flow | 0 | 0 | – | – |
+| 5. Upgrade variety | 0 | 0 | – | – |
+| 6. Enemy variety + behavior | 1 | 1 | – | unchanged |
+| 7. Run pacing | 0 | 0 | – | – |
+| 8. Visual feedback / juice | 0 | 0 | – | – |
+| 9. UI / UX | 0 | **1** | +1 | Anchor 1: text HP visible. `PlayerTank.gd:148`. Feel ≤2 OK with code citation. |
+| 10. Build distinctness | 0 | 0 | – | – |
+| **Total** | **4** | **7** | **+3** | |
+
+### Pre-mortem evaluation
+
+Pre-mortem-internal: all five predictions landed. Crit 3 → 2, crit 9 → 1,
+crit 1 held at 2, boot clean, oracle unchanged (not re-run since no
+tile-affecting changes — note this as a small process drift; PROMPT
+suggests oracle re-check after any BUILD that "touches level config or
+scene structure" — HurtBox is dynamic in code, not scene structure, so
+oracle re-check arguably not required, but worth doing in iter 4 for
+discipline).
+
+Real falsification risks (deferred):
+- iter-5 PLAYTEST: does HP actually drop when enemy touches player? Does R
+  actually restart cleanly? Does iframes feel right at 0.6s?
+- Pending GPT Pro consult: may surface H5 silent bugs (Timer creation
+  order, find_child timing, dynamic-node-in-_ready gotchas).
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd` (HP+HUD+death system),
+  `scripts/Enemy.gd` (group registration),
+  `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/STATE.md`,
+  `loop/gameplay/LEDGER.md`
+
+### Schedule
+
+- Iter 4 candidate = AUDIT mode (PROMPT §3 calls for AUDIT every 5 iters
+  or after substrate change). Iter 4 has two motivations: (a) integrate
+  GPT Pro consult response (should be done by then), (b) re-score all
+  criteria with fresh evidence including running the oracle again for
+  discipline. If Pro flags material H1-H5 issues, iter 4 morphs into a
+  targeted BUILD fix.
+- ScheduleWakeup 240s (AUDIT cadence is 120s per PROMPT §7 but the
+  primary uncertainty is the Pro response — 240s gives Pro time to finish)
+- PLAYTEST mandatory at iter 5 (2 iters away — that's when the user F5s)
+
+---

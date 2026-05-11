@@ -63,3 +63,41 @@ stuck on walls / spawn in unreachable pockets) is unverified — needs
 iter-5 playtest to confirm or falsify.
 
 ---
+
+## Iter 003 — BUILD (HP + HUD + death/restart)
+
+Going in, I expect this iter's biggest miss to be: combining HP + HUD +
+death/restart in one iter creates a wiring bug that headless boot won't
+catch — specifically the damage-detection mechanism. Two `CharacterBody2D`s
+(player + enemy) don't emit collision signals through `move_and_slide`, so
+I need an `Area2D` HurtBox somewhere. If layer/mask is wrong (HurtBox needs
+`collision_mask = 8` (Enemy), `collision_layer = 0` so it doesn't push
+anything), enemies will pass through the player silently and HP never
+drops. Secondary risk: restart via `get_tree().reload_current_scene()`
+recreates the Spawner cleanly but if I set `process_mode` wrong on a "dead"
+player, the death-state UI won't render. Tertiary: `Input.is_physical_key_pressed(KEY_R)`
+vs `Input.is_action_just_pressed` — polled `is_pressed` will instantly
+restart the moment a player dies if R was already held; debounce needed.
+
+Falsifiable predictions:
+1. Crit 1 (Core loop closes) → 3. Anchor 3 = "player has HP, takes damage,
+   can die — cited via playtest". Capped at 3 even with HP because feel
+   criterion needs playtest for >2. So actually capped at 2 from playtest
+   rule; but anchor 3 *exists* in code, so I'll cite scripts/PlayerTank.gd
+   and stay at 2 honestly — pre-mortem says crit 1 holds at 2.
+2. Crit 3 (HP/death model) → 2. Anchor 2 = "Player takes damage on
+   collision; HP shown numerically". HurtBox + Label HUD = exact anchor 2.
+3. Crit 9 (UI/UX) → 1. Anchor 1 = "HP/XP shown numerically (text only)".
+4. Crit 1 might stay at 2 (feel criterion playtest rule). I'm tempted to
+   bump it to 3 because anchor 3 is structurally satisfied, but the rule
+   says >2 needs playtest. So 2 it is.
+5. Headless boot clean; oracle unchanged.
+
+**Pre-commit override risk:** If the agentify GPT-Pro consultation
+(started end-of-iter-2) returns mid-iter with material critique (e.g.
+"this scope is too wide" or "silent bug in code"), I will integrate before
+commit. This iter therefore has a built-in falsification surface that's
+not my own work product — first iter where falsification can come from
+external evidence, not just my own scoring.
+
+---

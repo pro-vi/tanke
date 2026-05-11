@@ -4,7 +4,7 @@
 
 ```
 phase: loop
-iteration: 2
+iteration: 3
 preloop_complete: yes
 ```
 
@@ -43,60 +43,75 @@ procedural generation logic). Add new configs/scripts/scenes as needed.
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
-| 1. Core loop closes | 2 | Bullet system fixed iter 1; bullets hit enemies iter 2. Anchor 3 (death) needs HP. Capped — feel criterion needs playtest for >2. |
+| 1. Core loop closes | 2 | Anchor 3 (HP/death) in code iter 3; feel-criterion playtest rule caps at 2 |
 | 2. Spawn / wave system | 1 | Iter 2: fixed-rate spawner, random angle around player |
-| 3. HP + death model | 0 | No HP system |
+| 3. HP + death model | 2 | Iter 3: HurtBox + HP numerically shown; anchor 2 exact |
 | 4. XP + level-up flow | 0 | No XP |
 | 5. Upgrade variety | 0 | No upgrades |
 | 6. Enemy variety | 1 | Iter 2: one chaser type, naive move-and-slide |
 | 7. Run pacing | 0 | No run structure |
 | 8. Visual feedback / juice | 0 | None |
-| 9. UI / UX | 0 | No HUD |
+| 9. UI / UX | 1 | Iter 3: text HP HUD via CanvasLayer Label |
 | 10. Build distinctness | 0 | No builds |
-| **Total** | **4/50** | Iter 2 +2 (enemies online) |
+| **Total** | **7/50** | Iter 3 +3 (HP/HUD/death) |
 
 ---
 
-## Open seams (iter 3+ priorities)
+## Open seams (iter 4+ priorities)
 
-1. ~~**Bullet system broken.**~~ ✓ Fixed iter 1. Real visual validation
-   still pending iter-5 playtest.
+1. ~~**Bullet system broken.**~~ ✓ Fixed iter 1. Playtest validation iter 5.
 
-2. ~~**No enemies.**~~ ✓ Iter 2: chaser + spawner online. Open runtime
-   risks (predicted iter-2 pre-mortem): (a) enemies stuck on walls via
-   naive move-and-slide, no pathfinding; (b) spawn positions occasionally
-   land in BFS-unreachable pockets (~33% of map). Both deferred to iter 5
-   playtest for falsification.
+2. ~~**No enemies.**~~ ✓ Iter 2. Predicted runtime miss (stuck on walls /
+   BFS-unreachable spawns) deferred to iter 5 playtest.
 
-3. **No HP system.** PlayerTank.gd has no HP variable; no damage handling.
-   Iter-3 work. Unblocks crit 1 anchor 3 (HP/death) and crit 3.
+3. ~~**No HP system.**~~ ✓ Iter 3. Real damage-detection wiring unverified
+   (does HurtBox actually fire on enemy contact?) — iter 5 playtest.
 
-4. **No HUD.** No CanvasLayer. Likely seeds in iter 3 alongside HP
-   (text-only HP display = crit 9 anchor 1).
+4. ~~**No HUD.**~~ ✓ Iter 3 (anchor 1 only — text). Anchor 2 (HP bar +
+   XP bar) needs XP system to exist first.
 
-5. **No XP / level-up.** Major iter-4+ work. Foundational for crit 4 + 5.
+5. **No XP / level-up.** Iter 5+ work. Foundational for crit 4 + 5.
 
 6. **No upgrade pool.** Foundational for criterion 5 and 10.
 
-7. **No death/restart flow.** Once HP exists, need "you died" state with
-   restart. Crit 1 anchor 4 + crit 3 anchor 3.
+7. ~~**No death/restart flow.**~~ ✓ Iter 3 — `get_tree().reload_current_scene()`
+   on R debounced. Restart correctness verified iter 5.
+
+8. **Pending: integrate GPT Pro consult.** Fire-and-forget query sent
+   end-of-iter-2 (key `tanke-iter-2-secondopinion`). Iter 4 first action:
+   `agentify_status` + `agentify_read_page`, evaluate H1-H5 critique,
+   integrate any material findings. First external evidence channel —
+   primary falsification surface for the "all pre-mortems land exactly"
+   pattern.
+
+9. **No visual juice.** Crit 8 still at 0. Hit-flash on damage taken
+   would be cheap: tween modulate red on take_damage. Iter 5+.
+
+10. **No iframes visual indication.** Currently iframes work invisibly;
+    player can't see when they're invincible. Tied to crit 8.
 
 ---
 
 ## Last Action
 
 ```
-Iter 2 BUILD complete. Enemies + Spawner online:
-- scripts/Enemy.gd: CharacterBody2D chaser, move_and_slide toward player
-- scripts/Spawner.gd: scene-resident, 2s fixed interval, random angle 120px
-  from player, max 20 alive
-- scenes/Enemy.tscn: collision_layer=8, mask=1; sprite from sprites_0.png frame=16
-- scenes/ProceduralLevel.tscn: added Spawner node (only the .gd is frozen)
-- scripts/Bullet.gd: _on_body_entered calls take_damage on hit
-- scenes/Bullet.tscn: mask 1 → 9 (Environment + Enemy)
-Headless boot clean; oracle byte-identical to baseline.
-Criteria 2 → 1, 6 → 1; crit 1 holds at 2. Total 4/50.
-Next: iter 3 BUILD — HP/death system (unlocks crit 1 anchor 3, lifts crit 3).
+Iter 3 BUILD complete. HP + HUD + death/restart:
+- PlayerTank.gd: max_hp=3, damage_iframes=0.6, hp_changed/died signals,
+  take_damage with iframe gate, _die freezes player + shows death label,
+  R-restart with debounce (must release then press)
+- Dynamic HurtBox Area2D (mask=8, layer=0, 12×12) created in _ready —
+  avoids editing PlayerTank.tscn (still format=2)
+- Dynamic HUD CanvasLayer with HP %d/%d label + hidden YOU DIED [R]
+  RESTART label, all created in _ready
+- Enemy.gd: add_to_group("enemy") so HurtBox detects via group check
+Headless boot clean (carryover Bullet.gd UID warning, harmless).
+Crit 3 → 2, crit 9 → 1; crit 1 holds at 2 (feel-criterion playtest cap).
+Total 7/50.
+
+Pending external evidence: agentify GPT-Pro consult (key
+tanke-iter-2-secondopinion) was still mid-flight at commit. Iter 4 starts
+by reading the response; integrates material critique if any.
+Next: iter 4 AUDIT — read Pro response, re-score with oracle re-check.
 ```
 
 ---
@@ -109,25 +124,25 @@ None (new loop).
 
 ## Next Action
 
-`Iter 3 BUILD — HP + minimal HUD:
+`Iter 4 AUDIT (with Pro-consult integration):
   - Pre-mortem to PRE-MORTEMS.md
-  - DIAGNOSE: weakest axes are criteria 3, 4, 5, 7, 8, 9, 10 at 0/5.
-    Pick crit 3 (HP/death) + crit 9 (UI) — pair because HP needs display
-    to register as "feedback". Also unblocks crit 1 anchor 3 (player has
-    HP, can die).
-  - PlayerTank.gd: add max_hp/hp vars, take_damage(amount), death state.
-    On death: emit died signal, queue_free or set a "dead" flag.
-  - Add HitBox area (or use body_entered on PlayerTank's CharacterBody)
-    so enemies passing over the player deal damage. Cooldown timer to
-    prevent every-frame damage.
-  - Enemy.gd: on touching player (overlap or body_entered) → call player.take_damage(1)
-  - Minimal HUD: CanvasLayer with HP label. Text-only (crit 9 anchor 1).
-  - Death: show "YOU DIED" + "[R] restart" label. R reloads scene.
-  - Headless smoke + oracle re-check (oracle is tile-only; should still
-    match f873ae60…).
-  - Score: crit 3 → 2 (numeric HP, takes damage), crit 1 → 3 (HP+death,
-    capped at 3 without playtest — feel criterion), crit 9 → 1
-  - Commit; ScheduleWakeup 240s`
+  - FIRST: agentify_status + agentify_read_page for key
+    tanke-iter-2-secondopinion. Read GPT-Pro critique of H1-H5.
+  - If Pro response surfaces material issues:
+    - Substrate-freeze critique (H1) — re-read META-RETRO §"What survives";
+      either retract Spawner-in-tscn pattern or document why it's distinct
+    - Pre-mortem credibility (H2) — restructure pre-mortems to predict
+      something the *external evidence* (playtest, Pro) decides, not just
+      my own scoring
+    - Naive enemy AI (H3) — if Pro suggests a 30-line cheap fix, evaluate
+    - Iter-3 scope (H4) — already shipped; learn for next iter
+    - Silent bugs (H5) — patch any identified critical bug pre-iter-5
+  - Re-run reachability oracle for discipline (should still match
+    f873ae60ee3c420c…)
+  - Re-score all 10 criteria with fresh eyes
+  - Update LEDGER iter 4 with AUDIT findings
+  - Commit; ScheduleWakeup 240s
+  - Iter 5 = mandatory PLAYTEST (user-look gate)`
 
 ---
 

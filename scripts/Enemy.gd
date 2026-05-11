@@ -9,6 +9,7 @@ var _player: Node2D
 
 func _ready() -> void:
 	hp = max_hp
+	add_to_group("enemy")
 	_player = get_tree().get_root().find_child("PlayerTank", true, false)
 
 
