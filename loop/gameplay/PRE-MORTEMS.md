@@ -825,6 +825,25 @@ H2-RULE claims:
 
 ---
 
+## Iter 032 — Final playtest prep
+
+Tag: `[STRUCTURE]` prep only.
+
+Going in, biggest expected miss: temptation to ship "one more polish." Pro v5 H4 said do NOT add features before iter 33.
+
+H2-RULE claims:
+1. make test exit 0 — LANDED
+2. Headless boot exit 0 clean — LANDED
+3. Oracle hash unchanged — LANDED
+4. Iter-33 prompt drafted per 2-question template — LANDED (composed below)
+5. No new features added in iter 32 — LANDED (verification only)
+
+5/5 LANDED.
+
+**Post-iter:** Score unchanged at 17/50. Iter 33 issues playtest request.
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

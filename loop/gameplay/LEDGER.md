@@ -2385,3 +2385,122 @@ PROMPT.md says `loop/test_runner.gd` is frozen but can be "extend[ed] with new m
 - ScheduleWakeup 240s.
 
 ---
+
+## Iter 032 — Final playtest prep
+
+**Mode:** Prep (verification + iter-33 prompt composition; no code changes)
+**Focus:** verify build stable, compose 2-question playtest prompt per template + Pro v5 H3 language-based META test
+**Date:** 2026-05-12
+**Tag:** `[STRUCTURE]`
+
+### Build verification (pre-iter-33 final check)
+
+- `godot --headless --path . --quit` → exit 0, clean (no warnings post iter-9 UID fix)
+- `make test` (120-frame ProceduralLevel.tscn runtime) → exit 0 no errors
+- Reachability oracle at seed 42: `tile_hash f873ae60ee3c420c57cdef5762acdad857b1a763ec50b76db80971ef4503e797` — substrate intact iters 1-32 (32 iters, no deviation)
+
+### Deltas since iter-17 playtest (the BIG accumulation)
+
+15 iters of work since iter-17 (user said "looks alright; do at least 15 iters before asking me for any playtest"):
+
+**Iter 18:** Sprint plan installed.
+
+**Iter 19 (visual juice):** PlayerTank hit-flash + iframe blink Tween. `[STRUCTURE]`
+
+**Iter 20 (CONSULT):** Pro consult fired (background).
+
+**Iter 21 (visual juice):** Enemy death yellow burst ColorRect Tween. `[STRUCTURE]`
+
+**Iter 22 (Pro v4 integration):** Rubric crit 6 anchor 2 reworded stricter (role distinction, not stat-tweak). Score REVERT: crit 6 2 → 1. Ascent director scaffold (DEPTH_BANDS: warmup/first_push/heavy_gate/rush).
+
+**Iter 23 (/meta nat-13 structural fix):** H2 RULE v2 (STRUCTURE/FEEL/MIXED/STRUCTURE-DEFERRED tag mandatory). 2-question playtest template created. Retroactive tagging of iters 19/21/22.
+
+**Iter 24 (Pro v4 H2 part 1):** Heavy CHASE/AIM_FIRE state machine — corridor-denier. Crit 6 1 → 2 [STRUCTURE-DEFERRED → iter 33].
+
+**Iter 25 (CONSULT failed):** Tab_busy → self-consult fallback. Selected iter-26 Light split Option C.
+
+**Iter 26 (Pro v4 H2 part 2):** Light commit-to-lane — vertical bias, 3s dir commit, 3.5s fire. No new score lift.
+
+**Iter 27 (per-band rules):** DEPTH_BANDS per-band max_alive + guarantee_first_type. Graduated stall multiplier (1.0 → 0.4 linear). Crit 2 1 → 2 [STRUCTURE].
+
+**Iter 28 (Pro v4 META mit B):** Threats-from-behind — stalled player triggers below-spawn from camera bottom. (Bug: telegraph off-screen — caught + fixed iter 30.)
+
+**Iter 29 (CONSULT v5):** Fire-and-forget Pro query.
+
+**Iter 30 (Pro v5 integration):** DROPPED kills counter. FIXED below-spawn telegraph visibility (red marker INSIDE viewport edge). ADDED depth milestone flash (green pulse every 10 rows). PATCHED band-cap recheck post-await.
+
+**Iter 31 (CAPABILITY light):** Ascender-focused instrumentation. PlayerTank `[run]` summary on death. Spawner `spawn_origin_top`/`below` counters.
+
+**Iter 32 (this iter):** Verify + prep.
+
+### Score trajectory iter 17 → iter 32
+
+| Iter | Score | Δ | Driver |
+|------|-------|---|--------|
+| 17 | 14 | — | (post-iter-17 playtest baseline) |
+| 18-21 | 16 | +2 | crit 8 anchor 1 + anchor 2 (visual juice) |
+| 22 | 15 | -1 | crit 6 revert (rubric tightening) |
+| 23-26 | 16 | +1 | crit 6 re-earned via behavioral split |
+| 27 | 17 | +1 | crit 2 anchor 2 (varying intervals + multiple spawn points) |
+| 28-32 | 17 | 0 | reinforcement + polish + instrumentation |
+
+Net: +3 over 15 iters. Modest by score metric but the iter-22 rubric tightening means current 17/50 is HARDER to claim than pre-iter-22 17/50 would have been.
+
+### Iter-33 playtest prompt (drafted, ready to issue)
+
+Per `loop/gameplay/playtest-template.md` 2-question format + Pro v5 H3 language-based META test.
+
+```
+🎮 Playtest #5 — 1-2 min run + 2 questions
+
+F5 the project. Play one run (≤2 min). Note: a lot's changed since iter 17.
+HUD now shows DEPTH (rows ascended) + TIME (M:SS) top-right.
+
+After you die, look at Godot's Output dock for a line like:
+  [run] depth=12 time=1:23 ascent_rate=0.15 rows/s stall_total=42.1s (50%)
+
+Two questions:
+
+1. WHAT DID THE GAME SEEM TO WANT YOU TO DO?
+   Three options to pick from (or "other"):
+   - Clear enemies (kill everything that spawns)
+   - Survive in place (stay alive, don't move much)
+   - Keep climbing (push upward through danger)
+   Answer in your own words — what felt like the "win condition" of moving forward?
+
+2. ANYTHING OFF/SURPRISING/BROKEN?
+   New enemy types (Heavy that pauses to shoot, Light that takes a lane),
+   depth-milestone flash, red warning markers below when you stall,
+   varied spawn rates by depth band — any of these feel weird or break
+   the run?
+
+Plus the `[run]` line from Output dock if you remember to look — even
+just paste it verbatim and I'll interpret.
+```
+
+This prompt:
+- Slot 1 is the LOAD-BEARING META test (Pro v5 H3): if user picks "keep climbing" or names ascent-language unprompted → META resolved. If "clear enemies" → META still broken.
+- Slot 2 is wildcard catch-all for bugs/surprises.
+- The `[run]` line is bonus quantitative artifact (iter-31 instrumentation).
+
+### Substrate freeze check
+
+- No code changes this iter. All frozen scripts untouched.
+
+### Scores
+
+| Criterion | Iter 31 | Iter 32 | Δ |
+|-----------|---------|---------|---|
+| All | unchanged | unchanged | – |
+| **Total** | **17** | **17** | **0** | Prep-only iter |
+
+### Files touched
+
+- Modified: `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/LEDGER.md`, `loop/gameplay/STATE.md`
+
+### Schedule
+
+- Iter 33 issues the playtest prompt above; sets `phase: AWAITING_USER_PLAYTEST`. NO ScheduleWakeup (AWAIT per PROMPT §7). Halt rule fires iter 36 if no response.
+- ScheduleWakeup 240s for iter 33 to actually issue the prompt.
+
+---

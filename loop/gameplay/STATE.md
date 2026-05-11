@@ -4,13 +4,13 @@
 
 ```
 phase: loop
-iteration: 31
+iteration: 32
 preloop_complete: yes
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
-next_playtest_due_iter: 33
+next_playtest_due_iter: 33 (now ready to issue)
 consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 ADOPTED (Consult 005)
-sprint_phase: instrumentation complete (iter 31); iter 32 playtest prep
+sprint_phase: all 15-iter sprint work done; iter 33 issues playtest
 pending_consult: none
 load_bearing_problem: META mitigated; iter-33 verifies via language-based test
 h2_rule_version: v2 (iter 23)
@@ -128,6 +128,28 @@ on direction change, muzzle may not align visually with sprite center.
 ---
 
 ## Last Action
+
+```
+Iter 32 prep complete. Final pre-playtest verification:
+- make test exit 0
+- godot --headless --quit exit 0 (no warnings)
+- Oracle tile_hash f873ae60ee3c420c… unchanged
+- Iter-33 playtest prompt drafted per 2-question template + Pro v5 H3
+  language-based META test:
+  * Slot 1 LOAD-BEARING: "What did the game seem to want you to do?"
+    (clear / survive / climb) — META resolution test
+  * Slot 2 WILDCARD: "Anything off/surprising/broken?"
+  * Bonus: [run] line from Output dock (iter-31 instrumentation)
+- No code changes. No new features (per Pro v5 H4).
+- Score unchanged at 17/50.
+
+Sprint complete (iters 18-32, 15 iters of solo work between playtests).
+Score trajectory 14 → 17 (+3 net; iter-22 rubric tightening was -1).
+
+Next: iter 33 issues the playtest prompt. AWAIT user. Halt rule iter 36.
+```
+
+(Previous)
 
 ```
 Iter 31 CAPABILITY complete. Ascender metric instrumentation:
@@ -296,6 +318,25 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 33 — Issue playtest request:
+  - Pre-mortem (H2 RULE v2 tag declaration for the load-bearing iter-33
+    prediction: per Pro v5 H3, "user picks 'keep climbing' or names
+    ascent-language unprompted = META resolved")
+  - Update STATE.md phase → AWAITING_USER_PLAYTEST, iteration 33
+  - Output the iter-32-drafted 2-question playtest prompt to user
+  - NO ScheduleWakeup (AWAIT per PROMPT §7)
+  - Halt rule: iter 36 if no user response within 3 iters
+
+If user responds: iter 34 = AUDIT (eval 2 H2-RULE claims), iter 35 =
+BUILD per outcome. If user says "keep climbing" → META resolved, focus
+shifts to remaining anchors. If user says "clear enemies" → META still
+broken, iter 35-37 deepen meta-mit (third behavioral split? skippable
+band?).`
+
+---
+
+## Previous Next Action (iter 31 — iter 32 shipped)
 
 `Iter 32 — Final playtest prep:
   - Pre-mortem (H2 RULE v2): tag declaration
