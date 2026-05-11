@@ -1147,7 +1147,33 @@ H2-RULE claims (3):
 
 No score lift this iter (anchor 3 deferred to iter 60). Crit 10 stays at 2/5.
 
-**Post-iter:** [filled at iter 45]
+**Post-iter (iter 45 start):** Build clean, best-depth persistence live. Score 22/50.
+
+---
+
+## Iter 045 — CONSULT — Mid-sprint Pro review (Consult 006)
+
+Tag: `[STRUCTURE]` (CONSULT iter, no score lift).
+
+Mid-sprint Pro review per iter-39 sprint roadmap. Fire-and-forget agentify_query, key=`tanke-iter-45-consult-mid-sprint`. Tab capacity managed: closed 3 stale tabs (consult-20-vrc-direction, tanke-iter-2-secondopinion, cold-comprehension-probe-768) before firing.
+
+Going in, biggest expected miss: **Pro will name "seductive-but-hollow" as H4 strongest critique** — the visual juice tier is loud while the actual ascent verb (combat-as-decision) is thin. Expecting Pro to recommend deepening Light/Fast role-distinction beyond movement+firing-pattern level, OR add a tactical player verb (charge attack, lane-switch dodge, etc.).
+
+5 hypotheses presented:
+- H1 sprint trajectory (3 STRUCTURE-DEFERRED cites stacking)
+- H2 Heavy movement omniscience (defer or tackle)
+- H3 rubric debt (rename now or AUDIT-50)
+- H4 seductive-but-hollow (over-juicing thin loop)
+- H5 iter-60 playtest design (2-question vs tour)
+
+Output target: ~700 words, direct, lead with "breaks because" / "holds because" per H.
+
+H2-RULE claims:
+1. Pro consult fires successfully (queryId returned, fire-and-forget OK)
+2. Response read at iter 46 (240s wakeup); adoption logged in creative-consults.md as Consult 006
+3. At least 1 of H1-H5 is broken by Pro, triggering iter-46+ direction adjustment
+
+**Post-iter:** [filled at iter 46 after response read]
 
 ---
 

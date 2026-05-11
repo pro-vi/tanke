@@ -23,8 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 44 → 60)
-iteration: 44
+phase: SPRINT (iter 45 → 60)
+iteration: 45
+pending_consult: Consult 006 (Pro fired iter 45, read iter 46) — mid-sprint review (H1-H5)
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"

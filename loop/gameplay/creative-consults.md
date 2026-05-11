@@ -433,3 +433,28 @@ This invalidated Consult 002's static-base-defense BC clone framing. Map is proc
 4. **"Upward pressure as primary design law" is the new north star.** Every iter 11+ decision is evaluated by: "does this make the upward run clearer, tenser, or more replayable?"
 
 ---
+
+## Consult 006 — Iter 45 — GPT-Pro extended thinking — MID-SPRINT REVIEW
+
+**Date:** 2026-05-11
+**Trigger:** Planned mid-sprint review per iter-39 roadmap (iter 39-59 sprint window). 5 BUILD iters shipped (40-44); 14 iters remain before iter-60 PLAYTEST.
+**Tab key:** `tanke-iter-45-consult-mid-sprint`
+**Mode:** `extended-pro` fire-and-forget
+**Tab capacity:** closed 3 stale tabs before firing (consult-20-vrc-direction, tanke-iter-2-secondopinion, cold-comprehension-probe-768).
+
+### Prompt focus
+
+5 labeled hypotheses presented neutrally (per /agentify "don't preload your conclusions" rule):
+- **H1**: Sprint trajectory (sparks/shake/summary/best tracker) is the right priority. 3 STRUCTURE-DEFERRED cites stacking is acceptable.
+- **H2**: Heavy AI movement omniscience is *fine* now that wind-up + telegraph make Heavy reactable.
+- **H3**: Crit 8/9 rubric debt should be addressed iter 46 via reframe protocol, not deferred to AUDIT 50.
+- **H4**: Recent ships are seductive-but-hollow; the combat verb (decision-making) is thin.
+- **H5**: iter-60 playtest needs to expand beyond 2-question template for the 6 visible iters of change.
+
+Asked Pro to lead with "breaks because" / "holds because" per H, then recommend top 1-2 things to ship iter 46-59 that I'm NOT currently planning.
+
+### Status
+
+PENDING (fired iter 45, response expected iter 46). Adoption decision and lessons logged after read.
+
+---

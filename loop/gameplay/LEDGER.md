@@ -3288,3 +3288,51 @@ requires "cited via playtest." Holding 2/5 honestly with deferred tag.
 - 15 sprint iters remaining
 
 ---
+
+## Iter 045 — CONSULT (Consult 006) — Mid-sprint Pro review (fire-and-forget)
+
+**Mode:** CONSULT
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 22/50 (unchanged — CONSULT iters never lift scores)
+
+Mid-sprint Pro review per iter-39 sprint roadmap. Tab managed: closed 3
+stale tabs to make room (capacity ~10-12 per /agentify doc).
+
+### Prompt
+
+5 hypotheses presented for challenge:
+  H1: sprint trajectory (3 STRUCTURE-DEFERRED cites stacking acceptable)
+  H2: Heavy AI movement omniscience defers (wind-up + telegraph adequate)
+  H3: rubric debt rename now vs AUDIT 50
+  H4: seductive-but-hollow check on sparks/shake juicing
+  H5: iter-60 playtest expand beyond 2-question template
+
+Asked Pro for "breaks because"/"holds because" per H + top 1-2 things to
+ship iter 46-59 I'm NOT currently planning.
+
+### Fire status
+
+- `agentify_query` fire-and-forget OK
+- queryId: 513b82e5-f17e-4fcb-b154-46bf024107e7
+- tabId: 2584b6f2-0a82-43b3-9464-277a0550090b
+- key: `tanke-iter-45-consult-mid-sprint`
+- modeIntent: extended-pro
+
+### Files touched
+
+- Created (appended): `loop/gameplay/creative-consults.md` — Consult 006 PENDING entry
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 46 reads Pro response via `agentify_status` + `agentify_read_page`
+  - If response complete: synthesize, log Consult 006 ADOPTED/REJECTED
+    items in creative-consults.md, branch iter-46 BUILD/AUDIT accordingly
+  - If still generating: defer adoption to iter 47, fall back to a small
+    BUILD (could swing into the iter-44 schedule note's "death-cause"
+    idea, OR pure best-time tracker addition to stats.cfg)
+- 14 sprint iters remaining
+
+---
