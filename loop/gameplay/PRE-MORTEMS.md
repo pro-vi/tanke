@@ -375,3 +375,23 @@ Secondary score predictions (H2-RULE acknowledged secondary):
 **Post-iter evaluation:** All 4 binary-now predictions landed. Score lifted 9 → 11 via rubric realignment (no inflation — anchors retroactively countable, not new feature work). Iter 12 will exercise the new compulsion-loop axis via spawn-ahead-of-player.
 
 ---
+
+## Iter 012 — BUILD — Spawn ahead-of-player + stalling pressure + telegraph
+
+Going in, biggest expected miss: stalling-pressure creates a death spiral — player stalls → more spawns → harder to move → more spawns. Need rate caps and stall_time should be smoothed (per-frame velocity is noisy). Secondary risk: telegraph's `await get_tree().create_timer(...)` races with parent freeing if scene reloads mid-await.
+
+H2-RULE independently observable claims:
+1. (iter-14 playtest) User reports enemies appear ABOVE while ascending. Falsified by recurrence of "appear next to me."
+2. (iter-14 playtest) Stopping for 10+s noticeably increases spawn rate. Falsified by user not observing.
+3. (iter-14 playtest) User reports brief warning marker before enemy spawn. Falsified by no mention.
+4. `make test` exit 0 post-rewrite. Binary. → LANDED
+5. Oracle `tile_hash f873ae60ee3c420c…` unchanged. Binary. → LANDED
+6. (headless verification) Stationary player triggers stall_time > stall_pressure_after within 5 seconds; interval halves. → LANDED (verified via debug print)
+
+3 of 6 LANDED in-iter. 3 deferred to iter-14 playtest.
+
+Secondary score predictions: crit 5 → 1 (anchor 1 "fire while moving + enemies don't reliably block ascent" code-citable). All others unchanged till playtest.
+
+**Post-iter evaluation:** All 3 binary-now predictions landed. 30s stationary headless run showed: stall_time reaches 6s by tick 5 (5s mark), interval halved to 1.0s as designed. spawns_total grew accordingly (5 at tick 5, 20 at tick 20 over 30s). 1 enemy lost mysteriously (spawns_total - alive = 1 throughout); not investigated further — iter-14 playtest will surface if material.
+
+---

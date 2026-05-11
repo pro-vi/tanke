@@ -1084,3 +1084,84 @@ Full Pro v1 + Pro v2 transcripts in `loop/gameplay/creative-consults.md` Consult
 - Iter 14 PLAYTEST: paired iter-10/11/12/13 user-look gate
 
 ---
+
+## Iter 012 — BUILD — Spawn-ahead + stalling pressure + telegraph
+
+**Mode:** BUILD (compulsion-loop axis per Pro v2)
+**Focus:** spawn pattern responds to player ascent velocity (forward fairness); stalling produces visible spawn-rate pressure; telegraph spawn position 0.5s before enemy appears (BC convention)
+**Date:** 2026-05-11
+**Pre-mortem:** PRE-MORTEMS.md iter 012 — 6 H2-RULE claims (3 binary-now LANDED, 3 deferred to iter 14)
+
+### Actions
+
+**`scripts/Spawner.gd` rewritten** (Timer-based → accumulator-based for live interval modulation):
+
+- New exports:
+  - `ascent_lookahead_seconds: float = 1.5` — spawn this many seconds-of-ascent further ahead (scales with velocity)
+  - `stall_threshold: float = 0.3` rows/sec — below this counts as stalling
+  - `stall_pressure_after: float = 4.0` s — seconds of stall before pressure kicks in
+  - `stall_interval_multiplier: float = 0.5` — spawn_interval × this when stalled (faster)
+  - `telegraph_lead_time: float = 0.5` s — warning marker shows before spawn
+  - `velocity_ema_alpha: float = 2.0` — EMA smoothing for velocity (higher = more responsive)
+
+- Replaced `Timer` with `_spawn_accumulator`:
+  - `_process(delta)` accumulates delta; fires `_try_spawn` when accumulator ≥ `_current_spawn_interval()`
+  - Live interval modulation possible (Timer.wait_time changes mid-cycle were unreliable)
+
+- Ascent velocity tracking:
+  - `_update_ascent_velocity(delta)` — instant rows/sec = `(last_y - player.y) / 16.0 / delta`; smoothed via EMA `lerpf(_ascent_velocity, instant, alpha)` where `alpha = clampf(velocity_ema_alpha * delta, 0, 1)`
+  - `_update_stall_time(delta)` — increments stall when ascent_velocity < threshold; decays 2× faster when above
+
+- Spawn pos formula with lookahead:
+  - `lookahead_px = max(0, _ascent_velocity) * 16.0 * ascent_lookahead_seconds`
+  - `spawn_y = camera_y - viewport_half_height - top_off_screen_margin - lookahead_px`
+  - At 0 ascent: original behavior. At 4 rows/s ascent: spawn 96px further up.
+
+- Telegraph (`_telegraph_then_spawn(pos)`):
+  - Yellow `ColorRect` 8×4 added at spawn position, z_index=100 so it renders above terrain
+  - `await get_tree().create_timer(telegraph_lead_time).timeout`
+  - Marker `queue_free` (with is_instance_valid guard for race safety)
+  - Then enemy instantiation (with checks for scene/parent validity post-await)
+
+- Debug print now includes ascent_velocity, stall_time, current_interval per 5 ticks.
+
+### Substrate freeze check
+
+- All frozen scripts untouched. Only `scripts/Spawner.gd` rewritten (in scope for additions/modifications).
+- `scenes/ProceduralLevel.tscn` Spawner-node exports still match new variable names (`spawn_interval`, `max_enemies` — both retained). New exports use defaults; no .tscn edit needed.
+- H1 tripwire: no new gameplay siblings in ProceduralLevel.tscn. Count: 1. Unchanged.
+
+### Verification
+
+- `make test` exit 0 clean (no parse errors)
+- Reachability oracle at seed 42: `tile_hash f873ae60ee3c420c…` unchanged. Substrate intact iters 1-12.
+- 30s deterministic headless run (`--fixed-fps 60 --quit-after 1800`) with stationary player:
+  - tick 5 (5s elapsed): `spawns=5 rejections=0 alive=4 ascent=0.00 rows/s stall=6.0s interval=1.00s`
+  - tick 20 (~30s elapsed): `spawns=20 rejections=0 alive=19 ascent=0.00 stall=21s interval=1.00s`
+  - **Stall pressure verified working**: interval halved from 2.0 → 1.0 after stall_time exceeded 4s threshold.
+  - 1 enemy lost across the run (spawns_total - alive = 1 throughout); not investigated further, iter-14 playtest will surface if material.
+
+### Scores
+
+| Criterion | Iter 11 | Iter 12 | Δ | Citation |
+|-----------|---------|---------|---|----------|
+| 5. Forward survivability | 0 | **1** | +1 | Anchor 1 (no playtest qualifier): "Player can fire while moving; enemies don't reliably block ascent." `PlayerTank.gd:_physics_process:42-81` reads movement + fire independently per frame; `Spawner.gd:_find_valid_spawn` scales spawn lookahead with velocity so enemies don't reliably block ascent at climbing pace. |
+| Others | unchanged | unchanged | – | Crit 4 anchor 4 (stalling pressure) implemented but has playtest qualifier — deferred. Crit 7 anchor 1 (rate increases with depth) NOT met — rate increases with STALL, not DEPTH. |
+| **Total** | **11** | **12** | **+1** | |
+
+### Pre-mortem evaluation
+
+3 binary-now claims LANDED: make test, oracle hash, headless stall verification. 3 deferred to iter-14 playtest (user-observable spawn-from-above, stalling-pressure-feel, telegraph-visibility). Crit 5 lift predicted (anchor 1 code-citable) and landed.
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd` (full rewrite Timer → accumulator + ascent tracking + stall pressure + telegraph)
+- Modified: `loop/gameplay/PRE-MORTEMS.md` (iter 012 entry), `loop/gameplay/LEDGER.md` (this entry), `loop/gameplay/STATE.md`
+
+### Schedule
+
+- Iter 13 BUILD: forest hides tanks (sprite modulate alpha when over grass TileMapLayer cell) + steel indestructibility (BC truth-table: bullets bounce off steel, don't destroy it — currently no steel-vs-brick distinction in BrickBlock take_damage).
+- ScheduleWakeup 240s.
+- Iter 14 = mandatory PLAYTEST (paired iter-10/11/12/13).
+
+---

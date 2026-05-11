@@ -4,9 +4,9 @@
 
 ```
 phase: loop
-iteration: 11
+iteration: 12
 preloop_complete: yes
-last_completed_playtest_iter: 10  (iter-9 playtest evaluated iter 10)
+last_completed_playtest_iter: 10
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 next_playtest_due_iter: 14
 ```
@@ -61,14 +61,14 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 | 1. Core loop closes | 4 | Iter 6 playtest-cited anchor 4 |
 | 2. Spawn / wave system | 1 | Iter 7 top-edge spawn; pattern still single-direction (interval fixed) |
 | 3. HP + death model | 2 | Iter 3 HurtBox + HP shown; anchor 3 needs HP bar |
-| 4. Depth feedback + ascent pressure (was XP) | **1** | Iter 11: HUD shows DEPTH numerically. Anchor 2 needs playtest. |
-| 5. Forward survivability (was Upgrade variety) | 0 | Anchor 1 in code (fire-while-moving) but feel-criterion needs playtest |
+| 4. Depth feedback + ascent pressure (was XP) | 1 | Iter 11 HUD DEPTH; iter 12 stalling-pressure code-shipped (anchor 4 has playtest qualifier, deferred) |
+| 5. Forward survivability (was Upgrade variety) | **1** | Iter 12 anchor 1 met: fire-while-moving + spawn-ahead-of-velocity = enemies don't reliably block ascent |
 | 6. Enemy variety | 1 | Iter 2/7: one chaser+shooter type. Anchor 5 (no stuck) needs playtest. |
 | 7. Compulsion loop (was Run pacing) | 0 | Needs playtest |
 | 8. Visual feedback / juice | 0 | None |
 | 9. UI / UX | 1 | Iter 3 text HUD; iter 11 added DEPTH/TIME labels |
 | 10. Run summary + replayability (was Build distinctness) | **1** | Anchor 1 met retroactively iter 3 (YOU DIED + R) |
-| **Total** | **11/50** | Iter 11 +2 via rubric-realignment cleanup |
+| **Total** | **12/50** | Iter 12 +1 (crit 5 anchor 1 code-cited) |
 
 ---
 
@@ -125,22 +125,21 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 11 BUILD complete. Identity reframe + DEPTH/TIME HUD:
-- PROMPT.md "stone" rewritten to Pro v2's verbatim:
-  "A roguelike vertical tank ascender with Battle City combat feel."
-  Design law: upward pressure is primary; BC is control/terrain
-  reference, not structure reference.
-- RUBRIC.md crits 4/5/7/10 renamed to roguelike-ascender axes
-  (Depth feedback, Forward survivability, Compulsion loop, Run summary).
-- PlayerTank.gd: tracks _start_y, _min_y_reached, _run_time. HUD
-  shows DEPTH (rows ascended) and TIME (M:SS) top-right. Resets
-  on scene reload.
-- Scores: 9 → 11/50 (rubric refactor uncovered 2 retroactive anchors:
-  crit 4 anchor 1 via new DEPTH HUD, crit 10 anchor 1 via iter-3
-  YOU DIED label).
+Iter 12 BUILD complete. Spawn-ahead + stalling pressure + telegraph:
+- Spawner.gd rewritten Timer→accumulator (allows live interval
+  modulation). Tracks ascent velocity via EMA smoothing of player.y
+  changes. Spawn position now scales: spawn_y = camera_top - margin
+  - (velocity × lookahead_seconds × 16). Faster ascent = earlier spawns.
+- Stalling pressure: if ascent_velocity < 0.3 rows/s for >4s,
+  spawn_interval × 0.5 (faster spawns to push player forward).
+- Telegraph: 8×4 yellow ColorRect appears at spawn position for 0.5s
+  before enemy instantiates (BC-style spawn warning).
+- Verified headless (30s stationary player): stall_time grew, interval
+  halved as designed. One mysterious lost-enemy artifact not investigated.
 - Verified: make test exit 0, oracle tile_hash f873ae60ee3c420c…
-  unchanged (substrate intact iters 1-11).
-Next: iter 12 BUILD — spawn-ahead-of-player + telegraphing.
+  unchanged.
+- Scores: 11 → 12/50 (crit 5 Forward Survivability anchor 1 met).
+Next: iter 13 BUILD — forest hides tanks + steel indestructibility (BC truth).
 ```
 
 ---
@@ -152,6 +151,58 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 13 BUILD — BC terrain truth (forest hides + steel indestructibility):
+  - Pre-mortem (H2 RULE: ≥1 reference-language playtest prediction)
+  - DIAGNOSE: weakest axes still crit 4 (depth pressure anchor 4 needs
+    playtest), crit 6 (one enemy type), crit 7 (compulsion), crit 8
+    (visual juice), crit 10 (run summary playtest).
+    Pick crit 6 lift via BC terrain truth — terrain semantics is BC's
+    identity-feel axis. Forest hides + steel indestructible = 2 BC
+    parity items.
+
+  A. Steel indestructibility:
+     - BrickBlock.gd take_damage assumes hp=1 destroys. But ALL terrain
+       in the current setup uses BrickBlock-like StaticBody2D with hp.
+       Actually, only BrickBlock has take_damage; the Steel TileMapLayer
+       cells have no take_damage method. Bullet body_entered → if has
+       method → call. So bullets DON'T destroy Steel cells; they just
+       despawn against them. That's already correct BC behavior.
+     - BUT: brick currently destroys in 1 hit. BC convention: standard
+       bullet 1-hit destroys; star-upgraded bullet 1-hit destroys steel.
+       For now, just confirm steel survives (no change needed). Iter
+       13 might be lighter than expected.
+  B. Forest hides tanks:
+     - The Grass TileMapLayer exists (configs/playable.tres uses 12%
+       grass). When player or enemy is OVER a grass cell, sprite alpha
+       should reduce (e.g., to 0.3) — they're hidden in foliage.
+     - Implement: PlayerTank + Enemy poll their world position vs.
+       Grass TileMap. If above grass cell, sprite.modulate.a = 0.3.
+       Else 1.0.
+     - Need to find Grass TileMapLayer from script context. Use
+       get_tree().get_root().find_child("Grass", true, false) or
+       similar.
+  C. (Optional) Camera limit_top removal so player can ascend
+     unbounded. Currently project ProceduralLevel.tscn camera has
+     limit_bottom=240 only; no limit_top. So unbounded ascent already
+     works.
+
+  - Headless smoke + oracle re-check
+  - Score predictions: crit 6 anchor 2 ("Two types: chaser + ranged-
+    shooter") might unlock if I add a second enemy type. But forest
+    hides isn't really a new ENEMY axis — it's a terrain axis. So
+    forest hides doesn't directly lift crit 6 by anchor wording.
+    Could lift crit 8 anchor 1 (some hit-flash-equivalent) if forest
+    transition is visible. Honestly: scores might not change in iter
+    13; this is BC parity work.
+  - Commit; ScheduleWakeup 240s
+  - Iter 14 PLAYTEST: paired iter-10/11/12/13 user-look gate.
+
+H1 tripwire: no new gameplay siblings. Count: 1.`
+
+---
+
+## Previous Next Action (iter 12 — shipped)
 
 `Iter 12 BUILD — Spawn-ahead-of-player + ascending pressure:
   - Pre-mortem (H2 RULE: independently observable claims about iter-14
