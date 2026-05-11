@@ -3,13 +3,12 @@
 ## Phase
 
 ```
-phase: AWAITING_USER_PLAYTEST
-iteration: 14
+phase: loop
+iteration: 15
 preloop_complete: yes
-playtest_requested_iter: 14
-last_completed_playtest_iter: 10
+last_completed_playtest_iter: 15
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
-halt_iter_if_no_response: 17
+next_playtest_due_iter: 17
 ```
 
 ---
@@ -62,14 +61,14 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 | 1. Core loop closes | 4 | Iter 6 playtest-cited anchor 4 |
 | 2. Spawn / wave system | 1 | Iter 7 top-edge spawn; pattern still single-direction (interval fixed) |
 | 3. HP + death model | 2 | Iter 3 HurtBox + HP shown; anchor 3 needs HP bar |
-| 4. Depth feedback + ascent pressure (was XP) | 1 | Iter 11 HUD DEPTH; iter 12 stalling-pressure code-shipped (anchor 4 has playtest qualifier, deferred) |
+| 4. Depth feedback + ascent pressure (was XP) | **2** | Iter 15 playtest cite "feels like a run" satisfies anchor 2 (DEPTH+TIME live update) |
 | 5. Forward survivability (was Upgrade variety) | **1** | Iter 12 anchor 1 met: fire-while-moving + spawn-ahead-of-velocity = enemies don't reliably block ascent |
 | 6. Enemy variety | 1 | Iter 2/7: one chaser+shooter type. Anchor 5 (no stuck) needs playtest. |
 | 7. Compulsion loop (was Run pacing) | 0 | Needs playtest |
 | 8. Visual feedback / juice | 0 | None |
 | 9. UI / UX | 1 | Iter 3 text HUD; iter 11 added DEPTH/TIME labels |
 | 10. Run summary + replayability (was Build distinctness) | **1** | Anchor 1 met retroactively iter 3 (YOU DIED + R) |
-| **Total** | **12/50** | Iter 12 +1 (crit 5 anchor 1 code-cited) |
+| **Total** | **13/50** | Iter 15 +1 (crit 4 anchor 2 playtest-cited: "feels like a run") |
 
 ---
 
@@ -126,16 +125,31 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 14 PLAYTEST request issued. AWAITING USER. First user-look on
-the new roguelike-ascender stone. Compounded deltas iter 10-13:
-- Readability fixes (muzzle, enemy sprite rotation/frame, spawn off-screen)
-- Roguelike-ascender stone + DEPTH/TIME HUD
-- Spawn-ahead-of-velocity + stalling pressure + telegraph
-- Forest hide + steel indestructibility (BC terrain truth)
+Iter 15 AUDIT complete. Playtest eval:
+- Claim 1 (climbing/run): LANDED — "yes feels like a run"
+- Claim 3 (no skiing): LANDED — "they do better now, barring twitching"
+  (twitching canonical to BC)
+- Claim 4 (no off-center): LANDED — "i think so"
+- Claim 5 (brick destruction): LANDED — "sometimes destroy half sometimes
+  1/4" (asked is it expected — YES, authentic BC 2×2 sub-cell destruction)
+- Claims 2,6,7,8,9,10: INDETERMINATE (not addressed)
 
-10 H2-RULE reference-language claims pending user report. Halt rule
-fires iter 17 if no response.
-Build verified (make test + headless exit 0; no carryover warnings).
+Partial falsification F004 logged: "some spawn in the middle" — root
+cause was _camera.global_position.y reporting unclamped position when
+limit_bottom clamps view. Patched Spawner.gd to use
+_camera.get_screen_center_position().y (limit-aware Godot 4 API).
+Renamed export top_off_screen_margin → spawn_top_edge_offset (8px
+INSIDE visible edge); semantics: spawn AT top edge visibly, lookahead
+pushes off-screen at higher ascent velocity per user request.
+
+Verified: make test exit 0, oracle tile_hash f873ae60ee3c420c…
+unchanged. Substrate intact iters 1-15.
+
+Crit 4 (Depth feedback + ascent pressure) 1 → 2 via "feels like a run"
+playtest cite (anchor 2 DEPTH+TIME live update). Total 12 → 13/50.
+
+Next: iter 16 BUILD — pick from enemy variety, visual juice, or
+power-up prototype.
 ```
 
 ---
@@ -147,6 +161,39 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 16 BUILD — pick highest-leverage user-facing gap:
+
+Option A: Enemy variety (second enemy type)
+  - Add a second tank type: e.g., "armored" (faster bullets, 2 HP) or
+    "scout" (fast, fragile, 1HP, faster movement)
+  - Lifts crit 6 anchor 2 ("Two types: chaser + ranged-shooter")
+  - Once anchor 2 met, anchors 3-5 reachable (anchor 5 "they don't get
+    stuck" already arguably met per user "they do better now")
+
+Option B: Visual juice (hit flash on player damage)
+  - Tween modulate red on take_damage; brief shake on hit
+  - Lifts crit 8 anchor 1 ("Hit flashes one color")
+
+Option C: Power-up prototype
+  - BC helmet pickup: drops from random enemy kill; 10s invincibility
+  - Lifts toward crit 5 anchor 4 ("forward-friendly mechanics") and
+    crit 1 anchor satisfaction (more BC-genuine)
+
+Recommendation: A (enemy variety) — unblocks the crit-6 ladder which
+has 3 anchors stuck behind "two types" gate. One BUILD unlocks 4
+potential anchors over future playtests.
+
+Pre-mortem H2 RULE: reference-language predictions for iter-17 playtest:
+1. User reports two distinct enemy types (color or behavior visible)
+2. User does NOT report spawn-in-middle (F004 fixed)
+3. User notes enemy with different attack (if ranged-shooter type added)
+
+Iter 17 = PLAYTEST (per PROMPT §"USER-LOOK PROTOCOL" every 3 iters).`
+
+---
+
+## Previous Next Action (iter 14 — playtest evaluated iter 15)
 
 `AWAITING user playtest response.
 

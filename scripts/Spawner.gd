@@ -6,7 +6,7 @@ extends Node2D
 @export var max_spawn_attempts: int = 8
 @export var map_x_margin: float = 4.0
 @export var map_width: float = 320.0
-@export var top_off_screen_margin: float = 24.0  # spawn this many px above viewport top
+@export var spawn_top_edge_offset: float = 8.0  # spawn this many px INSIDE the visible viewport top, so user sees enemies "driving in" from the edge (BC-style)
 # Ascender pressure (iter 12)
 @export var ascent_lookahead_seconds: float = 1.5  # spawn this many seconds-of-ascent further ahead
 @export var stall_threshold: float = 0.3  # rows/sec; below this counts as stalling
@@ -94,17 +94,21 @@ func _try_spawn() -> void:
 		print("[spawner] tick %d: spawns=%d rejections=%d alive=%d ascent=%.2f rows/s stall=%.1fs interval=%.2fs" % [ticks_total, spawns_total, rejections_total, _enemies_alive, _ascent_velocity, _stall_time, _current_spawn_interval()])
 
 
-# Compute spawn position: above the visible viewport, scaled further up
-# by current ascent velocity so faster ascent gets earlier warning.
-# Falls back to player position if camera missing.
+# Compute spawn position: at the EFFECTIVE viewport top (just inside the
+# screen edge), scaled further up by current ascent velocity so faster
+# ascent gets earlier warning. Uses Camera2D.get_screen_center_position()
+# which accounts for limit_bottom clamping; raw _camera.global_position.y
+# can lie when the camera is clamped against limit_bottom (iter-14 bug).
 func _find_valid_spawn() -> Variant:
-	var reference_y: float = _player.global_position.y
+	var camera_center_y: float = _player.global_position.y
 	if _camera != null and is_instance_valid(_camera):
-		reference_y = _camera.global_position.y
-	# rows-ahead lookahead: at 0 velocity → no extra offset; at N rows/sec
-	# → N * lookahead_seconds rows further up
+		camera_center_y = _camera.get_screen_center_position().y
+	var screen_top: float = camera_center_y - _viewport_half_height
+	# rows-ahead lookahead: at 0 velocity → spawn at screen top + small offset
+	# (enemy visible "driving in"); at N rows/sec → N * lookahead_seconds rows
+	# further up (off-screen, gives player advance warning).
 	var lookahead_px: float = maxf(0.0, _ascent_velocity) * 16.0 * ascent_lookahead_seconds
-	var spawn_y: float = reference_y - _viewport_half_height - top_off_screen_margin - lookahead_px
+	var spawn_y: float = screen_top + spawn_top_edge_offset - lookahead_px
 	for i in max_spawn_attempts:
 		var x: float = randf_range(map_x_margin, map_width - map_x_margin)
 		var candidate: Vector2 = Vector2(x, spawn_y)

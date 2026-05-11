@@ -118,3 +118,21 @@ direction for iters 7-8: follow the user's playtest report (Battle City
 direction), since they're the loop's user-look authority.
 
 ---
+
+## Falsification 004 — iter 15 — Spawn-from-top-edge partial failure
+
+**Prediction (mine, iter 12 + iter 14 H2-RULE claim):** Enemies spawn off-screen above the viewport and walk down into view ("driving in from above" per user iter-9 request).
+
+**Contradiction (user playtest iter 14):** "no some of them spawn in the middle but there is an animation indicator, i want them to spawn almost out of screen and drivin into view"
+
+**Root cause:** `scripts/Spawner.gd` was using `_camera.global_position.y` as the camera reference for computing spawn_y. But `Camera2D.global_position` reports the *requested* camera position, NOT the *effective* (limit-clamped) screen center. When player is near the floor (y=232) and Camera2D has `limit_bottom=240`, the effective viewport is clamped: bottom = 240, top = 0, center = 120. But `_camera.global_position.y` returns 232 (the unclamped requested position). My spawn formula `spawn_y = 232 - 120 - 24 = 88` placed spawns at y=88, which is well INSIDE the visible viewport (0..240) instead of above it.
+
+**Why this slipped past iter-10 fix:** Iter 10 commit `a7f8bf0` switched from `_player.global_position.y` to `_camera.global_position.y` as the reference. That was a correct direction but used the wrong camera API — should have used `_camera.get_screen_center_position()` which accounts for limit clamping.
+
+**Why this slipped past iter-12 H2-RULE claims:** My pre-mortem claims #1 (spawn from top edge) and headless verification at fixed-fps confirmed timer-tick behavior but did NOT verify spawn-position correctness because the headless run used a stationary player at y=232 where the bug is most visible — yet I checked spawn_y values numerically rather than visually. Lesson: code-level verification doesn't catch positional bugs that need rendering to see; iter-12 should have included a camera-clamping check.
+
+**Action (iter 15):** Spawner.gd switched to `_camera.get_screen_center_position().y`. Renamed `top_off_screen_margin` to `spawn_top_edge_offset` and changed semantics: spawn AT screen top + 8px INSIDE the visible edge (rather than 24px ABOVE). User explicitly requested "spawn almost out of screen and driving into view" — enemy appears at top edge visibly, walks down into play area. Telegraph also visible at top edge.
+
+**Lesson:** When using camera position for game logic, prefer Camera2D APIs that account for clamping (`get_screen_center_position`) over raw node position (`global_position`). This is a Godot-API gotcha worth remembering.
+
+---

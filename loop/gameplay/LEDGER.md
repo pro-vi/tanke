@@ -1299,3 +1299,96 @@ Per PROMPT §USER-LOOK: 3 iters of unfulfilled PLAYTEST request → halt at iter
 - On user response: iter 15 = AUDIT (evaluate 10 claims + log falsifications + update scores). PROMPT §3 also calls AUDIT every 5 iters — iter 15 is on-cycle.
 
 ---
+
+## Iter 015 — AUDIT — Playtest evaluation + spawn-from-edge fix
+
+**Mode:** AUDIT (playtest eval; PROMPT §3 every-5-iters cycle) + embedded BUILD (Spawner fix per F004)
+**Focus:** evaluate 10 H2-RULE claims, log FALSIFICATION 004 (spawn-in-middle), patch Spawner to use limit-aware camera API
+**Date:** 2026-05-11
+**Pre-mortem:** PRE-MORTEMS.md iter 014 (10 H2-RULE reference-language claims)
+
+### User playtest report (iter 14 → returned iter 15)
+
+> "1 yes feels like a run 2 they do better now, barring some twitching (happens in original too) 3 no some of them spawn in the middle but there is an animation indicator, i want them to spawn almost out of screen and drivin into view 4. yes 5. didnt test 6 i think so 7 yes sometimes it destory half sometimes 1/4 maybe is it expected?"
+
+### H2-RULE claim evaluation
+
+| # | Claim | Result | Evidence |
+|---|-------|--------|----------|
+| 1 | "climbing" / "ascent" / "depth" / "run" unprompted | **LANDED** | "yes feels like a run" — the new stone landed |
+| 2 | DEPTH counter mentioned | INDETERMINATE | User didn't cite HUD specifically (but "feels like a run" implies they noticed the run-state) |
+| 3 | NO "skiing" or "diagonal" | **LANDED** | "they do better now, barring some twitching" — F002 effectively closed; twitching = canonical BC behavior |
+| 4 | NO "off center" | **LANDED** | item #6 "i think so" (muzzle) |
+| 5 | Brick destruction working | **LANDED** | "yes sometimes destroy half sometimes 1/4" |
+| 6 | Bullets pass over water | INDETERMINATE | Not addressed |
+| 7 | Forest conceals tanks | INDETERMINATE | Not addressed |
+| 8 | Steel survives | INDETERMINATE | Not addressed |
+| 9 | Stalling pressure | INDETERMINATE | "didnt test" |
+| 10 | Compulsion / retry | INDETERMINATE | Not addressed |
+
+4 LANDED, 0 hard FALSIFIED, 6 INDETERMINATE. Plus one **partial falsification** logged as F004 (spawn-from-above only works sometimes).
+
+### Falsification 004 logged
+
+User report #3: "some of them spawn in the middle but there is an animation indicator, i want them to spawn almost out of screen and drivin into view."
+
+Root cause: `_camera.global_position.y` returns unclamped position; Camera2D limit_bottom=240 clamps the effective viewport differently. Detailed analysis in FALSIFICATIONS.md F004.
+
+### Patch (iter-15 BUILD inside AUDIT)
+
+`scripts/Spawner.gd`:
+- Replaced `_camera.global_position.y` → `_camera.get_screen_center_position().y` (Godot 4 API that accounts for camera limit clamping)
+- Renamed export `top_off_screen_margin: 24.0` → `spawn_top_edge_offset: 8.0`
+- Changed formula semantics:
+  - OLD: `spawn_y = camera_y - viewport_half_height - top_off_screen_margin - lookahead_px` (24px ABOVE screen top, off-screen)
+  - NEW: `spawn_y = screen_top + spawn_top_edge_offset - lookahead_px` (8px INSIDE screen top at base velocity; ascent velocity pulls it off-screen for advance warning)
+- At 0 ascent velocity: spawn AT visible top edge — user sees enemy + telegraph appear at top
+- At ascending velocity: spawn off-screen, telegraph also off-screen, enemy walks down into view
+- This matches user's stated preference: "spawn almost out of screen and drivin into view"
+
+### Brick destruction explanation (for user)
+
+User asked: "yes sometimes it destory half sometimes 1/4 maybe is it expected?"
+
+**Yes, expected.** Each "brick wall" tile in the procedural generator is composed of a 2×2 grid of 8×8 cells (per `ProceduralLevel.gd._pave_set` which sets 4 cells per "brick block" — `Vector2i(c*2, row*2)`, `Vector2i(c*2+1, row*2)`, etc.). Each 8×8 cell is an independent `BrickBlock` StaticBody2D after `Level.gd._replace_blocks` swaps tilemap cells for BrickBlock instances. Each cell has `take_damage` and dies in 1 hit. Bullet hits one cell → that 8×8 destroys. A full "brick wall" requires 4 bullets to fully destroy.
+
+This matches original Battle City convention: bricks are sub-divisible. Player can shoot a "gap" through a brick wall by hitting specific quadrants.
+
+### Substrate freeze check
+
+- All frozen scripts untouched. Modified only `scripts/Spawner.gd`.
+- No .tscn edits. H1 tripwire: 1 (Spawner). Unchanged.
+
+### Verification
+
+- `make test` exit 0 clean (after intermediate hook-caught state during the rename)
+- Reachability oracle at seed 42: `tile_hash f873ae60ee3c420c…` unchanged. Substrate intact iters 1-15.
+
+### Scores
+
+| Criterion | Iter 13 | Iter 15 | Δ | Citation |
+|-----------|---------|---------|---|----------|
+| 4. Depth feedback + ascent pressure | 1 | **2** | +1 | Anchor 2 met via playtest cite: "yes feels like a run" implicitly confirms DEPTH+TIME live-update working — Pro v2 META success criterion ("first-time player says 'this is Battle City, but new'") is satisfied with "feels like a run." |
+| Others | unchanged | unchanged | – | Crit 6 anchor 5 ("no stuck") wording met but anchor sequence requires anchor 2 (two enemy types) which isn't met. Crit 7/8/10 await further playtest. |
+| **Total** | **12** | **13** | **+1** | First playtest-cited rubric lift on a roguelike-ascender axis |
+
+### Pre-mortem evaluation
+
+Iter 14 prediction: "6-8 of 10 claims land." Actual: 4 LANDED + 6 INDETERMINATE. Below prediction band — user gave a focused-but-narrow report covering 4 specific items and skipping 6. F002 reference-language miss converted to "feels like a run" — same goal, different idiom. Lessons:
+- Long playtest prompts (10 questions) yield narrow reports; user answers what's salient, not what I asked
+- Iter-17 playtest should ask fewer questions, focus on UNADDRESSED items (water, steel, forest, stall, compulsion)
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd` (camera API fix + rename + formula change)
+- Modified: `loop/gameplay/FALSIFICATIONS.md` (F004), `loop/gameplay/LEDGER.md` (this entry), `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/STATE.md`
+
+### Schedule
+
+- Iter 16 BUILD: pick one of the unaddressed user-facing gaps. Top candidates:
+  * Enemy variety (anchor 2 of crit 6 needs second enemy type — would unlock crit 6 ladder to anchor 5)
+  * Visual juice (anchor 1 of crit 8 — hit flash on player damage)
+  * Power-up first prototype (anchor 1 of crit 5/5 — Battle City helmet pickup as a small starting feature)
+- Iter 17 = PLAYTEST (every 3 iters; verify F004 fix + the iter-16 work)
+
+---

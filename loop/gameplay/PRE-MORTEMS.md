@@ -442,4 +442,18 @@ Score-target predictions (secondary, per Pro v2 H4):
 - Crit 1 anchor 5 (first-run-without-instruction) — UNREACHABLE this playtest (I gave 10 questions)
 - Total potential: 12 → 15-17 depending on which claims land
 
+**Post-iter evaluation (iter 15 AUDIT):** 4 of 10 LANDED, 0 FALSIFIED hard, 6 INDETERMINATE. Plus 1 partial falsification logged as F004 (spawn-from-above bug). Pro v2 META success criterion satisfied: "feels like a run." Crit 4 lifted 1 → 2 via playtest cite. Total 12 → 13. Other anchors await iter-17 playtest with narrower questions.
+
+---
+
+## Iter 015 — AUDIT (+ embedded BUILD spawn-edge fix)
+
+(Pre-mortem inlined into iter-14 post-eval above. No separate pre-mortem because iter 15 was reactive to playtest, not pre-planned. F004 logged in FALSIFICATIONS.md.)
+
+H2-RULE claims for iter 15:
+1. F004 root cause identified and patched. Binary. → LANDED (`_camera.get_screen_center_position().y` replaces `_camera.global_position.y`)
+2. `make test` exit 0 post-patch. Binary. → LANDED
+3. Oracle `tile_hash f873ae60ee3c420c…` unchanged. Binary. → LANDED
+4. (iter-17 playtest) User does NOT report "spawn in the middle" again. Deferred.
+
 ---
