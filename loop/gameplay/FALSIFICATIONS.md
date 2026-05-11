@@ -119,6 +119,56 @@ direction), since they're the loop's user-look authority.
 
 ---
 
+## Falsification 005 — iter 34 — Heavy AI omniscient (too smart per user)
+
+**Prediction (mine, iter 24 [STRUCTURE-DEFERRED]):** Heavy state machine CHASE/AIM_FIRE = legitimate behavioral split that lifts crit 6 anchor 2.
+
+**Contradiction (user playtest iter 33):** "heavy tanks are too smart of my location - i think we should gradually build into the best ver. of intelligence the AI system can have - vision first, transimission second. for example a heavy tank shouldnt be hunting me down and as soon as i go into its range it just starts firing non stop. too smart/cheaty."
+
+**Root cause:** `Enemy.gd:_player_in_line_of_sight` uses raw `player.global_position` — omniscient through walls. Heavy "sees" player even when there's a brick wall between them. Original Battle City had NO vision system at all; my Heavy is several orders of magnitude smarter than the source material.
+
+**Lesson:** Pro Consult 004 H2 said "make Heavy a corridor-denier that turns slower, pauses, and fires bursts." I implemented pauses+bursts correctly but the LOS check is omniscient. Pause+burst with raycast-aware LOS would have been the right move; I over-shot on "easy to detect alignment" and missed "fair detection."
+
+**Action:** Iter 35 BUILD reworks Heavy to Stage 1 vision per `.research/battle-city-ai.md`: cardinal forward cone + raycast through env layer 1 to block on walls. Heavy only enters AIM_FIRE when player is in forward cone AND no wall between. Authentic BC tactical play (hide behind brick, peek out, hide again).
+
+---
+
+## Falsification 006 — iter 34 — Tanks (and player) drift off map border
+
+**Prediction (implicit, never tested):** Map boundaries are respected; tanks stay within x ∈ [0, 320].
+
+**Contradiction (user iter 33):** "they sometimes drive out of map boarder? seems i can do that too..."
+
+**Root cause:** `scenes/ProceduralLevel.tscn:62-65` Camera2D has `limit_left=0, limit_right=320` — that clamps the CAMERA view, but there are no collision walls at x=0 or x=320. PlayerTank (mask=513 Env+Water) and Enemy (mask=513 same) collide with terrain INSIDE the maze but find no walls at the map edges. They can drift outside.
+
+**Action:** Iter 35 BUILD adds invisible StaticBody2D walls at x=-4 and x=324 (4px outside visible range) on layer 1 (Environment) so both tank types collide normally. Single small scene-edit in ProceduralLevel.tscn.
+
+---
+
+## Falsification 007 — iter 34 — Water doesn't block player
+
+**Prediction (iter 8):** WaterBlock.collision_layer 513→512 + Player mask 513 → Player still blocked by water (mask 513 includes 512).
+
+**Contradiction (user iter 33):** "water does not block me?"
+
+**Root cause:** Needs investigation. iter-8 collision math is correct on paper: 513 mask AND 512 layer = 512 (non-zero) → collision. Possibilities: (a) WaterBlock isn't actually placed at runtime in some path; (b) Level.gd `_replace_blocks()` replaces brick but NOT water in some procedural setup; (c) iter-N regressed the collision_layer back. Iter 35 must verify the current state and fix.
+
+**Action:** Iter 35 BUILD: re-grep WaterBlock.tscn for collision_layer; trace Level.gd `_replace_blocks` for water replacement path; verify with a runtime test. Likely a small fix once root-cause identified.
+
+---
+
+## Falsification 008 — iter 34 — Below-spawn fires when not intentionally stalling
+
+**Prediction (iter 28):** Below-spawn fires only after sustained intentional stall (stall_time > 8s with stall_threshold=0.3 rows/s).
+
+**Contradiction (user iter 33):** "enemies still can spawn behind me."
+
+**Possible root cause:** Player moving slowly through dense maze (collisions, navigating around walls) keeps `ascent_velocity` near 0 even though player IS trying to move forward. EMA-smoothed ascent_velocity might accumulate stall_time without the player feeling like they "stopped." 8s threshold + 6s cooldown means ~14s elapsed between below-spawns — that's plausibly mid-navigation, not a clear "I'm stalling" trigger.
+
+**Action:** Iter 35+ BUILD tighter threshold: raise stall_below_spawn_after to 12s (give player more grace). Or use ROWS-ASCENDED-IN-LAST-N-SECONDS instead of velocity (a player who climbed 0 rows in 10s is genuinely stalled; a player at 0.2 rows/s but moving is not). Use `_max_depth_reached` delta vs N seconds ago.
+
+---
+
 ## Falsification 004 — iter 15 — Spawn-from-top-edge partial failure
 
 **Prediction (mine, iter 12 + iter 14 H2-RULE claim):** Enemies spawn off-screen above the viewport and walk down into view ("driving in from above" per user iter-9 request).

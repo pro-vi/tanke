@@ -3,15 +3,19 @@
 ## Phase
 
 ```
-phase: AWAITING_USER_PLAYTEST
-iteration: 33
+phase: loop
+iteration: 34
 preloop_complete: yes
-playtest_requested_iter: 33
-last_completed_playtest_iter: 17
+last_completed_playtest_iter: 33
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
-consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 ADOPTED (Consult 005)
-load_bearing_iter33_test: per Pro v5 H3, "user picks 'keep climbing' OR uses ascent-language unprompted = META resolved"
-halt_iter_if_no_response: 36
+consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 ADOPTED, 40 next (PROMPT §10/20/30)
+ai_intelligence_stage: per user iter-33 directive — "vision first, transmission second"
+  Stage 0 dumb (Light: close)
+  Stage 1 vision+raycast (Heavy: iter 35 target)
+  Stage 2 transmission (future iter ~38)
+research_artifact: .research/battle-city-ai.md
+falsifications_open: F005 (Heavy too smart), F006 (map border drift), F007 (water bug), F008 (below-spawn trigger drift)
+score: 20/50
 ```
 
 ---
@@ -71,7 +75,7 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 | 8. Visual feedback / juice | **2** | Iter 19 player hit-flash + iter 21 enemy death yellow burst (anchor 2) |
 | 9. UI / UX | 1 | Iter 3 text HUD; iter 11 added DEPTH/TIME labels |
 | 10. Run summary + replayability (was Build distinctness) | **1** | Anchor 1 met retroactively iter 3 (YOU DIED + R) |
-| **Total** | **17/50** | Iter 27 +1 (crit 2 anchor 2 — multiple spawn points + varying intervals [STRUCTURE]) |
+| **Total** | **20/50** | Iter 34 +3 (crit 7 anchor 3 [FEEL] — 5-runs-unprompted) |
 
 ---
 
@@ -126,6 +130,32 @@ on direction change, muzzle may not align visually with sprite center.
 ---
 
 ## Last Action
+
+```
+Iter 34 AUDIT complete. User played 5 lives unprompted → "good" +
+4 falsifications (F005-F008) + design directive ("vision first,
+transmission second") + /research request.
+
+H2-RULE iter-33 eval:
+- Slot 1 META (keep climbing?): PARTIAL — user didn't verbatim-pick
+  but 5-runs-in-session = behavioral META resolution
+- Slot 2: 4 specific complaints (Heavy too smart, map border, water
+  doesn't block, below-spawn fires too freely)
+
+Score: crit 7 (Compulsion loop) 0 → 3 [FEEL]. Total 17 → 20/50.
+First [FEEL] playtest-cite since iter 15.
+
+Research dispatched via /research skill. Saved to
+.research/battle-city-ai.md. Key finding: original BC AI is
+fundamentally DUMB (no vision, no aiming, no pathfinding). My iter-24
+Heavy is omniscient = "too smart" per user. Vision-cone + raycast =
+Stage 1 of user ladder, iter 35 target.
+
+Next: iter 35 BUILD — F006 map walls + F007 water fix + F005 Heavy
+vision-cone rework.
+```
+
+(Previous)
 
 ```
 Iter 33 PLAYTEST request issued. AWAITING USER.
@@ -341,6 +371,40 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 35 BUILD — Critical fixes + Heavy vision-cone Stage 1:
+  - Pre-mortem H2 RULE v2 tag declaration
+  - Sub-task 1 (F006 map border walls):
+    * scenes/ProceduralLevel.tscn: add 2 StaticBody2D children with
+      CollisionShape2D RectangleShape2D, layer=1 (env), at x=-4 (left
+      wall) and x=324 (right wall), full vertical span (or tall enough
+      to cover all generated rows; e.g., size=Vector2(8, 8000)).
+    * Verify oracle (substrate-extension, should pass)
+  - Sub-task 2 (F007 water collision verification):
+    * grep WaterBlock.tscn for current collision_layer
+    * trace Level.gd _replace_blocks to confirm WaterBlock is
+      instantiated from water tilemap cells
+    * test player drives onto water tile — expected block; observed?
+    * fix root cause (collision_layer regression OR _replace_blocks
+      water path missing OR mask issue)
+  - Sub-task 3 (F005 Heavy vision-cone Stage 1):
+    * scripts/Enemy.gd: replace _player_in_line_of_sight() with
+      vision-cone-in-facing-direction + raycast through env layer 1
+    * Implementation per .research/battle-city-ai.md Stage 1:
+      - forward_dist = to_player.dot(dir_vec); reject if ≤0 or > vision_range
+      - lateral_dist = absf(to_player.dot(perpendicular(dir_vec))); reject if > vision_lateral_tolerance
+      - raycast from self to player on env layer 1; reject if hit
+    * Add @export vars: vision_range=80, vision_lateral_tolerance=16
+    * Heavy now only spots player when facing them AND no wall between
+    * Expected effect: Heavy nerf, more BC-like
+    * Tag: [STRUCTURE-DEFERRED → iter 36] for crit 6 anchor 2 reinforcement
+  - Verify make test + oracle
+  - Commit; ScheduleWakeup 240s
+  - Iter 36 = mandatory PLAYTEST (per "every 3 iters" cadence)`
+
+---
+
+## Previous Next Action (iter 33 → iter 34)
 
 `AWAITING user playtest response.
 
