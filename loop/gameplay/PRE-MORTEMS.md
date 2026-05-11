@@ -395,3 +395,22 @@ Secondary score predictions: crit 5 → 1 (anchor 1 "fire while moving + enemies
 **Post-iter evaluation:** All 3 binary-now predictions landed. 30s stationary headless run showed: stall_time reaches 6s by tick 5 (5s mark), interval halved to 1.0s as designed. spawns_total grew accordingly (5 at tick 5, 20 at tick 20 over 30s). 1 enemy lost mysteriously (spawns_total - alive = 1 throughout); not investigated further — iter-14 playtest will surface if material.
 
 ---
+
+## Iter 013 — BUILD — BC terrain truth (forest hides + steel indestructibility)
+
+Going in, biggest expected miss: only player gets hidden by forest while enemies remain visible — breaks BC symmetry. Need to apply to enemies too. Secondary risk: alpha-flicker as tank straddles a grass boundary frame-to-frame; might need hysteresis. Tertiary: steel indestructibility might already be true via current architecture (Steel = TileMapLayer w/o take_damage; Brick = StaticBody2D instance with take_damage) — iter 13 might be lighter than expected.
+
+H2-RULE independently observable claims (reference-language predictions per Pro v2 H4):
+1. (iter-14 playtest) User uses BC reference language: "hidden in bush" / "tank disappeared in grass" / "I hid". Falsified by no mention.
+2. (iter-14 playtest) User reports steel walls survive bullets while bricks break. Falsified by "steel broke too."
+3. `make test` exit 0. Binary. → LANDED
+4. Oracle `tile_hash f873ae60ee3c420c…` unchanged. Binary. → LANDED
+5. Oracle reports `grass: 188` (level config produces grass cells). Binary. → LANDED (verified via oracle output).
+
+3 of 5 LANDED in-iter. 2 deferred to playtest.
+
+Secondary score predictions: scores likely unchanged (forest-hide isn't a new enemy type, isn't a hit-flash). Iter 13 is BC parity work; Pro v2's framing says "progress = defect removal not system existence."
+
+**Post-iter evaluation:** All 3 binary-now claims LANDED. Steel indestructibility verified architecturally (Steel TileMapLayer cells have no take_damage; bullets just despawn against them — correct BC behavior, no code change needed). Forest hide implemented for both player and enemies via `_update_forest_hide` polling Grass TileMapLayer for cell occupancy. Iter 13 ships BC parity without rubric-anchor lift — exactly the Pro-v2-shaped iter.
+
+---

@@ -9,8 +9,12 @@ signal died
 @export var Bullet: PackedScene
 @export var max_hp: int = 3
 @export var damage_iframes: float = 0.6
+@export var forest_hidden_alpha: float = 0.3
+@export var forest_visible_alpha: float = 1.0
 
 @onready var sprite: Sprite2D = $Sprite2D
+
+var _grass_tilemap: TileMapLayer = null
 
 var direction: int = Constants.Dir.U
 var grid: Vector2 = Vector2(4, 4)  # minimum grid size to snap to when turning
@@ -34,6 +38,7 @@ func _ready() -> void:
 	rotation = Constants.dir_to_rotation(direction)
 	_start_y = global_position.y
 	_min_y_reached = _start_y
+	_grass_tilemap = get_tree().get_root().find_child("Grass", true, false) as TileMapLayer
 	_setup_hurtbox()
 	_setup_hud()
 	hp_changed.emit(hp, max_hp)
@@ -53,6 +58,7 @@ func _physics_process(delta: float) -> void:
 	if global_position.y < _min_y_reached:
 		_min_y_reached = global_position.y
 	_update_run_hud()
+	_update_forest_hide()
 
 	var input_vector: Vector2 = Vector2()
 
@@ -198,3 +204,14 @@ func _update_run_hud() -> void:
 	if _time_label != null:
 		var t: int = int(_run_time)
 		_time_label.text = "TIME %d:%02d" % [t / 60, t % 60]
+
+
+# BC forest convention: tank is concealed (low alpha) when standing on a grass
+# cell. Grass tilemap has no collision; tanks drive freely over it.
+func _update_forest_hide() -> void:
+	if _grass_tilemap == null or sprite == null:
+		return
+	var local_pos: Vector2 = _grass_tilemap.to_local(global_position)
+	var cell: Vector2i = _grass_tilemap.local_to_map(local_pos)
+	var source_id: int = _grass_tilemap.get_cell_source_id(cell)
+	sprite.modulate.a = forest_hidden_alpha if source_id != -1 else forest_visible_alpha

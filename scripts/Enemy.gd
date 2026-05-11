@@ -12,10 +12,13 @@ extends CharacterBody2D
 # Sprite layout per row: U(0,1), L(2,3), D(4,5), R(6,7) — matches TankSprite.gd.
 @export var sprite_base_frame: int = 8   # row 0 col 8 — white enemy tank, distinct from yellow player
 @export var sprite_dir_offsets: Array[int] = [2, 4, 0, 6]
+@export var forest_hidden_alpha: float = 0.3
+@export var forest_visible_alpha: float = 1.0
 
 var hp: int = max_hp
 var direction: int = Constants.Dir.D  # start facing down (comes from top)
 var _player: Node2D
+var _grass_tilemap: TileMapLayer = null
 var _fire_timer: float = 0.0
 var _direction_timer: float = 0.0
 @onready var _sprite: Sprite2D = $Sprite2D
@@ -25,6 +28,7 @@ func _ready() -> void:
 	hp = max_hp
 	add_to_group("enemy")
 	_player = get_tree().get_root().find_child("PlayerTank", true, false)
+	_grass_tilemap = get_tree().get_root().find_child("Grass", true, false) as TileMapLayer
 	_fire_timer = randf() * fire_cooldown  # stagger initial volleys
 	_choose_direction_toward_player()
 	_update_sprite_for_direction()
@@ -60,6 +64,18 @@ func _physics_process(delta: float) -> void:
 	if _fire_timer <= 0.0:
 		_fire()
 		_fire_timer = fire_cooldown
+
+	_update_forest_hide()
+
+
+# BC forest convention: enemy is concealed (low alpha) when on a grass cell.
+func _update_forest_hide() -> void:
+	if _grass_tilemap == null or _sprite == null:
+		return
+	var local_pos: Vector2 = _grass_tilemap.to_local(global_position)
+	var cell: Vector2i = _grass_tilemap.local_to_map(local_pos)
+	var source_id: int = _grass_tilemap.get_cell_source_id(cell)
+	_sprite.modulate.a = forest_hidden_alpha if source_id != -1 else forest_visible_alpha
 
 
 func take_damage(amount: int) -> void:

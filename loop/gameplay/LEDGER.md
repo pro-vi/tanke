@@ -1165,3 +1165,63 @@ Full Pro v1 + Pro v2 transcripts in `loop/gameplay/creative-consults.md` Consult
 - Iter 14 = mandatory PLAYTEST (paired iter-10/11/12/13).
 
 ---
+
+## Iter 013 — BUILD — BC terrain truth (forest hides + steel verified)
+
+**Mode:** BUILD (BC parity work)
+**Focus:** forest hide for player + enemy sprites (BC convention: tank in bush is visually concealed); verify steel-vs-brick destructibility asymmetry
+**Date:** 2026-05-11
+**Pre-mortem:** PRE-MORTEMS.md iter 013 — 5 H2-RULE claims (3 binary-now LANDED, 2 deferred to iter 14)
+
+### Actions
+
+**A. Forest hides tanks (`scripts/PlayerTank.gd` + `scripts/Enemy.gd`):**
+- New exports on both: `forest_hidden_alpha: float = 0.3`, `forest_visible_alpha: float = 1.0`
+- Cache `_grass_tilemap: TileMapLayer` in `_ready` via `get_tree().get_root().find_child("Grass", true, false) as TileMapLayer`
+- New `_update_forest_hide()` called per physics frame:
+  - `local_pos = _grass_tilemap.to_local(global_position)`
+  - `cell = _grass_tilemap.local_to_map(local_pos)`
+  - `source_id = _grass_tilemap.get_cell_source_id(cell)`
+  - `sprite.modulate.a = forest_hidden_alpha if source_id != -1 else forest_visible_alpha`
+- BC parity: tank straddling a grass cell renders dimmed (functional concealment); driving onto/off grass produces visible alpha transition.
+
+**B. Steel indestructibility — verified architecturally, no code change:**
+- Steel cells are placed via `Tiles/Steel` TileMapLayer (per `scenes/ProceduralLevel.tscn:79-80`)
+- Steel TileMapLayer has no `take_damage` method (and shouldn't — TileMapLayer is the engine class, not a script-attached node)
+- Bullet's `_on_body_entered(body)` calls `body.take_damage(damage)` only if the body has the method
+- So when a bullet hits a Steel cell: bullet queue_free's (correct visual: bullet stops at steel) but the Steel cell persists (correct BC behavior).
+- Brick is different: Level.gd `_replace_blocks` converts Brick TileMapLayer cells into `BrickBlock.tscn` instances (StaticBody2D with `take_damage` from iter 8). Bullet hits brick → calls take_damage → brick queue_free.
+- ∴ Steel indestructibility was correct since iter 8 (when brick became destructible) without any explicit steel code. No iter-13 change needed.
+
+### Substrate freeze check
+
+- All frozen scripts untouched. Modified only `scripts/PlayerTank.gd` and `scripts/Enemy.gd`.
+- No .tscn edits. H1 tripwire: 1 (Spawner). Unchanged.
+
+### Verification
+
+- `make test` exit 0 clean (after intermediate parse-error hook fired during edit chain — final state passed)
+- Reachability oracle at seed 42: `tile_hash f873ae60ee3c420c…` unchanged; oracle confirms 188 grass cells in playable.tres at seed 42 (plenty of exercise for forest-hide). Substrate intact iters 1-13.
+
+### Scores
+
+| Criterion | Iter 12 | Iter 13 | Δ | Notes |
+|-----------|---------|---------|---|-------|
+| All | unchanged | unchanged | – | Forest hide is BC parity, not a rubric-anchor lift. Crit 6 unchanged (no new enemy type); Crit 8 anchor 1 ("Hit flashes one color") is hit-flash specifically, not env-state flash; Crit 5 anchor 2 ("engageable on-the-go") has playtest qualifier — deferred. |
+| **Total** | **12** | **12** | **0** | Pro v2 framing: "progress = defect removal not system existence." Iter 13 ships a BC defect ("no forest hide" / "steel breaks") even though score doesn't change. |
+
+### Pre-mortem evaluation
+
+3 of 5 binary-now claims LANDED (make test, oracle hash, grass cells present in oracle). 2 deferred to iter-14 playtest (BC reference-language: "hidden in bush" / steel walls survive bullets while bricks break).
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd` (forest hide poll + state), `scripts/Enemy.gd` (forest hide poll + state)
+- Modified: `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/LEDGER.md`, `loop/gameplay/STATE.md`
+
+### Schedule
+
+- Iter 14 = mandatory PLAYTEST (paired iter-10/11/12/13). First user-look gate on the new roguelike-ascender stone. Will surface: BC parity (forest hide, brick break, water pass, steel survive), readability (muzzle, enemy rotation/sprite), ascender HUD (DEPTH/TIME), spawn behavior (top-edge + lookahead + telegraph + stalling pressure).
+- ScheduleWakeup 240s for iter 14.
+
+---

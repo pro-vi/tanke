@@ -4,7 +4,7 @@
 
 ```
 phase: loop
-iteration: 12
+iteration: 13
 preloop_complete: yes
 last_completed_playtest_iter: 10
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
@@ -125,21 +125,20 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 12 BUILD complete. Spawn-ahead + stalling pressure + telegraph:
-- Spawner.gd rewritten Timer→accumulator (allows live interval
-  modulation). Tracks ascent velocity via EMA smoothing of player.y
-  changes. Spawn position now scales: spawn_y = camera_top - margin
-  - (velocity × lookahead_seconds × 16). Faster ascent = earlier spawns.
-- Stalling pressure: if ascent_velocity < 0.3 rows/s for >4s,
-  spawn_interval × 0.5 (faster spawns to push player forward).
-- Telegraph: 8×4 yellow ColorRect appears at spawn position for 0.5s
-  before enemy instantiates (BC-style spawn warning).
-- Verified headless (30s stationary player): stall_time grew, interval
-  halved as designed. One mysterious lost-enemy artifact not investigated.
+Iter 13 BUILD complete. BC terrain truth:
+- Forest hide: PlayerTank + Enemy both poll Grass TileMapLayer each
+  physics frame. When on a grass cell, sprite.modulate.a = 0.3
+  (concealed). Off grass: alpha = 1.0. BC convention.
+- Steel indestructibility: verified architecturally — Steel cells are
+  TileMapLayer (no take_damage method). Bullet body_entered calls
+  take_damage only if has_method, so bullets stop at steel without
+  destroying it. Correct BC behavior since iter 8; no code change.
 - Verified: make test exit 0, oracle tile_hash f873ae60ee3c420c…
-  unchanged.
-- Scores: 11 → 12/50 (crit 5 Forward Survivability anchor 1 met).
-Next: iter 13 BUILD — forest hides tanks + steel indestructibility (BC truth).
+  unchanged. 188 grass cells in playable.tres seed-42 level → plenty
+  of opportunity for forest hide.
+- Scores: unchanged at 12/50. BC parity work; Pro v2 framing says
+  "progress = defect removal not system existence."
+Next: iter 14 PLAYTEST — first user-look on the new ascender stone.
 ```
 
 ---
@@ -151,6 +150,39 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 14 PLAYTEST (first user-look on the roguelike-ascender stone):
+  - Pre-mortem (H2 RULE: reference-language predictions per Pro v2 H4)
+  - Verify build: make test, godot --quit, both exit 0
+  - Capture run config deltas since iter-5 (FULL DELTA — first playtest
+    on the new stone):
+    * Movement: 4-dir grid (player + enemies)
+    * Enemy types: 1 chaser+shooter type, white sprite (distinct from player yellow)
+    * Spawn: top-edge, velocity-scaled lookahead, telegraph 0.5s before
+    * Stalling pressure: 4s stall → spawn rate doubles
+    * Bullets: 120 px/s, mask 9 (player) / mask 3 (enemy)
+    * Terrain: brick destructible (1 hit), steel indestructible,
+      water passable by bullets, forest hides tanks
+    * HP: 3, iframes 0.6s, YOU DIED + R restart
+    * HUD: HP 3/3 (top-left), DEPTH N (top-right), TIME M:SS (top-right)
+    * Muzzle: aligned with sprite edge (8, 0)
+  - Output playtest prompt to user. AWAIT. Halt rule iter 17.
+
+Expected user observations (H2-RULE predictions):
+  - "DEPTH counter goes up as I ascend" — verifies iter 11 HUD
+  - "Enemies appear above me as I climb" — verifies iter 7 + iter 12
+  - "Spawning is faster when I sit still" — verifies iter 12 stall pressure
+  - "I see a yellow flash before each enemy" — verifies iter 12 telegraph
+  - "Tank disappears in grass" — verifies iter 13 forest hide
+  - "Brick breaks, steel doesn't" — verifies iter 8 + iter 13
+  - "Bullets fly over water" — verifies iter 8
+  - "Muzzle no longer off-center" — verifies iter 10
+  - "Enemy faces forward properly" — verifies iter 10
+  - DEFECT/SURPRISE — any new bug from compounding iter-12/13 changes`
+
+---
+
+## Previous Next Action (iter 13 — shipped)
 
 `Iter 13 BUILD — BC terrain truth (forest hides + steel indestructibility):
   - Pre-mortem (H2 RULE: ≥1 reference-language playtest prediction)
