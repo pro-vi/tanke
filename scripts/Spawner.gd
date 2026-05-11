@@ -15,9 +15,11 @@ extends Node2D
 @export var telegraph_lead_time: float = 0.5  # seconds the warning marker shows before spawn
 @export var velocity_ema_alpha: float = 2.0  # EMA smoothing factor; higher = more responsive
 
-# Enemy type table (iter 16; behavioral split planned iter 24-26 per Pro
-# Consult 004 H2). Currently stats-only difference — Light/Heavy will
-# diverge behaviorally in future iters.
+# Enemy type table (iter 16; behavioral split iter 24 Heavy + iter 26 Light).
+# Per Pro Consult 004 H2 recipe: Light = "lane-invader, advances aggressively,
+# fires rarely"; Heavy = "corridor-denier, pauses, fires bursts."
+# direction_commit_time per type — Light commits to a lane longer (3.0s);
+# Heavy stays at 0.8s for responsiveness to player movement.
 const ENEMY_TYPES: Array = [
 	{
 		"name": "Light",
@@ -25,7 +27,8 @@ const ENEMY_TYPES: Array = [
 		"base_frame": 8,
 		"speed": 24.0,
 		"max_hp": 1,
-		"fire_cooldown": 1.5,
+		"fire_cooldown": 3.5,  # iter 26: fires rarely (was 1.5)
+		"direction_commit_time": 3.0,  # iter 26: commits to a lane (was 0.8)
 	},
 	{
 		"name": "Heavy",
@@ -34,6 +37,7 @@ const ENEMY_TYPES: Array = [
 		"speed": 14.0,
 		"max_hp": 2,
 		"fire_cooldown": 0.8,
+		"direction_commit_time": 0.8,
 	},
 ]
 
@@ -239,6 +243,7 @@ func _telegraph_then_spawn(pos: Vector2) -> void:
 	enemy.set("speed", type_data.speed)
 	enemy.set("max_hp", type_data.max_hp)
 	enemy.set("fire_cooldown", type_data.fire_cooldown)
+	enemy.set("direction_commit_time", type_data.direction_commit_time)  # iter 26
 	enemy.global_position = pos
 	enemy.tree_exited.connect(_on_enemy_freed)
 	parent_node.add_child(enemy)

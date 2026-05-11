@@ -4,17 +4,16 @@
 
 ```
 phase: loop
-iteration: 25
+iteration: 26
 preloop_complete: yes
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 next_playtest_due_iter: 33
-consult_cadence: every 5 iters (20 ADOPTED, 25 FAILED→self-consult, 29 retry)
-sprint_phase: bands+behaviors (iter 24 Heavy split shipped, iter 26 Light split next)
+consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 retry
+sprint_phase: bands+behaviors (iter 24 Heavy + iter 26 Light splits shipped)
 pending_consult: none
-load_bearing_problem: combat verbs vs ascender verbs — partially addressed Heavy AIM_FIRE
+load_bearing_problem: combat verbs vs ascender verbs — partial via Heavy AIM_FIRE + Light commit-to-lane
 h2_rule_version: v2 (iter 23)
-playtest_template: loop/gameplay/playtest-template.md
 ```
 
 ---
@@ -131,6 +130,24 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
+Iter 26 BUILD complete. Light commit-to-lane behavioral split:
+- Spawner ENEMY_TYPES["Light"]: fire_cooldown 1.5 → 3.5, NEW
+  direction_commit_time = 3.0 (commits to lane per Pro v4 H2 recipe)
+- Spawner ENEMY_TYPES["Heavy"]: NEW direction_commit_time = 0.8
+- Spawner _telegraph_then_spawn also sets direction_commit_time per type
+- Enemy.gd _light_tick: uses new _choose_direction_light_lane with
+  vertical bias (prefer U/D unless |dx| > 2× |dy|). Light invades
+  vertical lanes toward player rather than tracking precisely.
+- Heavy unchanged from iter 24
+- Verified: make test exit 0, oracle f873ae60ee3c420c… unchanged
+- Score: unchanged at 16/50 (reinforces crit 6 anchor 2 already met
+  iter 24; no new anchor satisfied).
+Next: iter 27 BUILD per-band encounter rules + stall pressure tuning.
+```
+
+(Previous)
+
+```
 Iter 25 CONSULT attempt FAILED (agentify tab_busy after closing 3 stale
 tabs) → SELF-CONSULT fallback per FALSIFICATION 001 lesson.
 
@@ -179,6 +196,33 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 27 BUILD — Per-band encounter rules + stall pressure tuning:
+  - Pre-mortem (H2 RULE v2 tag declaration)
+  - DIAGNOSE: ascent director bands currently differ only in type_weights
+    and interval_mult. Encounter "rules" could include:
+    * Min/max enemies alive per band (heavy_gate caps at 5? rush caps at 12?)
+    * Spawn-specific rules per band (e.g., heavy_gate guarantees first
+      spawn = Heavy)
+    * Stall pressure graduated: currently binary 4s threshold; ramp
+      progressively (e.g., 4s → 1.5× interval, 8s → 2× interval cap)
+  - Implementation:
+    * Add max_enemies_alive_band override per band (default = global
+      max_enemies)
+    * Add guarantee_first_type optional per band (e.g., heavy_gate first
+      spawn is Heavy regardless of weights — sets initial threat tone)
+    * Replace binary stall multiplier with graduated function:
+      stall_multiplier(stall_time) = clampf(1.0 - 0.1*(stall_time-4)/2, 0.4, 1.0)
+      So 4s stall = 1.0, 8s = 0.6, 12s = 0.4 (cap)
+  - Score predictions: no new anchor lifts (crit 4 anchor 4 "stalling
+    pressure" already at 2; anchor 4 needs playtest cite for >2)
+  - Tag: [STRUCTURE] / [STRUCTURE-DEFERRED] — no FEEL cite without playtest
+
+Iter 28: META mitigation (forward-only enemies or threats-from-behind).`
+
+---
+
+## Previous Next Action (iter 25 — iter 26 shipped)
 
 `Iter 26 BUILD — Light commit-to-lane behavioral split:
   - Pre-mortem with H2 RULE v2 tag declaration

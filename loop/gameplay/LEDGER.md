@@ -1996,3 +1996,70 @@ H2 RULE v2 self-deception detector applied throughout self-consult. Discipline h
 - ScheduleWakeup 240s.
 
 ---
+
+## Iter 026 — BUILD — Light commit-to-lane behavioral split
+
+**Mode:** BUILD (Pro Consult 004 H2 — Light branch)
+**Focus:** Light = "lane-invader, advances aggressively, fires rarely." Pair with iter-24 Heavy = "corridor-denier." Together implement Pro v4 H2 verbatim recipe.
+**Date:** 2026-05-12
+**Tag declaration:** `[STRUCTURE-DEFERRED → iter 33]` reinforcing crit 6 anchor 2 (already at 2; no new lift)
+
+### Actions
+
+`scripts/Spawner.gd`:
+- ENEMY_TYPES["Light"]:
+  - `fire_cooldown: 1.5 → 3.5` (fires rarely per recipe)
+  - NEW `direction_commit_time: 3.0` (commits to lane per recipe)
+- ENEMY_TYPES["Heavy"]:
+  - NEW `direction_commit_time: 0.8` (responsive, matches iter-24 chase tick)
+- `_telegraph_then_spawn` now also `enemy.set("direction_commit_time", ...)` per type
+
+`scripts/Enemy.gd`:
+- `_light_tick`: calls new `_choose_direction_light_lane()` instead of `_choose_direction_toward_player()`
+- New `_choose_direction_light_lane()`: vertical bias logic — Light prefers U/D unless `|dx| > 2 × |dy|` (strongly horizontal). Result: Light "invades" vertical lanes toward player rather than tracking precisely.
+- Heavy unchanged (`_heavy_chase_tick` still uses `_choose_direction_toward_player`)
+
+### Behavior summary post iter-26
+
+- **Light** (70% weight): vertical-biased direction choice; commits to lane for 3s; fires every 3.5s; speed=24. Reads as "tank that comes at you from below/above your column."
+- **Heavy** (30% weight): CHASE/AIM_FIRE state machine (iter 24); LOS-aligned pause+2-shot-burst; speed=14, HP=2. Reads as "tank that stops to shoot when you're in its lane."
+
+Role distinction NOW codified at TWO levels:
+- Direction-choice algorithm (vertical-bias vs cardinal-toward-player)
+- Locomotion pattern (continuous lane commit vs CHASE→AIM_FIRE state machine)
+
+### Substrate freeze check
+
+- All frozen scripts untouched. Modified only Enemy.gd + Spawner.gd.
+- No .tscn edits. H1 tripwire: 1. Unchanged.
+
+### Verification
+
+- `make test` exit 0
+- Reachability oracle: `tile_hash f873ae60ee3c420c…` unchanged. Substrate intact iters 1-26.
+- 15s headless (warmup band, Light-only spawn): no parse/runtime errors. New Light direction logic exercised; tank movement at 60fps showed expected vertical-biased choice.
+
+### Scores
+
+| Criterion | Iter 25 | Iter 26 | Δ | Citation |
+|-----------|---------|---------|---|----------|
+| 6. Enemy variety + behavior | 2 | 2 | – | `[STRUCTURE-DEFERRED → iter 33]` reinforced. Anchor 2 already met iter 24 via Heavy state machine; iter 26 strengthens role distinction by adding Light commit-to-lane (vertical bias + extended dir_commit + reduced fire). No new anchor satisfied. |
+| Others | unchanged | unchanged | – | – |
+| **Total** | **16** | **16** | **0** | Reinforcement iter |
+
+### Pre-mortem evaluation
+
+4 of 5 binary-now LANDED in-iter; 1 deferred to iter-33 playtest (user describes Light/Heavy behavioral distinction beyond stats).
+
+H2 RULE v2 self-deception check: would Pro reword anchor 2 if shown this code? My Light split implements Pro Consult 004 H2 recipe verbatim. Pro shouldn't reword. Anchor holds at 2 [STRUCTURE-DEFERRED].
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd` (Light branch + `_choose_direction_light_lane`), `scripts/Spawner.gd` (ENEMY_TYPES + per-type dir_commit), `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/LEDGER.md`, `loop/gameplay/STATE.md`
+
+### Schedule
+
+- Iter 27 BUILD: per-band encounter rules + stalling pressure tuning. Specifically: heavy_gate band could use different LIGHT/HEAVY type weights based on local conditions (e.g., player ascent rate); stall pressure currently binary 4s-or-not, could ramp.
+- ScheduleWakeup 240s.
+
+---

@@ -706,6 +706,23 @@ Self-consult conclusions:
 
 ---
 
+## Iter 026 — BUILD — Light commit-to-lane (Option C)
+
+Tag: `[STRUCTURE-DEFERRED → iter 33]` reinforcing crit 6 anchor 2 (no new lift; iter 24 already at 2).
+
+Going in, biggest expected miss: Light at fire_cooldown=3.5s feels too passive — player might experience Light as "moving target that doesn't fight back," breaking the "lane invader" threat feel. Mitigation: keep facing direction visible so Light telegraphs its lane commitment.
+
+H2-RULE claims:
+1. Spawner ENEMY_TYPES Light: fire_cooldown 1.5→3.5, dir_commit 3.0 — code ✓
+2. Enemy.gd Light uses `_choose_direction_light_lane` with vertical bias — code ✓
+3. (iter-33) User describes Light/Heavy as behaviorally different beyond stats — [FEEL] deferred
+4. make test exit 0 — LANDED
+5. Oracle hash unchanged — LANDED
+
+**Post-iter:** 4 of 5 binary-now LANDED. Score unchanged at 16. Reinforcement of crit 6 anchor 2 strengthens [STRUCTURE-DEFERRED] tag for iter-33 evaluation.
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

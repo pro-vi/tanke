@@ -65,10 +65,14 @@ func _physics_process(delta: float) -> void:
 	_update_forest_hide()
 
 
-# Light: naive grid chaser (pre-iter-24 behavior, unchanged).
+# Light (iter 26): commit-to-lane behavior. Per Pro Consult 004 H2 recipe:
+# "lane-invader that advances aggressively and fires rarely." Light picks a
+# direction with VERTICAL BIAS (prefer U/D unless player is strongly off-axis),
+# commits for direction_commit_time=3.0s (set per-type via Spawner), fires on
+# 3.5s cooldown. Player learns to dodge by exiting Light's committed lane.
 func _light_tick(delta: float) -> void:
 	if _direction_timer <= 0.0:
-		_choose_direction_toward_player()
+		_choose_direction_light_lane()
 		_direction_timer = direction_commit_time
 
 	var dir_vec: Vector2 = _direction_vector(direction)
@@ -89,6 +93,24 @@ func _light_tick(delta: float) -> void:
 	if _fire_timer <= 0.0:
 		_fire()
 		_fire_timer = fire_cooldown
+
+
+# Light variant of direction choice: vertical bias. Light prefers U/D
+# (ascending lanes) unless player is strongly off-axis horizontally
+# (|dx| > 2× |dy|). Result: Light "invades" a vertical lane toward player
+# rather than tracking precisely.
+func _choose_direction_light_lane() -> void:
+	if _player == null:
+		return
+	var to_player: Vector2 = _player.global_position - global_position
+	var new_dir: int
+	# Vertical bias: prefer vertical unless |dx| > 2× |dy| (strongly horizontal)
+	if absf(to_player.x) > absf(to_player.y) * 2.0:
+		new_dir = Constants.Dir.R if to_player.x > 0 else Constants.Dir.L
+	else:
+		new_dir = Constants.Dir.D if to_player.y > 0 else Constants.Dir.U
+	if new_dir != direction:
+		_turn_to(new_dir)
 
 
 # Heavy: corridor-denier state machine (iter 24). CHASE → AIM_FIRE on LOS;
