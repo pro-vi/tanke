@@ -21,14 +21,23 @@ var _dead: bool = false
 var _restart_armed: bool = false
 var _hp_label: Label
 var _death_label: Label
+# Roguelike ascender state (iter 11 — Pro Consult 003 reframe)
+var _start_y: float = 0.0
+var _min_y_reached: float = 0.0
+var _run_time: float = 0.0
+var _depth_label: Label
+var _time_label: Label
 
 
 func _ready() -> void:
 	hp = max_hp
 	rotation = Constants.dir_to_rotation(direction)
+	_start_y = global_position.y
+	_min_y_reached = _start_y
 	_setup_hurtbox()
 	_setup_hud()
 	hp_changed.emit(hp, max_hp)
+	_update_run_hud()
 
 
 func _physics_process(delta: float) -> void:
@@ -38,6 +47,12 @@ func _physics_process(delta: float) -> void:
 	if _dead:
 		_handle_restart_input()
 		return
+
+	# Roguelike ascender: track depth + run time (iter 11)
+	_run_time += delta
+	if global_position.y < _min_y_reached:
+		_min_y_reached = global_position.y
+	_update_run_hud()
 
 	var input_vector: Vector2 = Vector2()
 
@@ -154,6 +169,19 @@ func _setup_hud() -> void:
 	_death_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.3))
 	_death_label.visible = false
 	canvas.add_child(_death_label)
+	# Roguelike ascender HUD (iter 11) — top-right
+	_depth_label = Label.new()
+	_depth_label.name = "DepthLabel"
+	_depth_label.position = Vector2(232, 4)
+	_depth_label.text = "DEPTH 0"
+	_depth_label.add_theme_color_override("font_color", Color.WHITE)
+	canvas.add_child(_depth_label)
+	_time_label = Label.new()
+	_time_label.name = "TimeLabel"
+	_time_label.position = Vector2(232, 16)
+	_time_label.text = "TIME 0:00"
+	_time_label.add_theme_color_override("font_color", Color.WHITE)
+	canvas.add_child(_time_label)
 	add_child(canvas)
 	hp_changed.connect(_on_hp_changed_hud)
 
@@ -161,3 +189,12 @@ func _setup_hud() -> void:
 func _on_hp_changed_hud(new_hp: int, the_max_hp: int) -> void:
 	if _hp_label != null:
 		_hp_label.text = "HP %d/%d" % [new_hp, the_max_hp]
+
+
+func _update_run_hud() -> void:
+	if _depth_label != null:
+		var depth: int = int(maxf(0.0, (_start_y - _min_y_reached) / 16.0))
+		_depth_label.text = "DEPTH %d" % depth
+	if _time_label != null:
+		var t: int = int(_run_time)
+		_time_label.text = "TIME %d:%02d" % [t / 60, t % 60]

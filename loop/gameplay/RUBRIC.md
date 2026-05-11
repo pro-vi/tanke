@@ -55,33 +55,43 @@ Player takes damage; HP visible; death ends run.
 
 ---
 
-## 4. XP + level-up flow (0–5)
+## 4. Depth feedback + ascent pressure (0–5) — *feel criterion*
 
-Kills drop XP; threshold triggers upgrade modal.
+(Renamed iter 11 — replaces former "XP + level-up flow." Reframed per
+Pro Consult 003: the ascender's diegetic feedback is depth-as-score, not
+XP; uniform Eller's rows are "too texture-like" — need encounter beats.)
+
+Does the player feel/see upward progress? Is there pressure to keep
+moving up?
 
 | Score | Anchor |
 |-------|--------|
-| 0 | No XP system |
-| 1 | Enemies drop XP gems (visible) |
-| 2 | XP magnetizes to player; XP bar fills on HUD |
-| 3 | XP threshold triggers level-up; pause / modal appears |
-| 4 | Level-up offers 3 choices; selection applies upgrade and resumes |
-| 5 | Level-up is satisfying — clear feedback (visual flourish, sound, "Level X!"); cited via playtest |
+| 0 | No depth indicator; uniform Eller's maze; no upward pressure mechanic |
+| 1 | HUD shows `DEPTH: N` (rows ascended) numerically — cited via code |
+| 2 | DEPTH + run TIME both shown; updates live as player ascends — cited via playtest |
+| 3 | Every N rows = declared encounter beat (safe / pressure / choke / ambush); playtest cites varied rhythm |
+| 4 | Stalling at one depth produces visible pressure (e.g. faster spawn rate, descending fog, telegraphed "keep moving"); playtest cited "I felt pushed up" |
+| 5 | The compulsion to ascend is unmistakable in a 60-second playtest — user describes the game as a "climb" or "ascent" unprompted |
 
 ---
 
-## 5. Upgrade variety + compounding (0–5)
+## 5. Forward survivability (0–5) — *feel criterion*
 
-Distinct upgrades that combine.
+(Renamed iter 11 — replaces former "Upgrade variety + compounding."
+Reframed per Pro Consult 003: optimize for "fight while advancing," not
+"clear the screen.")
+
+Can the player sustain ascending while combat happens? Or does combat
+force stop-and-clear, breaking compulsion?
 
 | Score | Anchor |
 |-------|--------|
-| 0 | No upgrades |
-| 1 | 1–2 upgrades; only one stacks |
-| 2 | 3–5 upgrades available; choices presented as 1-of-3 |
-| 3 | 5+ upgrades; passives (HP, speed) and weapons (secondary, mines) both present |
-| 4 | 8+ upgrades; some have prerequisites or evolve at max level |
-| 5 | Upgrade synergies visible — picking A then B has different effect than B then A; cited via playtest "build matters" |
+| 0 | Combat forces full stop; ascending and fighting are exclusive |
+| 1 | Player can fire while moving; enemies don't reliably block ascent |
+| 2 | Climb rate observable — most enemies engageable on-the-go; cited via playtest "I kept moving" |
+| 3 | Combat micro-decisions while ascending (which enemy to engage, which to dodge); playtest cited |
+| 4 | Forward-friendly mechanics (e.g. forward-cone bullet pickups, dash, ramming charge) reward advancing over clearing |
+| 5 | The game rewards "fight while climbing" so unmistakably that stopping feels wrong — playtest cited "stalling got me killed" |
 
 ---
 
@@ -100,18 +110,21 @@ Multiple enemy types with distinct AI.
 
 ---
 
-## 7. Run pacing (0–5) — *feel criterion*
+## 7. Compulsion loop (0–5) — *feel criterion*
 
-Difficulty curve actually escalates.
+(Renamed iter 11 — was "Run pacing"; reframed per Pro Consult 003:
+roguelike compulsion is the primary success metric.)
+
+Does the player want one more run after dying?
 
 | Score | Anchor |
 |-------|--------|
-| 0 | No difficulty change over run time |
-| 1 | Spawn rate increases linearly |
-| 2 | Spawn rate AND enemy variety increase together |
-| 3 | Player power (via upgrades) and threat (via spawns) scale together — playtest cited "felt tense at minute 3" |
-| 4 | Distinct phases (early / mid / late) with different challenge characters — playtest cited |
-| 5 | A 5-minute run produces a "third-act crescendo" — playtest cited "I died but wanted to try again" |
+| 0 | After death, user does NOT want to play again |
+| 1 | Spawn rate increases with depth — difficulty escalates linearly |
+| 2 | Player reaches new personal-best depth at least once in 3 runs — playtest cited |
+| 3 | After dying, user spontaneously presses R within 5 seconds — playtest cited |
+| 4 | User completes 3+ runs in one session WITHOUT being asked — playtest cited |
+| 5 | User says "one more run" out loud (or equivalent) — playtest cited |
 
 ---
 
@@ -145,18 +158,22 @@ HUD legible at 320×240; restart obvious.
 
 ---
 
-## 10. Build distinctness (0–5) — *feel criterion*
+## 10. Run summary + replayability (0–5) — *feel criterion*
 
-Different upgrade paths produce visibly different play.
+(Renamed iter 11 — replaces former "Build distinctness." Reframed per
+Pro Consult 003: the death screen is the roguelike's pitch for the next
+run, not the build's epitaph.)
+
+Does the death screen close one run and pitch the next?
 
 | Score | Anchor |
 |-------|--------|
-| 0 | No upgrades to distinguish |
-| 1 | All upgrades are stat bumps (+10% damage, +10% speed, etc) |
-| 2 | Some weapon upgrades visibly change projectile (extra bullet, fire rate up) |
-| 3 | Three distinct play styles emerge from upgrade choices — playtest cited |
-| 4 | A "shotgun build" plays meaningfully different from a "speed build" — playtest cited |
-| 5 | Player can describe their build in 3 words ("burst-damage glass cannon", "tanky-defensive turret"); each is recognizable in playtest |
+| 0 | No death screen — instant restart or hard stop |
+| 1 | "YOU DIED" + restart hint shown — cited via code (iter 3) |
+| 2 | Death screen shows depth reached, run time, enemies killed — cited via playtest |
+| 3 | Death screen highlights personal best vs. this run — cited via playtest |
+| 4 | Death screen shows "death cause" (which enemy, depth) — playtest cited "I want to beat my last run" |
+| 5 | Death screen is fast, restart is immediate, user-flow is silent (no menu friction) — playtest cited "I didn't think, I just pressed R" |
 
 ---
 
@@ -165,3 +182,4 @@ Different upgrade paths produce visibly different play.
 | Iter | Change | Reason |
 |------|--------|--------|
 | 0 | Initial gameplay rubric, 10 criteria, reachability floor | New loop scope: VS-like gameplay; engine is substrate |
+| 11 | Renamed crits 4, 5, 7, 10 to roguelike-ascender axes (Depth feedback, Forward survivability, Compulsion loop, Run summary) | Framing pivot per user correction iter 10 + Pro Consult 003: roguelike vertical ascender with BC combat feel, not VS-like survival. Co-op explicitly NOT a rubric axis (scope grenade). |

@@ -342,4 +342,36 @@ Score-target predictions (secondary, H2-RULE-acknowledged):
 - Crit 8: maybe 1 (brick destruction = some feedback).
 - Total: 9 → 11-13 if anchors land.
 
+**Post-iter evaluation (iter 10 audit):** 3 of 7 claims resolved-favorable (incl. claim 1 reframed as "skiing → weird fashion / head not forward" — same root, different observable language), 2 FALSIFIED (claim 3 spawn-from-top, claim 6 off-center), 5 INDETERMINATE. User correction triggered framing pivot via CONSULT 002+003. See LEDGER iter 010-011.
+
+---
+
+## Iter 010 — AUDIT + CONSULT (reactive to playtest)
+
+(No separate pre-mortem — iter 10 was reactive to playtest, not pre-planned. Synthesis lives in LEDGER iter 010 + PRE-MORTEMS iter 009 post-eval above.)
+
+---
+
+## Iter 011 — BUILD — Identity rewrite (Pro v2 reframe) + DEPTH/TIME HUD
+
+Going in, biggest expected miss: I'll rewrite PROMPT.md's stone but leave dangling references elsewhere — STATE.md "design_direction" field, scripts mentioning VS-like concepts, comments referring to upgrades. The reframe is supposed to be load-bearing; partial adoption is worse than no adoption.
+
+H2-RULE independently observable claims:
+1. **PROMPT.md "the stone" contains Pro v2's verbatim sentence.** Binary, file-content. → LANDED
+2. **RUBRIC.md crits 4/5/7/10 renamed** to "Depth feedback / ascent pressure", "Forward survivability", "Compulsion loop", "Run summary + replayability". Binary, file-content. → LANDED
+3. **PlayerTank HUD shows `DEPTH 0` and `TIME 0:00` at game start.** Iter-14 playtest binary.
+4. **After 5s of W-held, DEPTH > 0.** Iter-14 playtest binary.
+5. **`make test` exit 0** post-rewrite. Binary. → LANDED
+6. **Oracle `tile_hash f873ae60ee3c420c…` unchanged.** Binary. → LANDED
+
+4 of 6 LANDED in-iter; 2 deferred to playtest.
+
+Secondary score predictions (H2-RULE acknowledged secondary):
+- Crit 4 (new: depth feedback) → 1 (anchor 1 cited via code)
+- Crit 10 (new: run summary) → 1 (anchor 1 retroactive from iter-3 YOU DIED label)
+- Others unchanged
+- Total predicted: 9 → 11
+
+**Post-iter evaluation:** All 4 binary-now predictions landed. Score lifted 9 → 11 via rubric realignment (no inflation — anchors retroactively countable, not new feature work). Iter 12 will exercise the new compulsion-loop axis via spawn-ahead-of-player.
+
 ---

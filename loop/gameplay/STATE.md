@@ -3,13 +3,12 @@
 ## Phase
 
 ```
-phase: AWAITING_USER_PLAYTEST
-iteration: 9
+phase: loop
+iteration: 11
 preloop_complete: yes
-playtest_requested_iter: 9
-last_completed_playtest_iter: 6
-design_direction: battle_city
-halt_iter_if_no_response: 12
+last_completed_playtest_iter: 10  (iter-9 playtest evaluated iter 10)
+design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
+next_playtest_due_iter: 14
 ```
 
 ---
@@ -59,17 +58,17 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
-| 1. Core loop closes | **4** | Iter 6: playtest-cited anchor 4 ("death triggers clear run over with restart"). Capped at 4 — anchor 5 needs first-run-without-instruction. |
-| 2. Spawn / wave system | 1 | Iter 2: fixed-rate. User playtest: pattern wrong (radial, should be top-edge). Iter 7 work. |
-| 3. HP + death model | 2 | Iter 3: HurtBox + HP numerically shown; playtest-confirmed iter 6. Anchor 3 needs HP bar. |
-| 4. XP + level-up flow | 0 | No XP |
-| 5. Upgrade variety | 0 | No upgrades |
-| 6. Enemy variety | 1 | Iter 2: one chaser, naive AI. User: "skiing without constraints" — wants 4-dir grid like player. Iter 7. |
-| 7. Run pacing | 0 | No run structure |
-| 8. Visual feedback / juice | 0 | None; iter-6 playtest flagged "bullet off-center" polish gap |
-| 9. UI / UX | 1 | Iter 3: text HP HUD via CanvasLayer Label; playtest-confirmed iter 6 |
-| 10. Build distinctness | 0 | No builds |
-| **Total** | **9/50** | Iter 6 +2 via playtest cite on crit 1 |
+| 1. Core loop closes | 4 | Iter 6 playtest-cited anchor 4 |
+| 2. Spawn / wave system | 1 | Iter 7 top-edge spawn; pattern still single-direction (interval fixed) |
+| 3. HP + death model | 2 | Iter 3 HurtBox + HP shown; anchor 3 needs HP bar |
+| 4. Depth feedback + ascent pressure (was XP) | **1** | Iter 11: HUD shows DEPTH numerically. Anchor 2 needs playtest. |
+| 5. Forward survivability (was Upgrade variety) | 0 | Anchor 1 in code (fire-while-moving) but feel-criterion needs playtest |
+| 6. Enemy variety | 1 | Iter 2/7: one chaser+shooter type. Anchor 5 (no stuck) needs playtest. |
+| 7. Compulsion loop (was Run pacing) | 0 | Needs playtest |
+| 8. Visual feedback / juice | 0 | None |
+| 9. UI / UX | 1 | Iter 3 text HUD; iter 11 added DEPTH/TIME labels |
+| 10. Run summary + replayability (was Build distinctness) | **1** | Anchor 1 met retroactively iter 3 (YOU DIED + R) |
+| **Total** | **11/50** | Iter 11 +2 via rubric-realignment cleanup |
 
 ---
 
@@ -126,17 +125,22 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 9 PLAYTEST request issued. AWAITING USER.
-Build verified (make test exit 0, godot --quit exit 0). 7 H2-RULE
-independently observable claims pending user playtest report:
-1. Enemy motion no longer "skiing"
-2. Enemies fire bullets
-3. Spawn from top edge, not "out of nowhere"
-4. Brick walls destructible by bullets
-5. Bullets pass over water
-6. Bullets NOT "off center"
-7. (balance) Difficulty acceptable, not "I die immediately"
-Halt rule: iter 12 if no response.
+Iter 11 BUILD complete. Identity reframe + DEPTH/TIME HUD:
+- PROMPT.md "stone" rewritten to Pro v2's verbatim:
+  "A roguelike vertical tank ascender with Battle City combat feel."
+  Design law: upward pressure is primary; BC is control/terrain
+  reference, not structure reference.
+- RUBRIC.md crits 4/5/7/10 renamed to roguelike-ascender axes
+  (Depth feedback, Forward survivability, Compulsion loop, Run summary).
+- PlayerTank.gd: tracks _start_y, _min_y_reached, _run_time. HUD
+  shows DEPTH (rows ascended) and TIME (M:SS) top-right. Resets
+  on scene reload.
+- Scores: 9 → 11/50 (rubric refactor uncovered 2 retroactive anchors:
+  crit 4 anchor 1 via new DEPTH HUD, crit 10 anchor 1 via iter-3
+  YOU DIED label).
+- Verified: make test exit 0, oracle tile_hash f873ae60ee3c420c…
+  unchanged (substrate intact iters 1-11).
+Next: iter 12 BUILD — spawn-ahead-of-player + telegraphing.
 ```
 
 ---
@@ -149,32 +153,36 @@ None (new loop).
 
 ## Next Action
 
-`AWAITING user playtest response.
-
-On response (iter 10):
-  - Read user report
-  - For each of 7 H2-RULE claims, mark LANDED / FALSIFIED / INDETERMINATE
-  - Append FALSIFICATIONS.md entries for any falsified claim
-  - Update score table per RUBRIC.md anchors using playtest evidence
-  - Iter 10 is also CONSULT iter per PROMPT §"CONSULT SCHEDULE"
-    (iters 10/20/30). Three permanent questions:
-    1. What's seductive-but-hollow about the gameplay so far?
-    2. Is the upgrade system creating distinct builds, or just stacking
-       numbers? (N/A yet — no upgrades; reframe to enemy variety?)
-    3. What would a Vampire Survivors player find embarrassing about
-       this in a 5-min run?
-  - Decision at iter 10: fire external CONSULT (GPT-Pro via agentify)
-    OR write self-pre-mortem-in-writing per FALSIFICATION 001 lesson
-    (always send all .tscn files in contextPaths). Engine-loop history:
-    external consult failed 2x; loop now has 1 success (iter 4 consult)
-    + 1 wrong-claim case (Pro lacking PlayerTank.tscn). Net: external
-    is worth trying with better context.
-  - Plan iter 11 BUILD targeting whichever broken thing surfaces from
-    playtest (likely balance fixes per H2 RULE claim #7) OR consult
-    findings.
-
-If no user response by end-of-iter-12 (3 iters later): write HALTED.md
-per PROMPT §"USER-LOOK PROTOCOL" halt rule; stop.`
+`Iter 12 BUILD — Spawn-ahead-of-player + ascending pressure:
+  - Pre-mortem (H2 RULE: independently observable claims about iter-14
+    playtest; specifically reference-language predictions like "I feel
+    pushed up" / "I keep climbing")
+  - DIAGNOSE: weakest axes are 4 (depth feedback, 1), 5 (forward survivability, 0),
+    7 (compulsion loop, 0). Pick crit 5 + 7 — spawn-ahead is the
+    primary lever for "fight while advancing."
+  - Spawner.gd modifications:
+    * Track player ascent velocity (avg upward rows/sec over last 2s)
+    * spawn_y formula: current top-of-camera-view minus ascent-velocity-scaled
+      margin (faster ascent = spawn further ahead, gives player time to
+      see enemies before reaching them)
+    * Add spawn TELEGRAPH: when an enemy will appear, briefly flash a
+      marker at the spawn x-coord at top edge (1s warning before spawn)
+    * If player stalls (ascent velocity < threshold), trigger
+      "stalling pressure": increase spawn rate by 50% as gentle "keep
+      moving" prompt
+  - Headless smoke + oracle re-check
+  - Score predictions (per H2 RULE secondary):
+    * Crit 5 → 1 (player fires while moving — true in code already; could
+      count this as anchor 1 if I cite Bullet's independence from player input)
+    * Crit 7 anchor 1 "Spawn rate increases with depth — difficulty
+      escalates linearly" — not exactly there since rate is fixed; could
+      reach by tying spawn_interval to depth.
+    * Stalling pressure mechanic = crit 4 anchor 4 ("Stalling at one
+      depth produces visible pressure") — only countable after playtest cite
+  - Commit; ScheduleWakeup 240s
+  - Iter 13 BUILD = terrain semantics (forest hides, steel indestructible)
+  - Iter 14 PLAYTEST — paired iter-10/11/12/13 user-look gate, the
+    "first 60 seconds unmistakably roguelike-ascender-with-BC-feel" test`
 
 ---
 

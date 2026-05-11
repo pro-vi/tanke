@@ -19,18 +19,47 @@ fail reachability. **The rubric was measuring the wrong thing.**
 **This loop fixes the framing.** Engine work is now substrate. Gameplay is the
 target.
 
-### The stone
+### The stone (revised iter 11)
 
-A complete Vampire-Survivors-like tank survival run:
-- Manual movement + manual primary gun + auto-firing secondary weapons
-- HP bar, single life, 5–10 minute runs
-- Procedural maze as terrain substrate (existing `LevelConfig` / `BiomeConfig` system)
-- Wave-based enemy escalation
-- Kills drop XP, threshold triggers level-up modal with 1-of-3 upgrade choice
-- Compounding builds; different upgrade paths *feel* different
-- Death ends run; restart easily
+**A roguelike vertical tank ascender with Battle City combat feel.**
+The player drives upward through an endlessly generated destructible maze,
+fighting readable enemy tanks, managing terrain, surviving as long as possible,
+and measuring each run by depth reached before death.
 
-**A successful loop produces a level a friend would want to retry after dying once.**
+(Pro-synthesis from GPT-Pro Consult 003, adopted iter 11 after user
+correction of iter-10 Pro v1's static-base framing — see
+`loop/gameplay/creative-consults.md`.)
+
+**Design law:** upward pressure is primary; Battle City is the
+control/terrain reference, not the structure reference. The autonomous
+loop's first job is making each ascent clearer, tenser, and more
+replayable.
+
+**What's load-bearing:**
+- 4-direction cardinal grid tank movement (BC verb)
+- BC terrain semantics: destructible brick / indestructible steel /
+  bullets-pass-water / tank-hidden-by-forest
+- Enemy tanks with distinct readable types (BC verb)
+- Procedurally generated upward terrain (substrate identity, not curse)
+- Depth ascended = run score; death ends run; restart cheap
+- Forward survivability — combat happens WHILE ascending, not after
+
+**What's not in scope:**
+- Static base defense (no fixed eagle to defend; player IS what's
+  preserved)
+- Hand-crafted levels (procedural with encounter beats — see RUBRIC.md
+  crit 4)
+- VS-style XP / upgrade modal / build distinctness (replaced with
+  ascender-aligned axes — see RUBRIC.md)
+- Two-player co-op (scope grenade; not in rubric)
+
+**Original VS-like framing (deprecated iter 11, retained for history):**
+~~A complete Vampire-Survivors-like tank survival run with manual movement,
+HP bar, kills drop XP, level-up modal with 1-of-3 upgrade choice,
+compounding builds, etc.~~
+
+**A successful loop produces a run a friend wants to retry after dying once,**
+because the climb felt close and they want to push further next time.
 
 ---
 

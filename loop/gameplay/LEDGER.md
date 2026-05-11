@@ -983,3 +983,104 @@ at iter 12 with `loop/gameplay/HALTED.md`.
   enough gameplay exists to consult on.
 
 ---
+
+## Iter 010 — AUDIT + CONSULT + readability fixes (commit a7f8bf0 for code)
+
+**Mode:** AUDIT (playtest eval) + CONSULT (PROMPT §"CONSULT SCHEDULE" iter 10) + embedded BUILD (4 readability patches already committed in a7f8bf0)
+**Date:** 2026-05-11
+
+### User playtest report (iter 9 → returned iter 10)
+
+> "it works. a few obs: 1: in initial position, the fire center is on my right track, meaning there is misalignment. 2. enemies move in weird fashion. their head is not foward.. 3. enemies doesnt use different sprite.. same as player 4. enemies dont appear from the top edge of the screen, they just spawn.. i think we might want to modify the loop: i want a loop where you are the ConcernedApe copying 牧場物語 - we are copying battlecity. fire /agentify then come up with your own response"
+
+### H2-RULE iter-9 claim evaluation
+
+| # | Claim | Result |
+|---|-------|--------|
+| 1 | No "skiing" | LANDED (user shifted to "weird fashion / head not forward") |
+| 2 | Enemies fire bullets | INDETERMINATE |
+| 3 | Top-edge spawn | **FALSIFIED** ("they just spawn") |
+| 4 | Brick destruction | INDETERMINATE |
+| 5 | Bullets over water | INDETERMINATE |
+| 6 | Bullets NOT "off center" | **FALSIFIED** ("on my right track") |
+| 7 | Difficulty acceptable | INDETERMINATE |
+
+3 resolved-favorable, 2 FALSIFIED, 5 INDETERMINATE. Logged in PRE-MORTEMS.md.
+
+### 4 readability fixes (commit a7f8bf0)
+
+1. PlayerTank initial muzzle: `rotation = Constants.dir_to_rotation(direction)` in _ready
+2. Enemy rotation: removed body rotation; use sprite.frame per direction
+3. Enemy sprite distinct: Enemy.tscn frame 16 → 12 + sprite_base_frame=8
+4. Spawn off-screen: spawn relative to camera position, not player position
+
+### CONSULT 002 (Pro v1) SUPERSEDED → CONSULT 003 (Pro v2) ADOPTED
+
+User correction: "the map is procedurally generated toward the up - player must keep moving towards up... thats where rogue like can happen." This invalidated Pro v1's static-base-defense BC framing. Re-fired query in same agentify tab as conversation continuation. Pro v2 returned in ~2.5 min.
+
+**Pro v2's stone (adopted verbatim):**
+> "A roguelike vertical tank ascender with Battle City combat feel: the player drives upward through an endlessly generated destructible maze, fighting readable enemy tanks, managing terrain, surviving as long as possible, and measuring each run by depth reached before death."
+
+**Pro v2 key insights:**
+- "Upward pressure is the primary design law; Battle City is the control/terrain reference, not the structure reference."
+- Optimize for "fight while advancing," not "clear the screen."
+- "Roguelike framing makes the loop more measurable, not less" — depth/climb-rate/stall-time/death-cause are concrete observables.
+- "Iter 11 should be identity + readability."
+
+Full Pro v1 + Pro v2 transcripts in `loop/gameplay/creative-consults.md` Consult 002 (SUPERSEDED tag) + Consult 003.
+
+### Iter-10 scores: unchanged at 9/50
+
+### Schedule
+
+- Iter 11 done in same turn (this commit covers iter-10 docs + iter-11 BUILD)
+- Iter 12 BUILD = spawn-ahead-of-player + telegraphing
+- Iter 14 PLAYTEST
+
+---
+
+## Iter 011 — BUILD — Identity rewrite + DEPTH/TIME HUD
+
+**Mode:** BUILD (identity per Pro v2 H5: "iter 11 should be identity + readability")
+**Focus:** PROMPT.md stone rewrite, RUBRIC.md crit 4/5/7/10 rename, DEPTH/TIME HUD
+**Date:** 2026-05-11
+
+### Actions
+
+**Documentation:**
+- `loop/gameplay/PROMPT.md`: replaced VS-like stone with Pro v2's verbatim sentence. Added "Design law: upward pressure is primary." Explicit in-scope / not-in-scope lists.
+- `loop/gameplay/RUBRIC.md`: renamed crits 4 ("Depth feedback + ascent pressure"), 5 ("Forward survivability"), 7 ("Compulsion loop"), 10 ("Run summary + replayability"). Anchors realigned to ascender axes.
+- `loop/gameplay/creative-consults.md`: Consult 003 entry + SUPERSEDED tag on Consult 002.
+
+**Code:**
+- `scripts/PlayerTank.gd`: added `_start_y`, `_min_y_reached`, `_run_time` state. `_setup_hud` adds DEPTH and TIME labels top-right. `_update_run_hud` recomputes per physics frame. Depth formula: `(_start_y - _min_y_reached) / 16` (rows).
+
+### Verification
+
+- `make test` exit 0 (clean after edit chain)
+- Reachability oracle: `tile_hash f873ae60ee3c420c…` unchanged
+
+### Scores
+
+| Criterion | Iter 10 | Iter 11 | Δ |
+|-----------|---------|---------|---|
+| 4. Depth feedback (was XP) | 0 | **1** | +1 (HUD numeric DEPTH, code-cited) |
+| 10. Run summary (was Build distinctness) | 0 | **1** | +1 (anchor 1 retroactively — YOU DIED + R already shipped iter 3) |
+| Others | unchanged | unchanged | – |
+| **Total** | **9** | **11** | **+2** |
+
+### Pre-mortem evaluation
+
+6 H2-RULE claims (PRE-MORTEMS.md iter 011): 4 LANDED in-iter (stone text, rubric names, make test, oracle hash), 2 deferred to iter-14 playtest (HUD shows DEPTH 0 at start, DEPTH > 0 after 5s ascent).
+
+### Files touched
+
+- Modified: `loop/gameplay/PROMPT.md`, `loop/gameplay/RUBRIC.md`, `loop/gameplay/creative-consults.md`, `loop/gameplay/STATE.md`, `loop/gameplay/LEDGER.md`, `loop/gameplay/PRE-MORTEMS.md`, `scripts/PlayerTank.gd`
+
+### Schedule
+
+- Iter 12 BUILD: spawn-ahead-of-player (compute ascent velocity; spawn farther ahead at higher velocity; telegraph spawns; stalling pressure)
+- Iter 13 BUILD: forest hides + steel indestructibility
+- Iter 14 PLAYTEST: paired iter-10/11/12/13 user-look gate
+
+---
