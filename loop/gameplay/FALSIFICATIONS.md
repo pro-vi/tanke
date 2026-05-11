@@ -161,6 +161,27 @@ direction), since they're the loop's user-look authority.
 
 **Lesson:** When a fix targets a `.tscn` file, verify the file is actually used at runtime — `grep` for instantiation sites first. The base PlayerTank.tscn correctly had mask=513 but the level-scene override silently stripped it; instance overrides on scenes mask base values without warning.
 
+**RESOLVED (user iter 37 playtest):** "water fixed." Closed.
+
+---
+
+## Falsification 005-v2 — iter 37 — Heavy still rapid-fires on LOS acquisition
+
+**Prediction (iter 35):** Vision-cone gate solves "Heavy too smart" — Heavy needs to FACE player + clear LOS to fire.
+
+**Contradiction (user iter 37):** "heavy feels easier but it still points me directly and fire rapidly as soon as i came into its line of sight. really hard to play around."
+
+**Root cause:** Vision-cone correctly gated ENTRY into AIM_FIRE, but on entry: (a) `_enter_aim_fire()` set `_burst_timer = 0.0` → fires on next tick with zero reaction time, (b) `burst_interval = 0.25s` produced rapid 2-shot volley, (c) `aim_fire_cooldown_between_bursts = 0.8s` was short enough that sustained LOS = sustained pressure. No telegraph — player had no signal "Heavy has locked on, dodge now."
+
+**Iter 38 fix:**
+- New export `aim_fire_reaction_time = 0.45s` — Heavy enters AIM_FIRE, stops, faces player, but does NOT fire for 0.45s.
+- Red modulate telegraph during reaction window (color `(1.6, 0.5, 0.5)`, alpha preserved for forest hide).
+- `burst_interval` 0.25 → 0.4 (less rapid).
+- `aim_fire_cooldown_between_bursts` 0.8 → 1.2 (longer recovery).
+- Telegraph cleared on first shot of each burst.
+
+This gives the player a ~0.45s readable window to either break LOS (slip behind a wall) or commit to a perpendicular dodge. Per `.research/battle-city-ai.md` Stage 1 design intent: vision-based AI must be REACTABLE; instant-fire on acquisition reproduces the iter-24 "too smart" feel even with vision gating.
+
 ---
 
 ## Falsification 008 — iter 34 — Below-spawn fires when not intentionally stalling

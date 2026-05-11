@@ -2698,3 +2698,72 @@ property overrides silently mask base-scene values without warnings, so the
 "PlayerTank.tscn has mask=513" check was misleading evidence.
 
 ---
+
+## Iter 038 — BUILD — Heavy aim wind-up + telegraph + slower fire (F005-v2)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 20/50 (unchanged — pending playtest)
+
+User iter-37 playtest: water FIXED ("water fixed"). F007 closed.
+F005-v2 surfaced: "heavy feels easier but it still points me directly
+and fire rapidly as soon as i came into its line of sight. really hard
+to play around."
+
+### Diagnosis
+
+Vision-cone correctly gates AIM_FIRE entry, but on entry Heavy fires
+instantly with no reaction window:
+
+- `_enter_aim_fire()` set `_burst_timer = 0.0` → fires on next tick
+- `burst_interval = 0.25s` → 2 shots in a quarter second
+- `aim_fire_cooldown_between_bursts = 0.8s` → sustained LOS = sustained
+  pressure with no readable break
+- No visual telegraph — player has no signal "Heavy locked on, dodge now"
+
+### Fix (scripts/Enemy.gd)
+
+New export: `aim_fire_reaction_time = 0.45` (wind-up before first shot).
+Defaults adjusted:
+  - `burst_interval`: 0.25 → 0.4
+  - `aim_fire_cooldown_between_bursts`: 0.8 → 1.2
+
+`_enter_aim_fire()` now sets `_burst_timer = aim_fire_reaction_time`
+instead of 0, and calls `_apply_aim_telegraph()` (modulate sprite to
+red `(1.6, 0.5, 0.5)`, preserving alpha for forest-hide compatibility).
+
+`_heavy_aim_fire_tick()` calls `_clear_aim_telegraph()` on the first
+shot of each fresh burst, restoring `Color(1,1,1,1)` with alpha
+preserved.
+
+Player now has ~0.45s readable window to break LOS (slip behind a
+wall) or commit to a perpendicular dodge after Heavy locks on.
+
+### Why this matters
+
+Per `.research/battle-city-ai.md` Stage 1: vision-based AI must be
+REACTABLE. Instant-fire on acquisition reproduces the iter-24
+"too smart" feel even with proper vision gating. The wind-up + visible
+telegraph is the missing tactical hook — player learns Heavy's
+behavior, can plan dodges, can use cover.
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0, no warnings
+- Substrate frozen scripts untouched ✓
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd` (+ ~30 lines: 1 export, 2 helper funcs, 2 callsite edits)
+- Modified: `loop/gameplay/{STATE,FALSIFICATIONS,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- Iter 39 = PLAYTEST (verify F005-v2 + carry-over F006/F008 confirmations)
+- Halt iter 41 if no response
+- If user reports "still too fast" → iter 40 raises reaction_time to 0.6s
+- If user reports "Heavy now too passive" → iter 40 lowers to 0.3s
+
+---

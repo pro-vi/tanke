@@ -945,6 +945,23 @@ H2-RULE claims (3, narrower):
 
 Build verification: `make test` exit 0 ✓, `godot --headless --quit-after 60` exit 0 with no errors/warnings ✓.
 
+**Post-iter (user iter 37 response):** Claim 1 LANDED ("water fixed"). Claim 2 LANDED (no new collision bug reported). Claim 3 LANDED (headless boot clean). F007 closed. NEW falsification surfaced: F005-v2 (Heavy rapid-fire on LOS) — see iter 38 entry.
+
+---
+
+## Iter 038 — BUILD (F005-v2 Heavy wind-up + telegraph + slower fire)
+
+Tag: `[FEEL]` reactable-AI iter.
+
+Going in, biggest expected miss: 0.45s reaction time may be either (a) too short, Heavy still feels instant, or (b) too long, Heavy now feels too passive and player walks past. Defaults are educated guesses — iter 39 may need tuning. Secondary risk: red modulate color clashes visually with Heavy's existing sprite tint (sprite_base_frame=32 in Spawner) — telegraph might be hard to see.
+
+H2-RULE claims (3, narrower):
+1. User reports Heavy now has a "wind-up" / "tells" / "I can dodge in time" — verifies F005-v2
+2. User does NOT report Heavy becoming too passive ("too easy now" / "Heavy never fires")
+3. User notices the red telegraph color (visible feedback)
+
+If 1 lands without 2: tuning was right. If 1+2 both land: 0.45s too long, iter 39 trims to 0.3s. If neither lands: still feels instant, iter 39 increases to 0.6s + bigger telegraph.
+
 **Post-iter:** [filled when user responds]
 
 ---

@@ -28,8 +28,14 @@ enum State { CHASE, AIM_FIRE }
 @export var vision_blocked_by_env: bool = true  # raycast obstruction check
 @export var aim_fire_min_dwell: float = 0.4  # hysteresis floor before exit
 @export var burst_count: int = 2
-@export var burst_interval: float = 0.25
-@export var aim_fire_cooldown_between_bursts: float = 0.8
+@export var burst_interval: float = 0.4
+@export var aim_fire_cooldown_between_bursts: float = 1.2
+# iter 38 (user iter-37 playtest: "still points me directly and fire rapidly
+# as soon as i came into its line of sight"): aim wind-up. Heavy stops, faces
+# player, and shows red telegraph for this duration BEFORE first shot. Gives
+# player reaction time to break LOS or commit to a dodge.
+@export var aim_fire_reaction_time: float = 0.45
+@export var aim_telegraph_color: Color = Color(1.6, 0.5, 0.5, 1.0)
 
 var hp: int = max_hp
 var direction: int = Constants.Dir.D  # start facing down (comes from top)
@@ -168,6 +174,8 @@ func _heavy_aim_fire_tick(delta: float) -> void:
 	_burst_timer -= delta
 
 	if _burst_remaining > 0 and _burst_timer <= 0.0:
+		# First shot of a fresh burst clears the wind-up telegraph.
+		_clear_aim_telegraph()
 		_fire()
 		_burst_remaining -= 1
 		_burst_timer = burst_interval
@@ -193,8 +201,28 @@ func _enter_aim_fire() -> void:
 	_state = State.AIM_FIRE
 	_state_time = 0.0
 	_burst_remaining = burst_count
-	_burst_timer = 0.0
+	# Wind-up: first shot delayed by aim_fire_reaction_time. Red telegraph
+	# during this window so player sees Heavy lock onto them.
+	_burst_timer = aim_fire_reaction_time
 	_face_player()
+	_apply_aim_telegraph()
+
+
+func _apply_aim_telegraph() -> void:
+	if _sprite == null:
+		return
+	# Preserve current alpha (forest hide manages alpha separately).
+	var a: float = _sprite.modulate.a
+	_sprite.modulate = aim_telegraph_color
+	_sprite.modulate.a = a
+
+
+func _clear_aim_telegraph() -> void:
+	if _sprite == null:
+		return
+	var a: float = _sprite.modulate.a
+	_sprite.modulate = Color(1, 1, 1, 1)
+	_sprite.modulate.a = a
 
 
 func _face_player() -> void:
