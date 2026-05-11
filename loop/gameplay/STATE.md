@@ -4,7 +4,7 @@
 
 ```
 phase: loop
-iteration: 22
+iteration: 23
 preloop_complete: yes
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
@@ -13,6 +13,8 @@ consult_cadence: every 5 iters (iter 20 → Consult 004 ADOPTED iter 22, 25 next
 sprint_phase: bands+behaviors (iters 23-30, post-Consult-004 reprioritization)
 pending_consult: none
 load_bearing_problem: combat verbs (stop-face-fire) vs ascender verbs (keep moving up) — Pro META
+h2_rule_version: v2 (iter 23) — STRUCTURE/FEEL/MIXED tag mandatory on score-lift citations
+playtest_template: loop/gameplay/playtest-template.md (2-question format, target 1-per-5-iters cadence post-33)
 ```
 
 ---
@@ -129,21 +131,21 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 22 BUILD complete. Pro Consult 004 integration + ascent director:
-- Read Pro response (durationMs 358561, ~6 min). Major critique:
-  game is BC-shaped not BC-legible; Light/Heavy stats-split insufficient;
-  crit 6 anchor 2 wording too loose. META: BC controls (stop-face-fire)
-  contradict ascender (keep moving up).
-- Rubric crit 6 reworded STRICTER (role distinction, not stats).
-- Score REVERT: crit 6 2 → 1. Total 16 → 15 (first downward revision).
-- Spawner.gd: DEPTH_BANDS scaffold (warmup/first_push/heavy_gate/rush).
-  Bands modulate spawn interval + enemy type weights. Band transitions
-  logged. Verified via 15s headless: band ENTER + correct interval math.
-- Verified: make test exit 0, oracle tile_hash f873ae60ee3c420c… unchanged.
-- Sprint plan REVISED: drop power-up + persistence + kill counter; spend
-  on behavioral split (iters 24/26) + per-band encounter rules.
+Iter 23 AUDIT complete. /meta nat-13 structural fixes installed:
+- Diagnosis: loop has parity drift — anchor-citation model diverges
+  from feel-delivery model; iter-22 score revert was the symptom.
+- H2 RULE v2: STRUCTURE / FEEL / MIXED / STRUCTURE-DEFERRED tags
+  mandatory on every score-lift citation. Feel-criteria >2 require
+  [FEEL] or [MIXED]. Self-deception detector before commit.
+- Retroactive tagging: iters 19, 21 = [STRUCTURE] (visual juice
+  feel-impact unverified); iter 22 = [STRUCTURE-DEFERRED → iter 26].
+- New playtest-template.md: 2-question format, target <30s user time,
+  enables 1-per-5-iter playtest cadence post-33.
+- make test exit 0, oracle f873ae60ee3c420c… unchanged.
+- Scores: unchanged at 15/50 (process iter).
 
-Next: iter 23 AUDIT — first band tuning + plan iter-24 Heavy behavioral split.
+Next: iter 24 BUILD Heavy behavioral split (corridor-denier) with
+STRUCTURE/FEEL tagging discipline applied.
 ```
 
 ---
@@ -155,6 +157,36 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 24 BUILD — Heavy behavioral split (corridor-denier state machine):
+  - Pre-mortem (H2 RULE v2): tag declaration upfront. Expected tag for
+    crit 6 lift: [STRUCTURE-DEFERRED → iter 33] — code-citable role
+    distinction (state machine), feel verification deferred to playtest.
+  - DIAGNOSE: crit 6 at 1 (post-revert). Anchor 2 wording (per iter 22
+    rewrite) requires "distinct battlefield roles visible within 10 seconds."
+    Heavy as corridor-denier = role distinction.
+  - Enemy.gd state machine:
+    * enum State { CHASE, AIM_FIRE }
+    * Only Heavy type uses state-machine; Light stays naive
+    * AIM_FIRE: stop moving, face player direction, fire 2-3 burst
+    * Transition CHASE → AIM_FIRE: when player in roughly same row/col
+      AND within ~80 px (line-of-sight proxy)
+    * Transition AIM_FIRE → CHASE: when player out of LOS for N frames
+      OR burst complete
+  - Score predictions:
+    * Crit 6: 1 → 2 [STRUCTURE-DEFERRED → iter 33]
+    * Tagged self-deception check: if Pro saw this code, would they
+      reword anchor 2 again? — Stricter wording from iter 22 demands
+      visible role distinction. Heavy CHASE/AIM_FIRE alternation IS a
+      role distinction. Should hold.
+  - Commit; ScheduleWakeup 240s.
+
+Iter 25 CONSULT (per cadence): fire /agentify to validate iter-24
+implementation feel-delivery vs structure-only.`
+
+---
+
+## Previous Next Action (iter 22 — shipped as iter 23)
 
 `Iter 23 AUDIT (every-5-iters cycle):
   - Pre-mortem (H2 RULE: reference-language for iter-33 — sharper version)

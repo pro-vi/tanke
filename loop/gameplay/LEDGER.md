@@ -1680,7 +1680,7 @@ Pro response will be read at iter 21.
 
 | Criterion | Iter 20 | Iter 21 | Δ |
 |-----------|---------|---------|---|
-| 8. Visual feedback / juice | 1 | **2** | +1 |
+| 8. Visual feedback / juice | 1 | **2** | +1 | `[STRUCTURE]` (retagged iter 23) — Anchor 2 "Hit flash + enemy death (sprite swap or particle)" code-cited; particle visible at queue_free position but feel-impact (does kill-confirmation feel satisfying?) unverified. Defer to iter-33 playtest. |
 | **Total** | **15** | **16** | **+1** |
 
 ### Files touched
@@ -1750,7 +1750,7 @@ Substrate intact iters 1-22.
 
 | Criterion | Iter 21 | Iter 22 | Δ | Citation |
 |-----------|---------|---------|---|----------|
-| 6. Enemy variety + behavior | 2 | **1** | -1 | REVERT iter-16 lift. Stricter anchor 2 wording per Pro Consult 004 H3 requires role distinction. Code-only stats-split doesn't meet. Behavioral split lands iters 24/26. |
+| 6. Enemy variety + behavior | 2 | **1** | -1 | `[STRUCTURE-DEFERRED → iter 26]` — REVERT iter-16 lift. Stricter anchor 2 wording per Pro Consult 004 H3 requires role distinction. Code-only stats-split doesn't meet. Behavioral split lands iters 24/26 to re-earn 2 with proper `[STRUCTURE]` (anchor 2 has no playtest qualifier under new wording — see RUBRIC.md). |
 | Others | unchanged | unchanged | – | – |
 | **Total** | **16** | **15** | **-1** | First downward revision; rubric-theater honesty per Pro v2 H2 mandate |
 
@@ -1783,6 +1783,67 @@ DROPPED: power-up prototype, run-best persistence (FileAccess), kill counter HUD
 ### Schedule
 
 - Iter 23 = AUDIT (every 5 iters cycle). Score recheck + first band tuning observations from a longer headless test.
+- ScheduleWakeup 240s.
+
+---
+
+## Iter 023 — AUDIT — /meta structural fixes (STRUCTURE/FEEL tags + playtest template)
+
+**Mode:** AUDIT (every 5 iters per PROMPT §3 + responding to /meta nat-13 diagnosis)
+**Focus:** Install discipline preventing parity drift recurrence (iter-22 score revert was Symptom)
+**Date:** 2026-05-11
+
+### Trigger
+
+Dice stop-hook nat-13 at iter-22-end invoked `/meta`. Diagnosis: the loop produces "anchor citation progress" but the goal is "feel delivery"; these diverge under pressure; consults bridge the gap retroactively. Pattern: **parity drift + frame mismatch**. /meta recommended three structural fixes; iter 23 implements them.
+
+### Actions
+
+**1. H2 RULE upgrade (PRE-MORTEMS.md):**
+Added STRUCTURE / FEEL / MIXED / STRUCTURE-DEFERRED tags. Every score-lift citation must declare evidence type. Feel-criteria scores >2 require `[FEEL]` or `[MIXED]` tag. Non-feel criteria can be `[STRUCTURE]` but must specify what playtest evidence would falsify.
+
+Self-deception detector: before commit, ask "if I showed this citation to Pro, would they reword the anchor?" If yes → defer or rewrite first.
+
+**2. Retroactive tagging:**
+- Iter 19 (player hit-flash): `[STRUCTURE]` — feel unverified, defer to iter-33
+- Iter 21 (enemy death particle): `[STRUCTURE]` — particle visible but kill-feel-satisfaction unverified
+- Iter 22 (crit 6 revert): `[STRUCTURE-DEFERRED → iter 26]`
+
+These iters' anchors are met BY THE LETTER of rubric wording, but the FEEL contribution is unverified. Honest framing.
+
+**3. 2-question playtest format (new file `loop/gameplay/playtest-template.md`):**
+Designed for lighter cadence. Two questions covering the LOAD-BEARING iter prediction + a wildcard "anything off?" slot. Should take <30s of user time, enabling playtest cadence of 1-per-5-iters without burden.
+
+### Substrate freeze check
+
+- No code changes. Pure process iter.
+- Substrate intact (tile_hash f873ae60ee3c420c… last verified iter 22).
+- H1 tripwire: 1 (Spawner). Unchanged.
+
+### Verification
+
+- `make test` exit 0 (no code changes; same as iter 22)
+- Oracle: unchanged at substrate baseline
+
+### Scores
+
+| Criterion | Iter 22 | Iter 23 | Δ | Citation |
+|-----------|---------|---------|---|----------|
+| All | unchanged | unchanged | – | Process iter; no anchor lifts |
+| **Total** | **15** | **15** | **0** | `[STRUCTURE]` process-only |
+
+### Pre-mortem evaluation
+
+5 of 5 H2-RULE claims LANDED in-iter. New STRUCTURE/FEEL tag rule installed. Three iters retagged. Playtest template created.
+
+### Files touched
+
+- Modified: `loop/gameplay/PRE-MORTEMS.md` (H2 RULE v2 + iter 23 entry), `loop/gameplay/LEDGER.md` (iter 19/21/22 retags + this entry), `loop/gameplay/STATE.md`
+- Created: `loop/gameplay/playtest-template.md`
+
+### Schedule
+
+- Iter 24 BUILD: Heavy behavioral split (corridor-denier state machine) per revised sprint plan. Will use STRUCTURE/FEEL tagging discipline. Expected tag: `[STRUCTURE-DEFERRED → iter 33]` for crit 6 anchor 2 lift (new role-distinction wording is code-citable in principle, but feel-impact requires playtest).
 - ScheduleWakeup 240s.
 
 ---

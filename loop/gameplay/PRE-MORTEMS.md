@@ -107,6 +107,32 @@ iter-4 LEDGER + creative-consults.md.
 
 ---
 
+## H2 RULE (v2 — iter 23 upgrade, after /meta diagnosis of parity drift)
+
+Original H2 RULE (iter 4): every pre-mortem must include ≥1 independently observable falsifiable claim. Still active.
+
+**NEW iter 23 — STRUCTURE / FEEL / MIXED tag mandatory on every score-lift citation:**
+
+The /meta analysis at iter 22 named the loop's recurring pattern: **parity drift + frame mismatch**. The per-iter model ("anchor citation = progress") diverges from the goal model ("feel delivery = progress"). Score climbs via code-citable anchors but the game's feel evolves only when playtest evidence lands. Iter-22 had to revert iter-16 because the rubric anchor was permission-to-rationalize.
+
+To prevent recurrence, every score-lift citation must include a tag:
+
+| Tag | Meaning | Allowed evidence |
+|-----|---------|------------------|
+| `[STRUCTURE]` | System exists in code; feel-impact unverified | Code citation sufficient |
+| `[FEEL]` | User-observable behavior verified via playtest | Playtest cite required |
+| `[MIXED]` | System exists AND has been playtest-cited | Both required |
+| `[STRUCTURE-DEFERRED]` | Built but feel verification deferred to specific later iter | Code cite + named verification iter |
+
+Rules:
+- Score lifts on feel criteria (1, 4, 5, 7, 8, 9, 10) MUST have `[FEEL]` or `[MIXED]` tag to land — `[STRUCTURE]` doesn't count for >score=2 on feel criteria
+- Score lifts on non-feel criteria (2, 3, 6) can be `[STRUCTURE]`-tagged but must specify what playtest evidence would falsify the lift
+- Each pre-mortem must declare the iter's intent: which tags it expects to earn
+
+Self-deception detector: before commit, re-read the score-lift citation and ask "if I showed this to Pro, would they reword the anchor?" If yes → defer the lift OR rewrite the anchor first (iter 22 precedent).
+
+---
+
 ## H2 RULE — pre-mortems must include independently observable claims
 
 Per GPT-Pro H2 critique (consult key tanke-iter-2-secondopinion): "'I
@@ -619,6 +645,23 @@ The Pro META insight (combat verbs vs ascender verbs contradiction) is the load-
 - Enemy behaviors that are dodgeable without stopping (Light = fast-pass that doesn't track tightly)
 - Threats from behind (push player up)
 - Bands skippable without clearing (open lane)
+
+---
+
+## Iter 023 — AUDIT — Install /meta structural fixes (STRUCTURE/FEEL tags + playtest format)
+
+Going in, biggest expected miss: I'll write a beautiful new H2 RULE clause and then violate it iter 24 by tagging Heavy behavioral split as `[FEEL]` when it's clearly `[STRUCTURE]` without playtest. The tag must be self-enforcing: every score-lift citation MUST include the tag and explicit evidence type.
+
+H2-RULE claims iter 23:
+1. PRE-MORTEMS.md adds STRUCTURE/FEEL/MIXED tag rule → LANDED (this clause)
+2. LEDGER iters 19/21/22 retagged STRUCTURE retroactively → execute via LEDGER edit
+3. New 2-question playtest format documented in STATE.md / playtest-template.md
+4. make test exit 0 (no code change) → binary
+5. Oracle hash unchanged → binary
+
+Tag pre-declaration for iter 23: This iter expects to earn NO score lifts. All work is process/discipline; tags would be `[STRUCTURE]` if anything cited. Score stays 15/50.
+
+**Post-iter:** 5 of 5 binary-now LANDED. H2 RULE v2 installed; 3 iters retagged honestly; 2-question playtest template created at `loop/gameplay/playtest-template.md`. No score change (process iter).
 
 ---
 
