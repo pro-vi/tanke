@@ -913,6 +913,25 @@ H2 RULE v2 self-deception check: would Pro reword anchor 2 of crit 6 if shown th
 
 ---
 
+## Iter 036 — PLAYTEST (verify F005-F008)
+
+Tag: `[STRUCTURE]` prompt-issue iter.
+
+Going in, biggest expected miss: user reports Heavy still feels too smart. My iter-35 fix gated FIRING through walls but NOT MOVEMENT — Heavy's `_choose_direction_toward_player` in CHASE mode still omnisciently knows player position. So Heavy still hunts perfectly, just doesn't shoot through walls. Half-fix; iter 37 may need to extend vision-aware to MOVEMENT (Heavy wanders dumbly until it sees player, then commits to interception).
+
+H2-RULE claims:
+1. F005 fix verified — user reports Heavy needs vision to shoot
+2. F006 fix verified — user no longer reports drift off map
+3. F007 fix verified — water blocks player now
+4. F008 fix verified — user no longer reports spam below-spawns
+5. (NEW falsification risk) User notices Heavy still hunts (movement) — would trigger iter-37 movement rework
+
+5 H2-RULE claims deferred to user response.
+
+**Post-iter:** [filled when user responds]
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

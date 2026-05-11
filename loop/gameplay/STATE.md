@@ -3,15 +3,16 @@
 ## Phase
 
 ```
-phase: loop
-iteration: 35
+phase: AWAITING_USER_PLAYTEST
+iteration: 36
 preloop_complete: yes
+playtest_requested_iter: 36
 last_completed_playtest_iter: 33
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
-consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 ADOPTED, 40 next (PROMPT §10/20/30)
-ai_intelligence_stage: Stage 1 VISION shipped (Heavy iter 35: cone + raycast). Stage 0 Light close. Stage 2 transmission future iter ~38.
-research_artifact: .research/battle-city-ai.md (referenced iter 35)
-falsifications_closed_pending_playtest: F005 (Heavy vision-cone), F006 (map walls), F007 (water format-3), F008 (stall threshold raise) — iter-36 verifies
+consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 ADOPTED, 40 next
+ai_intelligence_stage: Stage 1 VISION shipped (Heavy firing gated). Movement still omniscient — may need iter 37 if user reports.
+falsifications_pending_playtest: F005/F006/F007/F008
+halt_iter_if_no_response: 39
 score: 20/50
 ```
 
@@ -127,6 +128,16 @@ on direction change, muzzle may not align visually with sprite center.
 ---
 
 ## Last Action
+
+```
+Iter 36 PLAYTEST request issued. AWAITING USER.
+Build verified (make test + headless exit 0).
+2-question prompt covering 4 F005-F008 verifications.
+Halt rule iter 39.
+Score unchanged 20/50.
+```
+
+(Previous)
 
 ```
 Iter 35 BUILD complete. F005-F008 fixes + Heavy vision-cone Stage 1.
@@ -402,6 +413,23 @@ None (new loop).
 ---
 
 ## Next Action
+
+`AWAITING user playtest response.
+
+On response (iter 37):
+  - Evaluate 4 F-verification claims + new Heavy-movement-still-omniscient risk
+  - Update scores per playtest evidence
+  - If Heavy still feels too smart: iter 37 reworks _choose_direction_toward_player
+    for Heavy to be vision-aware (random wander until sees player, then chase)
+  - If F005-F008 all confirmed closed: F005-F008 close in FALSIFICATIONS.md,
+    score crit 6 anchor 2 cited via [FEEL]
+  - If new bugs: iter 37 fixes
+  
+Halt rule iter 39.`
+
+---
+
+## Previous Next Action (iter 35 → iter 36 shipped)
 
 `Iter 36 PLAYTEST (mandatory; verifies F005-F008):
   - Pre-mortem H2 RULE v2 tag declaration
