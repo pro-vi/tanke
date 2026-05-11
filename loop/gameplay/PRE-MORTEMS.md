@@ -596,6 +596,32 @@ H2-RULE claims:
 
 ---
 
+## Iter 022 — BUILD — Ascent director + crit 6 score revert (Pro Consult 004 integration)
+
+Pro Consult 004 (key tanke-iter-20-creative) returned iter 22. Major critique. Adopting H1-H5 + META + sharpest recommendation. See `loop/gameplay/creative-consults.md` Consult 004 for full transcript + synthesis.
+
+Going in, biggest expected miss: I'll under-implement the ascent director — bands as a Dictionary config WITHOUT actual behavioral consequences. Bands need to feel different not just be different in code. Iter 22 only ships the SCAFFOLD; iters 24+ make bands feel distinct via enemy behavioral split + per-band encounter rules.
+
+H2-RULE claims iter 22:
+1. Pro Consult 004 transcript appended to creative-consults.md → LANDED
+2. RUBRIC.md crit 6 anchor 2-3-5 reworded for role distinction → LANDED
+3. Crit 6 score reverted 2 → 1 (honest correction per stricter anchor) → LANDED
+4. Spawner.gd ships ascent director scaffolding (DEPTH_BANDS + band-based interval/type-weight) → LANDED
+5. Headless verification shows band transition + per-band intervals → LANDED (`[spawner] band ENTER warmup at depth 0` + `interval=1.25s` reflects band 1.25x mult * stall 0.5x)
+6. make test exit 0 → LANDED
+7. Oracle tile_hash unchanged → LANDED
+
+7/7 binary LANDED in-iter. No deferred claims.
+
+**Post-iter:** All 7 LANDED. Total score 16 → 15 (crit 6 revert).
+
+The Pro META insight (combat verbs vs ascender verbs contradiction) is the load-bearing critique for the next 10 iters. Iter 24+ must address it via either:
+- Enemy behaviors that are dodgeable without stopping (Light = fast-pass that doesn't track tightly)
+- Threats from behind (push player up)
+- Bands skippable without clearing (open lane)
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

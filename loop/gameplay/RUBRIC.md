@@ -97,16 +97,21 @@ force stop-and-clear, breaking compulsion?
 
 ## 6. Enemy variety + behavior (0–5)
 
-Multiple enemy types with distinct AI.
+Multiple enemy types with distinct **battlefield roles** (not just stats).
+
+(Reworded iter 22 per GPT-Pro Consult 004 H3: "the rubric wording is now
+giving you permission to rationalize. 'Chaser + ranged-shooter' was not
+just a VS artifact; it was trying to demand role distinction, not stat
+distinction." Anchors now require BEHAVIORAL distinction, not stat-tweak.)
 
 | Score | Anchor |
 |-------|--------|
 | 0 | No enemies, or one type with no AI |
 | 1 | One enemy type that moves toward player |
-| 2 | Two types: chaser + ranged-shooter |
-| 3 | Three+ types with distinct movement (chaser / circler / line-of-sight shooter) |
-| 4 | Boss-like enemy or wave-marker enemy (special spawn at minute 2/4/etc) |
-| 5 | Enemies route around walls (basic pathfinding); cited via playtest "they don't get stuck" |
+| 2 | Two types with **distinct battlefield roles visible within 10 seconds** (mobile pressure / lane denial / flanker / ambusher / etc.) — code-citable behavioral split, not stat-tweak |
+| 3 | Three+ types with **distinct movement AND firing patterns** (e.g., chaser-rusher / corridor-denier-pauser / line-of-sight-snapper) |
+| 4 | Boss-like enemy or band-marker enemy whose appearance changes player behavior (special spawn at depth-band boundary) |
+| 5 | Enemies route around walls (basic pathfinding) AND the role distinctions are user-cited via playtest ("the slow ones hold ground" / "the fast ones rush") |
 
 ---
 
@@ -183,3 +188,4 @@ Does the death screen close one run and pitch the next?
 |------|--------|--------|
 | 0 | Initial gameplay rubric, 10 criteria, reachability floor | New loop scope: VS-like gameplay; engine is substrate |
 | 11 | Renamed crits 4, 5, 7, 10 to roguelike-ascender axes (Depth feedback, Forward survivability, Compulsion loop, Run summary) | Framing pivot per user correction iter 10 + Pro Consult 003: roguelike vertical ascender with BC combat feel, not VS-like survival. Co-op explicitly NOT a rubric axis (scope grenade). |
+| 22 | Crit 6 anchor 2-3-5 reworded for role distinction (not stat distinction) | Per GPT-Pro Consult 004 H3: original anchor wording let me claim Light/Heavy stats-only as anchor 2; stricter wording forces behavioral split. Iter-16 score lift (crit 6 1→2) RETROACTIVELY REVERTED. |

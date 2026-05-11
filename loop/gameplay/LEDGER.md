@@ -1693,3 +1693,96 @@ Pro response will be read at iter 21.
 - ScheduleWakeup 240s
 
 ---
+
+## Iter 022 — BUILD — Ascent director scaffold + crit 6 revert (Pro Consult 004)
+
+**Mode:** BUILD (reactive — Pro response triggered re-prioritization)
+**Focus:** integrate Pro Consult 004 critique; revert iter-16 score per stricter rubric; scaffold ascent director
+**Date:** 2026-05-11
+
+### Pro Consult 004 integration
+
+Full critique in `loop/gameplay/creative-consults.md` Consult 004.
+
+Key insights adopted:
+- **H1:** Game is BC-shaped not BC-legible. Maze is decorative obstruction, not tactical authorship. STOP polishing surface events.
+- **H2:** Light/Heavy stats-split insufficient; need behavioral split. Skip third type (no Fast).
+- **H3:** Crit 6 anchor 2-3-5 wording reworded STRICTER (role-based not stat-based). Retroactively un-award iter-16 lift.
+- **H4:** Sprint plan reprioritized — drop power-up + run-best persistence + kill counter. Spend on ascent director + behavioral split.
+- **H5:** Sharper iter-33 prediction: "user will stop to clear enemies more often than they push upward through danger."
+- **META blind spot:** BC body-aimed combat (stop-face-fire) contradicts ascender (keep moving up). Mitigate via dodge-not-clear encounter design.
+
+### Actions
+
+**Rubric:**
+- `loop/gameplay/RUBRIC.md` crit 6: anchors 2/3/5 reworded for ROLE DISTINCTION not stat distinction. Specifically anchor 2: "Two types with **distinct battlefield roles visible within 10 seconds** — code-citable behavioral split, not stat-tweak." Revision log entry added.
+
+**Score revert:**
+- Crit 6: 2 → 1. Stats-only Light/Heavy doesn't meet new anchor 2 wording.
+- Total: 16 → 15.
+
+**Code:**
+- `scripts/Spawner.gd`:
+  - New `const DEPTH_BANDS: Array` with 4 bands: warmup (depth ≤8, Light-only, 1.25× interval), first_push (≤20, 70/30, 1.0×), heavy_gate (≤40, 40/60, 0.85×), rush (≤9999, 85/15, 0.7×).
+  - State: `_player_start_y`, `_max_depth_reached`, `_last_band_name`.
+  - `_update_ascent_velocity` tracks peak depth alongside instant velocity.
+  - `_current_band()` returns band whose depth_max ≥ peak depth.
+  - `_current_spawn_interval()` now multiplies base interval by band's `interval_mult` THEN applies stall pressure.
+  - `_pick_enemy_type()` weights now look up band's type_weights override (types absent from band = weight 0).
+  - `_try_spawn` debug print includes depth + band name; logs band ENTER transitions.
+
+### Substrate freeze check
+
+- All frozen scripts untouched. Modified only Spawner.gd + RUBRIC.md + creative-consults.md.
+- No .tscn edits. H1 tripwire: 1 (Spawner). Unchanged.
+
+### Verification
+
+- `make test` exit 0 clean
+- Reachability oracle: `tile_hash f873ae60ee3c420c…` unchanged
+- 15s deterministic headless run shows:
+  - `[spawner] band ENTER warmup at depth 0` — band transition detection working
+  - `[spawner] tick 5: ... depth=0 band=warmup ascent=0.00 stall=7.5s interval=1.25s` — interval = base 2.0 × warmup mult 1.25 × stall mult 0.5 = 1.25 ✓ (composition of band + stall modulation correct)
+
+Substrate intact iters 1-22.
+
+### Scores
+
+| Criterion | Iter 21 | Iter 22 | Δ | Citation |
+|-----------|---------|---------|---|----------|
+| 6. Enemy variety + behavior | 2 | **1** | -1 | REVERT iter-16 lift. Stricter anchor 2 wording per Pro Consult 004 H3 requires role distinction. Code-only stats-split doesn't meet. Behavioral split lands iters 24/26. |
+| Others | unchanged | unchanged | – | – |
+| **Total** | **16** | **15** | **-1** | First downward revision; rubric-theater honesty per Pro v2 H2 mandate |
+
+### Pre-mortem evaluation
+
+7 of 7 binary-now claims LANDED in-iter. Largest iter so far — Pro consult integration + rubric edit + score revert + ascent director scaffold all in one commit. Pro's META critique (combat vs ascender contradiction) becomes the load-bearing problem statement for iters 24-32.
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd` (DEPTH_BANDS + state + band-aware spawn formulas), `loop/gameplay/RUBRIC.md` (crit 6 reword + revision log), `loop/gameplay/creative-consults.md` (Consult 004 full transcript + synthesis), `loop/gameplay/PRE-MORTEMS.md` (iter 022 + Consult 004 post-eval), `loop/gameplay/LEDGER.md` (this entry), `loop/gameplay/STATE.md`
+
+### Revised sprint plan (per Pro Consult 004 H4)
+
+| Iter | Mode | Focus |
+|------|------|-------|
+| 22 | BUILD | (THIS) ascent director scaffold + rubric + score revert |
+| 23 | AUDIT | First band-encounter tuning + plan behavioral split |
+| 24 | BUILD | Heavy behavioral split (pause-and-fire / corridor denier) |
+| 25 | CONSULT |
+| 26 | BUILD | Light behavioral split (lane-invader, rare fire) |
+| 27 | BUILD | Encounter rule per band (e.g., heavy_gate spawns 1 Heavy first, holds Light spawns) |
+| 28 | AUDIT |
+| 29 | BUILD | "Stall punishment" or "open lane" band — addresses META combat-vs-climb tension |
+| 30 | CONSULT |
+| 31 | BUILD | Cheap death summary (depth/time/kills text on YOU DIED) |
+| 32 | Polish + prep iter-33 playtest |
+
+DROPPED: power-up prototype, run-best persistence (FileAccess), kill counter HUD. May reintroduce post-playtest if user reports missing.
+
+### Schedule
+
+- Iter 23 = AUDIT (every 5 iters cycle). Score recheck + first band tuning observations from a longer headless test.
+- ScheduleWakeup 240s.
+
+---

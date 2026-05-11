@@ -15,15 +15,14 @@ extends Node2D
 @export var telegraph_lead_time: float = 0.5  # seconds the warning marker shows before spawn
 @export var velocity_ema_alpha: float = 2.0  # EMA smoothing factor; higher = more responsive
 
-# Enemy type table (iter 16). Weighted random pick per spawn.
-# Battle City convention: light (basic, fast), armored/heavy (slower, tougher).
-# sprite_base_frame indices into sprites_0.png (16 hframes × 18 vframes;
-# frame N = (N/16)th row, (N%16)th col). Each tank uses 8 frames per row.
+# Enemy type table (iter 16; behavioral split planned iter 24-26 per Pro
+# Consult 004 H2). Currently stats-only difference — Light/Heavy will
+# diverge behaviorally in future iters.
 const ENEMY_TYPES: Array = [
 	{
 		"name": "Light",
 		"weight": 0.7,
-		"base_frame": 8,    # row 0 col 8 — white-ish, current default
+		"base_frame": 8,
 		"speed": 24.0,
 		"max_hp": 1,
 		"fire_cooldown": 1.5,
@@ -31,10 +30,42 @@ const ENEMY_TYPES: Array = [
 	{
 		"name": "Heavy",
 		"weight": 0.3,
-		"base_frame": 32,   # row 2 col 0 — different color (TBD by playtest)
-		"speed": 14.0,      # slower (less mobile, more rooted)
-		"max_hp": 2,        # 2 hits to destroy (BC armored convention)
-		"fire_cooldown": 0.8,  # faster fire (the "ranged-shooter" emphasis)
+		"base_frame": 32,
+		"speed": 14.0,
+		"max_hp": 2,
+		"fire_cooldown": 0.8,
+	},
+]
+
+# Ascent director (iter 22, per Pro Consult 004 sharpest recommendation):
+# depth bands change spawn texture as player ascends. Crude is fine —
+# player should feel "I reached a different kind of problem" within 1 min.
+# Each band specifies depth threshold + type weight overrides + interval.
+# (Bands tuned further in iters 23/27/29.)
+const DEPTH_BANDS: Array = [
+	{
+		"name": "warmup",
+		"depth_max": 8,
+		"type_weights": {"Light": 1.0, "Heavy": 0.0},
+		"interval_mult": 1.25,  # slower spawns — onboarding
+	},
+	{
+		"name": "first_push",
+		"depth_max": 20,
+		"type_weights": {"Light": 0.7, "Heavy": 0.3},
+		"interval_mult": 1.0,
+	},
+	{
+		"name": "heavy_gate",
+		"depth_max": 40,
+		"type_weights": {"Light": 0.4, "Heavy": 0.6},  # Heavy-heavy
+		"interval_mult": 0.85,
+	},
+	{
+		"name": "rush",
+		"depth_max": 9999,
+		"type_weights": {"Light": 0.85, "Heavy": 0.15},
+		"interval_mult": 0.7,  # fast spawns, mostly Light
 	},
 ]
 
@@ -46,10 +77,13 @@ var _viewport_half_height: float = 120.0
 # Spawn accumulator (replaces Timer; allows live spawn_interval modulation)
 var _spawn_accumulator: float = 0.0
 
-# Ascent tracking (iter 12)
+# Ascent tracking (iter 12 + iter 22 depth bands)
 var _last_player_y: float = 0.0
+var _player_start_y: float = 0.0  # iter 22: depth = (start - current) / 16
+var _max_depth_reached: int = 0   # iter 22: peak depth in rows
 var _ascent_velocity: float = 0.0  # rows/sec, positive = ascending
 var _stall_time: float = 0.0
+var _last_band_name: String = ""  # log when band changes
 
 # Counters for iter-4 pre-mortem prediction #2 (rejections per 10 ticks).
 var spawns_total: int = 0
@@ -63,6 +97,7 @@ func _ready() -> void:
 	_viewport_half_height = float(ProjectSettings.get_setting("display/window/size/viewport_height", 240)) * 0.5
 	if _player != null:
 		_last_player_y = _player.global_position.y
+		_player_start_y = _player.global_position.y
 
 
 func _process(delta: float) -> void:
@@ -88,6 +123,19 @@ func _update_ascent_velocity(delta: float) -> void:
 	var alpha: float = clampf(velocity_ema_alpha * delta, 0.0, 1.0)
 	_ascent_velocity = lerpf(_ascent_velocity, instant, alpha)
 	_last_player_y = _player.global_position.y
+	# iter 22: track peak depth for band lookup
+	var current_depth: int = int(maxf(0.0, (_player_start_y - _player.global_position.y) / 16.0))
+	if current_depth > _max_depth_reached:
+		_max_depth_reached = current_depth
+
+
+# iter 22 ASCENT DIRECTOR: which encounter band is the player currently in?
+# Returns the first band whose depth_max >= current peak depth.
+func _current_band() -> Dictionary:
+	for band in DEPTH_BANDS:
+		if _max_depth_reached <= band.depth_max:
+			return band
+	return DEPTH_BANDS[-1]
 
 
 func _update_stall_time(delta: float) -> void:
@@ -98,15 +146,24 @@ func _update_stall_time(delta: float) -> void:
 
 
 func _current_spawn_interval() -> float:
+	# iter 22: band's interval_mult modulates base spawn_interval; stall
+	# pressure still applies on top.
+	var band: Dictionary = _current_band()
+	var base: float = spawn_interval * float(band.get("interval_mult", 1.0))
 	if _stall_time > stall_pressure_after:
-		return spawn_interval * stall_interval_multiplier
-	return spawn_interval
+		return base * stall_interval_multiplier
+	return base
 
 
 func _try_spawn() -> void:
 	ticks_total += 1
 	if enemy_scene == null or _enemies_alive >= max_enemies:
 		return
+	# iter 22: detect band transition for debug visibility
+	var band: Dictionary = _current_band()
+	if band.name != _last_band_name:
+		print("[spawner] band ENTER %s at depth %d" % [band.name, _max_depth_reached])
+		_last_band_name = band.name
 	var spawn_pos: Variant = _find_valid_spawn()
 	if spawn_pos == null:
 		rejections_total += 1
@@ -114,7 +171,7 @@ func _try_spawn() -> void:
 		_telegraph_then_spawn(spawn_pos)
 		spawns_total += 1
 	if ticks_total % 5 == 0:
-		print("[spawner] tick %d: spawns=%d rejections=%d alive=%d ascent=%.2f rows/s stall=%.1fs interval=%.2fs" % [ticks_total, spawns_total, rejections_total, _enemies_alive, _ascent_velocity, _stall_time, _current_spawn_interval()])
+		print("[spawner] tick %d: spawns=%d rejections=%d alive=%d depth=%d band=%s ascent=%.2f stall=%.1fs interval=%.2fs" % [ticks_total, spawns_total, rejections_total, _enemies_alive, _max_depth_reached, band.name, _ascent_velocity, _stall_time, _current_spawn_interval()])
 
 
 # Compute spawn position: at the EFFECTIVE viewport top (just inside the
@@ -187,19 +244,24 @@ func _telegraph_then_spawn(pos: Vector2) -> void:
 	_enemies_alive += 1
 
 
-# Weighted random selection from ENEMY_TYPES. Returns a Dictionary with the
-# type's stats. Sum of weights need not be 1.0 — normalized at runtime.
+# Weighted random selection from ENEMY_TYPES, weighted by the current
+# DEPTH BAND's type_weights override (iter 22). Type weights in the band
+# replace the type's default weight; types absent from the band are weight 0.
 func _pick_enemy_type() -> Dictionary:
-	var total_weight: float = 0.0
+	var band: Dictionary = _current_band()
+	var weights: Dictionary = band.get("type_weights", {})
+	var total: float = 0.0
 	for t in ENEMY_TYPES:
-		total_weight += t.weight
-	var roll: float = randf() * total_weight
+		total += float(weights.get(t.name, t.weight))
+	if total <= 0.0:
+		return ENEMY_TYPES[0]
+	var roll: float = randf() * total
 	var accum: float = 0.0
 	for t in ENEMY_TYPES:
-		accum += t.weight
+		accum += float(weights.get(t.name, t.weight))
 		if roll <= accum:
 			return t
-	return ENEMY_TYPES[0]  # fallback (shouldn't reach)
+	return ENEMY_TYPES[0]
 
 
 func _on_enemy_freed() -> void:

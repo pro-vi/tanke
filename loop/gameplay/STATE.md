@@ -4,14 +4,15 @@
 
 ```
 phase: loop
-iteration: 21
+iteration: 22
 preloop_complete: yes
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 next_playtest_due_iter: 33
-consult_cadence: every 5 iters (iter 20 fired, 25, 30)
-sprint_phase: A (visual juice, iters 19-23)
-pending_consult: tanke-iter-20-creative (still waiting; read iter 22)
+consult_cadence: every 5 iters (iter 20 → Consult 004 ADOPTED iter 22, 25 next, 30)
+sprint_phase: bands+behaviors (iters 23-30, post-Consult-004 reprioritization)
+pending_consult: none
+load_bearing_problem: combat verbs (stop-face-fire) vs ascender verbs (keep moving up) — Pro META
 ```
 
 ---
@@ -66,12 +67,12 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 | 3. HP + death model | 2 | Iter 3 HurtBox + HP shown; anchor 3 needs HP bar |
 | 4. Depth feedback + ascent pressure (was XP) | **2** | Iter 15 playtest cite "feels like a run" satisfies anchor 2 (DEPTH+TIME live update) |
 | 5. Forward survivability (was Upgrade variety) | **1** | Iter 12 anchor 1 met: fire-while-moving + spawn-ahead-of-velocity = enemies don't reliably block ascent |
-| 6. Enemy variety | **2** | Iter 16: Light + Heavy types (70/30 weighted) — distinct sprite, speed, HP, fire cooldown. Anchor 2 BC-aligned. |
+| 6. Enemy variety | **1** | REVERTED iter 22 per Pro Consult 004 H3: stricter anchor 2 requires role distinction not stat distinction. Stats-only Light/Heavy doesn't meet. Behavioral split lands iters 24/26 to re-earn 2. |
 | 7. Compulsion loop (was Run pacing) | 0 | Needs playtest |
 | 8. Visual feedback / juice | **2** | Iter 19 player hit-flash + iter 21 enemy death yellow burst (anchor 2) |
 | 9. UI / UX | 1 | Iter 3 text HUD; iter 11 added DEPTH/TIME labels |
 | 10. Run summary + replayability (was Build distinctness) | **1** | Anchor 1 met retroactively iter 3 (YOU DIED + R) |
-| **Total** | **16/50** | Iter 21 +1 (crit 8 anchor 2 — enemy death particle) |
+| **Total** | **15/50** | Iter 22 -1 (crit 6 revert per Pro Consult 004 stricter anchor) |
 
 ---
 
@@ -128,17 +129,21 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 21 BUILD complete. Enemy death particle (Pro consult still pending):
-- Enemy.gd: take_damage on lethal calls _spawn_death_effect() BEFORE
-  queue_free. Spawns 16×16 yellow ColorRect at enemy pos, parented to
-  level so it survives enemy free. Tween fades alpha + scales 1.6× over
-  0.3s in parallel, then queue_frees burst via chain callback.
+Iter 22 BUILD complete. Pro Consult 004 integration + ascent director:
+- Read Pro response (durationMs 358561, ~6 min). Major critique:
+  game is BC-shaped not BC-legible; Light/Heavy stats-split insufficient;
+  crit 6 anchor 2 wording too loose. META: BC controls (stop-face-fire)
+  contradict ascender (keep moving up).
+- Rubric crit 6 reworded STRICTER (role distinction, not stats).
+- Score REVERT: crit 6 2 → 1. Total 16 → 15 (first downward revision).
+- Spawner.gd: DEPTH_BANDS scaffold (warmup/first_push/heavy_gate/rush).
+  Bands modulate spawn interval + enemy type weights. Band transitions
+  logged. Verified via 15s headless: band ENTER + correct interval math.
 - Verified: make test exit 0, oracle tile_hash f873ae60ee3c420c… unchanged.
-- Crit 8 (Visual feedback) 1 → 2 (anchor 2 met). Total 15 → 16/50.
+- Sprint plan REVISED: drop power-up + persistence + kill counter; spend
+  on behavioral split (iters 24/26) + per-band encounter rules.
 
-Pro consult key=tanke-iter-20-creative still waiting_for_response;
-iter 22 re-checks.
-Next: iter 22 BUILD — read Pro, then default = brick destruction visual.
+Next: iter 23 AUDIT — first band tuning + plan iter-24 Heavy behavioral split.
 ```
 
 ---
@@ -150,6 +155,33 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 23 AUDIT (every-5-iters cycle):
+  - Pre-mortem (H2 RULE: reference-language for iter-33 — sharper version)
+  - Re-score with fresh eyes per current scores 15/50
+  - Run longer headless (60-90s, simulated movement or just measure
+    bands at depth 0). Verify band-transitions are detectable.
+  - Open question: how do I drive headless player UP to test band
+    transitions at depth 8/20/40? Maybe a hidden test mode that auto-moves
+    PlayerTank up. Or use --remote-debug to inject Input events. Or just
+    rely on iter-33 user playtest for band verification.
+  - Decide whether iter 23 builds a test driver OR proceeds straight to
+    iter 24 Heavy behavioral split.
+  - Most likely: brief AUDIT, plan iter 24 BUILD detailed.
+
+Iter 24 BUILD plan: Heavy behavioral split — corridor-denier:
+  - Heavy doesn't always chase. Instead: if line-of-sight to player,
+    pause + face + fire 2-3 shot burst. Otherwise advance slowly toward
+    last known player position.
+  - State machine in Enemy.gd: states = CHASE, PAUSE_FIRE.
+  - Transition: see player + at firing range → PAUSE_FIRE. Player out
+    of LOS or moved → CHASE.
+  - Only "Heavy" type uses this state machine; "Light" stays naive chaser.
+  - Light's behavioral split (rare fire + aggressive forward) lands iter 26.`
+
+---
+
+## Previous Next Action (iter 21 — shipped iter 22)
 
 `Iter 22 — read Pro response (should be done by now), plan BUILD:
   - agentify_status / agentify_read_page for key tanke-iter-20-creative

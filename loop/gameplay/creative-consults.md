@@ -244,6 +244,79 @@ This is iter-12+ work. Iter 11 = base + template-stamping start.
 
 ---
 
+## Consult 004 — Iter 20 — GPT-Pro extended thinking — CREATIVE STEERING
+
+**When:** Fired iter 20 (2026-05-11), returned in iter 22 (durationMs 358561 ~6 min)
+**Agentify key:** `tanke-iter-20-creative`
+**Conversation URL:** https://chatgpt.com/g/g-p-69c9d0b3c3b88191872d6b59cb5adfb8-agentify/c/6a01a364-cfd4-83e8-8f9a-768d9c7a08c8
+**Context inlined:** 14 of 15 files (94K/100K). STATE.md omitted; LEDGER carried equivalent.
+
+### Trigger
+
+User iter-17 directive: "do at least 15 iters before asking me for any playtest. every 5 iter, may /agentify for creative input." Iter 20 is the first scheduled CONSULT under this cadence. Asked 5 hypotheses + META.
+
+### Pro's response (verbatim, key insights)
+
+**H1 (seductive-but-hollow): BREAKS** — "The seductive hollow thing is not merely 'depth 10 feels like depth 100.' It is worse: the game may be Battle City-shaped but not Battle City-legible. You have bullets, bricks, steel, forest alpha, water pass-through, top spawns, and tanks, but those are nouns. Battle City feel comes from combat grammar: lanes, brick sacrifice, bunker angles, spawn anticipation, pressure from known gates, and 'I chose to break this wall / preserve this wall.' Right now the procedural maze may be functioning as decorative obstruction rather than tactical authorship. Avoid polishing surface events until terrain creates recognizable decisions."
+
+→ **My synthesis (H1):** ADOPT. The pre-mortem prediction "depth 10 vs depth 30 feels same" was the surface complaint; the deeper truth is the terrain has no grammar. Procedural maze is RANDOM, not ARGUMENTATIVE — it doesn't pose decisions. **Stop polishing.** Iter 19 (hit flash) and iter 21 (enemy death particle) were rubric-driven but Pro is correct that they're surface polish over a missing skeleton.
+
+**H2 (enemy variety depth): BREAKS** — "Light vs Heavy as stats-only types is not enough unless the player can predict them by silhouette and change behavior. 'Fast/fragile' and 'slow/tough/fires more' is a good seed, but both currently chase and shoot, so the player mostly experiences 'enemy tank but sometimes annoying.' Make Light a lane-invader that advances aggressively and fires rarely; make Heavy a corridor-denier that turns slower, pauses, and fires bursts or aimed shots. One behavior split is worth more than adding a third type."
+
+→ **My synthesis (H2):** ADOPT. Iter 16's Light/Heavy currently differ only in stats. Make them BEHAVIORALLY distinct: Light=aggressive forward, low fire; Heavy=defensive position-and-shoot, high fire. Skip "Fast" as third type per Pro. Behavioral split takes ~2 iters; lifts crit 6 properly (under new rubric anchor 2 wording per H3).
+
+**H3 (rubric rewording): BREAKS** — "The rubric wording is now giving you permission to rationalize. 'Chaser + ranged-shooter' was not just a VS artifact; it was trying to demand role distinction, not stat distinction. Reword crit 6 now, but make it stricter, not easier: 'enemy types have distinct battlefield roles visible within 10 seconds: mobile pressure, lane denial, flanker, ambusher, etc.' Do not retroactively award yourself for Light/Heavy unless the code creates different decisions. Rubric edits are healthy only if they make future self-deception harder."
+
+→ **My synthesis (H3):** ADOPT. Update crit 6 anchor 2 wording to require ROLE distinction. RETROACTIVELY un-award iter-16 lift (crit 6 was 1, was lifted to 2 via Light/Heavy stats; revert to 1 since stats-only doesn't meet new anchor wording). Total drops 16 → 15. This is the kind of honesty Pro v2's H2 critique demanded.
+
+**H4 (sprint plan reprioritization): BREAKS** — "The sprint plan overinvests in after-the-fact roguelike framing: death summaries, best tracking, kill counter, particles. Those help a good run feel remembered; they do not make the run good. Sacrifice the power-up prototype first, then most of the persistent run-best work. Keep only the cheapest death summary: depth, time, kills. Spend the freed 2–3 iters on encounter bands or a depth director. Yes: encounter bands are more important than power-ups for iter-33. A helmet pickup inside a samey climb is just another noun."
+
+→ **My synthesis (H4):** ADOPT. Sprint plan revised below. Drop power-up (iter 31). Drop run-best tracker (iter 26). Keep minimal death summary (iter 24, cheap). Replace freed iters with encounter-band work.
+
+**H5 (iter-33 prediction): HOLDS** — "Your proposed falsification is probably right, but the sharper H2-RULE prediction should be more player-language-specific: 'In the iter-33 playtest, the user will not describe the game as a climb/ascent unless prompted; they will describe it as Battle City-ish tanks in a maze, and at least one comment will imply sameness or unclear forward pressure.' Even sharper: 'The user will stop to clear enemies more often than they push upward through danger.' That is the prediction most likely to expose whether the ascender premise exists in hands, not just HUD."
+
+→ **My synthesis (H5):** ADOPT. Replace my iter-33 H2-RULE prediction "depth 10 ≠ depth 30" with Pro's sharper version: "The user will stop to clear enemies more often than they push upward through danger." This is the falsification-pure test of whether the ascender premise EXISTS IN HANDS.
+
+### Pro's sharpest recommendation (adopted)
+
+"Before particles, power-ups, or persistence, build a tiny ascent director. Every N depth rows, change the run's situation in an obvious way: 'open lane,' 'brick choke,' 'heavy gate,' 'light rush,' 'forest pocket,' 'stall punishment.' This can be crude. It does not need full procedural artistry. It needs the player to feel, within one minute, 'I reached a different kind of problem.' If you only do one thing before iter-33, make depth alter encounter texture, not just spawn count."
+
+### Pro's META (the blind spot)
+
+"The core verbs may be fighting each other. Battle City shooting is body-aimed: to shoot left, right, or down, you stop ascending and turn. A vertical ascender asks the player to keep moving up. That means your 'authentic BC control feel' may directly sabotage 'forward survivability.' If the optimal play is stop, face, clear, then ascend, the roguelike ascender collapses into room-by-room tank clearing. Avoid building ten systems around a contradiction. You need mechanics or encounter design that make fighting while climbing natural: forward lanes, threats from behind, enemies that can be dodged rather than cleared, or rewards for maintaining upward motion."
+
+→ **My synthesis (META):** This is the load-bearing critique. The combat verbs (stop-face-fire) compete with the ascender verbs (keep moving). Mitigations Pro lists: forward lanes, threats from behind, dodge-not-clear enemies, ascending rewards. Translates to design rules for the ascent director:
+- Top-spawn enemies = naturally "behind" you as you ascend (already partially in place)
+- Stalling pressure (iter-12) = reward for moving = ALREADY in place but maybe too weak
+- Future bands could be "skippable" — no requirement to clear, just pass through
+- Future enemies could have stable patterns the player learns to weave around without stopping
+
+### Revised iter-22-32 roadmap
+
+| Iter | Mode | Focus |
+|------|------|-------|
+| 22 | BUILD | Rubric rewrite (crit 6 anchor 2) + score revert + ASCENT DIRECTOR scaffolding (depth bands → per-band spawn config) |
+| 23 | AUDIT | First encounter band tuning |
+| 24 | BUILD | First behaviorally distinct enemy type (Heavy = pause-and-fire) |
+| 25 | CONSULT (per cadence) |
+| 26 | BUILD | Light behavioral split (lane-invader, low fire) |
+| 27 | BUILD | Second encounter band (e.g., "heavy gate" = brick choke + Heavy spawn) |
+| 28 | AUDIT |
+| 29 | BUILD | Third band + "stall punishment" band (escalates stalling pressure visibly) |
+| 30 | CONSULT (per cadence + PROMPT §10/20/30) |
+| 31 | BUILD | Cheap death summary (depth/time/kills text on YOU DIED screen) |
+| 32 | Polish + prep iter-33 playtest |
+
+DROPPED: power-up prototype, run-best tracker (FileAccess persistence), kill counter HUD. May reintroduce post-playtest if user reports them missing.
+
+### Lessons
+
+1. **Rubric is permission-to-rationalize when wording is loose.** Crit 6 anchor 2 "chaser + ranged-shooter" let me claim stats-only Light/Heavy as anchor-met. Pro flagged this as exactly the rubric theater H2 critique warned about. Tighter wording → harder to self-deceive.
+2. **Surface polish before structure is a false-progress trap.** Iter 19/21 (hit flash, death particle) are crit-8 anchor citations but Pro says particles inside a samey climb are "another noun." They're not WRONG, just LOW-PRIORITY vs. building grammar.
+3. **The combat-vs-climb tension is the load-bearing META blind spot.** Need to design encounters that resolve it rather than fight it. Pro names 4 mitigations — pick 1-2 to encode in the ascent director.
+
+---
+
 ## Consult 003 — Mid-iter-10 — GPT-Pro extended thinking — LOOP REFRAME v2 (vertical ascender)
 
 **When:** Fired iter 10 (2026-05-11) after user correction; returned ~2.5 min later (durationMs 151971). Same agentify tab as Consult 002 (continuation conversation).
