@@ -24,16 +24,17 @@
 
 ```
 phase: AWAITING_USER_PLAYTEST
-iteration: 37
+iteration: 38
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
-playtest_requested_iter: 37
-last_completed_playtest_iter: 36 (PARTIAL — user reported F007 STILL BROKEN; F005/F006/F008 untested)
+playtest_requested_iter: 38
+last_completed_playtest_iter: 37 (PARTIAL — water FIXED ✓; F005-v2 Heavy still rapid-fires on LOS)
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 ADOPTED, 40 next
-ai_intelligence_stage: Stage 1 VISION shipped (Heavy firing gated). Movement still omniscient.
-falsifications_pending_playtest: F005/F006/F008 + F007-v2 (root-cause fix shipped iter 37)
-halt_iter_if_no_response: 40
+ai_intelligence_stage: Stage 1 VISION + wind-up telegraph (iter 38). Movement still omniscient.
+falsifications_closed: F007 (water iter 37)
+falsifications_pending_playtest: F005-v2 (Heavy reaction-time + telegraph + slower fire pacing), F006, F008
+halt_iter_if_no_response: 41
 score: 20/50
 ```
 
