@@ -480,6 +480,76 @@ Secondary score predictions:
 
 ---
 
+## Iter 017 — PLAYTEST evaluation (implicit "looks alright")
+
+User response: "yeah it looks alright. goodjob. im going to sleep, do at least 15 iters before asking me for any playtest. every 5 iter, may /agentify for creative input"
+
+H2-RULE eval — implicit landings (user gave general approval, no specific complaints):
+- Claim 1 (two types): LANDED (no complaint about sprite or behavior)
+- Claim 2 (no middle spawn): LANDED (F004 fix verified by absence of recurrence)
+- Claim 5 (sprite frame 32 OK): LANDED (no "weird sprite" complaint)
+- Claims 3, 4 (stalling, compulsion): INDETERMINATE (not addressed)
+
+3 LANDED + 2 INDETERMINATE. F004 officially closed.
+
+---
+
+## Iter 018+ — SPRINT (15-iter run without playtest, 5-iter consult cadence)
+
+User directive iter 17: "do at least 15 iters before asking me for any playtest. every 5 iter, may /agentify for creative input"
+
+This overrides PROMPT §"USER-LOOK PROTOCOL" cadence (iter 5 + every 3 iters → next at iter 20). New cadence:
+- **No playtest request until iter 33 minimum** (17 + 15+ = 32+; pick 33 for clean cadence)
+- **CONSULT every 5 iters:** iters 20, 25, 30 (per PROMPT §"CONSULT SCHEDULE" 10/20/30) — natural alignment
+- **AUDIT every 5 iters** per PROMPT §3 — iters 19/24/29 cycle works
+
+Going in to iter 18, biggest expected miss: I'll over-commit to a 15-iter sprint plan and the user's next interaction will redirect within 5-10 iters anyway. Realistic plan should be "high-leverage features ordered by dependency, allow re-routing at each consult."
+
+H2-RULE iter-18 claims (this iter is AUDIT + planning, not BUILD):
+1. STATE.md "Next Action" updated with sprint plan including iter-by-iter focus
+2. No code changes in iter 18 (audit-only)
+3. make test still exit 0 (unchanged from iter 17 commit)
+4. Oracle tile_hash unchanged
+
+Sprint roadmap (sketch, subject to consult-driven changes):
+
+**Phase A (iters 19-23) — Visual juice:**
+- 19: BUILD player hit-flash on take_damage + iframe blink (crit 8 anchor 1)
+- 20: CONSULT (creative input on next direction)
+- 21: BUILD enemy death particle/effect (crit 8 anchor 2)
+- 22: BUILD brick destruction visual feedback
+- 23: AUDIT (every 5 iters per PROMPT §3)
+
+**Phase B (iters 24-28) — Roguelike depth:**
+- 24: BUILD death screen with run-summary stats (crit 10 anchor 2)
+- 25: CONSULT
+- 26: BUILD run-best tracker (persistent across restarts via FileAccess)
+- 27: BUILD per-run kill counter on HUD
+- 28: AUDIT
+
+**Phase C (iters 29-32) — Combat depth:**
+- 29: BUILD third enemy type (Fast) → crit 6 anchor 3 unlock
+- 30: CONSULT (final consult before playtest)
+- 31: BUILD power-up prototype (BC helmet → 5s invulnerability)
+- 32: BUILD final polish for iter-33 playtest
+
+**Iter 33: PLAYTEST** (paired ~13 iters of work — biggest delta yet).
+
+Each phase has 1 AUDIT/CONSULT iter to absorb feedback. The 15-iter rule is the floor; if iter 32's accumulated work feels playtest-worthy at iter 31 I can extend. If Pro consult at iter 30 says "ship something different" I can re-route.
+
+Score-target predictions (cumulative over 15-iter sprint):
+- Crit 8: 0 → 2 (hit flash + enemy death = anchor 2)
+- Crit 4: 2 → 4 if stalling pressure is verified at iter 33
+- Crit 6: 2 → 3 (third type) or → 5 (if iter-33 playtest cites "no stuck")
+- Crit 7: 0 → 3 (anchor 3 if compulsion-R lands)
+- Crit 10: 1 → 3 (anchor 3 = personal best vs. this run)
+- Crit 9: 1 → 3 (anchor 3 = run timer + kill count + level number on HUD)
+- Total: 14 → ~22-26/50
+
+Major risk: 15 iters without playtest = lots of code drift, harder to root-cause feel issues at iter 33. Pro consults at 20/25/30 are the partial mitigation.
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

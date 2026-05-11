@@ -3,13 +3,14 @@
 ## Phase
 
 ```
-phase: AWAITING_USER_PLAYTEST
-iteration: 17
+phase: loop
+iteration: 18
 preloop_complete: yes
-playtest_requested_iter: 17
-last_completed_playtest_iter: 15
+last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
-halt_iter_if_no_response: 20
+next_playtest_due_iter: 33  (user override: no playtest before iter 33)
+consult_cadence: every 5 iters (iter 20, 25, 30)
+sprint_phase: A (visual juice, iters 19-23)
 ```
 
 ---
@@ -126,14 +127,21 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 17 PLAYTEST request issued. AWAITING USER.
-Build verified (make test + headless exit 0). 5 NARROWER H2-RULE claims:
-1. Two distinct enemy types visible
-2. NO "spawn in the middle" (F004 fix)
-3. Stalling pressure noticed
-4. Spontaneous R-press / "one more" (compulsion)
-5. NO new visual bug (sprite frame 32 lands on tank)
-Halt rule: iter 20 if no response.
+Iter 18 AUDIT complete. User said "looks alright, goodjob, do at least
+15 iters before asking me for any playtest. every 5 iter, may /agentify
+for creative input."
+
+Iter-17 implicit eval: 3 H2-RULE LANDED (two types, no middle spawn,
+sprite OK), 2 INDETERMINATE (stalling, compulsion). F004 closed.
+
+Sprint plan (iters 19-32) installed:
+- Phase A (19-23): visual juice — hit flash, enemy death, brick break
+- Phase B (24-28): roguelike depth — death screen, run-best, kill counter
+- Phase C (29-32): combat depth — third enemy type, power-up
+- AUDIT cycles at 23, 28; CONSULT at 20, 25, 30
+- Iter 33: paired playtest
+
+Scores unchanged at 14/50. Next: iter 19 BUILD player hit-flash.
 ```
 
 ---
@@ -145,6 +153,36 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 19 BUILD — Player hit-flash + iframe blink (visual juice):
+  - Pre-mortem (H2 RULE — claims about iter-33 playtest, not immediate)
+  - DIAGNOSE: crit 8 (Visual feedback / juice) at 0/5. Anchor 1 "Hit
+    flashes one color." Player has iframes (0.6s) after take_damage but
+    no visual signal — feels like nothing happens on hit.
+  - PlayerTank.gd take_damage flow:
+    * On take_damage (non-lethal): start a brief tween that modulates
+      sprite red→white→red→white→normal over the iframe period
+    * Visual: red flash on hit, blinking during iframes for visibility
+  - Headless smoke + oracle re-check
+  - Score predictions: crit 8 0 → 1 (anchor 1 "Hit flashes one color")
+    code-citable
+  - Commit; ScheduleWakeup 240s
+
+Iter 20 = CONSULT (PROMPT §10/20/30 + user's 5-iter cadence):
+  - Fire /agentify with current state, ask for creative direction.
+  - Question themes:
+    * Anything seductive-but-hollow about the playable thing?
+    * Should iter 21+ continue Phase A (visual juice) or shift focus?
+    * Rubric anchor 2 wording for crit 6 ("chaser + ranged-shooter")
+      is VS-style; should it be BC-aligned-renamed?
+    * What's the single most likely thing missing for the
+      first-60-seconds-unmistakably-roguelike-ascender test at iter 33?
+
+Iter 21 onwards: follow Pro v2 path; re-plan after each consult.`
+
+---
+
+## Previous Next Action (iter 17 — playtest implicit landed)
 
 `AWAITING user playtest response.
 
