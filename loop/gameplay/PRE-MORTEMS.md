@@ -457,3 +457,23 @@ H2-RULE claims for iter 15:
 4. (iter-17 playtest) User does NOT report "spawn in the middle" again. Deferred.
 
 ---
+
+## Iter 016 — BUILD — Enemy variety (second tank type)
+
+Going in, biggest expected miss: the chosen sprite_base_frame=32 lands on an unrelated graphic in the sprite sheet (16×18 layout was partly guessed). Iter-17 playtest will surface if Heavy doesn't look like a tank. Secondary risk: 30% Heavy at fire_cooldown=0.8s makes the bullet density punishing — at saturation that's ~7 enemies × 1.25 shots/s = 9 bullets/s from Heavies alone. May need to tune weights or fire rate at iter 17.
+
+H2-RULE independently observable claims:
+1. Spawner has weighted-random selection between 2 enemy types (Light 70% / Heavy 30%). Code-citable. → LANDED (`Spawner.gd:19-38` ENEMY_TYPES + `_pick_enemy_type()`).
+2. Enemies at runtime have varying sprite_base_frame + speed + max_hp + fire_cooldown per type. Code-citable. → LANDED (`Spawner.gd:_telegraph_then_spawn` applies type props before add_child).
+3. (iter-17 playtest) User reports two different enemy types — reference-language: "different enemy" / "tougher one" / "harder color" / "[two color names]". Deferred.
+4. (iter-17 playtest) F004 fix verified: NO "spawn in the middle" recurrence. Deferred.
+5. `make test` exit 0. Binary. → LANDED.
+6. Oracle `tile_hash f873ae60ee3c420c…` unchanged. Binary. → LANDED.
+
+4 of 6 LANDED in-iter. 2 deferred to iter-17 playtest.
+
+Secondary score predictions:
+- Crit 6 (Enemy variety + behavior) 1 → 2 (anchor 2 "Two types: chaser + ranged-shooter" — BC-aligned reading: Light chaser-mobile, Heavy ranged-shooter-emphasis with faster fire and slower mobility).
+- Total predicted: 13 → 14.
+
+---

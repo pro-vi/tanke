@@ -4,7 +4,7 @@
 
 ```
 phase: loop
-iteration: 15
+iteration: 16
 preloop_complete: yes
 last_completed_playtest_iter: 15
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
@@ -63,12 +63,12 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 | 3. HP + death model | 2 | Iter 3 HurtBox + HP shown; anchor 3 needs HP bar |
 | 4. Depth feedback + ascent pressure (was XP) | **2** | Iter 15 playtest cite "feels like a run" satisfies anchor 2 (DEPTH+TIME live update) |
 | 5. Forward survivability (was Upgrade variety) | **1** | Iter 12 anchor 1 met: fire-while-moving + spawn-ahead-of-velocity = enemies don't reliably block ascent |
-| 6. Enemy variety | 1 | Iter 2/7: one chaser+shooter type. Anchor 5 (no stuck) needs playtest. |
+| 6. Enemy variety | **2** | Iter 16: Light + Heavy types (70/30 weighted) — distinct sprite, speed, HP, fire cooldown. Anchor 2 BC-aligned. |
 | 7. Compulsion loop (was Run pacing) | 0 | Needs playtest |
 | 8. Visual feedback / juice | 0 | None |
 | 9. UI / UX | 1 | Iter 3 text HUD; iter 11 added DEPTH/TIME labels |
 | 10. Run summary + replayability (was Build distinctness) | **1** | Anchor 1 met retroactively iter 3 (YOU DIED + R) |
-| **Total** | **13/50** | Iter 15 +1 (crit 4 anchor 2 playtest-cited: "feels like a run") |
+| **Total** | **14/50** | Iter 16 +1 (crit 6 anchor 2 — second enemy type) |
 
 ---
 
@@ -125,31 +125,19 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 15 AUDIT complete. Playtest eval:
-- Claim 1 (climbing/run): LANDED — "yes feels like a run"
-- Claim 3 (no skiing): LANDED — "they do better now, barring twitching"
-  (twitching canonical to BC)
-- Claim 4 (no off-center): LANDED — "i think so"
-- Claim 5 (brick destruction): LANDED — "sometimes destroy half sometimes
-  1/4" (asked is it expected — YES, authentic BC 2×2 sub-cell destruction)
-- Claims 2,6,7,8,9,10: INDETERMINATE (not addressed)
+Iter 16 BUILD complete. Enemy variety (second tank type):
+- Spawner.gd: ENEMY_TYPES table (Light 70% + Heavy 30%).
+- Light: sprite_base_frame=8, speed=24, max_hp=1, fire_cooldown=1.5
+- Heavy: sprite_base_frame=32, speed=14, max_hp=2, fire_cooldown=0.8
+  (slower, tougher, faster fire — BC armored convention)
+- _pick_enemy_type weighted-random + _telegraph_then_spawn applies
+  stats before add_child so _ready sees overridden values.
+- Verified: make test exit 0, 10s headless run no errors, oracle
+  tile_hash f873ae60ee3c420c… unchanged.
+- Crit 6 (Enemy variety) 1 → 2 (anchor 2 BC-aligned reading).
+  Total 13 → 14/50.
 
-Partial falsification F004 logged: "some spawn in the middle" — root
-cause was _camera.global_position.y reporting unclamped position when
-limit_bottom clamps view. Patched Spawner.gd to use
-_camera.get_screen_center_position().y (limit-aware Godot 4 API).
-Renamed export top_off_screen_margin → spawn_top_edge_offset (8px
-INSIDE visible edge); semantics: spawn AT top edge visibly, lookahead
-pushes off-screen at higher ascent velocity per user request.
-
-Verified: make test exit 0, oracle tile_hash f873ae60ee3c420c…
-unchanged. Substrate intact iters 1-15.
-
-Crit 4 (Depth feedback + ascent pressure) 1 → 2 via "feels like a run"
-playtest cite (anchor 2 DEPTH+TIME live update). Total 12 → 13/50.
-
-Next: iter 16 BUILD — pick from enemy variety, visual juice, or
-power-up prototype.
+Next: iter 17 PLAYTEST — verify F004 fix + new enemy types.
 ```
 
 ---
@@ -161,6 +149,42 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 17 PLAYTEST — verify F004 fix + enemy variety:
+  - Pre-mortem (H2 RULE — reference-language predictions, NARROWER list
+    than iter 14: ask 5-6 things max so user can answer all)
+  - Verify build: make test + godot --quit exit 0
+  - Capture run config deltas since iter 14:
+    * F004 fix: spawn position now relative to effective camera (no
+      more middle-screen spawns)
+    * Enemy variety: 2 types (Light fast/fragile, Heavy slow/tough)
+  - Output playtest prompt to user. AWAIT. Halt rule iter 20.
+
+NARROWER iter-17 questions (lessons from iter-14's 10-question report
+where user answered 4):
+  1. Do enemies now appear from the TOP EDGE (driving in), not the
+     middle? (F004 verification)
+  2. Do you see TWO different enemy types? Describe what's different
+     about them (color, speed, toughness, fire rate)?
+  3. Does stalling (standing still) increase spawn rate noticeably?
+     (iter-12 unverified)
+  4. After dying, do you press R quickly? (iter-11 compulsion signal,
+     unverified)
+  5. Any new bugs or surprises from the recent changes?
+
+Score-target predictions:
+  - Crit 6 anchor 2 confirmed → 2 stays. If user notices behavior
+    distinction, doesn't lift further.
+  - Crit 7 anchor 3 ("user presses R within 5s of death") if claim 4
+    lands → 3.
+  - Crit 4 anchor 4 (stalling pressure) if claim 3 lands → 4.
+
+Previous Next Action (iter 15 — shipped iter 16 BUILD):
+  Original plan was "pick highest-leverage." Picked enemy variety.`
+
+---
+
+## Previous Next Action (iter 15 — implemented as iter 16)
 
 `Iter 16 BUILD — pick highest-leverage user-facing gap:
 

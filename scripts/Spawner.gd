@@ -15,6 +15,29 @@ extends Node2D
 @export var telegraph_lead_time: float = 0.5  # seconds the warning marker shows before spawn
 @export var velocity_ema_alpha: float = 2.0  # EMA smoothing factor; higher = more responsive
 
+# Enemy type table (iter 16). Weighted random pick per spawn.
+# Battle City convention: light (basic, fast), armored/heavy (slower, tougher).
+# sprite_base_frame indices into sprites_0.png (16 hframes × 18 vframes;
+# frame N = (N/16)th row, (N%16)th col). Each tank uses 8 frames per row.
+const ENEMY_TYPES: Array = [
+	{
+		"name": "Light",
+		"weight": 0.7,
+		"base_frame": 8,    # row 0 col 8 — white-ish, current default
+		"speed": 24.0,
+		"max_hp": 1,
+		"fire_cooldown": 1.5,
+	},
+	{
+		"name": "Heavy",
+		"weight": 0.3,
+		"base_frame": 32,   # row 2 col 0 — different color (TBD by playtest)
+		"speed": 14.0,      # slower (less mobile, more rooted)
+		"max_hp": 2,        # 2 hits to destroy (BC armored convention)
+		"fire_cooldown": 0.8,  # faster fire (the "ranged-shooter" emphasis)
+	},
+]
+
 var _player: Node2D
 var _camera: Camera2D
 var _enemies_alive: int = 0
@@ -152,10 +175,31 @@ func _telegraph_then_spawn(pos: Vector2) -> void:
 	if parent_node == null or not is_instance_valid(parent_node):
 		return
 	var enemy: Node2D = enemy_scene.instantiate()
+	# Apply enemy type stats BEFORE add_child so _ready sees the right values
+	var type_data: Dictionary = _pick_enemy_type()
+	enemy.set("sprite_base_frame", type_data.base_frame)
+	enemy.set("speed", type_data.speed)
+	enemy.set("max_hp", type_data.max_hp)
+	enemy.set("fire_cooldown", type_data.fire_cooldown)
 	enemy.global_position = pos
 	enemy.tree_exited.connect(_on_enemy_freed)
 	parent_node.add_child(enemy)
 	_enemies_alive += 1
+
+
+# Weighted random selection from ENEMY_TYPES. Returns a Dictionary with the
+# type's stats. Sum of weights need not be 1.0 — normalized at runtime.
+func _pick_enemy_type() -> Dictionary:
+	var total_weight: float = 0.0
+	for t in ENEMY_TYPES:
+		total_weight += t.weight
+	var roll: float = randf() * total_weight
+	var accum: float = 0.0
+	for t in ENEMY_TYPES:
+		accum += t.weight
+		if roll <= accum:
+			return t
+	return ENEMY_TYPES[0]  # fallback (shouldn't reach)
 
 
 func _on_enemy_freed() -> void:

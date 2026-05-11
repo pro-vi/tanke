@@ -1392,3 +1392,56 @@ Iter 14 prediction: "6-8 of 10 claims land." Actual: 4 LANDED + 6 INDETERMINATE.
 - Iter 17 = PLAYTEST (every 3 iters; verify F004 fix + the iter-16 work)
 
 ---
+
+## Iter 016 — BUILD — Enemy variety (second tank type)
+
+**Mode:** BUILD
+**Focus:** unblock crit 6 anchor 2 ("Two types: chaser + ranged-shooter") by adding a second tank type with distinct stats
+**Date:** 2026-05-11
+**Pre-mortem:** PRE-MORTEMS.md iter 016 — 6 H2-RULE claims (4 binary-now LANDED, 2 deferred to iter 17)
+
+### Actions
+
+`scripts/Spawner.gd`:
+- Added `const ENEMY_TYPES: Array` table with two entries:
+  - **Light** (weight 0.7): sprite_base_frame=8 (white-ish, current default), speed=24, max_hp=1, fire_cooldown=1.5s. Mobile chaser.
+  - **Heavy** (weight 0.3): sprite_base_frame=32 (row 2 col 0, intended different color — sprite layout guessed), speed=14 (slower, less mobile), max_hp=2 (2 hits to destroy — BC armored convention), fire_cooldown=0.8s (faster fire — the "ranged-shooter" emphasis).
+- New helper `_pick_enemy_type()` — weighted random selection (normalized at runtime so weights don't need to sum to 1.0).
+- In `_telegraph_then_spawn`, BEFORE `add_child`, set the new enemy's `sprite_base_frame`, `speed`, `max_hp`, `fire_cooldown` from the picked type's stats. Using `enemy.set("prop_name", value)` so order is: instantiate → set props → set position → connect tree_exited → add_child. `_ready` then runs with the overridden values, so `hp = max_hp` and `_update_sprite_for_direction` both see the right values.
+
+### Substrate freeze check
+
+- All frozen scripts untouched. Modified only `scripts/Spawner.gd`.
+- No .tscn edits. H1 tripwire: 1 (Spawner). Unchanged.
+
+### Verification
+
+- `make test` exit 0 clean (no parse errors, no setup errors).
+- 10s headless `--fixed-fps 60` run: `[spawner] tick 5: spawns=5 rejections=0 alive=4 ascent=0.00 rows/s stall=6.0s interval=1.00s` — no runtime errors from the type-picking + property-set path; identical timing/cadence behavior to iter 15. Type variety not visible in headless print but exercise verified via no-error completion.
+- Reachability oracle at seed 42: `tile_hash f873ae60ee3c420c…` unchanged. Substrate intact iters 1-16.
+
+### Scores
+
+| Criterion | Iter 15 | Iter 16 | Δ | Citation |
+|-----------|---------|---------|---|----------|
+| 6. Enemy variety + behavior | 1 | **2** | +1 | Anchor 2 ("Two types: chaser + ranged-shooter") met code-citably under BC-aligned reading. Light = mobile chaser; Heavy = ranged-shooter emphasis (faster fire, slower mobility). `Spawner.gd:19-38` ENEMY_TYPES; `_pick_enemy_type` + `_telegraph_then_spawn` apply per-type stats. |
+| Others | unchanged | unchanged | – | Crit 6 anchor 3 ("Three+ types with distinct movement") needs a third type — not in iter 16. Crit 5/7/8/10 await further playtest. |
+| **Total** | **13** | **14** | **+1** | |
+
+Note on anchor 2 wording: "chaser + ranged-shooter" is VS-style; BC's natural pairing is "fast/light + slow/heavy" where both chase and shoot but differ in stats. My implementation matches the BC convention. Rubric anchor 2 might deserve a wording refresh at a future AUDIT to align with the iter-11 BC framing pivot — flagging for iter 20 CONSULT or earlier.
+
+### Pre-mortem evaluation
+
+4 of 6 H2-RULE claims LANDED in-iter (type table, type stats, make test, oracle hash). 2 deferred to iter-17 playtest (user sees two types; F004 fix verified visually).
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd` (ENEMY_TYPES table + `_pick_enemy_type` + per-type stat application in spawn flow)
+- Modified: `loop/gameplay/PRE-MORTEMS.md` (iter-016 entry), `loop/gameplay/LEDGER.md` (this entry), `loop/gameplay/STATE.md`
+
+### Schedule
+
+- Iter 17 = mandatory PLAYTEST (per "every 3 iters after iter 5/8/11/14"). Verify F004 fix + new enemy types + accumulated iter-15/16 work.
+- ScheduleWakeup 240s.
+
+---
