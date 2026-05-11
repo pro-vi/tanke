@@ -1597,3 +1597,50 @@ Each consult iter (20/25/30) lets user steer if direction drifts. AUDIT iters (2
 - ScheduleWakeup 240s
 
 ---
+
+## Iter 020 — CONSULT (fire-and-forget)
+
+**Mode:** CONSULT (PROMPT §"CONSULT SCHEDULE" iter 10/20/30 + user's 5-iter cadence directive)
+**Focus:** creative direction for iters 21-32 (sprint phases B+C); rubric wording check
+**Date:** 2026-05-11
+
+### Actions
+
+Fired GPT-Pro extended-thinking query (key `tanke-iter-20-creative`, fireAndForget=true). 14 of 15 inline files (94K of 100K context); STATE.md omitted by budget but LEDGER has equivalent state info.
+
+5 hypotheses to challenge:
+- H1 (seductive-but-hollow): what's hollow about 15/50 BC-on-procedural-ascender?
+- H2 (enemy variety depth): Light/Heavy = cosmetic stats distinction?
+- H3 (rubric wording drift): crit 6 anchor 2 VS-style; rename?
+- H4 (iter 21-32 priority): which iters to sacrifice for higher leverage?
+- H5 (iter-33 playtest risk): single most-likely-to-falsify claim?
+
+Pro response will be read at iter 21.
+
+### Substrate freeze check
+
+- No code changes this iter (pure CONSULT).
+- All frozen scripts untouched. H1 tripwire: 1. Unchanged.
+
+### Verification
+
+- No build changes; no need to re-run make test.
+- Substrate baseline: tile_hash f873ae60ee3c420c… (last verified iter 19).
+
+### Scores
+
+| Criterion | Iter 19 | Iter 20 | Δ |
+|-----------|---------|---------|---|
+| All | unchanged | unchanged | – |
+| **Total** | **15** | **15** | **0** | Consult-only iter |
+
+### Files touched
+
+- Modified: `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/LEDGER.md`, `loop/gameplay/STATE.md`
+
+### Schedule
+
+- Iter 21 = read Pro response + plan accordingly. If Pro says continue Phase A, iter 21 = enemy death particle BUILD. If Pro redirects, plan adjusts.
+- ScheduleWakeup 240s (gives Pro the typical 3-5 min to complete)
+
+---

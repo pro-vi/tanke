@@ -4,13 +4,14 @@
 
 ```
 phase: loop
-iteration: 19
+iteration: 20
 preloop_complete: yes
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 next_playtest_due_iter: 33
-consult_cadence: every 5 iters (iter 20, 25, 30)
+consult_cadence: every 5 iters (iter 20 fired, 25, 30)
 sprint_phase: A (visual juice, iters 19-23)
+pending_consult: tanke-iter-20-creative (read iter 21)
 ```
 
 ---
@@ -127,16 +128,19 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 19 BUILD complete. Player hit-flash + iframe blink:
-- PlayerTank.gd: take_damage (non-lethal) → _start_hit_flash() Tween:
-  red pulse (0.08s) → 3× dim/normal blink cycles (0.48s) → restore.
-  Total ~0.56s matches damage_iframes window.
-- _update_forest_hide gated on _is_flashing to prevent alpha-write
-  collision with the tween.
-- Verified: make test exit 0, oracle tile_hash f873ae60ee3c420c… unchanged.
-- Crit 8 (Visual feedback) 0 → 1 (anchor 1 hit-flash). Total 14 → 15/50.
+Iter 20 CONSULT fired. GPT-Pro extended-thinking query
+key=tanke-iter-20-creative, fireAndForget=true, 14 inline files
+(94K of 100K context).
 
-Next: iter 20 CONSULT (PROMPT §10/20/30, user's 5-iter cadence).
+5 hypotheses to challenge:
+- H1 seductive-but-hollow risk at 15/50
+- H2 Light/Heavy = cosmetic distinction?
+- H3 crit 6 anchor 2 VS-style wording rename?
+- H4 iter 21-32 priority — what to sacrifice?
+- H5 iter-33 playtest most-likely-to-falsify claim?
+
+Pro response read at iter 21. Iter-21 BUILD adjusts per direction.
+Scores unchanged at 15/50.
 ```
 
 ---
@@ -148,6 +152,23 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 21 — read Pro response, plan BUILD:
+  - agentify_status / agentify_read_page for key tanke-iter-20-creative
+  - Evaluate H1-H5 responses + META
+  - Append Consult 004 entry to creative-consults.md
+  - If Pro says continue Phase A: BUILD enemy death particle (per
+    original roadmap; lifts crit 8 anchor 2 "Hit flash + enemy death")
+  - If Pro redirects: plan accordingly; document the pivot
+  - Score iter 21 per the build that lands
+  - Commit; ScheduleWakeup 240s
+
+Iter 22: Phase A continuation (brick destruction visual) or whatever
+Pro recommended. Iter 23: AUDIT.`
+
+---
+
+## Previous Next Action (iter 20 — shipped as the consult fire)
 
 `Iter 20 CONSULT (PROMPT §"CONSULT SCHEDULE" iter 10/20/30 + user's 5-iter cadence):
   - Pre-mortem (H2 RULE — claims about Pro's response language)

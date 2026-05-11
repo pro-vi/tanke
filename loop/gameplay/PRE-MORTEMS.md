@@ -565,6 +565,20 @@ H2-RULE claims:
 
 ---
 
+## Iter 020 — CONSULT (fire-and-forget, read iter 21)
+
+H2-RULE claims:
+1. Pro response completes within 5 min, returns clean
+2. Pro names ≥1 insight not already in PRE-MORTEMS / LEDGER
+3. Pro takes a position on rubric anchor 2 (crit 6) wording
+4. Pro flags at least one cargo-cult risk
+
+Pre-mortem prediction for the WORST claim of iter-33 playtest (per my H5 in the query): "I'll claim the run feels meaningfully different at depth 10 vs depth 30 but the user will say 'it's the same fight, just more enemies.'" If Pro agrees this is the load-bearing risk, iter 21-32 priority shifts to encounter-band differentiation. If Pro names a different risk, plan adjusts.
+
+**Post-iter:** [filled iter 21 when Pro response read]
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.
