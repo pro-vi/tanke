@@ -476,4 +476,28 @@ Secondary score predictions:
 - Crit 6 (Enemy variety + behavior) 1 → 2 (anchor 2 "Two types: chaser + ranged-shooter" — BC-aligned reading: Light chaser-mobile, Heavy ranged-shooter-emphasis with faster fire and slower mobility).
 - Total predicted: 13 → 14.
 
+**Post-iter evaluation:** 4 H2-RULE binary claims LANDED; 2 deferred to iter-17 playtest. Crit 6 lift confirmed via code citation. Iter ships clean (no parse errors).
+
+---
+
+## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
+
+Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.
+
+H2-RULE independently observable claims (reference-language per Pro v2 H4 — NARROWER list, 5 items not 10):
+
+1. **User reports two distinct enemy types** — "different color" / "tougher one" / "two kinds" / "white and X". Reference-language.
+2. **User does NOT report "spawn in the middle" again** — F004 verified by absence of that phrase, or explicit "they spawn from the top now."
+3. **User notices stalling pressure** ("more enemies when I stopped" or similar) — verifies iter-12 unverified mechanic.
+4. **User reports spontaneous R-press / "one more"** — verifies compulsion loop (crit 7 anchor 3).
+5. **User does NOT report a new visual bug** (sprite frame 32 not landing on tank) — falsified by "weird sprite" / "second enemy looks wrong."
+
+Predict 3-4 of 5 land.
+
+Score-target predictions (secondary):
+- If claim 1 lands and user describes differences → confirms crit 6 anchor 2 by playtest cite (currently code-cite only)
+- If claim 3 lands → crit 4 anchor 4 ("Stalling at one depth produces visible pressure") → crit 4: 2 → 4
+- If claim 4 lands → crit 7 anchor 3 ("user spontaneously presses R within 5s of death") → crit 7: 0 → 3
+- Total potential: 14 → 16-19
+
 ---

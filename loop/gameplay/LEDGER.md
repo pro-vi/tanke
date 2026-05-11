@@ -1445,3 +1445,41 @@ Note on anchor 2 wording: "chaser + ranged-shooter" is VS-style; BC's natural pa
 - ScheduleWakeup 240s.
 
 ---
+
+## Iter 017 — PLAYTEST — narrower verification (F004 + enemy variety)
+
+**Mode:** PLAYTEST (AWAIT per PROMPT §7)
+**Focus:** 5 narrow H2-RULE claims covering F004 fix, enemy variety, plus 3 unanswered items from iter-14
+**Date:** 2026-05-11
+**Pre-mortem:** PRE-MORTEMS.md iter 017 — 5 narrower H2-RULE claims
+
+### Build verification
+
+- `godot --headless --path . --quit` → exit 0 clean (no warnings)
+- `make test` (120-frame ProceduralLevel.tscn runtime) → exit 0 no errors
+
+### Deltas since iter-14 playtest
+
+- **F004 fix (iter 15):** Spawner uses `Camera2D.get_screen_center_position()` instead of `_camera.global_position` for spawn_y reference. Renamed `top_off_screen_margin` (24px above) → `spawn_top_edge_offset` (8px inside top edge). Result: spawns now happen AT visible top edge (or off-screen if player is ascending fast). User said "i want them to spawn almost out of screen and drivin into view" — this should match.
+- **Enemy variety (iter 16):** Spawner picks between 2 types (Light 70% / Heavy 30%):
+  - Light: sprite_base_frame=8, speed=24, HP=1, fire 1.5s
+  - Heavy: sprite_base_frame=32, speed=14, HP=2, fire 0.8s
+
+### NARROWER question list (lesson from iter 14)
+
+User answered 4/10 in iter 14. Reducing to 5 focused items expecting full answers.
+
+### Halt rule
+
+Per PROMPT §USER-LOOK: 3 iters of unfulfilled PLAYTEST → halt at iter 20 with `loop/gameplay/HALTED.md`.
+
+### Files touched
+
+- Modified: `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/STATE.md`, `loop/gameplay/LEDGER.md`
+
+### Schedule
+
+- **No ScheduleWakeup.** AWAIT per PROMPT §7.
+- On user response: iter 18 evaluates 5 claims. PROMPT §3 says iter 20 = CONSULT (iter 10/20/30) — iter 18 or 19 might combine with consult prep if material drift surfaces.
+
+---

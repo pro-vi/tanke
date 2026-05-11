@@ -3,12 +3,13 @@
 ## Phase
 
 ```
-phase: loop
-iteration: 16
+phase: AWAITING_USER_PLAYTEST
+iteration: 17
 preloop_complete: yes
+playtest_requested_iter: 17
 last_completed_playtest_iter: 15
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
-next_playtest_due_iter: 17
+halt_iter_if_no_response: 20
 ```
 
 ---
@@ -125,19 +126,14 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 16 BUILD complete. Enemy variety (second tank type):
-- Spawner.gd: ENEMY_TYPES table (Light 70% + Heavy 30%).
-- Light: sprite_base_frame=8, speed=24, max_hp=1, fire_cooldown=1.5
-- Heavy: sprite_base_frame=32, speed=14, max_hp=2, fire_cooldown=0.8
-  (slower, tougher, faster fire — BC armored convention)
-- _pick_enemy_type weighted-random + _telegraph_then_spawn applies
-  stats before add_child so _ready sees overridden values.
-- Verified: make test exit 0, 10s headless run no errors, oracle
-  tile_hash f873ae60ee3c420c… unchanged.
-- Crit 6 (Enemy variety) 1 → 2 (anchor 2 BC-aligned reading).
-  Total 13 → 14/50.
-
-Next: iter 17 PLAYTEST — verify F004 fix + new enemy types.
+Iter 17 PLAYTEST request issued. AWAITING USER.
+Build verified (make test + headless exit 0). 5 NARROWER H2-RULE claims:
+1. Two distinct enemy types visible
+2. NO "spawn in the middle" (F004 fix)
+3. Stalling pressure noticed
+4. Spontaneous R-press / "one more" (compulsion)
+5. NO new visual bug (sprite frame 32 lands on tank)
+Halt rule: iter 20 if no response.
 ```
 
 ---
@@ -149,6 +145,36 @@ None (new loop).
 ---
 
 ## Next Action
+
+`AWAITING user playtest response.
+
+On response (iter 18):
+  - Evaluate 5 H2-RULE claims (LANDED / FALSIFIED / INDETERMINATE)
+  - Log F005+ for any falsification (especially sprite_base_frame=32
+    if it lands on non-tank graphic)
+  - Update scores per claim outcomes — potential lifts:
+    * Crit 6 anchor 2 confirmed via playtest cite (if claim 1)
+    * Crit 4 anchor 4 unlocked (if claim 3)
+    * Crit 7 anchor 3 unlocked (if claim 4)
+  - Iter 19 BUILD targeting whatever surfaces (likely visual juice
+    or power-up prototype if no major bug; iter-16 sprite fix if
+    claim 5 falsifies)
+  - Iter 20 = CONSULT (PROMPT §"CONSULT SCHEDULE" 10/20/30). Suggested
+    questions:
+    * The rubric anchor 2 wording for crit 6 is "chaser + ranged-
+      shooter" (VS-style). BC-aligned reading was used for iter 16
+      score. Should the rubric be updated to BC-aligned wording for
+      crit 6, similar to iter 11's rename of crits 4/5/7/10?
+    * Where's next on the roguelike-ascender axis after enemy
+      variety and depth feedback?
+    * Anything seductive-but-hollow about the current playable thing?
+
+If no user response by end-of-iter-20: write HALTED.md per PROMPT
+§"USER-LOOK PROTOCOL" halt rule; stop.`
+
+---
+
+## Previous Next Action (iter 17 — shipped as this playtest prompt)
 
 `Iter 17 PLAYTEST — verify F004 fix + enemy variety:
   - Pre-mortem (H2 RULE — reference-language predictions, NARROWER list
