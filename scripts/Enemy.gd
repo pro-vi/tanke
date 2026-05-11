@@ -81,7 +81,28 @@ func _update_forest_hide() -> void:
 func take_damage(amount: int) -> void:
 	hp -= amount
 	if hp <= 0:
+		_spawn_death_effect()
 		queue_free()
+
+
+# BC-style death burst — yellow ColorRect at enemy position, fades + scales
+# up over 0.3s, then auto-frees. Parented to level (not enemy) so the
+# tween survives the enemy's queue_free.
+func _spawn_death_effect() -> void:
+	var parent_node: Node = get_parent()
+	if parent_node == null or not is_instance_valid(parent_node):
+		return
+	var burst: ColorRect = ColorRect.new()
+	burst.size = Vector2(16, 16)
+	burst.color = Color(1.0, 0.9, 0.3, 0.9)  # warm yellow burst
+	burst.position = global_position - Vector2(8, 8)  # center on enemy
+	burst.z_index = 50
+	parent_node.add_child(burst)
+	var tween: Tween = burst.create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(burst, "modulate:a", 0.0, 0.3)
+	tween.tween_property(burst, "scale", Vector2(1.6, 1.6), 0.3)
+	tween.chain().tween_callback(burst.queue_free)
 
 
 func _choose_direction_toward_player() -> void:

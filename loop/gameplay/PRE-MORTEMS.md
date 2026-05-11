@@ -579,6 +579,23 @@ Pre-mortem prediction for the WORST claim of iter-33 playtest (per my H5 in the 
 
 ---
 
+## Iter 021 — BUILD — Enemy death particle (Pro pending)
+
+Pro consult key=tanke-iter-20-creative still in phase=waiting_for_response when iter 21 fired (270s after fire). Proceeding with default roadmap per auto mode. Iter 22 will re-check Pro.
+
+Going in, biggest expected miss: tween bound to dying enemy → tween freed when enemy queue_free's → particle never animates. Fix: parent burst to level, bind tween to burst.
+
+H2-RULE claims:
+1. Pro response readable by iter 22 — DEFERRED to iter 22
+2. Enemy death spawns visible burst — code-citable → LANDED
+3. Burst auto-frees — code-citable → LANDED
+4. make test exit 0 — Binary → LANDED
+5. Oracle hash unchanged — Binary → LANDED
+
+**Post-iter:** 4 binary-now LANDED. Crit 8: 1 → 2 (anchor 2 met). Iter 22 checks Pro.
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

@@ -1644,3 +1644,52 @@ Pro response will be read at iter 21.
 - ScheduleWakeup 240s (gives Pro the typical 3-5 min to complete)
 
 ---
+
+## Iter 021 — BUILD — Enemy death particle (Pro consult still pending)
+
+**Mode:** BUILD (Phase A iter 21/23)
+**Focus:** crit 8 anchor 2 "Hit flash + enemy death"
+**Date:** 2026-05-11
+
+### Pro consult status
+
+`agentify_status` for key=tanke-iter-20-creative returns `activeQuery.phase = "waiting_for_response"` at iter-21 wake (270s after fire). Auto mode: proceed with default Phase A roadmap (enemy death particle). Iter 22 re-checks Pro.
+
+### Actions
+
+`scripts/Enemy.gd`:
+- `take_damage(amount)` on lethal: call `_spawn_death_effect()` BEFORE `queue_free`
+- `_spawn_death_effect`: spawn `ColorRect` 16×16, yellow (0.9 alpha), centered on enemy position, z_index=50, parented to level (`get_parent()`, not the dying enemy)
+- Tween bound to BURST (not enemy) so it survives the enemy's queue_free:
+  - Parallel: modulate:a → 0.0 over 0.3s
+  - Parallel: scale → Vector2(1.6, 1.6) over 0.3s
+  - Chain: queue_free callback
+
+### Substrate freeze check
+
+- All frozen scripts untouched. Modified only `scripts/Enemy.gd`.
+- No .tscn edits. H1 tripwire: 1. Unchanged.
+
+### Verification
+
+- `make test` exit 0
+- Reachability oracle: `tile_hash f873ae60ee3c420c…` unchanged
+- Substrate intact iters 1-21
+
+### Scores
+
+| Criterion | Iter 20 | Iter 21 | Δ |
+|-----------|---------|---------|---|
+| 8. Visual feedback / juice | 1 | **2** | +1 |
+| **Total** | **15** | **16** | **+1** |
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd`, `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/LEDGER.md`, `loop/gameplay/STATE.md`
+
+### Schedule
+
+- Iter 22 = read Pro response + BUILD per direction (default: brick destruction visual)
+- ScheduleWakeup 240s
+
+---

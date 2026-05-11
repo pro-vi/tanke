@@ -4,14 +4,14 @@
 
 ```
 phase: loop
-iteration: 20
+iteration: 21
 preloop_complete: yes
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 next_playtest_due_iter: 33
 consult_cadence: every 5 iters (iter 20 fired, 25, 30)
 sprint_phase: A (visual juice, iters 19-23)
-pending_consult: tanke-iter-20-creative (read iter 21)
+pending_consult: tanke-iter-20-creative (still waiting; read iter 22)
 ```
 
 ---
@@ -68,10 +68,10 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 | 5. Forward survivability (was Upgrade variety) | **1** | Iter 12 anchor 1 met: fire-while-moving + spawn-ahead-of-velocity = enemies don't reliably block ascent |
 | 6. Enemy variety | **2** | Iter 16: Light + Heavy types (70/30 weighted) — distinct sprite, speed, HP, fire cooldown. Anchor 2 BC-aligned. |
 | 7. Compulsion loop (was Run pacing) | 0 | Needs playtest |
-| 8. Visual feedback / juice | **1** | Iter 19: player hit-flash red + iframe blink Tween |
+| 8. Visual feedback / juice | **2** | Iter 19 player hit-flash + iter 21 enemy death yellow burst (anchor 2) |
 | 9. UI / UX | 1 | Iter 3 text HUD; iter 11 added DEPTH/TIME labels |
 | 10. Run summary + replayability (was Build distinctness) | **1** | Anchor 1 met retroactively iter 3 (YOU DIED + R) |
-| **Total** | **15/50** | Iter 19 +1 (crit 8 anchor 1 — hit flash) |
+| **Total** | **16/50** | Iter 21 +1 (crit 8 anchor 2 — enemy death particle) |
 
 ---
 
@@ -128,19 +128,17 @@ on direction change, muzzle may not align visually with sprite center.
 ## Last Action
 
 ```
-Iter 20 CONSULT fired. GPT-Pro extended-thinking query
-key=tanke-iter-20-creative, fireAndForget=true, 14 inline files
-(94K of 100K context).
+Iter 21 BUILD complete. Enemy death particle (Pro consult still pending):
+- Enemy.gd: take_damage on lethal calls _spawn_death_effect() BEFORE
+  queue_free. Spawns 16×16 yellow ColorRect at enemy pos, parented to
+  level so it survives enemy free. Tween fades alpha + scales 1.6× over
+  0.3s in parallel, then queue_frees burst via chain callback.
+- Verified: make test exit 0, oracle tile_hash f873ae60ee3c420c… unchanged.
+- Crit 8 (Visual feedback) 1 → 2 (anchor 2 met). Total 15 → 16/50.
 
-5 hypotheses to challenge:
-- H1 seductive-but-hollow risk at 15/50
-- H2 Light/Heavy = cosmetic distinction?
-- H3 crit 6 anchor 2 VS-style wording rename?
-- H4 iter 21-32 priority — what to sacrifice?
-- H5 iter-33 playtest most-likely-to-falsify claim?
-
-Pro response read at iter 21. Iter-21 BUILD adjusts per direction.
-Scores unchanged at 15/50.
+Pro consult key=tanke-iter-20-creative still waiting_for_response;
+iter 22 re-checks.
+Next: iter 22 BUILD — read Pro, then default = brick destruction visual.
 ```
 
 ---
@@ -152,6 +150,20 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 22 — read Pro response (should be done by now), plan BUILD:
+  - agentify_status / agentify_read_page for key tanke-iter-20-creative
+  - If Pro responded: synthesize, append Consult 004 to creative-consults.md, integrate
+  - If still pending (unlikely after 8+ min): proceed with default roadmap
+  - Default iter 22 BUILD: brick destruction visual feedback (small puff
+    on brick break, similar pattern to enemy death burst but smaller/whiter)
+  - Score + commit + ScheduleWakeup 240s
+
+Iter 23 = AUDIT (every-5-iters cycle).`
+
+---
+
+## Previous Next Action (iter 21 — shipped iter 21 BUILD)
 
 `Iter 21 — read Pro response, plan BUILD:
   - agentify_status / agentify_read_page for key tanke-iter-20-creative
