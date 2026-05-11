@@ -2246,3 +2246,81 @@ Asked Pro:
 - ScheduleWakeup 240s
 
 ---
+
+## Iter 030 — BUILD — Ascent legibility per Pro Consult 005
+
+**Mode:** BUILD (Pro Consult 005 redirect — H2 visibility fix + META "readable upward intent")
+**Focus:** Fix below-spawn telegraph visibility bug; add depth milestone flash; patch band-cap post-await
+**Date:** 2026-05-12
+**Tag:** `[STRUCTURE]` code-only
+
+### Pro Consult 005 integration
+
+Full transcript in `creative-consults.md`. Key redirects:
+- **DROP kills counter HUD** (Pro v5 H4: teaches wrong objective; kill-completion not ascent)
+- **FIX below-spawn marker visibility** (Pro v5 H2: `screen_bottom + 8` places marker OFF-SCREEN — first behind-spawn feels like hidden punishment)
+- **ADD depth milestone flash** (Pro v5 META: "readable upward intent" is the single missing thing)
+- **PATCH band-cap recheck post-await** (Pro v5 H5: telegraph await can exceed band cap because only global max_enemies rechecked)
+
+### Actions
+
+**A. `scripts/Spawner.gd` — visibility fix + post-await band-cap recheck:**
+
+- New state: `_pending_below_spawn: bool`, `_pending_below_telegraph_pos: Vector2`
+- `_find_valid_spawn` when `use_below`:
+  - Enemy `spawn_y` still = `screen_bottom + 8` (off-screen for "drives in from behind" feel)
+  - After valid `x` picked, compute `_pending_below_telegraph_pos = Vector2(x, visible_bottom - 12)` — marker placed 12px INSIDE bottom edge (visible to player)
+- `_telegraph_then_spawn`:
+  - For below-spawn (`_pending_below_spawn`): marker color = RED (1.0, 0.3, 0.3, 0.9), positioned at `_pending_below_telegraph_pos` (visible)
+  - For top-spawn: yellow marker at `pos` (existing)
+  - Post-await: re-check `_current_band().max_alive`, not just `max_enemies`. Skip spawn if cap exceeded mid-await.
+
+**B. `scripts/PlayerTank.gd` — depth milestone flash:**
+
+- New state: `_last_milestone_depth: int = 0`, `@export depth_milestone_step: int = 10`
+- `_update_run_hud()` detects `depth > 0 AND depth % step == 0 AND depth != last`:
+  - Triggers `_flash_depth_milestone(depth)`
+- `_flash_depth_milestone(depth)`: Tween on DEPTH label
+  - Parallel: scale → 1.8×, modulate → green (0.4, 1.0, 0.4) over 0.12s
+  - Chain: parallel return to scale=1.0, modulate=white over 0.4s
+  - Total: 0.52s pulse signals "you crossed a milestone"
+
+### Substrate freeze check
+
+- All frozen scripts untouched. Modified only PlayerTank.gd + Spawner.gd.
+- No .tscn edits. H1 tripwire: 1. Unchanged.
+
+### Verification
+
+- `make test` exit 0 clean (after intermediate parse-error hook mid-edit-chain; final state clean)
+- Reachability oracle: `tile_hash f873ae60ee3c420c…` unchanged. Substrate intact iters 1-30.
+- Below-spawn telegraph visibility fix verified in code: `_pending_below_telegraph_pos` set INSIDE viewport edge; enemy spawn position remains off-screen below.
+- Depth milestone flash uses Tween — same pattern as iter-19 hit-flash + iter-21 enemy death particle. Should work in playtest.
+
+### Scores
+
+| Criterion | Iter 29 | Iter 30 | Δ | Citation |
+|-----------|---------|---------|---|----------|
+| All | unchanged | unchanged | – | `[STRUCTURE]` polish-only iter; no rubric anchor satisfied |
+| **Total** | **17** | **17** | **0** | Critical visibility bug fixed + legibility cue added before iter 33 |
+
+### Pre-mortem evaluation
+
+5 of 7 binary-now LANDED. 2 deferred to iter-33 (user sees red warning; user notices milestones).
+
+Self-deception check (H2 RULE v2): would Pro reword any anchor if shown this code? Iter 30 doesn't claim new anchors — purely defensive bug-fix + legibility polish. No rationalization.
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd` (visibility fix + post-await band-cap recheck), `scripts/PlayerTank.gd` (depth milestone flash), `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/LEDGER.md`, `loop/gameplay/STATE.md`, `loop/gameplay/creative-consults.md` (Consult 005 entry)
+
+### Schedule
+
+- Iter 31 CAPABILITY (per Pro v5 H4 guidance — ASCENDER metrics only): extend `loop/test_runner.gd` with:
+  - ascent_rate_avg (rows/sec averaged over run)
+  - stall_time_total (cumulative seconds with ascent_velocity < threshold)
+  - spawn_origin_top_count vs spawn_origin_below_count
+  - time_since_last_depth_gain (final value at quit)
+- ScheduleWakeup 240s.
+
+---

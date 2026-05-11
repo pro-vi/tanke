@@ -4,15 +4,15 @@
 
 ```
 phase: loop
-iteration: 29
+iteration: 30
 preloop_complete: yes
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 next_playtest_due_iter: 33
-consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 fired
-sprint_phase: META mitigation shipped; iter 29 consult pending read
-pending_consult: tanke-iter-29-revalidate (read iter 30)
-load_bearing_problem: combat verbs vs ascender verbs — addressed; iter-33 verifies
+consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 ADOPTED (Consult 005)
+sprint_phase: ascent-legibility polish complete (iter 30)
+pending_consult: none
+load_bearing_problem: META mitigated; readable upward intent now cued via depth milestones + visible below-warning
 h2_rule_version: v2 (iter 23)
 ```
 
@@ -128,6 +128,31 @@ on direction change, muzzle may not align visually with sprite center.
 ---
 
 ## Last Action
+
+```
+Iter 30 BUILD complete. Pro Consult 005 ascent legibility redirect:
+- DROPPED kills counter HUD (Pro v5 H4: teaches wrong objective)
+- FIXED below-spawn telegraph visibility bug: marker now placed INSIDE
+  viewport bottom edge (12px inside); enemy still spawns at off-screen
+  position. Red color for "behind" distinction. Pro v5 H2 fix.
+- ADDED depth milestone flash: DEPTH label scales 1.8× + recolors green
+  for 0.12s when crossing every 10th depth row. "Readable upward intent"
+  per Pro v5 META.
+- PATCHED band-cap recheck post-telegraph-await (Pro v5 H5 minor code
+  issue): _telegraph_then_spawn now uses _current_band().max_alive
+  instead of global max_enemies.
+- Verified: make test exit 0, oracle f873ae60ee3c420c… unchanged
+- Scores unchanged at 17/50 (polish-only iter)
+
+Pro Consult 005 caught critical iter-28 fairness bug (below-spawn marker
+was off-screen, would have felt like hidden punishment at iter-33 playtest)
+and a kills-counter cargo-cult trap (drops from plan).
+
+Next: iter 31 CAPABILITY — extend test_runner with ASCENDER metrics only
+per Pro v5 H4.
+```
+
+(Previous)
 
 ```
 Iter 29 CONSULT retry SUCCEEDED. Fired tanke-iter-29-revalidate agentify
@@ -252,6 +277,33 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 31 CAPABILITY — Extend test_runner.gd with ASCENDER metrics:
+  - Pre-mortem H2 RULE v2: [STRUCTURE] tagged (oracle-test instrumentation).
+  - Per Pro v5 H4: instrument ascent-quality metrics, NOT kill counts.
+    Specifically:
+    * ascent_rate_avg (rows/sec averaged over run frames)
+    * stall_time_total (cumulative seconds with ascent_velocity below threshold)
+    * spawn_origin_top_count vs spawn_origin_below_count
+    * time_since_last_depth_gain (final value at quit)
+    * Per-band: time_in_band, kills_in_band (KILLS PER BAND is OK because
+      contextualizes density, not a goal metric)
+  - Spawner.gd already has spawns_total/rejections_total/ticks_total —
+    extend with origin distribution counters.
+  - test_runner.gd already collects post-generation tile counts; add
+    runtime aggregates by instrumenting the live scene for N frames.
+  - Output: JSON with the new fields appended.
+  - Verify make test + oracle (tile_hash should still match — this is
+    additive instrumentation, no gameplay change).
+  - Score: no new anchor.
+  - Commit; ScheduleWakeup 240s.
+
+Iter 32 = final playtest prep using 2-question template per iter 23.
+Iter 33 = PLAYTEST (paired iters 18-30 work).`
+
+---
+
+## Previous Next Action (iter 29 — iter 30 shipped)
 
 `Iter 30 BUILD — Read Pro consult response, integrate, then polish:
   - agentify_status / read_page for key tanke-iter-29-revalidate

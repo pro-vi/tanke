@@ -35,6 +35,9 @@ var _min_y_reached: float = 0.0
 var _run_time: float = 0.0
 var _depth_label: Label
 var _time_label: Label
+# iter 30: depth milestone flash (Pro Consult 005 META — ascent legibility)
+var _last_milestone_depth: int = 0
+@export var depth_milestone_step: int = 10
 
 
 func _ready() -> void:
@@ -233,9 +236,28 @@ func _update_run_hud() -> void:
 	if _depth_label != null:
 		var depth: int = int(maxf(0.0, (_start_y - _min_y_reached) / 16.0))
 		_depth_label.text = "DEPTH %d" % depth
+		# iter 30: milestone flash on every Nth depth row crossing
+		if depth_milestone_step > 0 and depth > 0 and depth % depth_milestone_step == 0 and depth != _last_milestone_depth:
+			_last_milestone_depth = depth
+			_flash_depth_milestone(depth)
 	if _time_label != null:
 		var t: int = int(_run_time)
 		_time_label.text = "TIME %d:%02d" % [t / 60, t % 60]
+
+
+# iter 30 (Pro Consult 005 META — "readable upward intent"): when player
+# crosses a depth milestone (multiple of depth_milestone_step), briefly
+# scale + recolor the DEPTH label. Cues the climb visually.
+func _flash_depth_milestone(_depth: int) -> void:
+	if _depth_label == null:
+		return
+	var tween: Tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(_depth_label, "scale", Vector2(1.8, 1.8), 0.12)
+	tween.tween_property(_depth_label, "modulate", Color(0.4, 1.0, 0.4, 1.0), 0.12)
+	tween.chain().set_parallel(true)
+	tween.tween_property(_depth_label, "scale", Vector2.ONE, 0.4)
+	tween.tween_property(_depth_label, "modulate", Color.WHITE, 0.4)
 
 
 # BC forest convention: tank is concealed (low alpha) when standing on a grass

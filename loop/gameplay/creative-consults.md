@@ -244,6 +244,46 @@ This is iter-12+ work. Iter 11 = base + template-stamping start.
 
 ---
 
+## Consult 005 — Iter 29 (returned iter 30) — Validation + ascent legibility redirect
+
+**When:** Fired iter 29 (after iter 25 tab_busy failure recovered), returned iter 30 (durationMs 282263, ~4.7 min)
+**Agentify key:** `tanke-iter-29-revalidate`
+**Context inlined:** 7 of 9 files (99K/100K). RUBRIC.md + STATE.md omitted by budget; LEDGER carries equivalent.
+
+### Pro's response (key insights, full transcript at `https://chatgpt.com/g/g-p-69c9d0b3c3b88191872d6b59cb5adfb8-agentify/c/6a01b2d6-8160-83e8-88ab-20be0a2f1c0d`)
+
+**H1 (Light split): MOSTLY HOLDS but fragile in dense terrain.** 3s × 24px/s = 72px commit = ~4.5 tiles — good "chose a lane" feel. Terrain collisions reset commit → could read as "bumbling wall AI" in dense pockets. Don't tune before iter 33; if needed later, bias should be STRICTER (3× not 2×).
+
+**H2 (Below-spawn): BREAKS on telegraph visibility.** `spawn_y = screen_bottom + 8` places marker BELOW viewport, not inside. First behind-spawn = hidden punishment. **Fix critical before iter 33.** Either move marker INSIDE bottom edge OR add visible bottom-edge warning while enemy spawns from below. Don't increase frequency before fixing visibility.
+
+**H3 (META resolution): NOT RESOLVED until player names strategy.** Systems improved but player must perceive the climb. Iter-33 discriminator: "What did the game seem to want you to do: clear enemies, survive in place, or keep climbing?" META resolved IF player says version of "I should keep moving up." Best supporting metrics: stall time below peak depth, ascent velocity over time, deaths-while-advancing vs deaths-while-camping. NOT kill count.
+
+**H4 (Sprint plan): CUT kills counter HUD; reorder iter 30 to "ascent legibility polish".** **Kills counter is DANGEROUS** — teaches wrong objective (kill-completion not ascent). Iter 30 should serve climb: bottom-spawn warning visibility, "STALL WARNING" cue, depth milestone feedback. Iter 31 CAPABILITY worth it ONLY if ascender-focused metrics (NOT kill counts). DO NOT add: new enemy, power-up, death summary, economy, upgrade, terrain feature.
+
+**H5 (Crit 2 lift): HOLDS but narrow.** Lift legitimate. Pro flags separate code issue: `_telegraph_then_spawn` post-await only re-checks GLOBAL `max_enemies`, not BAND cap → band caps can be exceeded after delayed spawns. Worth a small patch (folded into iter 30).
+
+**Sharpest recommendation:** Replace iter 30 "kills counter HUD" with "ascent legibility polish." Build smallest cue that makes ASCENT legible. Then stop.
+
+**META:** **Readable upward intent** is the single missing thing. Systems punish stalling but player must perceive the climb BEFORE being punished for not climbing.
+
+### My synthesis
+
+Adopt Pro v5 wholesale:
+- **DROP kills counter HUD** (would teach wrong objective)
+- **FIX below-spawn marker visibility** (critical fairness issue)
+- **ADD depth milestone flash** (ascent legibility cue per META)
+- **PATCH band-cap recheck post-await** (H5 minor code issue)
+- **Iter 31 CAPABILITY must be ascender-focused** (stall time, ascent velocity, spawn-origin distribution) if shipped at all
+- **DO NOT add content** before iter 33
+
+### Lessons
+
+1. **Visibility check matters for "fairness."** I called the below-spawn telegraph "visible" in my iter-28 commit message, but the math (`screen_bottom + 8`) put it 8px BELOW viewport — invisible to player. Pro caught this before iter-33 playtest would have. Anti-pattern: trusting the comment without verifying the math.
+2. **Kills counter is a SCORING TRAP.** Even as "polish" it teaches kill-completion not ascent. Pro caught the cargo-cult shape of "more numbers on HUD = better feedback." HUD should reinforce the GOAL, not enumerate side effects.
+3. **Pro v5 confirms the loop's parity drift is mitigated, not resolved.** iter-33 test is language-based (what does the player NAME the goal as).
+
+---
+
 ## Consult attempt iter 25 — FAILED (tab_busy after max_tabs_reached) → SELF-CONSULT
 
 **Trigger:** Iter 25 is per the user's 5-iter consult cadence. Fired `tanke-iter-25-validate` query.

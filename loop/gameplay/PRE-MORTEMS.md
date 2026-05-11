@@ -782,6 +782,29 @@ If Pro returns by iter 30, integrate. If Pro fails again → self-consult fallba
 
 ---
 
+## Iter 030 — BUILD — Ascent legibility (Pro Consult 005 redirect)
+
+Tag declaration: `[STRUCTURE]` for code fixes; no rubric anchor lift expected.
+
+Going in, biggest expected miss: depth milestone flash is too subtle to notice (50% of screen reads dim it). Mitigation: also color-shift to green for emphasis.
+
+H2-RULE claims:
+1. Below-spawn marker visibility fix — telegraph placed INSIDE viewport bottom edge (12px inside); enemy still spawns at off-screen `screen_bottom + 8`. Visible warning, behind entry. → LANDED in code
+2. Depth milestone flash — DEPTH label scales 1.8× + recolors green for 0.12s when crossing depth % 10 == 0. → LANDED in code
+3. Band-cap recheck post-await — `_telegraph_then_spawn` post-await uses `_current_band().max_alive` instead of global max_enemies. → LANDED
+4. make test exit 0 — LANDED
+5. Oracle hash unchanged — LANDED
+6. (iter-33) User reports seeing red warning at bottom when stalled — [FEEL] deferred
+7. (iter-33) User notices depth milestones — [FEEL] deferred
+
+5 of 7 binary-now LANDED. Pro Consult 005 critical visibility bug closed before iter 33.
+
+DROPPED FROM ITER 30 (per Pro v5 H4): kills counter HUD. Would teach wrong objective.
+
+**Post-iter:** Score unchanged at 17. Critical iter-28 fairness bug caught + fixed pre-playtest.
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

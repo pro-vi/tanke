@@ -116,6 +116,9 @@ var _last_band_name: String = ""  # log when band changes
 var _band_first_spawn_pending: bool = false  # iter 27: trigger guarantee_first_type on band entry
 var _last_below_spawn_time: float = -1000.0  # iter 28: timestamp of last below-spawn (running seconds)
 var _elapsed_time: float = 0.0  # iter 28: accumulator since spawner ready
+# iter 30: visibility-fix state for below-spawn telegraph (Pro Consult 005 H2)
+var _pending_below_spawn: bool = false
+var _pending_below_telegraph_pos: Vector2 = Vector2.INF
 
 # Counters for iter-4 pre-mortem prediction #2 (rejections per 10 ticks).
 var spawns_total: int = 0
@@ -224,10 +227,11 @@ func _try_spawn() -> void:
 
 
 # Compute spawn position. Top-edge by default (iter 12+). iter 28: if
-# player has stalled past threshold AND below_spawn_cooldown has elapsed,
-# THIS spawn comes from BELOW viewport — threats-from-behind per Pro
-# Consult 004 META. Threats-from-behind incentivizes player to keep
-# moving up to escape encirclement.
+# player has stalled past threshold, spawn from BELOW (threats-from-
+# behind). iter 30 (Pro Consult 005 H2 fix): below-spawn telegraph must
+# be VISIBLE inside the viewport edge — fairness-not-cheap. Below-spawn
+# returns a Vector2 for enemy position AND a separate telegraph_pos for
+# the marker (stored on `_pending_below_telegraph_pos`).
 func _find_valid_spawn() -> Variant:
 	var camera_center_y: float = _player.global_position.y
 	if _camera != null and is_instance_valid(_camera):
@@ -235,19 +239,27 @@ func _find_valid_spawn() -> Variant:
 	var use_below: bool = _should_spawn_below()
 	var spawn_y: float
 	if use_below:
-		# Just below viewport bottom; enemy ascends toward player from behind.
 		var screen_bottom: float = camera_center_y + _viewport_half_height
+		# Enemy still spawns just OFF-screen below (so it visibly enters)
 		spawn_y = screen_bottom + spawn_bottom_edge_offset
+		# Telegraph marker stored INSIDE bottom edge so player sees the warning
+		_pending_below_telegraph_pos = Vector2.INF  # filled by caller after x picked
+		_pending_below_spawn = true
 		_last_below_spawn_time = _elapsed_time
 	else:
 		var screen_top: float = camera_center_y - _viewport_half_height
 		var lookahead_px: float = maxf(0.0, _ascent_velocity) * 16.0 * ascent_lookahead_seconds
 		spawn_y = screen_top + spawn_top_edge_offset - lookahead_px
+		_pending_below_spawn = false
 	for i in max_spawn_attempts:
 		var x: float = randf_range(map_x_margin, map_width - map_x_margin)
 		var candidate: Vector2 = Vector2(x, spawn_y)
 		if _is_blocked(candidate):
 			continue
+		# iter 30: store telegraph pos for below-spawn (visible inside bottom)
+		if _pending_below_spawn and _camera != null and is_instance_valid(_camera):
+			var visible_bottom: float = _camera.get_screen_center_position().y + _viewport_half_height
+			_pending_below_telegraph_pos = Vector2(x, visible_bottom - 12.0)  # 12px inside bottom
 		return candidate
 	return null
 
@@ -277,21 +289,34 @@ func _is_blocked(pos: Vector2) -> bool:
 	return results.size() > 0
 
 
-# Battle-City-style spawn telegraph: brief warning marker at spawn position,
-# then enemy instantiates after telegraph_lead_time. Uses a ColorRect since
-# we don't have sprite assets for the telegraph in the current sheet.
+# Battle-City-style spawn telegraph: brief warning marker, then enemy
+# instantiates after telegraph_lead_time. iter 30 (Pro Consult 005 H2):
+# for below-spawn, the marker is placed INSIDE the viewport bottom edge
+# (visible warning), while enemy still spawns at the off-screen `pos`.
+# iter 30 (Pro Consult 005 H5): re-check BAND cap after await, not just
+# global max_enemies.
 func _telegraph_then_spawn(pos: Vector2) -> void:
 	var marker: ColorRect = ColorRect.new()
 	marker.size = Vector2(8, 4)
-	marker.color = Color(1.0, 0.85, 0.2, 0.9)  # yellow warning
-	marker.position = pos - Vector2(4, 2)  # center
+	# Below-spawn: red marker at viewport-bottom edge (visible warning)
+	# Top-spawn: yellow marker at spawn position (existing behavior)
+	if _pending_below_spawn and _pending_below_telegraph_pos != Vector2.INF:
+		marker.color = Color(1.0, 0.3, 0.3, 0.9)  # red for "behind" warning
+		marker.position = _pending_below_telegraph_pos - Vector2(4, 2)
+	else:
+		marker.color = Color(1.0, 0.85, 0.2, 0.9)  # yellow for top spawn
+		marker.position = pos - Vector2(4, 2)
 	marker.z_index = 100
 	get_parent().add_child(marker)
 	await get_tree().create_timer(telegraph_lead_time).timeout
 	if is_instance_valid(marker):
 		marker.queue_free()
-	# Bail if enemy_scene cleared or cap hit mid-await
-	if enemy_scene == null or _enemies_alive >= max_enemies:
+	# iter 30: re-check BAND cap (not just global) after await
+	if enemy_scene == null:
+		return
+	var post_band: Dictionary = _current_band()
+	var post_cap: int = int(post_band.get("max_alive", max_enemies))
+	if _enemies_alive >= post_cap:
 		return
 	var parent_node: Node = get_parent()
 	if parent_node == null or not is_instance_valid(parent_node):
