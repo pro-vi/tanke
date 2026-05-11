@@ -1,10 +1,31 @@
 # tanke — Gameplay Loop State
 
+> **iter 38 advisory (PROMPT v2 active):** `loop/gameplay/PROMPT.md` was
+> rewritten between iters 37 and 38. Continuity preserved (iter counter,
+> LEDGER, scores, falsifications, pre-mortems, consults all carry). Read
+> `loop/gameplay/META-RETRO-iter37.md` once at iter 38 start; then proceed
+> per v2 PROMPT. v1 archived at `PROMPT-v1.md` for provenance.
+>
+> **What changed in v2:**
+> - Stone rewritten (no VS-like vocabulary; ascender + BC feel only)
+> - New **META** mode (alongside BUILD/CAPABILITY/AUDIT/CONSULT/SWEEP/PLAYTEST/AWAIT)
+> - H1 tripwire codified in SUBSTRATE FREEZE (ProceduralLevel.tscn additions need LEDGER justification)
+> - STRUCTURE/FEEL/MIXED/STRUCTURE-DEFERRED tags from H2 RULE v2 are now PROMPT-mandated for score citations
+> - CONSULT SCHEDULE is adaptive (not fixed iter 10/20/30)
+> - CEILING RULE extended to cover **rubric rename** (not just anchor lift)
+> - Sprint authorization (user override of PLAYTEST cadence) codified
+> - F-numbered falsifications + "≥3 Fs from one playtest → BUILD scope was too broad" rule
+> - HALT 3-stall rule scoped to "outside sprint window"
+> - ANTI-PATTERNS vocabulary refreshed
+>
+> No state reset. Continue iter 38 with current `falsifications_pending_playtest` and `phase: AWAITING_USER_PLAYTEST`.
+
 ## Phase
 
 ```
 phase: AWAITING_USER_PLAYTEST
 iteration: 37
+prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 playtest_requested_iter: 37
 last_completed_playtest_iter: 36 (PARTIAL — user reported F007 STILL BROKEN; F005/F006/F008 untested)
