@@ -723,6 +723,27 @@ H2-RULE claims:
 
 ---
 
+## Iter 027 — BUILD — Per-band rules + graduated stall pressure
+
+Tag declaration: `[STRUCTURE]` for crit 2 lift (anchor 2 wording has no playtest qualifier).
+
+Going in, biggest expected miss: per-band max_alive=4 for warmup might make first 30 seconds feel too empty. Mitigation: if iter-33 playtest reports "boring start," raise warmup cap.
+
+H2-RULE claims:
+1. DEPTH_BANDS adds max_alive + guarantee_first_type per band — code → LANDED
+2. _try_spawn honors per-band max_alive — code → LANDED
+3. First spawn after band entry uses guarantee_first_type — code → LANDED
+4. Graduated stall multiplier replacing binary — code → LANDED (verified 25s headless: stall=9.9s→stallMult=0.56, stall=15.1s+→stallMult=0.40)
+5. Crit 2 anchor 2 lift code-citable — LANDED
+6. make test exit 0 — LANDED
+7. Oracle hash unchanged — LANDED
+
+7/7 binary LANDED. Score 16 → 17.
+
+**Post-iter:** All landed. Crit 2 anchor 2 met under [STRUCTURE].
+
+---
+
 ## Iter 017 — PLAYTEST (narrower; verify F004 + enemy variety)
 
 Going in, biggest expected miss: the sprite_base_frame=32 picked for Heavy lands on a non-tank graphic — user would report "weird sprite" or "second one isn't a tank." Secondary risk: F004 fix (Camera2D.get_screen_center_position) doesn't behave as expected under smoothed camera lag — user might still see middle-spawns.

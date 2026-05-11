@@ -41,37 +41,55 @@ const ENEMY_TYPES: Array = [
 	},
 ]
 
-# Ascent director (iter 22, per Pro Consult 004 sharpest recommendation):
-# depth bands change spawn texture as player ascends. Crude is fine —
-# player should feel "I reached a different kind of problem" within 1 min.
-# Each band specifies depth threshold + type weight overrides + interval.
-# (Bands tuned further in iters 23/27/29.)
+# Ascent director (iter 22 scaffold; iter 27 adds per-band max_alive +
+# guarantee_first_type encounter rules). Each band differs in:
+# - depth_max: upper bound for band membership
+# - type_weights: spawn pool override
+# - interval_mult: spawn cadence multiplier on base spawn_interval
+# - max_alive: cap on simultaneously-alive enemies (overrides global)
+# - guarantee_first_type: first spawn after entering this band is this type
+#   (sets the tone before random weights take over)
 const DEPTH_BANDS: Array = [
 	{
 		"name": "warmup",
 		"depth_max": 8,
 		"type_weights": {"Light": 1.0, "Heavy": 0.0},
-		"interval_mult": 1.25,  # slower spawns — onboarding
+		"interval_mult": 1.25,
+		"max_alive": 4,  # onboarding density
+		"guarantee_first_type": null,
 	},
 	{
 		"name": "first_push",
 		"depth_max": 20,
 		"type_weights": {"Light": 0.7, "Heavy": 0.3},
 		"interval_mult": 1.0,
+		"max_alive": 10,
+		"guarantee_first_type": null,
 	},
 	{
 		"name": "heavy_gate",
 		"depth_max": 40,
-		"type_weights": {"Light": 0.4, "Heavy": 0.6},  # Heavy-heavy
+		"type_weights": {"Light": 0.4, "Heavy": 0.6},
 		"interval_mult": 0.85,
+		"max_alive": 8,  # fewer but heavier — denial pressure
+		"guarantee_first_type": "Heavy",  # band-marker
 	},
 	{
 		"name": "rush",
 		"depth_max": 9999,
 		"type_weights": {"Light": 0.85, "Heavy": 0.15},
-		"interval_mult": 0.7,  # fast spawns, mostly Light
+		"interval_mult": 0.7,
+		"max_alive": 16,
+		"guarantee_first_type": "Light",  # signal the rush phase
 	},
 ]
+
+# Graduated stall pressure (iter 27, replacing binary multiplier):
+# stall_time < stall_pressure_after  → mult = 1.0 (no pressure)
+# stall_time = stall_pressure_after  → mult = 1.0 (start ramp)
+# stall_time = stall_full_pressure_at → mult = stall_min_multiplier (capped)
+@export var stall_full_pressure_at: float = 12.0  # seconds for full pressure
+@export var stall_min_multiplier: float = 0.4  # floor (max 2.5× spawn rate)
 
 var _player: Node2D
 var _camera: Camera2D
@@ -88,6 +106,7 @@ var _max_depth_reached: int = 0   # iter 22: peak depth in rows
 var _ascent_velocity: float = 0.0  # rows/sec, positive = ascending
 var _stall_time: float = 0.0
 var _last_band_name: String = ""  # log when band changes
+var _band_first_spawn_pending: bool = false  # iter 27: trigger guarantee_first_type on band entry
 
 # Counters for iter-4 pre-mortem prediction #2 (rejections per 10 ticks).
 var spawns_total: int = 0
@@ -150,32 +169,48 @@ func _update_stall_time(delta: float) -> void:
 
 
 func _current_spawn_interval() -> float:
-	# iter 22: band's interval_mult modulates base spawn_interval; stall
-	# pressure still applies on top.
+	# iter 22: band interval_mult; iter 27: graduated stall multiplier.
 	var band: Dictionary = _current_band()
 	var base: float = spawn_interval * float(band.get("interval_mult", 1.0))
-	if _stall_time > stall_pressure_after:
-		return base * stall_interval_multiplier
-	return base
+	return base * _current_stall_multiplier()
+
+
+# iter 27: graduated stall multiplier replacing iter-12 binary stall_interval_multiplier.
+# Linear ramp from 1.0 at stall_pressure_after to stall_min_multiplier at
+# stall_full_pressure_at. Capped at floor. The original binary
+# stall_interval_multiplier export is now interpreted as the floor target
+# but kept for backward compatibility.
+func _current_stall_multiplier() -> float:
+	if _stall_time <= stall_pressure_after:
+		return 1.0
+	var span: float = maxf(stall_full_pressure_at - stall_pressure_after, 0.01)
+	var t: float = clampf((_stall_time - stall_pressure_after) / span, 0.0, 1.0)
+	return lerpf(1.0, stall_min_multiplier, t)
 
 
 func _try_spawn() -> void:
 	ticks_total += 1
-	if enemy_scene == null or _enemies_alive >= max_enemies:
+	if enemy_scene == null:
 		return
-	# iter 22: detect band transition for debug visibility
+	# iter 22+27: band transition + first-spawn guarantee setup
 	var band: Dictionary = _current_band()
 	if band.name != _last_band_name:
 		print("[spawner] band ENTER %s at depth %d" % [band.name, _max_depth_reached])
 		_last_band_name = band.name
-	var spawn_pos: Variant = _find_valid_spawn()
-	if spawn_pos == null:
-		rejections_total += 1
-	else:
-		_telegraph_then_spawn(spawn_pos)
-		spawns_total += 1
+		_band_first_spawn_pending = true
+	# iter 27: per-band max_alive override
+	var band_cap: int = int(band.get("max_alive", max_enemies))
+	var cap_hit: bool = _enemies_alive >= band_cap
+	if not cap_hit:
+		var spawn_pos: Variant = _find_valid_spawn()
+		if spawn_pos == null:
+			rejections_total += 1
+		else:
+			_telegraph_then_spawn(spawn_pos)
+			spawns_total += 1
 	if ticks_total % 5 == 0:
-		print("[spawner] tick %d: spawns=%d rejections=%d alive=%d depth=%d band=%s ascent=%.2f stall=%.1fs interval=%.2fs" % [ticks_total, spawns_total, rejections_total, _enemies_alive, _max_depth_reached, band.name, _ascent_velocity, _stall_time, _current_spawn_interval()])
+		var cap_marker: String = " CAP" if cap_hit else ""
+		print("[spawner] tick %d: spawns=%d rejections=%d alive=%d/%d%s depth=%d band=%s ascent=%.2f stall=%.1fs interval=%.2fs stallMult=%.2f" % [ticks_total, spawns_total, rejections_total, _enemies_alive, band_cap, cap_marker, _max_depth_reached, band.name, _ascent_velocity, _stall_time, _current_spawn_interval(), _current_stall_multiplier()])
 
 
 # Compute spawn position: at the EFFECTIVE viewport top (just inside the
@@ -251,10 +286,19 @@ func _telegraph_then_spawn(pos: Vector2) -> void:
 
 
 # Weighted random selection from ENEMY_TYPES, weighted by the current
-# DEPTH BAND's type_weights override (iter 22). Type weights in the band
-# replace the type's default weight; types absent from the band are weight 0.
+# DEPTH BAND's type_weights override (iter 22). iter 27: also honors
+# band's guarantee_first_type when entering a new band — first spawn
+# uses that type to set the band's tone before random weights take over.
 func _pick_enemy_type() -> Dictionary:
 	var band: Dictionary = _current_band()
+	# iter 27: band-entry guarantee
+	if _band_first_spawn_pending:
+		_band_first_spawn_pending = false
+		var guar = band.get("guarantee_first_type", null)
+		if guar != null:
+			var forced: Dictionary = _get_type_by_name(guar)
+			if not forced.is_empty():
+				return forced
 	var weights: Dictionary = band.get("type_weights", {})
 	var total: float = 0.0
 	for t in ENEMY_TYPES:
@@ -268,6 +312,14 @@ func _pick_enemy_type() -> Dictionary:
 		if roll <= accum:
 			return t
 	return ENEMY_TYPES[0]
+
+
+# iter 27: helper for guarantee_first_type lookup
+func _get_type_by_name(type_name: String) -> Dictionary:
+	for t in ENEMY_TYPES:
+		if t.name == type_name:
+			return t
+	return {}
 
 
 func _on_enemy_freed() -> void:

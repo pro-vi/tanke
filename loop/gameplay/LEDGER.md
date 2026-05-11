@@ -2063,3 +2063,76 @@ H2 RULE v2 self-deception check: would Pro reword anchor 2 if shown this code? M
 - ScheduleWakeup 240s.
 
 ---
+
+## Iter 027 — BUILD — Per-band rules + graduated stall pressure
+
+**Mode:** BUILD (Phase B per revised sprint)
+**Focus:** Add per-band encounter rules (max_alive override, guarantee_first_type) + graduated stall multiplier
+**Date:** 2026-05-12
+**Tag declaration:** `[STRUCTURE]` for crit 2 anchor 2 lift
+
+### Actions
+
+`scripts/Spawner.gd` DEPTH_BANDS:
+- Each band now has `max_alive` (per-band enemy cap override) and
+  `guarantee_first_type` (optional — band-marker enemy on entry).
+- warmup: max_alive=4 (onboarding), guarantee=null
+- first_push: max_alive=10, guarantee=null
+- heavy_gate: max_alive=8, guarantee="Heavy" (sets denial tone)
+- rush: max_alive=16, guarantee="Light" (signals rush phase)
+
+New exports for graduated stall:
+- `stall_full_pressure_at: float = 12.0`
+- `stall_min_multiplier: float = 0.4` (floor = max 2.5× spawn rate at peak stall)
+
+`_current_spawn_interval` now uses `_current_stall_multiplier()`:
+- `stall_time ≤ pressure_after (4s)` → 1.0
+- `stall_time ∈ [4s, 12s]` → linear ramp 1.0 → 0.4
+- `stall_time > 12s` → 0.4 (capped)
+
+`_try_spawn`:
+- Detects band transition → sets `_band_first_spawn_pending = true`
+- Per-band cap blocks spawn (but tick counter still increments; print still fires)
+- Print includes alive/cap, stallMult value for debug visibility
+
+`_pick_enemy_type`:
+- If `_band_first_spawn_pending`, returns the band's `guarantee_first_type` (consumed). Otherwise weighted random as before.
+- New helper `_get_type_by_name(name)` for lookup.
+
+### Verification
+
+- `make test` exit 0
+- Reachability oracle: `tile_hash f873ae60ee3c420c…` unchanged. Substrate intact iters 1-27.
+- 25s deterministic headless run (stationary player, warmup band):
+  - `[spawner] band ENTER warmup at depth 0`
+  - `tick 5: alive=4/4 CAP stall=9.9s interval=1.40s stallMult=0.56`
+  - `tick 10: alive=4/4 CAP stall=15.1s interval=1.00s stallMult=0.40` (floored)
+  - `tick 15: alive=4/4 CAP stall=20.1s interval=1.00s stallMult=0.40`
+
+Graduated stall verified: ramps 0.56 → 0.40 between 10s and 15s wall-time, capped after. Band cap correctly blocks spawns once 4 enemies alive.
+
+### Scores
+
+| Criterion | Iter 26 | Iter 27 | Δ | Citation |
+|-----------|---------|---------|---|----------|
+| 2. Spawn / wave system | 1 | **2** | +1 | `[STRUCTURE]` — Anchor 2 "Enemies spawn at varying intervals, multiple spawn points." Random x along top edge = multiple points; band-graduated intervals (1.25× warmup, 1.0× first_push, 0.85× heavy_gate, 0.7× rush) + graduated stall multiplier = varying intervals. Anchor wording has no playtest qualifier; code citation sufficient. |
+| Others | unchanged | unchanged | – | – |
+| **Total** | **16** | **17** | **+1** | |
+
+Self-deception check: would Pro reword anchor 2 of crit 2 if shown this code? Anchor wording is unambiguous — "varying intervals, multiple spawn points." Both met. Pro shouldn't reword.
+
+### Pre-mortem evaluation
+
+7 of 7 binary-now LANDED in-iter.
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd` (DEPTH_BANDS encounter rules + graduated stall + per-type guarantee + cap-aware tick print)
+- Modified: `loop/gameplay/PRE-MORTEMS.md`, `loop/gameplay/LEDGER.md`, `loop/gameplay/STATE.md`
+
+### Schedule
+
+- Iter 28 BUILD: META mitigation — address combat-vs-ascender contradiction. Pro Consult 004 META options: (a) forward-only enemy type that doesn't track lateral, (b) threats-from-behind that push player up, (c) "open lane" band that's skippable without clearing. Pick one for iter 28. Combined with small AUDIT.
+- ScheduleWakeup 240s.
+
+---

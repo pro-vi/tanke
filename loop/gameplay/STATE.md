@@ -4,15 +4,15 @@
 
 ```
 phase: loop
-iteration: 26
+iteration: 27
 preloop_complete: yes
 last_completed_playtest_iter: 17
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 next_playtest_due_iter: 33
 consult_cadence: 20 ADOPTED, 25 FAILED→self-consult, 29 retry
-sprint_phase: bands+behaviors (iter 24 Heavy + iter 26 Light splits shipped)
+sprint_phase: bands+behaviors (iters 22/24/26/27 shipped)
 pending_consult: none
-load_bearing_problem: combat verbs vs ascender verbs — partial via Heavy AIM_FIRE + Light commit-to-lane
+load_bearing_problem: combat verbs vs ascender verbs — addressed by iter 28 META mit
 h2_rule_version: v2 (iter 23)
 ```
 
@@ -73,7 +73,7 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 | 8. Visual feedback / juice | **2** | Iter 19 player hit-flash + iter 21 enemy death yellow burst (anchor 2) |
 | 9. UI / UX | 1 | Iter 3 text HUD; iter 11 added DEPTH/TIME labels |
 | 10. Run summary + replayability (was Build distinctness) | **1** | Anchor 1 met retroactively iter 3 (YOU DIED + R) |
-| **Total** | **16/50** | Iter 24 +1 (crit 6 re-earned via behavioral split [STRUCTURE-DEFERRED]) |
+| **Total** | **17/50** | Iter 27 +1 (crit 2 anchor 2 — multiple spawn points + varying intervals [STRUCTURE]) |
 
 ---
 
@@ -128,6 +128,27 @@ on direction change, muzzle may not align visually with sprite center.
 ---
 
 ## Last Action
+
+```
+Iter 27 BUILD complete. Per-band encounter rules + graduated stall:
+- DEPTH_BANDS: each band has max_alive cap (warmup 4, first_push 10,
+  heavy_gate 8, rush 16) + guarantee_first_type (heavy_gate=Heavy,
+  rush=Light; sets band tone on entry)
+- Graduated stall multiplier (replaces binary): linear ramp 1.0 → 0.4
+  between 4s and 12s stall. At full stall, spawn rate 2.5× faster.
+- _try_spawn: per-band cap blocks spawn but tick print still fires
+  (with CAP marker)
+- _pick_enemy_type: honors band-entry guarantee_first_type
+- Verified 25s headless: stall=9.9s→stallMult=0.56, stall=15.1s→0.40
+  (floored). Band cap correctly blocks at 4/4.
+- Crit 2 1 → 2 [STRUCTURE] (anchor 2 wording unambiguous, no playtest
+  qualifier). Total 16 → 17/50.
+
+Next: iter 28 META mitigation (forward enemies / threats-from-behind /
+open lane).
+```
+
+(Previous)
 
 ```
 Iter 26 BUILD complete. Light commit-to-lane behavioral split:
@@ -196,6 +217,37 @@ None (new loop).
 ---
 
 ## Next Action
+
+`Iter 28 BUILD — META mitigation (combat vs ascender tension):
+  - Pre-mortem H2 RULE v2 tag declaration
+  - Pro Consult 004 META options:
+    (a) Forward-only enemy that doesn't lateral-track — dodgeable by side step
+    (b) Threats-from-behind: enemies spawning BELOW player force upward push
+    (c) "Open lane" band variant that's skippable without clearing
+  - Choose ONE. Likely (b) — most direct addressing of "user stops to
+    clear instead of pushing upward." Threats-from-behind = scary
+    enough that player wants to escape upward.
+  - Implementation if (b): periodic spawn from BOTTOM edge of camera
+    view (below player). These enemies converge on player from below.
+    Player who keeps moving up = always at safe distance; player who
+    stalls = caught.
+    * Spawner adds optional bottom_spawn flag per band? Or constant low
+      rate of bottom-spawns regardless of band?
+    * Simplest: at certain depths or stall conditions, spawn 1 enemy
+      below player. Heavy or Light same as top.
+  - Smaller scope alternative: tune existing graduated stall to spawn
+    1 enemy at BOTTOM after sustained stall (e.g., stall_time > 8s →
+    spawn from below). Limited frequency.
+  - Score: probably no new anchor lift. Crit 4 anchor 4 "stalling
+    produces visible pressure" already qualified [STRUCTURE] but has
+    [FEEL] requirement for >2.
+  - Tag: [STRUCTURE-DEFERRED → iter 33]
+
+Iter 29 = CONSULT retry (per cadence + addressing iter-25 failure).`
+
+---
+
+## Previous Next Action (iter 26 — iter 27 shipped)
 
 `Iter 27 BUILD — Per-band encounter rules + stall pressure tuning:
   - Pre-mortem (H2 RULE v2 tag declaration)
