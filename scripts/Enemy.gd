@@ -334,6 +334,21 @@ func take_damage(amount: int) -> void:
 	if hp <= 0:
 		_spawn_death_effect()
 		queue_free()
+		return
+	_flash_hit()
+
+
+# iter 41: visual juice — brief white modulate on non-kill damage. Skip when
+# Heavy is mid-AIM_FIRE so the red wind-up telegraph signal isn't stomped.
+func _flash_hit() -> void:
+	if _sprite == null:
+		return
+	if enemy_type == "Heavy" and _state == State.AIM_FIRE:
+		return
+	var saved_a: float = _sprite.modulate.a
+	_sprite.modulate = Color(2.0, 2.0, 2.0, saved_a)
+	var tween: Tween = _sprite.create_tween()
+	tween.tween_property(_sprite, "modulate", Color(1, 1, 1, saved_a), 0.12)
 
 
 # BC-style death burst — yellow ColorRect at enemy position, fades + scales

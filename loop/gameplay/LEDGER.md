@@ -2938,3 +2938,96 @@ literally matches the 3 roles now implemented.
 - 19 iters remaining in sprint window before iter 60 PLAYTEST
 
 ---
+
+## Iter 041 — BUILD — Visual juice: bullet impact spark + enemy hit-flash
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 21/50 (unchanged — `[STRUCTURE-DEFERRED → iter 60]` tag; no score
+lift permitted on feel-criterion past 2 without playtest cite)
+
+Diagnose: crit 8 (Visual juice) at 2/5. Per v2 §Step 5 "Score > 2 on feel
+criteria requires [FEEL] or [MIXED]" — structural-only work can't lift past
+2. Strategy: ship anchor 4's structural pieces this iter, defer score lift
+to iter 60 playtest.
+
+### Rubric debt flagged
+
+Crit 8 anchor 3 ("XP gems animate (drift toward player); level-up modal")
+is stale post-iter-11 reframe (no XP system, no level-up modal — we're a
+roguelike ascender). Anchor 4's "UI counter increments" piece references
+kill count, which was deliberately dropped iter 30 per Pro Consult 005 H4
+("teaches the wrong objective: kill-completion not ascent"). Flagged for
+AUDIT iter ~50 to rebuild anchors per current design (impact spark,
+camera shake, screen flash, depth-milestone visual).
+
+### Code changes
+
+**scripts/Bullet.gd** (+~25 lines):
+- Added `_spawn_impact_spark()` — 4×4 white ColorRect at impact, Tween scale
+  1.0 → 1.5 + alpha 1.0 → 0 over 0.12s, parented to level so survives
+  bullet `queue_free`. z_index 60.
+- Wired into both `_on_area_entered` and `_on_body_entered` so the spark
+  fires on bullet-vs-bullet hits (unlikely) AND bullet-vs-anything-solid
+  (brick, steel, enemy, player, wall).
+
+**scripts/Enemy.gd** (+~12 lines):
+- `take_damage` now returns early on hp > 0 to call `_flash_hit()` instead
+  of falling through to the queue_free check.
+- `_flash_hit()` — modulate sprite white (factor 2.0, alpha preserved for
+  forest hide compatibility), Tween back to white over 0.12s.
+- **Skip flash when Heavy is mid-AIM_FIRE** — preserves red wind-up
+  telegraph signal so player still sees the lock-on warning even if
+  damaging Heavy during its 0.45s wind-up.
+
+### Visual frequency analysis
+
+- Impact spark: fires on EVERY bullet that hits anything. Player bullets ~3-5/sec, enemy bullets vary. High-frequency feedback, very visible.
+- Hit-flash: fires only on non-kill damage. Light=1 HP (no flash, killed in 1 hit). Heavy=2 HP (1 in 2 hits shows flash). Fast=1 HP (no flash). So hit-flash is Heavy-specific signal: "your shot landed but didn't kill."
+
+### Heavy telegraph priority
+
+When Heavy enters AIM_FIRE, sprite goes red (wind-up telegraph). If player
+hits Heavy DURING wind-up, `_flash_hit()` early-returns and the red
+telegraph stays visible. Player still gets impact spark feedback from
+the bullet itself, so the hit is registered visually without obscuring
+the wind-up warning. Confirmed via code inspection
+(scripts/Enemy.gd:_flash_hit lines).
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0, no warnings
+- Tween chain syntax valid: `set_parallel(true)` for scale + alpha, then
+  `chain().tween_callback(queue_free)` to clean up the spark after fade.
+
+### Score
+
+| Criterion | Before | After | Δ | Citation |
+|-----------|--------|-------|---|----------|
+| 8. Visual juice | 2 | 2 | 0 | `[STRUCTURE-DEFERRED → iter 60]` — anchor 4 partial (impact spark shipped, hit-flash shipped; camera shake + UI counter deferred). Feel verification required for lift. |
+
+Score remains 21/50.
+
+### Substrate freeze check
+
+- Hard scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- H1 tripwire unchanged at 2
+- Hash anchor `f873ae60ee3c420c…` unchanged
+
+### Files touched
+
+- Modified: `scripts/Bullet.gd`, `scripts/Enemy.gd`
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 42 BUILD likely camera shake on player damage (completes anchor 4
+  "Camera shake on damage" + "bullet impact spark" pair) OR shift to crit 9
+  (UI/UX — best-depth tracker, depth-milestone HUD polish)
+- 18 sprint iters remaining
+
+---

@@ -23,8 +23,8 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 40 → 60)
-iteration: 40
+phase: SPRINT (iter 41 → 60)
+iteration: 41
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"
@@ -33,7 +33,8 @@ design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 consult_cadence: adaptive — last 29, planned 45 (mid-sprint), 55 (pre-playtest)
 ai_intelligence_stage: Stage 1 VISION + wind-up telegraph. Movement still omniscient. 3rd type Fast (iter 40) — harassment rusher, no AI state (BC-baseline behavior on top of vertical bias).
 falsifications_closed: F007, F005-v2, F006, F008
-falsifications_pending_playtest: crit 6 anchor 3 [STRUCTURE] lift falsification clause (iter 60: if user does NOT distinguish Fast from Light/Heavy → revert 3→2)
+falsifications_pending_playtest: crit 6 anchor 3 [STRUCTURE] lift falsification clause (iter 60); crit 8 anchor 4 [STRUCTURE-DEFERRED → iter 60] for impact spark + hit-flash feel cite
+rubric_debt: crit 8 anchor 3 (XP gems language stale post-iter-11 reframe), anchor 4 "UI counter increments" (kill count dropped iter 30) — flag for AUDIT iter ~50
 mandatory_playtest_iter: 60
 halt_iter_if_no_response: 63
 score: 21/50 (iter 40 +1 [STRUCTURE] crit 6 2→3 — 3 distinct types: Light lane-invader / Heavy paused-aim corridor-denier / Fast continuous-fire harasser)

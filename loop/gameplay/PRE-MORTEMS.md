@@ -1019,7 +1019,32 @@ Falsification clause (iter 60 playtest):
 
 Self-deception check (Pro reword test): if I showed Pro "I added a 3rd enemy with continuous fire vs Light's rare fire vs Heavy's burst" + RUBRIC.md crit 6 anchor 3, would they grant 2 → 3 [STRUCTURE]? YES — the anchor's e.g. list ("chaser-rusher / corridor-denier-pauser / line-of-sight-snapper") literally describes the configuration. Lift defensible.
 
-**Post-iter:** [filled at iter 41]
+**Post-iter (iter 41 start):** Build clean, Fast type live. Score 21/50. Falsification clause carried to iter 60.
+
+---
+
+## Iter 041 — BUILD — Visual juice: bullet impact spark + enemy hit-flash
+
+Tag: `[STRUCTURE-DEFERRED → iter 60]` for crit 8 anchor 4 reinforcement.
+
+Diagnose: crit 8 at 2/5 (feel criterion). Per v2 §Step 5 "Score > 2 on feel criteria requires [FEEL] or [MIXED]" — can't structurally lift past 2. Best path: ship structural pieces of anchor 4 ("Camera shake on damage; bullet impact spark; UI counter increments") and defer score lift to iter 60 playtest. Today: anchor 4's "bullet impact spark" piece + a tangentially relevant enemy hit-flash. UI counter increments + camera shake reserved for later sprint iters.
+
+**Rubric debt noted**: anchor 3 ("XP gems animate... level-up modal") is stale post-iter-11 reframe. Anchor 4 "UI counter increments" is also debt (kill count dropped iter 30 per Pro Consult 005 H4 "teaches wrong objective"). Flag for AUDIT iter ~50: crit 8 anchors need updated post-reframe vocabulary.
+
+Going in, biggest expected miss: bullet impact spark might be too small/too brief to register visually at 320×240 native pixel scale, OR might spam the screen when 3 Fast enemies are alive and shooting. Mitigation: 4×4 ColorRect, single Tween, no audio (audio is a separate iter).
+
+Design:
+- **Bullet impact spark**: 4×4 white ColorRect at bullet's collision position. Tween scale 1.0 → 1.5 + alpha 1.0 → 0 over 0.12s. Parented to bullet's parent so it survives bullet's `queue_free`. z_index 60.
+- **Enemy hit-flash**: when enemy `take_damage` doesn't kill, briefly modulate sprite white (factor 2.0, brief Tween back to white over 0.12s). Skip when Heavy is in AIM_FIRE state — preserves red wind-up telegraph signal (priority: telegraph signal > damage flash for Heavy specifically).
+
+H2-RULE claims (3):
+1. Build verified: make test exit 0, godot --headless --quit-after 60 clean
+2. Score 21/50 unchanged this iter ([STRUCTURE-DEFERRED → iter 60] tag — no lift until playtest)
+3. Heavy red wind-up telegraph is NOT obscured by hit-flash (priority preserved)
+
+Falsification clause for iter 60 [FEEL] lift: if user playtest at iter 60 does NOT cite "feels punchy" / "looks good when bullets hit" / similar visual-juice language, the structural work was insufficient and crit 8 stays at 2.
+
+**Post-iter:** [filled at iter 42]
 
 ---
 
