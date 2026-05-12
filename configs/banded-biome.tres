@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="BandedBiomeConfig" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/BandedBiomeConfig.gd" id="1"]
+[ext_resource type="Resource" path="res://configs/band-warmup.tres" id="2"]
+[ext_resource type="Resource" path="res://configs/band-first-push.tres" id="3"]
+[ext_resource type="Resource" path="res://configs/band-heavy-gate.tres" id="4"]
+[ext_resource type="Resource" path="res://configs/band-rush.tres" id="5"]
+
+[resource]
+script = ExtResource("1")
+surface = ExtResource("2")
+deep = ExtResource("5")
+surface_row = 14
+depth_scale = 14
+first_push = ExtResource("3")
+heavy_gate = ExtResource("4")
+rush = ExtResource("5")
+first_push_row_threshold = 6
+heavy_gate_row_threshold = -6
+rush_row_threshold = -26

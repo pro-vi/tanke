@@ -23,8 +23,8 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 61 → 99) — MAP-FOCUSED per user iter-60 directive
-iteration: 61
+phase: SPRINT (iter 62 → 99) — MAP-FOCUSED per user iter-60 directive
+iteration: 62
 sprint_authorization: "User directive iter 60: 'next playtest at ITER 99' + priority: local map > enemy types > feedback/polish > roguelite mechanics"
 sprint_complete_prior: yes (iter 39-60 sprint, score 20 → 32/50 incl iter-60 cite)
 last_completed_playtest_iter: 60 (user cited: Q4 routing decisions; Q5 map-first directive)

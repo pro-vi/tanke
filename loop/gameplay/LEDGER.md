@@ -4702,3 +4702,104 @@ Details in `loop/gameplay/FALSIFICATIONS.md`.
 - 38 sprint iters remain
 
 ---
+
+## Iter 062 — BUILD — Phase A start: LevelConfig variants + BandedBiomeConfig (uniwred)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — infrastructure; no wiring yet)
+
+### Trigger
+
+Phase A iter 1 of 38-iter sprint authorized iter 60 (user directive:
+"next playtest at iter 99"). Priority 1 per Q5: "interesting local map."
+Pro Consult 006 H4 + Consult 007 H4 confirmed: map samey-ness is biggest
+gap. Per Pro: "you may not change Eller's, but you can still tune
+encounter pacing, landmark cadence, and readability around it."
+
+### Architecture discovery
+
+ProceduralLevel.gd already supports per-row config via biome interface:
+```gdscript
+func _active_config(row: int) -> LevelConfigT:
+    if biome != null:
+        return biome.config_at(row)
+    return config
+```
+
+BiomeConfig.gd is 2-config interpolation (surface ↔ deep). I want 4
+discrete bands matching Spawner DEPTH_BANDS. Solution: subclass
+BiomeConfig with discrete band-switching.
+
+### Files created
+
+1. **`scripts/BandedBiomeConfig.gd`** — extends BiomeConfig. Adds
+   `first_push`, `heavy_gate`, `rush` exports + row thresholds
+   (`first_push_row_threshold=6`, `heavy_gate_row_threshold=-6`,
+   `rush_row_threshold=-26` mapping to Spawner depth 8/20/40).
+   Override `config_at(row)` returns appropriate band's LevelConfig.
+   `surface` (inherited) = warmup default.
+
+2. **`configs/band-warmup.tres`** — sparse, beginner-friendly:
+   empty=0.65 / brick=0.18 / steel=0.04 / grass=0.08 / water=0.05.
+   merge_probability=0.45 (more openness).
+
+3. **`configs/band-first-push.tres`** — balanced (matches current
+   playable.tres mix): empty=0.55 / brick=0.18 / steel=0.07 /
+   grass=0.12 / water=0.08, merge=0.40.
+
+4. **`configs/band-heavy-gate.tres`** — restrictive corridors:
+   empty=0.42 / brick=0.22 / **steel=0.18** / grass=0.08 / water=0.10,
+   merge=0.30 (denser). Steel doubled vs first_push for permanent
+   chokepoints.
+
+5. **`configs/band-rush.tres`** — open battle zones with grass cover:
+   empty=0.58 / brick=0.12 / steel=0.05 / **grass=0.20** / water=0.05,
+   merge=0.50 (most open). Reduced steel for fast traversal.
+
+6. **`configs/banded-biome.tres`** — BandedBiomeConfig instance binding
+   all four configs with row thresholds.
+
+### NOT wired this iter
+
+ProceduralLevel.tscn `biome` export NOT modified. Current state: config
+still points to `playable.tres`, biome null → ProceduralLevel uses
+config path. Behavior unchanged.
+
+Iter 63 will:
+1. Re-run oracle on seed 42 with biome=banded-biome.tres (test path)
+2. Verify playable: true, rows_climbed >= 10 across multiple seeds
+3. If pass: wire biome on ProceduralLevel.tscn, document new hash anchor
+4. If fail: tune band configs until reachable
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓ (LevelConfig.gd, BiomeConfig.gd, ProceduralLevel.gd, ProceduralStep.gd, LevelDNA.gd)
+- BandedBiomeConfig.gd is NEW SCRIPT extending BiomeConfig — per substrate rule "You may freely add new scripts/scenes/configs."
+- configs/playable.tres UNTOUCHED ✓ (hash anchor still f873ae60…)
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- All new .tres files load cleanly (validated via parse on boot)
+
+### Files touched
+
+- Created: `scripts/BandedBiomeConfig.gd`
+- Created: `configs/band-warmup.tres`, `band-first-push.tres`, `band-heavy-gate.tres`, `band-rush.tres`, `banded-biome.tres`
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 63 = oracle verification + wiring. Steps:
+  1. Test-only oracle on banded biome via experimental code (don't commit if fails)
+  2. If hash drifts but playable=true on seed 42+: wire biome on .tscn
+  3. Document new hash anchor for banded biome
+- 37 sprint iters remaining
+
+---
