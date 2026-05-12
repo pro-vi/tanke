@@ -5639,3 +5639,73 @@ Two persistent stats now show retroactive comparison:
 - 26 sprint iters remain
 
 ---
+
+## Iter 074 — META — Mid-sprint audit + re-prioritize
+
+**Mode:** META
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — META iter)
+
+### Trigger
+
+13 BUILD iters shipped since sprint start (iter 62-73). All small.
+25 iters remain (74-98) before iter 99 PLAYTEST. Diminishing marginal
+return on continued small-polish ships. Pause to re-plan.
+
+### Shipped iter 62-73 summary
+
+Phase A (map): infra (62), wired (63), HUD overlays (64), themed gates (65), first_push variance (66)
+Phase B (enemies): Fast cyan (67), Heavy density (68)
+Phase C (polish): spark polish (69), telegraph tone-down (70), death typography (71-72), best-time (73)
+
+### Re-priority — iter 74-98 (25 iters)
+
+**Final prep window reserved**: iter 95-98 (4 iters) for META/AUDIT/final-look.
+
+That leaves iter 74-94 (21 iters) for content/polish:
+
+| Iters | Theme | Candidates |
+|-------|-------|------------|
+| 74-78 | Targeted polish | band-marker shake, bullet trail, restart hint blink, rush.tres validation |
+| 79-83 | Phase B cont | enemy spawn affordance, sub-distinction within "yellow" |
+| 84-89 | Phase A cont | heavy_gate visible corridor verification, more landmark variety |
+| 90-94 | Buffer | unscheduled / no-op iters allowed |
+
+### META observation
+
+Each subsequent +1 line tweak has marginal value. The BIG issues from
+iter-60 user feedback (map samey-ness, enemy distinction, font) are
+addressed. Iter 74-94 polish iters are nice-to-have but won't unlock
+new anchors unless they materially affect iter-99 cite quality.
+
+**Compression option flagged**: if iter 80-ish all candidates are
+exhausted, can schedule early PLAYTEST — but user said "iter 99" so
+honor that directive.
+
+### Final prep iter window plan
+
+- **iter 95** META: comprehensive iter-99 prep audit
+- **iter 96** CONSULT 008 (mid/late-sprint Pro pulse, fire-and-forget)
+- **iter 97** Read Consult 008 + AUDIT
+- **iter 98** Final-look + build verify
+- **iter 99** PLAYTEST fires (use iter-60-playtest-prompt-draft.md as template, possibly tweaked)
+- **iter 102** halt rule if no response
+
+### Substrate freeze check
+
+- No code changes (META).
+- H1 tripwire unchanged at 2.
+
+### Files touched
+
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 120s (META wakeup)
+- Iter 75 candidate: band-marker camera shake (small, composes with
+  iter-42/64) OR bullet trail
+- 24 sprint iters remain (75-98 + iter 99 PLAYTEST)
+
+---

@@ -23,9 +23,10 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 73 → 99) — MAP-FOCUSED per user iter-60 directive
-iteration: 73
-banded_biome: WIRED + variances. F010 polish (69-70). F011 typography (71-72). Best-time tracking (73).
+phase: SPRINT (iter 74 → 99) — META mid-sprint replan iter 74
+iteration: 74
+sprint_progress: 13 BUILD iters 62-73 shipped. Iter 74 META re-prioritize. 25 iters remain.
+final_prep_window: iter 95-98 reserved for META/AUDIT/final-look before iter 99 PLAYTEST
 hash_anchor_drift: f873ae60... (iter 0-65, warmup=first_push=playable) → 8224ebda... (iter 66+, first_push has +0.04 brick variance). Multi-seed playable preserved.
 sprint_authorization: "User directive iter 60: 'next playtest at ITER 99' + priority: local map > enemy types > feedback/polish > roguelite mechanics"
 sprint_complete_prior: yes (iter 39-60 sprint, score 20 → 32/50 incl iter-60 cite)
