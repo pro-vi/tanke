@@ -34,26 +34,17 @@ Score: 30/50. Many [STRUCTURE-DEFERRED → iter 60] tags depend on your cites.
 
 Please play 2-3 lives and answer 5 short questions (≤30s each):
 
-**Q1 (crit 6 — enemy types).** Which enemy types did you notice, and how
-did you tell them apart? (Were Heavy / Light / Fast distinguishable in
-play?)
+**Q1.** Did you notice 3 enemy types? How did you tell them apart?
 
-**Q2 (crit 8 — feedback).** Name one moment where the hit/fire feedback
-helped or confused you. (Bullet sparks, hit flashes, camera shake, low-HP
-red — did any feel right or feel like noise?)
+**Q2.** Name one moment where hit/fire feedback (sparks, flashes, shake, low-HP red) helped — or felt like noise.
 
-**Q3 (crit 10 — run loop).** Did the death screen / best-depth tracker
-make you want to retry? (Or just feel like extra UI?)
+**Q3.** Did the death screen + best-depth make you want to retry?
 
-**Q4 (CORE STONE — decision quality).** During ascent, did you feel you
-were making route/combat decisions, or mostly reacting? (Specifically:
-did you try to bait Heavy / use cover / cancel Heavy's wind-up shot?)
+**Q4 (LOAD-BEARING).** During ascent — were you making decisions, or mostly reacting? Specifically: did you bait Heavy, use cover, cancel Heavy's wind-up shot?
 
-**Q5 (forced choice — direction).** What should be improved first:
-**enemy behavior** / **map / ascent structure** / **feedback & juice** /
-**run goals & replayability**?
+**Q5.** What should I improve first: **enemy behavior** / **map structure** / **feedback** / **run goals**?
 
-**Bonus**: copy the `[run]` line from terminal if you die (depth/time/kills/stall counters).
+**Bonus**: copy the `[run]` line from terminal if you die (depth/time/kills/aim_cancels/stall).
 
 Halt rule: iter 63 if no response.
 
@@ -71,10 +62,11 @@ Halt rule: iter 63 if no response.
 
 ## Iter-60 [run] log interpretation guide
 
-`[run] depth=N time=M:SS kills=K ascent_rate=R rows/s stall_total=T.Ts (P%)`
+`[run] depth=N time=M:SS kills=K aim_cancels=A ascent_rate=R rows/s stall_total=T.Ts (P%)`
 
 - `depth`: hit anchor 1-5 of crit 1/4 progression
 - `kills`: balances "kill-loop" awareness without HUD live-count (death-screen only per iter 30 Pro Consult 005 H4)
+- `aim_cancels`: iter 56 instrumentation. How many Heavy aim-cancels landed. >0 = player engaged Heavy tactical decision (crit 5 + 6 + 8 cite gate). 0 = player never tried OR Heavy too rare.
 - `stall_total / P%`: if P > 30%, player struggled with ascent pressure (suggest iter 61 tuning); if P < 10%, ascent was smooth
 - `ascent_rate`: rows/s. Iter-31 baseline was ~0.3 rows/s. Higher = aggressive ascender, lower = cautious player.
 

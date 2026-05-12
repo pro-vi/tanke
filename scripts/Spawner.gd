@@ -156,6 +156,10 @@ var spawn_origin_below: int = 0
 # tree_exits (i.e., gets queue_free'd by take_damage hp<=0 or other paths).
 # Used by PlayerTank._die() to render death-screen kill count.
 var enemies_killed: int = 0
+# iter 56 (Pro Consult 007 H1 caveat: instrumentation for iter-60 diagnostic).
+# Incremented by Enemy._heavy_aim_cancel() each time Heavy's wind-up is
+# interrupted. Read by PlayerTank._die() for [run] summary + death screen.
+var aim_cancels_landed: int = 0
 
 
 func _ready() -> void:

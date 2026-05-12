@@ -218,11 +218,16 @@ func _die() -> void:
 	if _run_time > 0.0:
 		stall_pct = 100.0 * _stall_time_total / _run_time
 	# iter 43: kills lookup from Spawner sibling (best-effort)
+	# iter 56: aim-cancels counter from same Spawner
 	var kills: int = 0
+	var aim_cancels: int = 0
 	var spawner: Node = get_parent().get_node_or_null("Spawner")
-	if spawner != null and "enemies_killed" in spawner:
-		kills = int(spawner.enemies_killed)
-	print("[run] depth=%d time=%d:%02d kills=%d ascent_rate=%.2f rows/s stall_total=%.1fs (%.0f%%)" % [depth, t / 60, t % 60, kills, ascent_rate, _stall_time_total, stall_pct])
+	if spawner != null:
+		if "enemies_killed" in spawner:
+			kills = int(spawner.enemies_killed)
+		if "aim_cancels_landed" in spawner:
+			aim_cancels = int(spawner.aim_cancels_landed)
+	print("[run] depth=%d time=%d:%02d kills=%d aim_cancels=%d ascent_rate=%.2f rows/s stall_total=%.1fs (%.0f%%)" % [depth, t / 60, t % 60, kills, aim_cancels, ascent_rate, _stall_time_total, stall_pct])
 	# iter 44: persistent best-depth tracking
 	var prior_best: int = _load_best_depth()
 	var is_new_best: bool = depth > prior_best
@@ -235,7 +240,7 @@ func _die() -> void:
 			best_line = "\n* NEW BEST!  (was %d)" % prior_best
 		else:
 			best_line = "\nBEST %d" % prior_best
-		_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nSTALL %d%%%s\n\n[R] RESTART" % [depth, t / 60, t % 60, kills, int(stall_pct), best_line]
+		_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nCANCELS %d\nSTALL %d%%%s\n\n[R] RESTART" % [depth, t / 60, t % 60, kills, aim_cancels, int(stall_pct), best_line]
 		_death_label.visible = true
 	died.emit()
 

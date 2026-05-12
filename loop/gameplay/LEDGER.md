@@ -4212,3 +4212,88 @@ Asked for one recommendation: (a) ship feature, (b) tune params,
 - 4 sprint iters remaining
 
 ---
+
+## Iter 056 — BUILD-tune — Aim-cancel instrumentation + playtest trim (Consult 007 ADOPTED)
+
+**Mode:** BUILD (Pro-permitted instrumentation, no new features)
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 30/50 (unchanged)
+
+### Trigger
+
+Pro Consult 007 read iter 56. 275s gen, Extended Thinking. Pro broke H2
+(keep 5Q, trim wording), held H1 (with caveat about diagnostic
+instrumentation), H3, H4. Recommendation **(b) tune existing parameters**;
+no new features iter 56-59.
+
+Pro H1 caveat: "tiny affordance/instrumentation changes acceptable if they
+directly improve test interpretability." Aim-cancel counter fits this
+exactly — adds diagnostic data point for iter-60 [run] log without
+changing gameplay.
+
+### Code (~+15 lines)
+
+**scripts/Spawner.gd**: new `var aim_cancels_landed: int = 0`.
+
+**scripts/Enemy.gd `_heavy_aim_cancel()`**: at end, finds Spawner via
+`get_tree().get_root().find_child("Spawner", ...)`, increments
+`aim_cancels_landed += 1`.
+
+**scripts/PlayerTank.gd `_die()`**:
+- `[run]` print now includes `aim_cancels=A`
+- Death label adds `CANCELS A` line above STALL
+
+### Playtest template trim (loop/gameplay/iter-60-playtest-prompt-draft.md)
+
+Per Pro H2 critique: "optimizing for shorter form instead of rubric
+coverage." Kept 5 questions, trimmed wording. Each question now ≤1 short
+sentence + parenthetical. User time still ≤3 min.
+
+[run] log guide updated to include `aim_cancels=A` interpretation:
+- >0 = player engaged Heavy tactical decision
+- 0 = player never tried OR Heavy too rare in encounters
+
+### Heavy param tuning decisions (per Pro)
+
+Pro suggested testing `lkp_search_duration` at 2.0 / 2.5 / 3.0. Kept
+current value (2.5s) — middle of range, "fallible but not stupid" is
+Pro's framing for this midpoint. If iter-60 user reports "Heavy lost me
+too easily" → drop to 2.0 iter 61. If "Heavy never finds me" → raise to
+3.0.
+
+Kept `aim_cancel_cooldown=1.5`, `bullet_damage=2` per Pro recommendations.
+
+### Score
+
+Unchanged at 30/50. Pro-permitted instrumentation; no anchor lift.
+
+### Substrate freeze check
+
+- Hard scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- Cross-script wiring: `find_child("Spawner", true, false)` from any
+  Node works (whole tree search; Spawner is unique in scene).
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd`, `scripts/Enemy.gd`, `scripts/PlayerTank.gd`
+- Modified: `loop/gameplay/iter-60-playtest-prompt-draft.md` (Q trim + log guide)
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER,creative-consults}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s (BUILD wakeup)
+- Iter 57-59: protective tune-only iters. Reserve for surface issues.
+  Could just be re-reads / sanity passes if nothing surfaces.
+- Iter 60 PLAYTEST fires draft prompt from
+  `loop/gameplay/iter-60-playtest-prompt-draft.md`.
+- 3 sprint iters remain after this one.
+
+---

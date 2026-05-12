@@ -454,6 +454,10 @@ func _heavy_aim_cancel() -> void:
 		_sprite.modulate = Color(2.0, 2.0, 2.0, a)
 		var tween: Tween = _sprite.create_tween()
 		tween.tween_property(_sprite, "modulate", Color(1, 1, 1, a), 0.15)
+	# iter 56: increment Spawner counter for [run] summary
+	var spawner: Node = get_tree().get_root().find_child("Spawner", true, false)
+	if spawner != null and "aim_cancels_landed" in spawner:
+		spawner.aim_cancels_landed += 1
 
 
 # iter 41: visual juice — brief white modulate on non-kill damage. Skip when

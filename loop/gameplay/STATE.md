@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 55 → 60)
-iteration: 55
-consult_006: ADOPTED. consult_007: PENDING (fired iter 55, read iter 56) — pre-playtest pulse check (H1-H4).
+phase: SPRINT (iter 56 → 60)
+iteration: 56
+consult_006: ADOPTED. consult_007: ADOPTED iter 56 — Pro broke H2 (keep 5Q trim wording), held H1/H3/H4. Recommendation (b) tune only. No new features 57-59.
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"

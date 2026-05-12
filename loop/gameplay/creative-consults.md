@@ -520,6 +520,44 @@ Asked for breaks/holds per H + one recommendation for iter 56-59:
 
 ### Status
 
-PENDING (fired iter 55, response expected iter 56). Adoption decision and lessons logged after read.
+ADOPTED (read iter 56; 275s gen, Pro Extended Thinking).
+
+### Pro response synthesis
+
+| H | Verdict | Pro's lead-in (paraphrased) |
+|---|---------|------------------------------|
+| H1 | **MOSTLY HOLDS** with caveat | "Shipped layer is sufficient for iter-60 diagnosis." Caveat: "no more features" shouldn't mean "no more risk reduction." Tiny affordance/instrumentation changes OK if they directly improve test interpretability. Sharp critique: "stability work should ACTIVELY make playtest cleaner — fewer ambiguous deaths, clearer Heavy states, cleaner feedback reads." |
+| H2 | **BREAKS** | "Dropping to 3 questions is too aggressive — pending lifts are citation-gated. Q2 supports crit 8 impact/feedback; Q3 supports crit 10 run-loop closure. You DO NOT 'already know' those work — you know you implemented structures intending to support them." Holds Q1/Q4/Q5 as most load-bearing. Sharp critique: "Optimizing for shorter form instead of rubric coverage. Keep 5 questions but make them punchier." |
+| H3 | **HOLDS as risk, not problem** | "Heavy may dominate attention budget — unique pathing/damage/tint/aim-cancel/counterplay. Light/Fast may feel like ambient noise." But: "Heavy being the main decision enemy is fine if Light/Fast change positioning, timing, panic pressure. They need FUNCTIONAL PRESSURE, not equal attention." Sharp critique: "Do not ask 'are Light/Fast as interesting as Heavy.' Ask 'do Light/Fast make Heavy decisions HARDER, EARLIER, or MORE COSTLY.'" |
+| H4 | **HOLDS** | "Map/level structure is the biggest systemic risk. Landmarks improve orientation not topology. If maze feels samey, iter-48 only helps name depth, not feel authored progression." But: "not the highest-risk thing to fix before iter 60. Playtest can expose whether sameness damages decision quality or is just aesthetic." Sharp critique: "'Procedural generation is frozen' is becoming a hiding place. You may not change Eller's, but you can still tune encounter pacing, landmark cadence, and readability around it." |
+
+### Recommendation: (b) TUNE EXISTING PARAMETERS
+
+No new gameplay features iter 56-59. Narrow tuning pass:
+
+1. **Heavy `lkp_search_duration`**: test 2.0s / 2.5s / 3.0s. Pick "fallible but not stupid."
+2. **Heavy `aim_cancel_cooldown`**: keep 1.5s unless Heavy becomes trivial in self-play; raise slightly only if spam-cancel viable.
+3. **Heavy `bullet_damage=2`**: keep — gives enemy identity. Watch iter-60 whether deaths feel "my fault" vs "cheap."
+4. **Light/Fast**: don't buff blindly. Make sure existing speeds/damage create positioning pressure around Heavy.
+5. **Playtest prompt**: keep 5 questions, trim wording.
+
+**Posture for iter 56-59**: "freeze feature surface, tune feel, protect diagnostic value of iter 60."
+
+### Adoption decisions
+
+**Iter 56 (this iter):**
+- ADOPT recommendation (b): no new features.
+- ADOPT Pro H2 break: keep 5Q template, trim wording (iter-60-playtest-prompt-draft.md edits).
+- ADOPT Pro H1 caveat: ship a small INSTRUMENTATION improvement — aim-cancel success counter in [run] log. Diagnostic value for iter 60.
+- Heavy params: keep current values (lkp_search_duration=2.5, aim_cancel_cooldown=1.5, bullet_damage=2). Pro's "fallible but not stupid" is informational; 2.5 is middle of 2.0-3.0 range.
+
+**Iter 57-59**: tune-only iters. Reserve for actual signal from self-play or surface issues.
+
+### Lessons
+
+1. **"Stability is not passivity"** — Pro's H1 sharp critique. Tuning iters can ACTIVELY improve diagnostic value. Aim-cancel counter is the iter-56 application.
+2. **Playtest coverage > prompt brevity** — Pro broke H2 cleanly. The 5 questions exist for rubric coverage. Trim wording, not count.
+3. **"Functional pressure ≠ equal attention"** — Pro's H3 reframe. Don't measure Light/Fast against Heavy's depth; measure whether they make Heavy harder to deal with. The current design (Light lane-commit, Fast continuous fire) DOES create positioning pressure; iter-60 will tell.
+4. **"Procedural generation is becoming a hiding place"** — Pro's H4 sharp critique. Substrate freeze is real, but I can tune around it (landmark cadence, encounter pacing). Future iter aspiration.
 
 ---

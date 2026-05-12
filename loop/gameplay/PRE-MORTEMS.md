@@ -1497,7 +1497,32 @@ H2-RULE claims (3):
 2. Response read at iter 56 (240s wakeup); adoption logged in creative-consults.md as Consult 007
 3. At least 1 of H1-H4 broken by Pro, triggering iter-56+ direction adjustment OR Pro confirms all 4 hold (= shipping conservatism is the right move)
 
-**Post-iter:** [filled at iter 56]
+**Post-iter (iter 56):** Pro broke H2 (keep 5Q, trim wording) + held H1/H3/H4 with caveats. Recommendation (b) tune parameters. See creative-consults.md Consult 007 ADOPTED.
+
+---
+
+## Iter 056 — BUILD-tune — Aim-cancel instrumentation + playtest trim
+
+Tag: `[STRUCTURE]` (Pro-permitted tiny instrumentation per H1 caveat; no new gameplay features).
+
+Trigger: Pro Consult 007 ADOPTED. Recommendation (b) tune parameters. Pro H1 caveat: "tiny instrumentation changes acceptable if they improve test interpretability." Pro H2 break: trim playtest template wording.
+
+Going in, biggest expected miss: **adding cross-script counter (Spawner.aim_cancels_landed) might break the existing tree_exited signal flow** OR Heavy._heavy_aim_cancel might run before Spawner is initialized in some race. Mitigation: `get_parent().get_node_or_null("Spawner")` with null-safety; +1 increment is idempotent if it fires multiple times.
+
+Design:
+- Spawner.gd: `var aim_cancels_landed: int = 0`
+- Enemy.gd `_heavy_aim_cancel()`: at end, `var spawner = get_tree().get_root().find_child("Spawner", true, false); if spawner: spawner.aim_cancels_landed += 1`
+- PlayerTank.gd `_die()`: include `aim_cancels=N` in `[run]` print + add line to death label (compact "AIM-CANCELS K")
+- iter-60-playtest-prompt-draft.md: trim wording per Pro H2 critique — questions stay 5, but each gets tighter framing
+
+H2-RULE claims (3):
+1. Aim-cancel counter increments each time `_heavy_aim_cancel()` fires (verifiable via `[run]` print after a death)
+2. `[run]` log shows aim-cancels alongside depth/time/kills/stall
+3. Playtest template trimmed: each question's framing 1 sentence max; total user time still ≤3 minutes
+
+No score lift (Pro-permitted instrumentation, not feature).
+
+**Post-iter:** [filled at iter 57]
 
 ---
 
