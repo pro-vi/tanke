@@ -186,6 +186,87 @@ This gives the player a ~0.45s readable window to either break LOS (slip behind 
 
 ---
 
+## Falsification 009 — iter 60 — Enemy type visual distinction insufficient
+
+**Prediction (iter 40 falsification clause):** Adding Fast as 3rd enemy type unlocks crit 6 anchor 3 [STRUCTURE]. User would distinguish 3 types in iter-60 playtest.
+
+**Contradiction (user iter 60 Q1):** "i see a yellow one that can be killed 1 shot. i see less heavy though."
+
+**Root cause analysis:**
+- User identified ONE 1-shot enemy ("yellow one"). Light (base_frame=8) + Fast (base_frame=16) both 1-HP — visually both render as similar tanks. User collapses them into "yellow one."
+- Heavy density LOW at depths user reached. Heavy starts at depth 8 (first_push 0.2 weight) and dominates at depth 20+ (heavy_gate 0.5 weight). If user died at depth <8, Heavy never spawned.
+- Net: structural 3-type distinction exists in code; visual + density distinction insufficient for user to perceive.
+
+**Action (iter 61+ sprint):** Per Q5 directive priority 2 "enemy types," consider:
+- Sprite/color differentiation for Light vs Fast (currently both white-tinted)
+- Heavy spawn-rate tuning: lower depth threshold for first_push band, OR raise Heavy weight in first_push 0.2 → 0.3
+- Movement-speed-based ID cues (Fast is 32px/s — could add brief speed-blur or motion trail)
+
+---
+
+## Falsification 010 — iter 60 — Visual juice reads as "noise artifact"
+
+**Prediction (iter 41-42 falsification clause):** Bullet impact spark + camera shake satisfies crit 8 anchor 4 "hits feel solid / punchy" on iter-60 playtest cite.
+
+**Contradiction (user iter 60 Q2):** "there is some noise artifact in front of each tank"
+
+**Root cause analysis:**
+- "in front of each tank" likely refers to bullet sprites at muzzle offset OR Heavy red telegraph.
+- "noise artifact" framing = visual reads as jank, not feedback.
+- Possible culprits:
+  - 4×4 white ColorRect impact spark may look pixelated/spammy at 320×240 native scale when many bullets are firing
+  - Heavy red telegraph color (1.6, 0.5, 0.5) saturated to over-1.0 — may produce strange compositing
+  - Bullet orange tint (iter 53) may not register as semantic — user reads as visual noise
+
+**Action (iter 61+ sprint, Q5 priority 3):** Polish pass on impact effects:
+- Replace 4×4 white ColorRect with shaped sprite (4×4 yellow diamond / star burst)
+- Cap concurrent sparks (queue old ones first if N > 8)
+- Tune Heavy telegraph color brightness (1.6 → 1.3?)
+- Verify Heavy bullet orange is visually distinct vs just "different shade"
+
+---
+
+## Falsification 011 — iter 60 — Death screen text/font is presentation blocker
+
+**Prediction (iter 43-44):** Multi-line death summary + NEW BEST highlight is enough to engage user retry-feel for crit 10 anchor 4 [FEEL] cite.
+
+**Contradiction (user iter 60 Q3):** "the text / font is not good - make it pretty not focusing on manipulation yet"
+
+**Root cause analysis:**
+- Default Godot 4 Label font at small size (320×240 viewport) is low-quality pixel rendering of system font. No theme/font override applied to most labels.
+- User is signaling: presentation quality blocks them from evaluating the death-screen's behavioral effect.
+- "not focusing on manipulation yet" = user explicitly NOT in evaluation mode for psychological design until visuals upgrade.
+
+**Action (iter 61+ sprint, Q5 priority 3):** Death screen + HUD typography polish:
+- Custom bitmap font (BC-style pixel font) for HUD + death label
+- Possibly larger size + better alignment
+- Color theming consistent across labels
+
+---
+
+## Falsification 012 — iter 60 — Map samey-ness is biggest user complaint (Pro H4 confirmed)
+
+**Prediction (Pro Consult 006 H4 + Consult 007 H4 hold):** Map/level structure is biggest playtest risk. Landmarks help orientation not topology. "If maze feels samey, iter-48 only helps name depth, not feel authored progression."
+
+**Confirmation (user iter 60 Q5):** Priority order: "interesting local map > enemy types > feedback (animations) and polish > then i want to explore mechanics like power ups, heals."
+
+**Root cause analysis:**
+- Eller's algorithm + uniform terrain weight per row = "too texture-like" per Pro Consult 003 framing
+- Procedural gen is hard-substrate frozen (cannot modify ProceduralLevel.gd, ProceduralStep.gd)
+- Pro Consult 006 sharp critique: "Procedural generation is becoming a hiding place. You may not change Eller's, but you can still tune encounter pacing, landmark cadence, and readability around it."
+
+**Action (iter 61-99 sprint, Q5 priority 1):** Map content layer WITHOUT touching substrate:
+- Multiple LevelConfig variants per depth band (different empty/brick/steel/grass/water mixes)
+- Switch active LevelConfig.tres per band entry (Spawner already detects band transitions)
+- "Danger pockets" via Spawner-triggered enemy clusters at depth multiples
+- "Safe rooms" via Spawner-triggered reduced spawn windows
+- Architectural decorations (gate posts iter 48 generalized — different post styles per band)
+- Possibly: stronger band-marker visual events (full-screen flash + sound stub on band transition)
+
+THIS IS THE 38-ITER SPRINT FOCUS (iter 61-99).
+
+---
+
 ## Falsification 006 — RESOLVED iter 39 (soft-closed, no complaint after 2 playtests)
 
 **Original prediction (iter 12+):** Map borders contain player/enemies without drift.

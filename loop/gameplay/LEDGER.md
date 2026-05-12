@@ -4600,3 +4600,105 @@ iter 63 if no user response (60 + 3 = 63, per v2 PROMPT §USER-LOOK PROTOCOL).
   - Update STATE to next phase per response
 
 ---
+
+## Iter 061 — META — Iter-60 PLAYTEST evaluation + iter 61-99 sprint authorization
+
+**Mode:** META (post-playtest evaluation + sprint planning)
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** **32/50** (was 30; +2 crit 5 [FEEL] from Q4 cite)
+
+### User response received (verbatim)
+
+> Q1 isee a yellow one that can be killed 1 shot. i see less heavy though
+> Q2. there is some noise artifact in front of each tank
+> Q3 the text / font is not good - make it pretty not focusing on manipulation yet
+> Q4 the decision is in whether i can dig tunnel to ignore some enemies, how do i safely redue the angle i engage etc.
+> Q5 interesting local map > enemy types > feedback (animations) and polish (we can think about assets and FX). then i want to explore mechanics like power ups, heals, etc the rogue lite stuff. next playtest at ITER 99
+
+### Score change
+
+| Criterion | Before | After | Δ | Citation |
+|-----------|--------|-------|---|----------|
+| 5. Forward survivability | 1 | **3** | +2 | `[FEEL]` Q4 verbatim: "decision is in whether i can dig tunnel to ignore some enemies, how do i safely reduce the angle i engage." Anchor 3: "Combat micro-decisions while ascending — which enemy to engage, which to dodge — playtest cited." Routing + angle = anchor 3 met. |
+| **Total** | **30** | **32** | **+2** | |
+
+Best-case scenario from iter-59 prediction (30 → 36-40) was OPTIMISTIC.
+User cite pattern: 1 strong [FEEL] (Q4) + 4 partial/negative/deferred.
+Realistic score gain matches conservative end of range.
+
+### Falsifications surfaced
+
+- **F009** enemy type visual distinction insufficient (Q1)
+- **F010** visual juice reads as "noise artifact" (Q2)
+- **F011** death screen text/font is presentation blocker (Q3)
+- **F012** map samey-ness is biggest user complaint (Q5; Pro H4 confirmed)
+
+Details in `loop/gameplay/FALSIFICATIONS.md`.
+
+**Note**: Q1 fail does NOT trigger crit 6 revert. The falsification clause was "if user does NOT distinguish Fast from Light/Heavy → revert 3→2." Strict reading: user saw "yellow one" (1 type) + "less heavy" (acknowledging Heavy exists but rare). That's 2 types acknowledged. Code structure has 3. Conservative: hold crit 6 at 3 [STRUCTURE], flag F009 for iter-61+ remediation. If iter-99 user STILL doesn't distinguish, revert.
+
+### Sprint authorization (user directive iter 60)
+
+- **Window**: iter 61-99 (39 iters)
+- **Mandatory PLAYTEST**: iter 99
+- **Halt rule**: iter 102 (= 99 + 3)
+- **User priority order** (Q5 forced choice):
+  1. Interesting local map (PRO H4 CONFIRMED — map is biggest gap)
+  2. Enemy types (more variety / tuning)
+  3. Feedback (animations) + polish (assets, FX)
+  4. Roguelite mechanics (powerups, heals)
+- **User constraint** (Q3): "make it pretty not focusing on manipulation yet" — polish is gating factor before psychological design
+
+### Sprint roadmap (iter 61-99)
+
+**Phase A — Map content layer (iter 61-78, ~18 iters)**
+- Per Pro Consult 006 advice: "tune around frozen substrate"
+- Multiple LevelConfig.tres variants per depth band
+- Switch active config on band entry (Spawner-driven)
+- Band-marker visual events (full-screen flash on band transition)
+- Generalize depth landmarks: different post styles per band; possibly
+  "gate room" markers (decorative walls forming archway near gate)
+- "Danger pocket" Spawner triggers at depth multiples (cluster spawn)
+- "Safe room" Spawner triggers (reduced spawn windows)
+
+**Phase B — Enemy variety + density tuning (iter 79-88, ~10 iters)**
+- F009 remediation: Light/Fast visual distinction
+- Heavy density tuning (raise warmup/first_push weight)
+- Possible 4th enemy type if Phase A doesn't surface enough variety
+- Movement-style differentiation (Fast motion trail?)
+
+**Phase C — Polish / FX / typography (iter 89-95, ~7 iters)**
+- F010 remediation: impact-spark visual quality (shaped sprite vs ColorRect)
+- F011 remediation: HUD + death label custom bitmap font
+- Per Q5 priority 3: "feedback animations + polish + assets + FX"
+
+**Phase D — Pre-playtest (iter 96-98, ~3 iters)**
+- META, AUDIT, final-look
+- Possibly CONSULT 008 (mid-Phase or pre-playtest)
+
+**Iter 99**: PLAYTEST. Halt rule iter 102.
+
+### Substrate freeze check
+
+- Hard scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- H1 tripwire unchanged at 2
+- Hash anchor `f873ae60…` carries from iter-58 verification
+
+### Files touched
+
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER,FALSIFICATIONS}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s (META mode would normally be 120s, but iter 62 is
+  first BUILD of long sprint — give thinking room)
+- Iter 62 = FIRST BUILD of Phase A. Candidate: create
+  `configs/playable-warmup.tres` + `configs/playable-rush.tres` variants
+  with different terrain mixes; modify Spawner to switch active config on
+  band entry. NEW configs created alongside playable.tres (per substrate
+  rule: "Add new configs/scripts/scenes as needed").
+- 38 sprint iters remain
+
+---

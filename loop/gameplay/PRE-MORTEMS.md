@@ -1610,7 +1610,32 @@ H2-RULE claims (3):
 
 NO ScheduleWakeup. AWAIT per v2 §Step 7.
 
-**Post-iter:** [filled at iter 61 after user response]
+**Post-iter (iter 61 — user response received):**
+
+User response (verbatim):
+> Q1 isee a yellow one that can be killed 1 shot. i see less heavy though
+> Q2. there is some noise artifact in front of each tank
+> Q3 the text / font is not good - make it pretty not focusing on manipulation yet
+> Q4 the decision is in whether i can dig tunnel to ignore some enemies, how do i safely redue the angle i engage etc.
+> Q5 interesting local map > enemy types > feedback (animations) and polish (we can think about assets and FX). then i want to explore mechanics like power ups, heals, etc the rogue lite stuff. next playtest at ITER 99
+
+**Cite-by-cite analysis:**
+- **Q1 PARTIAL FAIL**: "yellow one" singular + "less heavy though" — user did NOT spontaneously distinguish 3 types. Identified ONE 1-shot enemy (Light or Fast). Implies Heavy spawn density too low at depths reached. Crit 6 anchor 3 falsification clause: "if user does NOT distinguish Fast from Light/Heavy → revert 3→2." User isn't separating Light from Fast either — they read as "yellow one" collectively. F009 new falsification: enemy type visual distinction insufficient.
+- **Q2 NEGATIVE**: "noise artifact in front of each tank." Visual juice (sparks, bullets, telegraphs) reading as JANK not feedback. F010 new falsification: impact spark / bullet visuals look amateur. Crit 8 holds at 3 (no lift).
+- **Q3 DEFERRED**: "text/font not good — make it pretty not focusing on manipulation yet." Death screen presentation is a blocker before manipulation effect can be measured. F011: death screen typography below user threshold for engagement.
+- **Q4 LANDED**: "decision is in whether i can dig tunnel to ignore some enemies, how do i safely reduce the angle i engage etc." Solid combat-routing-decision cite. **Crit 5 anchor 3 lifts 1 → 3 [FEEL]**. Note: user did NOT cite aim-cancel or LKP-bait specifically — their decisions are about ROUTING + ANGLES, not Heavy-specific tactics. Crit 6 anchor 5 NOT cited (no "I used walls to bait Heavy" language).
+- **Q5 DIRECTIVE**: priority `local map > enemy types > feedback/polish > roguelite mechanics`. **Pro H4 CONFIRMED — map samey-ness IS the biggest gap.** Pro called it iter 45.
+
+**Score impact:**
+- Crit 5: 1 → 3 [FEEL] +2
+
+**New sprint authorization:** iter 61 → 99 (38-iter sprint). User priority: map first.
+
+**New F-numbered falsifications:**
+- F009: enemy type visual distinction insufficient at native scale (Q1)
+- F010: bullet/spark visuals read as "noise artifact" (Q2)
+- F011: death screen text/font is presentation blocker (Q3)
+- F012: map samey-ness confirmed top priority (Q5)
 
 ---
 
