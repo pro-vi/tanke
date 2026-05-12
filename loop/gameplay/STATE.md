@@ -23,16 +23,16 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 46 → 60)
-iteration: 46
-consult_006: ADOPTED iter 46 — Pro broke H1 + H2; held H3-H5. Rubric rename done iter 46. Heavy LKP de-omniscience iter 47-48. Depth pressure landmarks iter 49-50.
+phase: SPRINT (iter 47 → 60)
+iteration: 47
+consult_006: ADOPTED. Heavy LKP shipped iter 47. Depth landmarks iter 48-50.
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"
 last_completed_playtest_iter: 38 (Heavy wind-up: user cite "yeah ok that works for now")
 design_direction: roguelike_vertical_ascender_with_battle_city_combat_feel
 consult_cadence: adaptive — last 29, planned 45 (mid-sprint), 55 (pre-playtest)
-ai_intelligence_stage: Stage 1 VISION + wind-up telegraph. Movement still omniscient. 3rd type Fast (iter 40) — harassment rusher, no AI state (BC-baseline behavior on top of vertical bias).
+ai_intelligence_stage: Stage 1 VISION + wind-up + LKP (iter 47): Heavy chases last-known position, searches 2.5s on reach, wanders upward-bias when no LKP. 3rd type Fast — harassment rusher (movement still omniscient by design).
 falsifications_closed: F007, F005-v2, F006, F008
 falsifications_pending_playtest: crit 6 anchor 3 [STRUCTURE] lift falsification clause (iter 60); crit 8 anchor 4 [STRUCTURE-DEFERRED → iter 60] for impact spark + hit-flash feel cite
 rubric_debt: crit 8 anchor 3 (XP gems language stale post-iter-11 reframe), anchor 4 "UI counter increments" (kill count dropped iter 30) — flag for AUDIT iter ~50

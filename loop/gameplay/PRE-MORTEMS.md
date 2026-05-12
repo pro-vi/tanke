@@ -1200,7 +1200,44 @@ H2-RULE claims (3):
 2. Score lifts applied: crit 8 2→3 [STRUCTURE], crit 10 2→3 [STRUCTURE]; crit 9 stays at 1 (anchor 3 HP bar not shipped)
 3. Self-deception check: I am NOT lifting beyond what the new anchors literally describe. Anchor 3 for crit 8 requires MULTI-EVENT impact layer (spark + flash + milestone); iter 41 + iter 30 ship satisfies. Anchor 3 for crit 10 requires best-depth + NEW BEST highlight; iter 44 ship satisfies.
 
-**Post-iter:** [filled at iter 47]
+**Post-iter (iter 47 start):** META landed. Score 24/50. Sprint replan in effect. Heavy LKP next.
+
+---
+
+## Iter 047 — BUILD — Heavy LKP de-omniscience (Pro Consult 006 primary)
+
+Tag: `[STRUCTURE-DEFERRED → iter 60]` for crit 6 anchor 5 path (anchor 5 requires "enemies route around walls AND user-cited via playtest" — both gates).
+
+Diagnose: Pro broke H2 — Heavy omniscient movement is "not the loudest problem, but still not fine." `_choose_direction_toward_player` reads raw `player.global_position` for cardinal direction picks. Player can't bait Heavy, can't route around walls, can't use cover for movement (only at firing moment). Ship Heavy LKP per Pro primary.
+
+Going in, biggest expected miss: **Heavy gets stuck in WANDER loop** after reaching LKP without re-acquiring LOS — random cardinal wandering might keep Heavy facing wrong direction, never letting vision cone re-find player. Mitigation: in WANDER mode add vertical-bias (upward bias — Heavy patrols toward the ascent direction), so even with no LOS, Heavy makes player-adjacent progress. Secondary risk: LKP saved while player was inside vision cone might "teleport" Heavy across the map if player and Heavy are far apart — but vision cone caps at aim_fire_range=80px, so LKP can't be more than 80px away. Tertiary risk: when Heavy is in CHASE_TO_LKP and player moves PERPENDICULAR to the LKP line (out of cone), Heavy can't see them — that's the FEATURE.
+
+Design:
+- New state-extension vars on Heavy (Light/Fast unaffected):
+  - `_lkp: Variant = null` — last known player position (Vector2 when set, null when unknown)
+  - `_reached_lkp: bool = false` — true when Heavy has arrived at LKP without regaining LOS
+  - `_search_until: float = 0.0` — `_state_time` value past which search expires
+- `_player_in_line_of_sight()` saves LKP on TRUE: `_lkp = _player.global_position; _reached_lkp = false; _search_until = 0.0`
+- Replace `_choose_direction_toward_player()` call in Heavy CHASE with `_choose_direction_heavy_chase()`:
+  - If `_lkp == null` → WANDER (vertical-bias-upward random)
+  - Else if `_reached_lkp` AND `_state_time < _search_until` → SEARCH (random cardinal)
+  - Else if `_reached_lkp` AND `_state_time >= _search_until` → clear LKP, WANDER
+  - Else → bee-line cardinal toward LKP
+- Reach detection: if `global_position.distance_to(_lkp) < 12.0`, set `_reached_lkp = true`, `_search_until = _state_time + 2.5`
+- Light/Fast continue to use `_choose_direction_toward_player` / `_choose_direction_light_lane` / `_choose_direction_fast` (omniscient is part of their design)
+
+H2-RULE claims (3):
+1. Heavy LOS = saves LKP; Heavy LOS lost = continues toward LKP for collision-free 12px-reach, then SEARCH wanders for 2.5s, then clears LKP and WANDERS
+2. Player can break Heavy LOS, slip behind wall, and reach safety without Heavy hunting through walls
+3. Build clean + Light/Fast unaffected (only Heavy CHASE direction-picking changed)
+
+No score lift this iter (anchor 5 requires path-around-walls + playtest cite; LKP is not pathfinding). Tag `[STRUCTURE-DEFERRED → iter 60]` for crit 6 5 path.
+
+Self-deception check: would Pro grant 3 → 4 on crit 6 for LKP alone? Anchor 4 = "Boss-like enemy or band-marker enemy whose appearance changes player behavior (special spawn at depth-band boundary)." LKP is NOT anchor 4 territory. Stay at 3/5 honestly.
+
+Falsification: if iter-60 user reports "Heavy still chases me through walls" / "Heavy still tracks me perfectly," ROOT-CAUSE check needed — maybe LKP horizon too large, OR Heavy direction-commit_time=0.8s lets it re-pick toward old player.pos too often. Iter 48 tuning.
+
+**Post-iter:** [filled at iter 48]
 
 ---
 

@@ -3435,3 +3435,118 @@ Pro's two sharp recommendations adopted into the schedule:
 - 13 sprint iters remaining (47-59 + iter 60 PLAYTEST)
 
 ---
+
+## Iter 047 — BUILD — Heavy LKP de-omniscience (Pro Consult 006 primary)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 24/50 (unchanged — `[STRUCTURE-DEFERRED → iter 60]` for crit 6
+anchor 5 path; anchor 5 requires "enemies route around walls AND user-cited
+via playtest" both gates)
+
+### Trigger
+
+Pro Consult 006 H2 break: "Heavy omniscient movement is not fine; it is
+just not the loudest problem anymore. Pursuit is part of stealth/peek/cover
+verb. If Heavy always chooses toward raw player position, the player cannot
+meaningfully lose it, bait it, route around it, or exploit walls except at
+the firing moment."
+
+### Code (scripts/Enemy.gd, ~+70 lines net)
+
+New state vars (Heavy-only — Light/Fast unaffected):
+- `_lkp: Variant = null` — Vector2 when LKP set, null when unknown
+- `_reached_lkp: bool = false`
+- `_search_until: float = 0.0` — `_state_time` threshold for SEARCH expiry
+- `@export lkp_reach_radius: float = 12.0`
+- `@export lkp_search_duration: float = 2.5`
+
+Behavior changes:
+- `_heavy_chase_tick()`:
+  - LOS check at top → on TRUE, `_save_lkp()` then `_enter_aim_fire()`
+  - Direction picking now via `_choose_direction_heavy_chase()` (NOT
+    `_choose_direction_toward_player`)
+  - Reach detection: when distance(self, LKP) < 12px → `_reached_lkp = true`,
+    arm SEARCH window for 2.5s
+- `_heavy_aim_fire_tick()`:
+  - While LOS holds, call `_save_lkp()` every tick to keep LKP fresh — so
+    when player slips out of cone, LKP = exit point, not entry
+- `_choose_direction_heavy_chase()` — three phases:
+  - **CHASE_TO_LKP**: LKP set, not reached → cardinal toward LKP
+    (dominant-axis bee-line)
+  - **SEARCH**: reached LKP within window → uniform random cardinal
+  - **WANDER**: no LKP OR search expired → vertical-bias-upward random
+    (U:U:U:D:L:R weight pool — 50% upward bias)
+- `_save_lkp()`: stores `_player.global_position`, resets `_reached_lkp` +
+  `_search_until`
+
+### Why Light/Fast unchanged
+
+Light = lane-invader: omniscient lane-commit is the role's structural
+distinction. Vertical-bias direction-choice + 3s commit are the verb.
+LKP would dilute the lane-commit feel.
+
+Fast = harassment rusher: omniscient direction (1.5× horizontal threshold)
++ continuous fire is the role. Fast already doesn't aim; the omniscience is
+about movement aggression. LKP would slow Fast into less harassment.
+
+### Player tactical reading
+
+- **Bait**: player enters Heavy's cone briefly, then dodges into cover.
+  Heavy locks AIM_FIRE, fires wind-up burst at LKP, exits to LKP, searches
+  empty area, wanders away. Player can come back from a different angle.
+- **Lose Heavy**: break LOS by dodging perpendicular into walls. Heavy
+  chases TOWARD where it last saw you, not where you actually are.
+- **Cover**: stand behind walls when Heavy is in CHASE_TO_LKP. Heavy will
+  bee-line into the wall and collision-fallback bounce.
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0, no warnings
+- Substrate frozen scripts untouched ✓
+
+### Score
+
+Unchanged at 24/50. `[STRUCTURE-DEFERRED → iter 60]` for crit 6 anchor 5
+path. Anchor 5 explicitly requires "enemies route around walls AND user
+cited via playtest." LKP is NOT pathfinding (no wall-routing); it's
+last-position memory with collision-fallback wander. Honest hold at 3/5
+on crit 6.
+
+Self-deception check: would Pro grant 3 → 4 on crit 6 for LKP alone?
+Anchor 4 = "Boss-like enemy or band-marker enemy whose appearance changes
+player behavior." LKP is not anchor 4. Holding 3 honestly.
+
+### Falsification clause (iter 60)
+
+- If user iter-60 cites "Heavy still chases me through walls" / "Heavy
+  still tracks me perfectly," ROOT-CAUSE check needed:
+  - LKP_reach_radius too large?
+  - direction_commit_time=0.8s lets Heavy re-pick toward old player.pos?
+  - Heavy speed=14 catches player too quickly even with LKP indirection?
+- If user reports Heavy now feels "lost / wandering / never finds me,"
+  iter 48 tunes:
+  - Reduce search_duration 2.5→1.5s (give up faster)
+  - Increase WANDER upward-bias (Heavy patrols toward ascent zone more)
+
+### Substrate freeze check
+
+- Hard scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- H1 tripwire unchanged at 2
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd`
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s (BUILD mode)
+- Iter 48 candidate: SHORT tuning iter if LKP feels off in self-test,
+  OR pivot to depth pressure landmarks (Pro secondary recommendation)
+- 12 sprint iters remaining
+
+---

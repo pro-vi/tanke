@@ -47,6 +47,15 @@ var _state: int = State.CHASE
 var _state_time: float = 0.0
 var _burst_remaining: int = 0
 var _burst_timer: float = 0.0
+# iter 47 (Pro Consult 006 primary): Heavy LKP de-omniscience. Heavy CHASE no
+# longer reads raw player.global_position; instead tracks last-known position
+# and searches when LOS lost. Light/Fast unaffected (omniscient is part of
+# their design — Light commits lane, Fast sprays).
+var _lkp: Variant = null  # Vector2 when set, null when no LKP
+var _reached_lkp: bool = false
+var _search_until: float = 0.0  # _state_time threshold past which SEARCH expires
+@export var lkp_reach_radius: float = 12.0
+@export var lkp_search_duration: float = 2.5
 @onready var _sprite: Sprite2D = $Sprite2D
 
 
@@ -184,13 +193,16 @@ func _heavy_tick(delta: float) -> void:
 
 
 func _heavy_chase_tick(delta: float) -> void:
-	# Same locomotion as Light, plus LOS check for state transition.
+	# iter 47: LKP-aware CHASE. LOS check first; on TRUE, save LKP + transition
+	# to AIM_FIRE. LOS FALSE → direction picks come from _choose_direction_heavy_chase
+	# which uses LKP state machine (CHASE_TO_LKP / SEARCH / WANDER).
 	if _player_in_line_of_sight():
+		_save_lkp()
 		_enter_aim_fire()
 		return
 
 	if _direction_timer <= 0.0:
-		_choose_direction_toward_player()
+		_choose_direction_heavy_chase()
 		_direction_timer = direction_commit_time
 
 	var dir_vec: Vector2 = _direction_vector(direction)
@@ -208,10 +220,77 @@ func _heavy_chase_tick(delta: float) -> void:
 		_direction_timer = direction_commit_time
 		return
 
+	# iter 47: check if reached LKP (sets _reached_lkp + arms SEARCH window)
+	if _lkp != null and not _reached_lkp:
+		var dist: float = global_position.distance_to(_lkp)
+		if dist < lkp_reach_radius:
+			_reached_lkp = true
+			_search_until = _state_time + lkp_search_duration
+
 	# Heavy fires occasionally during CHASE too, but less than during AIM_FIRE
 	if _fire_timer <= 0.0:
 		_fire()
 		_fire_timer = fire_cooldown
+
+
+# iter 47: Heavy LKP-aware direction picking (Pro Consult 006 primary).
+# Three phases by LKP state:
+#   1. CHASE_TO_LKP: LKP set, not yet reached → bee-line cardinal toward LKP
+#   2. SEARCH: reached LKP, within search window → random cardinal
+#   3. WANDER: no LKP OR search expired → vertical-bias-upward random
+# Light/Fast continue to use omniscient direction picks (their design).
+func _choose_direction_heavy_chase() -> void:
+	if _lkp == null:
+		_choose_direction_wander()
+		return
+	if _reached_lkp:
+		if _state_time < _search_until:
+			_choose_direction_random_cardinal()
+		else:
+			# Search expired without re-acquire — clear LKP and wander
+			_lkp = null
+			_reached_lkp = false
+			_choose_direction_wander()
+		return
+	# CHASE_TO_LKP: bee-line cardinal toward last known position
+	var to_lkp: Vector2 = (_lkp as Vector2) - global_position
+	var new_dir: int
+	if absf(to_lkp.x) > absf(to_lkp.y):
+		new_dir = Constants.Dir.R if to_lkp.x > 0 else Constants.Dir.L
+	else:
+		new_dir = Constants.Dir.D if to_lkp.y > 0 else Constants.Dir.U
+	if new_dir != direction:
+		_turn_to(new_dir)
+
+
+# WANDER: vertical-bias-upward random cardinal. Heavy with no LKP patrols
+# loosely upward (matches ascent direction so Heavy still creates pressure).
+func _choose_direction_wander() -> void:
+	# Weight: U=3, D=1, L=1, R=1 → 60% chance U, 40% spread among the rest
+	var pool: Array = [Constants.Dir.U, Constants.Dir.U, Constants.Dir.U, Constants.Dir.D, Constants.Dir.L, Constants.Dir.R]
+	var new_dir: int = pool[randi() % pool.size()]
+	if new_dir != direction:
+		_turn_to(new_dir)
+
+
+# SEARCH: uniform random cardinal. Heavy reached LKP, hunts nearby briefly.
+func _choose_direction_random_cardinal() -> void:
+	var pool: Array = [Constants.Dir.U, Constants.Dir.D, Constants.Dir.L, Constants.Dir.R]
+	var new_dir: int = pool[randi() % pool.size()]
+	if new_dir != direction:
+		_turn_to(new_dir)
+
+
+# iter 47: save player position as LKP. Called when LOS is TRUE (entering
+# AIM_FIRE) and also during AIM_FIRE to keep LKP fresh while player stays
+# in cone — so when player slips out, LKP is the EXIT point of cone, not
+# stale.
+func _save_lkp() -> void:
+	if _player == null or not is_instance_valid(_player):
+		return
+	_lkp = _player.global_position
+	_reached_lkp = false
+	_search_until = 0.0
 
 
 func _heavy_aim_fire_tick(delta: float) -> void:
@@ -219,6 +298,11 @@ func _heavy_aim_fire_tick(delta: float) -> void:
 	velocity = Vector2.ZERO
 	_face_player()
 	_burst_timer -= delta
+	# iter 47: refresh LKP while LOS holds during AIM_FIRE — when player breaks
+	# out of cone, LKP captures the exit point (latest known pos), not the
+	# entry point.
+	if _player_in_line_of_sight():
+		_save_lkp()
 
 	if _burst_remaining > 0 and _burst_timer <= 0.0:
 		# First shot of a fresh burst clears the wind-up telegraph.
