@@ -1387,7 +1387,45 @@ H2-RULE claims (3):
 
 No score lift this iter — anchors require [FEEL] cite for crit 5/8. Tag for iter-60.
 
-**Post-iter:** [filled at iter 52]
+**Post-iter (iter 52 start):** Heavy aim-cancel shipped. Build clean.
+
+---
+
+## Iter 052 — BUILD — Damage variation per enemy type
+
+Tag: `[STRUCTURE-DEFERRED → iter 60]` for crit 3 anchor 4 + crit 6 role-distinction sharpening.
+
+Diagnose: crit 3 anchor 4 = "Damage values vary by enemy type; iframes/knockback after hit (cited: playtest 'felt fair')." iframes already shipped (damage_iframes=0.6). Damage variation NOT yet (all bullets damage=1). Shipping Heavy=2, Light=1, Fast=1 completes the structural side; "felt fair" cite gates [FEEL] lift to iter 60.
+
+Going in, biggest expected miss: **Heavy bullet=2 makes Heavy too lethal** at max_hp=3. Two Heavy hits = dead. With aim-cancel mechanic (iter 51), player has counterplay but unsuccessful cancels = 2dmg punishment. Mitigation: keep max_hp=3 for now; iter-60 user reports too-lethal → iter 61 raises to 4 OR tunes Heavy burst_count=2 down to 1.
+
+Damage table:
+- Heavy bullet: damage=2 (corridor-denier, punishing)
+- Light bullet: damage=1
+- Fast bullet: damage=1 (volume-based pressure already harder to avoid)
+
+Reinforces:
+- crit 3 anchor 4 (structural side of damage variation)
+- crit 6 anchor 4 (band-marker enemy whose appearance "changes player behavior" — Heavy now an even bigger priority target)
+- crit 5 anchor 3 (combat micro-decisions — engage Heavy first vs run)
+- Aim-cancel value (iter 51) becomes critical — cancel = -1 Heavy hit absorbed
+
+Going in, secondary risk: bullets fired BEFORE damage variation deployed would still be damage=1. Mitigation: damage is set on each fire() via type_data.bullet_damage push to enemy at spawn, propagated to bullet at fire() time. Per-bullet correctness.
+
+Design:
+- Enemy.gd: new `@export var bullet_damage: int = 1`
+- Enemy._fire(): `bullet.damage = bullet_damage` after instantiate, before `bullet.start()`
+- Spawner.gd ENEMY_TYPES: add `"bullet_damage"` per type (Heavy=2, Light=1, Fast=1)
+- Spawner._telegraph_then_spawn: `enemy.set("bullet_damage", type_data.bullet_damage)`
+
+H2-RULE claims (3):
+1. Heavy bullets do 2 damage; Light/Fast do 1 (verifiable via take_damage call)
+2. Build clean: make test + headless --quit-after 60 exit 0
+3. Player bullets (PlayerTank uses Bullet too) unaffected: Bullet.damage default 1, PlayerTank doesn't override → players continue dealing 1 dmg to enemies (Heavy at 2 HP still requires 2 hits)
+
+No score lift (anchor 4 needs [FEEL]).
+
+**Post-iter:** [filled at iter 53]
 
 ---
 

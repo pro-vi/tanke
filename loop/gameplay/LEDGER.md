@@ -3919,3 +3919,109 @@ Unchanged at 30/50. `[STRUCTURE-DEFERRED → iter 60]` for:
 - 8 sprint iters remaining
 
 ---
+
+## Iter 052 — BUILD — Damage variation per enemy type
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 30/50 (unchanged — `[STRUCTURE-DEFERRED → iter 60]` for crit 3
+anchor 4 + crit 6 anchor 4 role sharpening)
+
+### Diagnose
+
+Crit 3 anchor 4 partial since iter 3 (iframes shipped, damage uniform).
+"Damage values vary by enemy type" piece NOT shipped. Iter 52 ships it.
+
+### Damage table
+
+| Enemy | Bullet Damage | Reason |
+|-------|--------------|--------|
+| Heavy | **2** | Corridor-denier hits harder — wind-up + telegraph + bigger punishment if uncancelled |
+| Light | 1 | Lane-invader, rare fire — single-shot weight |
+| Fast | 1 | Volume-based pressure already harder to avoid — per-bullet stays low |
+
+### Code (scripts/Enemy.gd, scripts/Spawner.gd, ~+8 lines)
+
+**Enemy.gd**:
+- New `@export var bullet_damage: int = 1`
+- `_fire()`: `bullet.set("damage", bullet_damage)` after instantiate, before `start()`
+
+**Spawner.gd ENEMY_TYPES**:
+- Added `"bullet_damage": 1` to Light, Fast
+- Added `"bullet_damage": 2` to Heavy
+
+**`_telegraph_then_spawn`**: `enemy.set("bullet_damage", type_data.bullet_damage)`
+
+### Composing with iter 51 aim-cancel
+
+Heavy now does 2 dmg per bullet. Burst of 2 = 4 dmg = instant death from
+full max_hp=3. BUT iter-51 aim-cancel converts a single hit during wind-up
+into 0 incoming damage. So the cancel mechanic becomes critical:
+
+- Heavy locks on, red telegraph 0.45s
+- Player shoots Heavy during telegraph → cancel → 0 dmg to player +
+  Heavy stunned 1.5s
+- Player misses cancel → Heavy fires burst → up to 4 dmg incoming
+
+This SHARPENS the tactical decision Pro recommended.
+
+### Health budget at max_hp=3
+
+| Hit pattern | Total dmg | Player state |
+|-------------|-----------|--------------|
+| 1× Heavy | 2 | 1 HP, red low-HP cue |
+| 2× Heavy | 4 | Dead |
+| 1× Heavy + 1× Light | 3 | Dead |
+| 3× Light | 3 | Dead |
+| 4× Fast | 4 | Dead |
+
+Heavy is the priority avoid target. Death faster overall.
+
+Pre-mortem expected miss: "too lethal" at iter-60. Mitigation if cited:
+iter 61 raise max_hp 3→4 OR drop Heavy burst_count 2→1.
+
+### Player bullets unaffected
+
+PlayerTank uses Bullet.tscn but doesn't set `damage` override. Bullet default
+`damage = 1` holds for player bullets. Heavy at max_hp=2 still requires 2
+player hits.
+
+### Score
+
+Unchanged at 30/50. `[STRUCTURE-DEFERRED → iter 60]` for:
+- Crit 3 anchor 4 ("damage values vary + iframes/knockback ... cited 'felt fair'")
+- Crit 6 anchor 4 role-distinction sharpening (band-marker Heavy whose
+  appearance changes player behavior MORE NOW with 2× damage threat)
+- Crit 5 anchor 3 (combat micro-decisions reinforced)
+
+### Substrate freeze check
+
+- Hard scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- bullet.set("damage", ...) verified via Bullet.gd: `@export var damage: int = 1`
+  (settable via .set())
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd`, `scripts/Spawner.gd`
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 53 candidate: tune sprint cleanup OR a Light role sharpener (Pro H4
+  follow-up: "Light's lane-commit can work, but only if the map creates
+  recognizable lanes and cover choices"). Light could pause briefly when
+  it reaches a wall, like a momentary "hunter pause" before turning —
+  signals "this enemy is committed to a corridor."
+- Iter 55 CONSULT 007 pre-playtest
+- 7 sprint iters remaining
+
+---

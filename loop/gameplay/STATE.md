@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 51 → 60)
-iteration: 51
-consult_006: ADOPTED. Heavy LKP 47, landmarks 48, HP bar 49, AUDIT 50, Heavy aim-cancel 51.
+phase: SPRINT (iter 52 → 60)
+iteration: 52
+consult_006: ADOPTED. Heavy LKP 47, landmarks 48, HP bar 49, AUDIT 50, aim-cancel 51, damage variation 52.
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"

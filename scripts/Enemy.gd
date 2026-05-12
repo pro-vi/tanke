@@ -11,6 +11,7 @@ enum State { CHASE, AIM_FIRE }
 @export var direction_commit_time: float = 0.8
 @export var bullet_scene: PackedScene
 @export var bullet_target_mask: int = 3  # Environment (1) + Player (2)
+@export var bullet_damage: int = 1  # iter 52: per-type damage (Heavy=2, others=1)
 @export var grid: float = 8.0  # half-cell snap on turn
 # Visual
 @export var sprite_base_frame: int = 8
@@ -541,5 +542,6 @@ func _fire() -> void:
 	var bullet: Node2D = bullet_scene.instantiate()
 	var muzzle_offset: Vector2 = _direction_vector(direction) * 8.0
 	var spawn_pos: Vector2 = global_position + muzzle_offset
+	bullet.set("damage", bullet_damage)  # iter 52: per-type damage
 	get_parent().add_child(bullet)
 	bullet.start(spawn_pos, direction, bullet_target_mask)
