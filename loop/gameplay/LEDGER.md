@@ -6041,3 +6041,57 @@ incentive. Player decisions:
 - 19 sprint iters remain
 
 ---
+
+## Iter 080 — BUILD — Pickup activation toast (HP+ / SPEED+ HUD feedback)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged)
+
+### Change
+
+PlayerTank gets `_show_pickup_toast(text, color)` helper. Called from
+both `heal()` and `apply_speed_boost()` to show brief activation
+confirmation.
+
+### Toast behavior
+
+- Label spawned at HUD position (140, 28) top-center
+- Color matches pickup type (green for HP+, cyan for SPEED+)
+- Black outline + size 2
+- Tween:
+  - modulate:a 1.0 → 0.0 over 1.5s (fade out)
+  - position.y 28 → 16 over 1.5s (gentle float upward)
+- Auto-frees after fade
+
+### Wired in
+
+- `heal()` → `_show_pickup_toast("HP+1", green)`
+- `apply_speed_boost()` → `_show_pickup_toast("SPEED+", cyan)`
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd` (~+20 lines toast helper)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 81 candidate: consider entering Phase D early (META iter to audit
+  recent ships). 19 iters until iter 99 PLAYTEST. Final-prep window
+  reserved for 95-98 per iter-74 plan.
+- 18 sprint iters remain
+
+---

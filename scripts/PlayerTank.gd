@@ -180,6 +180,7 @@ func heal(amount: int) -> void:
 		return
 	hp = mini(hp + amount, max_hp)
 	hp_changed.emit(hp, max_hp)
+	_show_pickup_toast("HP+%d" % amount, Color(0.3, 0.95, 0.4, 1.0))
 
 
 # iter 79 (Q5 priority 4): speed-boost pickup application. Replaces any active
@@ -189,6 +190,27 @@ func apply_speed_boost(duration: float, multiplier: float) -> void:
 		return
 	_speed_boost_timer = duration
 	_speed_boost_multiplier = multiplier
+	_show_pickup_toast("SPEED+", Color(0.55, 0.95, 1.0, 1.0))
+
+
+# iter 80: brief HUD toast on pickup activation. Confirmation feedback.
+# Label spawned at top-center, fades over 1.5s, then self-frees.
+func _show_pickup_toast(text: String, color: Color) -> void:
+	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
+	if canvas == null:
+		return
+	var toast: Label = Label.new()
+	toast.text = text
+	toast.position = Vector2(140, 28)
+	toast.add_theme_color_override("font_color", color)
+	toast.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	toast.add_theme_constant_override("outline_size", 2)
+	canvas.add_child(toast)
+	var tween: Tween = toast.create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(toast, "modulate:a", 0.0, 1.5)
+	tween.tween_property(toast, "position:y", 16.0, 1.5)
+	tween.chain().tween_callback(toast.queue_free)
 
 
 # Visual damage cue (iter 19): bright red pulse + alternating alpha blink
