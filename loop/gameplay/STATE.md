@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 81 → 99)
-iteration: 81
-sprint_progress: 19 BUILD + 2 META. iter 81 AUDIT-light verification (hash 8224ebda... unchanged).
+phase: SPRINT (iter 82 → 99)
+iteration: 82
+sprint_progress: 20 BUILD + 1 META + 1 AUDIT. 3 roguelite pickups: HP (Heavy 25%), Speed (Fast 15%), Shield (Light 10%).
 final_prep_window: iter 95-98 reserved for META/AUDIT/final-look before iter 99 PLAYTEST
 hash_anchor_drift: f873ae60... (iter 0-65, warmup=first_push=playable) → 8224ebda... (iter 66+, first_push has +0.04 brick variance). Multi-seed playable preserved.
 sprint_authorization: "User directive iter 60: 'next playtest at ITER 99' + priority: local map > enemy types > feedback/polish > roguelite mechanics"

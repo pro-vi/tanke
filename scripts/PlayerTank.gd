@@ -9,6 +9,9 @@ signal died
 # _speed_boost_timer seconds.
 var _speed_boost_timer: float = 0.0
 var _speed_boost_multiplier: float = 1.0
+# iter 82: shield-pickup invulnerability window. take_damage early-returns
+# while _shield_timer > 0.
+var _shield_timer: float = 0.0
 @export var gun_cooldown: int = 100
 @export var Bullet: PackedScene
 @export var max_hp: int = 3
@@ -85,6 +88,11 @@ func _physics_process(delta: float) -> void:
 		if _speed_boost_timer <= 0.0:
 			_speed_boost_multiplier = 1.0
 			_speed_boost_timer = 0.0
+	# iter 82: tick down shield invulnerability
+	if _shield_timer > 0.0:
+		_shield_timer -= delta
+		if _shield_timer < 0.0:
+			_shield_timer = 0.0
 
 	if _dead:
 		_handle_restart_input()
@@ -163,6 +171,9 @@ func _on_GunTimer_timeout() -> void:
 func take_damage(amount: int) -> void:
 	if _dead or _iframe_timer > 0.0:
 		return
+	# iter 82: shield-pickup blocks damage during _shield_timer window
+	if _shield_timer > 0.0:
+		return
 	hp = max(0, hp - amount)
 	_iframe_timer = damage_iframes
 	hp_changed.emit(hp, max_hp)
@@ -191,6 +202,15 @@ func apply_speed_boost(duration: float, multiplier: float) -> void:
 	_speed_boost_timer = duration
 	_speed_boost_multiplier = multiplier
 	_show_pickup_toast("SPEED+", Color(0.55, 0.95, 1.0, 1.0))
+
+
+# iter 82 (Q5 priority 4): shield pickup grants brief invulnerability.
+# take_damage early-returns while _shield_timer > 0.
+func apply_shield(duration: float) -> void:
+	if _dead:
+		return
+	_shield_timer = max(_shield_timer, duration)  # take the longer of active/new
+	_show_pickup_toast("SHIELD", Color(0.9, 0.9, 1.0, 1.0))
 
 
 # iter 80: brief HUD toast on pickup activation. Confirmation feedback.

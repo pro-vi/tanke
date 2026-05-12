@@ -6151,3 +6151,79 @@ reserved for iter 95-98.
 - 18 sprint iters remain
 
 ---
+
+## Iter 082 — BUILD — Shield pickup for Light (3rd roguelite mechanic)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged)
+
+### Design
+
+Light on death has 10% chance to drop shield pickup. Player walks over
+→ 2 seconds of damage invulnerability. Light has lowest drop rate
+because it's the most numerous spawn (don't flood the screen).
+
+### Code
+
+**scripts/Enemy.gd**:
+- `_spawn_death_effect`: branches Heavy/Fast/Light with respective drop chances
+- `_spawn_shield_pickup(parent_node)`:
+  - 8×8 pale-blue Area2D with 2×2 white inner accent
+  - body_entered → `body.apply_shield(2.0)` + free
+  - 8s despawn timer
+
+**scripts/PlayerTank.gd**:
+- New `_shield_timer: float = 0.0`
+- `_physics_process` ticks down shield_timer
+- `take_damage` early-returns if `_shield_timer > 0.0`
+- `apply_shield(duration)`: takes longer of active vs new (no stacking
+  but no truncation either); shows toast "SHIELD" pale blue
+
+### Three-pickup ecosystem
+
+| Enemy | Drop | Reward | Risk balance |
+|-------|------|--------|--------------|
+| Heavy | 25% | HP+1 (heal) | High-damage threat |
+| Fast | 15% | Speed+50% × 5s | Continuous-fire harasser |
+| Light | 10% | Shield 2s | Numerous, basic threat |
+
+Drop rates inversely match spawn frequency (Light most spawns / lowest
+drop) so cumulative pickup frequency stays balanced.
+
+### Tactical decision space expanded
+
+- Low HP + Heavy nearby → kill Heavy for healing chance
+- About to enter rush band → kill Fast for speed boost approach
+- Bullet swarm incoming → if Light nearby, kill it for shield window
+- All three pickups are NICE-TO-HAVE not REQUIRED — game stays playable
+  without exploiting them
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- `_spawn_shield_pickup` defined (verified via grep)
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd` (+~40 lines)
+- Modified: `scripts/PlayerTank.gd` (+~12 lines apply_shield + shield_timer logic)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 83 candidate: player visual indicator when shielded (subtle blue
+  modulate on _sprite via self_modulate channel), OR continue with
+  small polish. 17 iters until iter 99.
+- 17 sprint iters remain
+
+---

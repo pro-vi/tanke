@@ -507,6 +507,9 @@ func _spawn_death_effect() -> void:
 	# iter 79: Fast 15% drop chance for speed boost. +50% for 5s.
 	elif enemy_type == "Fast" and randf() < 0.15:
 		_spawn_speed_pickup(parent_node)
+	# iter 82: Light 10% drop chance for shield. 2s invulnerability.
+	elif enemy_type == "Light" and randf() < 0.10:
+		_spawn_shield_pickup(parent_node)
 
 
 # iter 78: HP pickup spawned at Heavy death position. Inline Area2D (no
@@ -580,6 +583,45 @@ func _spawn_speed_pickup(parent_node: Node) -> void:
 	pickup.body_entered.connect(func(body):
 		if body.has_method("apply_speed_boost"):
 			body.apply_speed_boost(5.0, 1.5)
+			pickup.queue_free()
+	)
+	var timer: Timer = Timer.new()
+	timer.wait_time = 8.0
+	timer.one_shot = true
+	timer.autostart = true
+	timer.timeout.connect(pickup.queue_free)
+	pickup.add_child(timer)
+	parent_node.add_child(pickup)
+
+
+# iter 82: Shield pickup spawned at Light death position. Light 10% drop
+# rate (rarer because Light spawns frequently). 2s invulnerability on
+# overlap. Pale-blue diamond visual.
+func _spawn_shield_pickup(parent_node: Node) -> void:
+	var pickup: Area2D = Area2D.new()
+	pickup.collision_layer = 0
+	pickup.collision_mask = 2
+	pickup.global_position = global_position
+	pickup.z_index = 45
+	# Pale-blue square visual with white inner accent ("shield" suggests defense)
+	var outer: ColorRect = ColorRect.new()
+	outer.size = Vector2(8, 8)
+	outer.color = Color(0.7, 0.85, 1.0, 1.0)
+	outer.position = Vector2(-4, -4)
+	pickup.add_child(outer)
+	var inner: ColorRect = ColorRect.new()
+	inner.size = Vector2(2, 2)
+	inner.color = Color(1.0, 1.0, 1.0, 1.0)
+	inner.position = Vector2(-1, -1)
+	pickup.add_child(inner)
+	var shape: CollisionShape2D = CollisionShape2D.new()
+	var rs: RectangleShape2D = RectangleShape2D.new()
+	rs.size = Vector2(8, 8)
+	shape.shape = rs
+	pickup.add_child(shape)
+	pickup.body_entered.connect(func(body):
+		if body.has_method("apply_shield"):
+			body.apply_shield(2.0)
 			pickup.queue_free()
 	)
 	var timer: Timer = Timer.new()
