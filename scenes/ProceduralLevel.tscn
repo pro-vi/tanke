@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Texture2D" uid="uid://p8x1cyxdqfu0" path="res://img/sprites_1.png" id="1"]
 [ext_resource type="Script" uid="uid://cyo8ns4520b78" path="res://scripts/ProceduralLevel.gd" id="2"]
@@ -10,6 +10,7 @@
 [ext_resource type="Resource" path="res://configs/playable.tres" id="8"]
 [ext_resource type="Script" path="res://scripts/Spawner.gd" id="9"]
 [ext_resource type="PackedScene" path="res://scenes/Enemy.tscn" id="10"]
+[ext_resource type="Resource" path="res://configs/banded-biome.tres" id="11"]
 
 [sub_resource type="TileSetAtlasSource" id="SteelSrc"]
 texture = ExtResource("5")
@@ -63,6 +64,7 @@ size = Vector2(8, 8000)
 [node name="ProceduralLevel" type="Node2D"]
 script = ExtResource("2")
 config = ExtResource("8")
+biome = ExtResource("11")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(160, 232)
