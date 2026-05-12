@@ -5762,3 +5762,69 @@ Same shake mechanism as iter-42 damage but tuned softer to signal
 - 23 sprint iters remain
 
 ---
+
+## Iter 076 — BUILD — Pulsing restart hint on death screen (Q3 polish)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged)
+
+### Pivot rationale
+
+Iter-75 schedule note suggested bullet trail next, but Q2 user cite
+"noise artifact in front of each tank" risks worsening with more bullet
+visuals. Pivoting to Q3-targeted polish: pulsing restart-hint label.
+
+### Code (scripts/PlayerTank.gd)
+
+New `_restart_hint_label: Label`:
+- Positioned at (72, 170), size 176×14, centered horizontal alignment
+- Text "press [R] to restart" (lowercase + descriptive verb, friendlier
+  than ALL CAPS "[R] RESTART")
+- Color (1.0, 1.0, 0.7) cream-yellow + black outline size 2
+- Hidden until death
+
+New `_restart_hint_tween: Tween` infinite-loop:
+- Tween modulate:a 1.0 → 0.35 over 0.6s
+- Tween back to 1.0 over 0.6s
+- Set_loops() = infinite
+- Gives breathing-pulse effect, signals "click me, I'm interactive"
+
+Main death label text NO LONGER includes "[R] RESTART" — separated to
+the pulsing label for emphasis and animation independence.
+
+### Visual effect
+
+Death screen now shows:
+- Dark panel
+- Main death label (centered): YOU DIED + run stats + BEST DEPTH + BEST TIME
+- Below panel: pulsing "press [R] to restart" cream-yellow text
+
+Restart hint draws the eye via slow pulse without being aggressive.
+Aligned with Q3 directive "make it pretty not focusing on manipulation."
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd` (+~15 lines: 2 vars + setup + _die() ext)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 77 candidate: rush.tres variance multi-seed verification (depth 40+
+  band hasn't been tested across seeds for visible diversity)
+- 22 sprint iters remain
+
+---

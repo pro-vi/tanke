@@ -39,6 +39,8 @@ var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
 var _death_panel: ColorRect = null  # iter 71: dark backing panel behind death label
+var _restart_hint_label: Label = null  # iter 76: pulsing [R] RESTART hint
+var _restart_hint_tween: Tween = null
 # Roguelike ascender state (iter 11 — Pro Consult 003 reframe)
 var _start_y: float = 0.0
 var _min_y_reached: float = 0.0
@@ -258,10 +260,18 @@ func _die() -> void:
 			best_time_line = "\n* NEW BEST TIME!  (was %d:%02d)" % [prior_best_time / 60, prior_best_time % 60]
 		else:
 			best_time_line = "\nBEST TIME %d:%02d" % [prior_best_time / 60, prior_best_time % 60]
-		_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nCANCELS %d\nSTALL %d%%%s%s\n\n[R] RESTART" % [depth, t / 60, t % 60, kills, aim_cancels, int(stall_pct), best_line, best_time_line]
+		_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nCANCELS %d\nSTALL %d%%%s%s" % [depth, t / 60, t % 60, kills, aim_cancels, int(stall_pct), best_line, best_time_line]
 		_death_label.visible = true
 	if _death_panel != null:
 		_death_panel.visible = true
+	# iter 76: start pulsing restart hint
+	if _restart_hint_label != null:
+		_restart_hint_label.visible = true
+		if _restart_hint_tween != null and _restart_hint_tween.is_valid():
+			_restart_hint_tween.kill()
+		_restart_hint_tween = create_tween().set_loops()
+		_restart_hint_tween.tween_property(_restart_hint_label, "modulate:a", 0.35, 0.6)
+		_restart_hint_tween.tween_property(_restart_hint_label, "modulate:a", 1.0, 0.6)
 	died.emit()
 
 
@@ -385,6 +395,18 @@ func _setup_hud() -> void:
 	_death_label.add_theme_font_size_override("font_size", 12)
 	_death_label.visible = false
 	canvas.add_child(_death_label)
+	# iter 76: separate pulsing [R] RESTART hint (Q3 polish)
+	_restart_hint_label = Label.new()
+	_restart_hint_label.name = "RestartHintLabel"
+	_restart_hint_label.position = Vector2(72, 170)
+	_restart_hint_label.size = Vector2(176, 14)
+	_restart_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_restart_hint_label.text = "press [R] to restart"
+	_restart_hint_label.add_theme_color_override("font_color", Color(1.0, 1.0, 0.7, 1.0))
+	_restart_hint_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	_restart_hint_label.add_theme_constant_override("outline_size", 2)
+	_restart_hint_label.visible = false
+	canvas.add_child(_restart_hint_label)
 	# Roguelike ascender HUD (iter 11) — top-right
 	_depth_label = Label.new()
 	_depth_label.name = "DepthLabel"
