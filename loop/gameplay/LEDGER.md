@@ -3749,3 +3749,75 @@ cite or visible blink/pulse polish iter.
 - 10 sprint iters remaining (50-59 + iter 60 PLAYTEST)
 
 ---
+
+## Iter 050 — AUDIT — Mid-sprint re-score (planned)
+
+**Mode:** AUDIT (per v2 §Step 3: "Re-score all criteria with fresh evidence")
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** **30/50** (was 26; +4 AUDIT lifts)
+
+### Trigger
+
+Planned mid-sprint AUDIT per iter-39 roadmap. Re-evaluate all 10 criteria
+against current state. Surface buried lifts where prior ships satisfy
+anchors that hadn't been re-cited.
+
+### Lifts
+
+| Criterion | Before | After | Δ | Citation |
+|-----------|--------|-------|---|----------|
+| 2. Spawn/wave | 1 | **4** | +3 | `[STRUCTURE]` anchors 2/3/4 — non-feel crit allows [STRUCTURE] with falsification clause. Anchor 2: varying intervals (band interval_mult 1.25→0.7) + multiple spawn points (top + below-spawn iter 28). Anchor 3: spawn rate escalates over run time (band progression). Anchor 4: multiple wave types (DEPTH_BANDS type_weights — Light/Heavy/Fast dominance per band). Anchor 5 (WaveConfig.tres) not met — inline const. Falsification: iter-60 "spawn felt same" cite → revert to 2. |
+| 3. HP/death | 2 | **3** | +1 | `[STRUCTURE]` anchor 3 verbatim: "HP bar visible (iter 49) + hits flash player (iter 19) + death triggers run-end (iter 3)." Anchor 4 partial (iframes only; damage uniform). |
+| 9. HUD/state | 3 | **4** | +1 | `[STRUCTURE]` anchor 4: "Best-depth visible during run OR low-HP warning state cue (color shift / blink)" — second clause met by iter-49 red shift at hp/max<0.34. |
+| 7. Compulsion | (table 0) | (3) | 0 | Stale row fix: iter-34 lifted to 3 [FEEL]; table was never updated. No scoring change. |
+| **Total** | **26** | **30** | **+4** | All AUDIT lifts cited per renamed/original anchor wording verbatim. |
+
+### Lifts NOT taken (held the line)
+
+| Criterion | Current | Why not lifted |
+|-----------|---------|----------------|
+| 1. Core loop | 4 | Anchor 5 first-run cite required. |
+| 4. Depth feedback | 2 | Anchors 3-5 all explicit playtest cites ("varied rhythm" / "I felt pushed up" / "climb"). Iter-48 landmarks STRUCTURE-DEFERRED. |
+| 5. Forward survivability | 1 | Anchor 2 needs "I kept moving" [FEEL] cite. |
+| 6. Enemy variety | 3 | Anchor 4 "band-marker enemy whose appearance changes player behavior" — band markers structurally met (guarantee_first_type), but "changes player behavior" qualifier leans on [FEEL] cite. Conservative hold. |
+| 8. Impact/feedback | 3 | Anchor 4 has explicit "feel-verified" trailer. [FEEL] required. Iter-42 shake STRUCTURE-DEFERRED. |
+| 10. Run loop closure | 3 | Anchors 4-5 explicit playtest cites ("I want one more" / "I want to beat my best"). |
+
+### Self-deception check (Pro reword test per lift)
+
+- **Crit 2 +3**: anchors 2/3/4 each have multi-mechanism code evidence (DEPTH_BANDS, interval_mult, type_weights, below-spawn). Pro would grant — non-feel crit + verbatim anchor matches.
+- **Crit 3 +1**: anchor 3 reads verbatim "HP bar visible + hits flash player + death." All three components shipped (49/19/3). Pro would grant.
+- **Crit 9 +1**: anchor 4 reads "color shift / blink" — color shift to red at low HP shipped iter 49. Pro would grant.
+
+If any of these don't survive iter-60 playtest cross-reference, falsification clauses are written. AUDIT is honest correction, not rationalization.
+
+### Rubric debt resolutions (final pass)
+
+Crit 7 row was stale at 0 since iter 34 (when crit 7 was lifted to 3 via
+5-runs-unprompted cite). Iter 50 AUDIT corrects the table. No score
+change.
+
+### Substrate freeze check
+
+- No code changes (AUDIT mode). Hard substrate untouched.
+- H1 tripwire unchanged at 2.
+
+### Files touched
+
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 120s (AUDIT mode per v2 §Step 7)
+- Iter 51-54 BUILD as surfaces (per Pro Consult 006 roadmap):
+  - Heavy LKP tuning if needed (none surfaced yet)
+  - Light role-distinction sharpening per Pro H4 "thinness"
+  - Audio stubs (out of scope: no SFX assets)
+  - Possible iter 51: clean up rubric notes column or improve readability
+- Iter 55 = CONSULT 007 pre-playtest
+- Iter 56-59 = tune per Consult 007
+- Iter 60 = PLAYTEST (4-5 question diagnostic tour per Pro H5)
+- 9 sprint iters remaining
+
+---

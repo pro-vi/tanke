@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 49 → 60)
-iteration: 49
-consult_006: ADOPTED. Heavy LKP iter 47. Depth landmarks iter 48. HP bar iter 49.
+phase: SPRINT (iter 50 → 60)
+iteration: 50
+consult_006: ADOPTED. Heavy LKP iter 47. Landmarks iter 48. HP bar iter 49. AUDIT iter 50.
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"
@@ -38,7 +38,7 @@ falsifications_pending_playtest: crit 6 anchor 3 [STRUCTURE] lift falsification 
 rubric_debt: crit 8 anchor 3 (XP gems language stale post-iter-11 reframe), anchor 4 "UI counter increments" (kill count dropped iter 30) — flag for AUDIT iter ~50
 mandatory_playtest_iter: 60
 halt_iter_if_no_response: 63
-score: 26/50 (iter 40 +1 crit 6; iter 43 +1 crit 10; iter 46 +2 via rubric rename; iter 49 +2 crit 9 1→3 [STRUCTURE] HP bar + retro correction)
+score: 30/50 (iter 50 AUDIT +4: crit 2 +3, crit 3 +1, crit 9 +1; crit 7 stale row corrected)
 ```
 
 ---
@@ -89,16 +89,16 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 | Criterion | Score | Notes |
 |-----------|-------|-------|
 | 1. Core loop closes | 4 | Iter 6 playtest-cited anchor 4 |
-| 2. Spawn / wave system | 1 | Iter 7 top-edge spawn; pattern still single-direction (interval fixed) |
-| 3. HP + death model | 2 | Iter 3 HurtBox + HP shown; anchor 3 needs HP bar |
+| 2. Spawn / wave system | **4** | Iter 50 AUDIT [STRUCTURE] anchors 2/3/4: varying intervals (band interval_mult 1.25→0.7) + multiple spawn points (top + below-spawn iter 28) + spawn rate escalation (band progression) + multiple wave types (DEPTH_BANDS type_weights — Light warmup, Heavy heavy_gate, Fast rush). Anchor 5 (config-driven WaveConfig.tres) not met. Falsification clause iter 60: if user cites "spawn felt same throughout," revert to 2. |
+| 3. HP + death model | **3** | Iter 50 AUDIT [STRUCTURE] anchor 3: "HP bar visible (iter 49) + hits flash player (iter 19) + death triggers run-end (iter 3)" — all verbatim met. Anchor 4 partial: iframes (damage_iframes=0.6) but damage uniform across enemies, no knockback. |
 | 4. Depth feedback + ascent pressure (was XP) | **2** | Iter 15 playtest cite "feels like a run" satisfies anchor 2 (DEPTH+TIME live update) |
 | 5. Forward survivability (was Upgrade variety) | **1** | Iter 12 anchor 1 met: fire-while-moving + spawn-ahead-of-velocity = enemies don't reliably block ascent |
 | 6. Enemy variety | **3** | Iter 40 [STRUCTURE] anchor 3: 3 types with distinct movement AND firing patterns — Light (lane-invader, 3.5s rare fire, 3s lane-commit) / Heavy (paused-aim corridor-denier, 0.45s wind-up + telegraph + burst, vision-gated) / Fast (continuous-fire harasser, 1.0s fire while moving, no aim, no LOS check). Falsification clause iter 60: if user does NOT distinguish Fast → revert 3→2. |
-| 7. Compulsion loop (was Run pacing) | 0 | Needs playtest |
+| 7. Compulsion loop (was Run pacing) | **3** | Iter 34 [FEEL] anchor 3: "user spontaneously presses R within 5s of death" — playtest cited "5 lives this time" implied. Anchor 4 (3+ runs unprompted) implied by 5-runs cite but iter-34 conservatively held at 3. Iter 50 AUDIT: table row was stale at 0 — correction to 3. |
 | 8. Impact / feedback / readability (iter 46 rename) | **3** | Iter 46 [STRUCTURE] anchor 3: multi-event impact layer — bullet impact spark on every collision (iter 41) + enemy hit-flash on non-kill (iter 41) + depth milestone visual cue (iter 30). Carries forward iter-19 hit-flash + iter-21 enemy death (anchors 1-2). Anchor 4 (camera shake on damage + above layer "feel-verified") gates on iter-60 playtest cite for shake's punch. |
-| 9. HUD / state communication (iter 46 rename) | **3** | Iter 49 [STRUCTURE] anchor 3: "HP shown via bar (graphical, not just text) + DEPTH + TIME" — green/red HP bar at HUD top-left + numeric HP text hybrid below + DEPTH + TIME labels. Retro-correction iter-46 undercount (anchor 2 was already met). Anchor 4 partial: low-HP red color shift implements "low-HP warning state cue." |
+| 9. HUD / state communication (iter 46 rename) | **4** | Iter 50 AUDIT [STRUCTURE] anchor 4: "Best-depth visible during run OR low-HP warning state cue (color shift / blink)" — second clause met verbatim by iter-49 red shift at hp/max<0.34. Anchor 3 met (iter 49 HP bar). Anchor 5 ("first-time user navigates death→restart without instruction — playtest cited") requires [FEEL] cite. |
 | 10. Run loop closure (iter 46 rename; anchors tightened) | **3** | Iter 46 [STRUCTURE] anchor 3 (post-rename): "Death screen shows best-depth + NEW BEST highlight when run > prior — code-citable" — iter 44 ship matches verbatim. Carries: anchor 2 (depth+time+kills+stall) iter 43. Anchors 4-5 require iter-60 playtest cite ("I want one more" / "I want to beat my best"). |
-| **Total** | **26/50** | Iter 49 +2: crit 9 1→3 [STRUCTURE] (retro 2 + HP bar 3) |
+| **Total** | **30/50** | Iter 50 AUDIT +4: crit 2 1→4 (+3 [STRUCTURE] anchors 2/3/4 — band varying intervals + rate escalation + wave types), crit 3 2→3 (+1 [STRUCTURE] anchor 3 HP bar + flash + death), crit 9 3→4 (+1 [STRUCTURE] anchor 4 low-HP color cue). Crit 7 stale row fixed to 3 (no math change — total already counted it). |
 
 ---
 

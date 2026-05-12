@@ -1308,7 +1308,54 @@ H2-RULE claims (3):
 2. HP bar width updates correctly on damage (5/5 → full width, 0/5 → zero width)
 3. HP color shifts to red when hp/max < 0.34 (low-HP warning state — partial fulfillment of anchor 4)
 
-**Post-iter:** [filled at iter 50]
+**Post-iter (iter 50 start):** HP bar live. Build clean.
+
+---
+
+## Iter 050 — AUDIT — Mid-sprint re-score (planned)
+
+Tag: `[STRUCTURE]` (AUDIT iter — re-scoring with fresh evidence, no new code).
+
+Trigger: planned mid-sprint AUDIT per iter-39 roadmap. Re-evaluate all 10 criteria against current state. Surface buried lifts where prior ships satisfy anchors that hadn't been re-cited.
+
+Going in, biggest expected miss: **AUDIT lifts that look like rationalization** — pulling +4 score from "previously uncounted" evidence is parity-drift territory. Mitigation: each lift gets explicit Pro reword test in PRE-MORTEM. If a lift's evidence doesn't verbatim match the anchor, hold the line.
+
+### Lifts proposed
+
+1. **Crit 2 Spawn/wave 1 → 4 [STRUCTURE]** (non-feel crit; allows [STRUCTURE] w/ falsification clause)
+   - Anchor 2 verbatim: "Enemies spawn at varying intervals, multiple spawn points." Met by DEPTH_BANDS interval_mult variation (iter 22) + below-spawn from bottom when stalling (iter 28).
+   - Anchor 3 verbatim: "Spawn rate increases over run time." Met by band interval_mult progression (1.25 warmup → 0.7 rush).
+   - Anchor 4 verbatim: "Multiple wave types — different enemy compositions over time." Met by DEPTH_BANDS type_weights variation (Light dominant warmup, Heavy dominant heavy_gate, Fast dominant rush) — iter-40 Fast addition completed the structural picture.
+   - Anchor 5 ("config-driven WaveConfig.tres"): NOT met — bands are inline const. Hold at 4.
+   - Falsification clause iter 60: if user cites "spawn felt same throughout" / "no escalation," revert to 2.
+
+2. **Crit 3 HP/death 2 → 3 [STRUCTURE]**
+   - Anchor 3 verbatim: "HP bar visible on HUD; hits flash the player; death triggers run-end." Met by iter-49 HP bar + iter-19 hit flash + iter-3 death.
+   - Anchor 4 ("damage values vary by enemy type; iframes/knockback") only iframes met; damage uniform. Hold at 3.
+
+3. **Crit 9 HUD/state 3 → 4 [STRUCTURE]** (anchor 4 structural per renamed wording)
+   - Anchor 4 verbatim: "Best-depth visible during run OR low-HP warning state cue (color shift / blink)." Met by iter-49 low-HP red color shift at hp/max < 0.34.
+   - Anchor 5 ("first-time user navigates death → restart without instruction — playtest cited"): needs [FEEL]. Hold at 4.
+
+4. **Crit 7 Compulsion table row stale at 0; iter-34 lifted to 3.** Table correction, no scoring change.
+
+### Lifts NOT taken (held the line)
+
+- Crit 1 (4): anchor 5 needs first-run cite. Hold.
+- Crit 4 (2): anchors 3-5 all need [FEEL]. Iter-48 landmarks structurally compose with anchor 3 but the anchor explicitly says "playtest cites varied rhythm." Hold.
+- Crit 5 (1): anchor 2 needs "I kept moving" [FEEL] cite. Hold.
+- Crit 6 (3): anchor 4 "boss-like OR band-marker enemy whose appearance changes player behavior." Band-marker structurally met but "changes player behavior" qualifier reads as feel-cite. CONSERVATIVE hold at 3.
+- Crit 8 (3): anchor 4 has explicit "feel-verified" trailer. [FEEL] required. Hold.
+- Crit 10 (3): anchors 4-5 explicit playtest cites. Hold.
+
+Total: 26 → 30/50 (+4 AUDIT lifts).
+
+H2-RULE claims (3):
+1. STATE.md table updated; crit 2/3/9 lifts cited per renamed/original anchors verbatim
+2. Crit 7 stale row corrected (was 0, should have been 3 since iter 34)
+3. AUDIT lifts pass Pro reword test — each anchor wording maps to specific code-cited evidence (no rationalization through vague "general progress" reading)
+
+**Post-iter:** [filled at iter 51]
 
 ---
 
