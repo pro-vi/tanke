@@ -17,6 +17,9 @@ enum State { CHASE, AIM_FIRE }
 # and aim-telegraph). Light=white default, Fast=cyan, Heavy=white (its red
 # AIM_FIRE telegraph is sufficient distinction).
 @export var sprite_tint: Color = Color(1, 1, 1, 1)
+# iter 86: per-type sprite scale — Heavy bigger (toughness), Fast smaller
+# (agility), Light default. Adds visual ID layer alongside iter-67 color tint.
+@export var sprite_scale: float = 1.0
 @export var grid: float = 8.0  # half-cell snap on turn
 # Visual
 @export var sprite_base_frame: int = 8
@@ -80,8 +83,10 @@ func _ready() -> void:
 	_update_sprite_for_direction()
 	# iter 67: apply per-type sprite tint via self_modulate (independent of
 	# the modulate channel used by hit-flash + aim-telegraph)
+	# iter 86: apply per-type sprite scale (Heavy 1.15, Fast 0.85, Light 1.0)
 	if _sprite != null:
 		_sprite.self_modulate = sprite_tint
+		_sprite.scale = Vector2(sprite_scale, sprite_scale)
 
 
 func _physics_process(delta: float) -> void:

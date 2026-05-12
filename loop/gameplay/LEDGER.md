@@ -6381,3 +6381,77 @@ be:
 - Iter 86+ likely no-op AUDIT cycles until iter 95 final-prep window
 
 ---
+
+## Iter 086 — BUILD — Enemy sprite scale variance (F009 visual ID layer)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged)
+
+### Rationale
+
+User fired /loop manually rather than waiting for the 25min wakeup —
+signaled they want continued progress, not idle iters. Shipping real
+visual-ID layer that composes with iter-67 color tint.
+
+### Change
+
+| Enemy | Scale | Visual signal |
+|-------|-------|---------------|
+| Light | 1.0 | Default |
+| Fast | **0.85** | Smaller = agility |
+| Heavy | **1.15** | Bigger = toughness |
+
+Sprite scale only (CollisionShape2D unchanged) — visual differentiation
+without changing combat math.
+
+Composes with:
+- Iter-67 color tint (Light white, Fast cyan, Heavy white)
+- Iter-38 Heavy red AIM_FIRE telegraph (Heavy only)
+- Iter-78/79/82 pickup drops (different rates per type)
+
+Player now has 3 axes for distinguishing Light/Fast/Heavy:
+1. Color tint (Light white / Fast cyan / Heavy white)
+2. Size (Light 1.0 / Fast 0.85 / Heavy 1.15)
+3. Behavior (Light lane-commit / Fast rushes / Heavy paused-aim with red telegraph)
+
+### Code (scripts/Enemy.gd + Spawner.gd)
+
+**Enemy.gd**:
+- New `@export var sprite_scale: float = 1.0`
+- `_ready()` applies `_sprite.scale = Vector2(sprite_scale, sprite_scale)`
+
+**Spawner.gd ENEMY_TYPES**:
+- Light: sprite_scale=1.0
+- Heavy: sprite_scale=1.15
+- Fast: sprite_scale=0.85
+
+**`_telegraph_then_spawn`**: pushes sprite_scale on spawn.
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd` (+~3 lines export + _ready application)
+- Modified: `scripts/Spawner.gd` (~3 sprite_scale entries + 1 set line)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s (resumed normal cadence per user signal)
+- Iter 87+ candidates: still saturated, but user wants progress.
+  Consider: pre-emptive Consult 008, or last small polish (e.g.
+  enemy hit-flash also scaled with sprite_scale).
+- 13 sprint iters remain
+
+---
