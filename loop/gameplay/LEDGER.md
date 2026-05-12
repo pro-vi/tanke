@@ -3550,3 +3550,109 @@ player behavior." LKP is not anchor 4. Holding 3 honestly.
 - 12 sprint iters remaining
 
 ---
+
+## Iter 048 — BUILD — Depth pressure landmarks (Pro Consult 006 secondary)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 24/50 (unchanged — `[STRUCTURE-DEFERRED → iter 60]` for crit 4
+anchor 3)
+
+### Trigger
+
+Pro Consult 006 secondary recommendation: "Every N vertical chunks, create
+a recognizable 'gate room' or 'danger pocket' with a small depth milestone
+callout. Not a new progression economy. Just make ascent feel authored
+enough that the player remembers 'I pushed past 120m' instead of 'the maze
+kept scrolling.'"
+
+### Code (scripts/Spawner.gd, ~+30 lines)
+
+New exports:
+- `depth_gate_step: int = 20` — gates at depth 20, 40, 60, 80, ...
+- `depth_gate_post_color: Color = Color(1.0, 0.85, 0.2, 0.9)` (yellow)
+- `depth_gate_text_color: Color = Color(1.0, 0.95, 0.5, 1.0)`
+
+State: `_last_gate_depth: int = 0` (tracks idempotently — each gate fires
+exactly once when `_max_depth_reached` first crosses it).
+
+`_process` now calls `_check_depth_gates()` each frame. When
+`_max_depth_reached >= _last_gate_depth + depth_gate_step`:
+- Advance `_last_gate_depth`
+- `_spawn_depth_gate(next_gate)`:
+  - Compute `gate_y = _player_start_y - depth_rows × 16.0`
+  - Two yellow 8×16 ColorRect "posts" at viewport-edge x (4, 308),
+    centered on gate row
+  - One Label `"* DEPTH N *"` at center (120, gate_y - 6)
+  - All parented to level (world-static)
+  - z_index 30-31 (above tiles, below HUD)
+- Print `[landmark] gate depth N at y=Y`
+
+### Existing landmark layer (composes with iter 30 + bands)
+
+- **Iter 30**: depth_milestone_step=10 → screen flash on PlayerTank every
+  10 rows. Transient effect (Tween).
+- **Iter 22-27**: DEPTH_BANDS with band transitions logged + guarantee_first_type
+  enemies at band crossings (depth 8, 20, 40).
+- **Iter 48 (new)**: persistent world-static gate posts + label every 20 rows.
+
+Combined effect: player sees flashes at 10, 20, 30, 40... AND persistent
+gate posts at 20, 40, 60... AND band-marker Heavy/Fast spawns at band
+crossings. "Ascent feels authored" layer.
+
+### Player experience
+
+As player ascends past depth 20:
+1. Iter-30 flash on PlayerTank (transient)
+2. Two yellow posts emerge over top of viewport at x=4 and x=308
+3. "* DEPTH 20 *" label between them
+4. (At band crossings depth 8/20/40) guarantee_first_type enemy spawns
+5. Player ascends past — posts and label persist behind, marking history
+
+If player reaches depth 60, all 3 prior gates (20, 40, 60) are visible
+below them in camera (camera 240px tall, gates 320px apart in world =
+camera shows 1 gate at a time typically, sometimes 2 during transition).
+
+### Score
+
+Unchanged at 24/50. `[STRUCTURE-DEFERRED → iter 60]` for crit 4 anchor 3
+("Every N rows = declared encounter beat; playtest cites varied rhythm").
+Lift to 3/5 requires iter-60 [FEEL] cite — "ascent feels authored" /
+"varied rhythm" / "remember pushing past N" / similar language.
+
+Self-deception check: would Pro grant 2 → 3 on crit 4 for landmarks
+alone (structural)? Anchor 3 explicitly says "playtest cites varied
+rhythm." Cite requirement is explicit; structural ship can't lift it.
+Honest hold at 2.
+
+### Substrate freeze check
+
+- Hard scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- H1 tripwire unchanged at 2 (gate posts are dynamic-instantiated, not
+  static scene siblings — same as Spawner's enemy spawns + telegraph
+  markers + below-spawn markers)
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0, no warnings
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd`
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 49 candidate (open per Pro Consult 006 roadmap "iter 51-54 BUILD
+  as surfaces"):
+  - HP bar (crit 9 anchor 3 structural lift candidate — 1→2 [STRUCTURE])
+  - Light role-distinction sharpening per Pro H4 thinness concern
+  - Heavy LKP tuning if visible issue
+  - Audio stubs (out of scope: GDScript-only, no SFX assets ready)
+- 11 sprint iters remaining (49-59 + iter 60 PLAYTEST)
+
+---

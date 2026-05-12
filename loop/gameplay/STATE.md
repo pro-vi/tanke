@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 47 → 60)
-iteration: 47
-consult_006: ADOPTED. Heavy LKP shipped iter 47. Depth landmarks iter 48-50.
+phase: SPRINT (iter 48 → 60)
+iteration: 48
+consult_006: ADOPTED. Heavy LKP shipped iter 47. Depth landmarks shipped iter 48. Iter 49+ open for surfacing.
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"

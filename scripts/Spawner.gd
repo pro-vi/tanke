@@ -110,6 +110,15 @@ const DEPTH_BANDS: Array = [
 @export var stall_below_spawn_after: float = 12.0  # iter 35 (F008): raised 8→12 to reduce false-positive below-spawns during slow navigation
 @export var below_spawn_cooldown: float = 10.0  # iter 35 (F008): raised 6→10 to reduce frequency
 @export var spawn_bottom_edge_offset: float = 8.0  # px below viewport bottom (telegraph stays visible)
+# Depth pressure landmarks (iter 48, Pro Consult 006 secondary). Every
+# depth_gate_step rows, spawn a recognizable visual "gate" in the world —
+# two yellow posts at viewport edges + center label "* DEPTH N *". Persistent
+# (world-static); marks ascent progress so player remembers "I pushed past 80m"
+# instead of "the maze kept scrolling."
+@export var depth_gate_step: int = 20
+@export var depth_gate_post_color: Color = Color(1.0, 0.85, 0.2, 0.9)
+@export var depth_gate_text_color: Color = Color(1.0, 0.95, 0.5, 1.0)
+var _last_gate_depth: int = 0
 
 var _player: Node2D
 var _camera: Camera2D
@@ -161,6 +170,7 @@ func _process(delta: float) -> void:
 	_elapsed_time += delta  # iter 28
 	_update_ascent_velocity(delta)
 	_update_stall_time(delta)
+	_check_depth_gates()  # iter 48
 
 	var current_interval: float = _current_spawn_interval()
 	_spawn_accumulator += delta
@@ -401,3 +411,38 @@ func _get_type_by_name(type_name: String) -> Dictionary:
 func _on_enemy_freed() -> void:
 	_enemies_alive -= 1
 	enemies_killed += 1  # iter 43: death-screen summary counter
+
+
+# iter 48 (Pro Consult 006 secondary): depth pressure landmarks. Each time
+# _max_depth_reached crosses a multiple of depth_gate_step, spawn one gate.
+# Idempotent: tracks _last_gate_depth to fire each gate exactly once.
+func _check_depth_gates() -> void:
+	var next_gate: int = _last_gate_depth + depth_gate_step
+	if _max_depth_reached < next_gate:
+		return
+	_last_gate_depth = next_gate
+	_spawn_depth_gate(next_gate)
+
+
+func _spawn_depth_gate(depth_rows: int) -> void:
+	var parent_node: Node = get_parent()
+	if parent_node == null or not is_instance_valid(parent_node):
+		return
+	# World-y of gate row (player ascended depth_rows × 16 px from start)
+	var gate_y: float = _player_start_y - float(depth_rows) * 16.0
+	# Two posts at viewport edges (inside map walls at x=-4 and x=324)
+	for px in [4.0, 308.0]:
+		var post: ColorRect = ColorRect.new()
+		post.size = Vector2(8, 16)
+		post.color = depth_gate_post_color
+		post.position = Vector2(px, gate_y - 8.0)  # centered on gate row
+		post.z_index = 30
+		parent_node.add_child(post)
+	# Center label
+	var label: Label = Label.new()
+	label.text = "* DEPTH %d *" % depth_rows
+	label.position = Vector2(120.0, gate_y - 6.0)
+	label.add_theme_color_override("font_color", depth_gate_text_color)
+	label.z_index = 31
+	parent_node.add_child(label)
+	print("[landmark] gate depth %d at y=%d" % [depth_rows, int(gate_y)])

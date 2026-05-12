@@ -1237,7 +1237,44 @@ Self-deception check: would Pro grant 3 → 4 on crit 6 for LKP alone? Anchor 4 
 
 Falsification: if iter-60 user reports "Heavy still chases me through walls" / "Heavy still tracks me perfectly," ROOT-CAUSE check needed — maybe LKP horizon too large, OR Heavy direction-commit_time=0.8s lets it re-pick toward old player.pos too often. Iter 48 tuning.
 
-**Post-iter:** [filled at iter 48]
+**Post-iter (iter 48 start):** Heavy LKP shipped, build clean. Pivoting to Pro secondary: depth landmarks.
+
+---
+
+## Iter 048 — BUILD — Depth pressure landmarks (Pro Consult 006 secondary)
+
+Tag: `[STRUCTURE-DEFERRED → iter 60]` for crit 4 anchor 3 path ("Every N rows = declared encounter beat; playtest cites varied rhythm").
+
+Diagnose: Pro secondary recommendation — "Every N vertical chunks, create a recognizable 'gate room' or 'danger pocket' with slightly denser cover/enemy placement and a small depth milestone callout. Not a new progression economy. Just make ascent feel authored enough that the player remembers 'I pushed past 120m' instead of 'the maze kept scrolling.'"
+
+Existing state:
+- Iter 30 depth_milestone_step=10 already flashes depth-milestone events on PlayerTank — "small depth milestone callout" piece partially shipped
+- DEPTH_BANDS in Spawner already provide guarantee_first_type at band crossings (depth 8/20/40) — implicit "denser enemy" via band transitions
+
+Missing per Pro: persistent visual landmark in-world that's RECOGNIZABLE — something the player can point at and say "I made it past that one."
+
+Going in, biggest expected miss: **gate posts visually clutter the screen** as player ascends past many gates — 5 gates = 10 posts + 5 labels accumulating. Mitigation: posts at viewport edges (x=4 and x=308), small (8×16px); labels small font. If clutter shows up self-test or iter-60, iter 49 prunes (despawn gates below 100px from camera bottom).
+
+Secondary risk: gates at x=4, x=308 OVERLAP with map walls (LeftWall at x=-4, RightWall x=324). Visually fine since gates are at x=4 (NOT colliding with wall body at x=-4 with shape extending from -8 to 0), but worth a quick eye-check on first render.
+
+Design:
+- `@export var depth_gate_step: int = 20` (gates every 20 rows: 20, 40, 60, ...)
+- `var _last_gate_depth: int = 0`
+- `_check_depth_gates()` called from _process when `_max_depth_reached` increases
+- `_spawn_depth_gate(depth_rows)`:
+  - Two 8×16 yellow ColorRect "posts" at world-x=4 and x=308, y=gate_y-8 (centered on row)
+  - One Label at (120, gate_y-6) with text `* DEPTH N *`
+  - All parented to level (not Spawner) so they persist as world-static
+  - z_index=30-31
+
+H2-RULE claims (3):
+1. Build clean: make test + headless quit clean
+2. _max_depth_reached crossing 20, 40, 60 triggers ONE gate per crossing (not multiple)
+3. Gates persist as world-static (don't despawn or follow camera)
+
+No score lift this iter (anchor 3 is feel-criterion >2 requires [FEEL]). Tag `[STRUCTURE-DEFERRED → iter 60]` for crit 4 anchor 3 path. iter-60 cite "ascent feels authored" / "varied rhythm" / "remember pushing past N" gates lift 2→3.
+
+**Post-iter:** [filled at iter 49]
 
 ---
 
