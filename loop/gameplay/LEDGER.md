@@ -3821,3 +3821,101 @@ change.
 - 9 sprint iters remaining
 
 ---
+
+## Iter 051 — BUILD — Heavy aim-cancel on hit (player tactical agency)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 30/50 (unchanged — `[STRUCTURE-DEFERRED → iter 60]` for crit 5
+anchor 3 + crit 8 anchor 4 [FEEL] cite path)
+
+### Diagnose
+
+Pro Consult 006 H4 critique held: player verbs sound mostly like "drive
+upward, shoot, dodge," not "scout, bait, break LOS, decide push or clear."
+Heavy LKP (iter 47) addressed scout/bait/break-LOS. Iter 51 addresses the
+"decide" verb: shooting Heavy during AIM_FIRE wind-up (red telegraph 0.45s)
+INTERRUPTS the burst, returning Heavy to CHASE. Player tactical reward for
+accurate aim during the red window.
+
+### Code (scripts/Enemy.gd, +~35 lines)
+
+New export: `aim_cancel_cooldown: float = 1.5` (stunlock guard).
+
+New state var: `_aim_cancel_timer: float = 0.0`.
+
+**`_heavy_chase_tick`**: decrement `_aim_cancel_timer`; block re-entry to
+AIM_FIRE while cooldown > 0 (LOS true is recognized but `_enter_aim_fire`
+gated).
+
+**`take_damage` flow**:
+- hp ≤ 0: death (unchanged)
+- Heavy + AIM_FIRE state: `_heavy_aim_cancel()` (NEW path)
+- Otherwise: `_flash_hit()` (existing)
+
+**`_heavy_aim_cancel()`** (NEW):
+- Transition State.AIM_FIRE → State.CHASE
+- Reset `_state_time, _direction_timer, _burst_remaining, _burst_timer`
+- `_clear_aim_telegraph()` removes red modulate
+- Apply 0.15s white stagger flash (visual signal of successful cancel)
+- Arm `_aim_cancel_timer = 1.5s` (prevents re-AIM_FIRE for 1.5s)
+
+Light/Fast unaffected — they don't have AIM_FIRE state.
+
+### Tactical reading
+
+Player learns:
+- Heavy's red telegraph = window of opportunity, not just warning
+- Accurate aim DURING telegraph cancels the burst — pure damage upside
+- Wasted shot (miss) = Heavy continues wind-up, fires, player takes hit
+- Decision point: "engage Heavy now or run past it" — engaging mid-wind-up
+  is now actively rewarded (no shot fired by Heavy + 1.5s breather)
+
+This is the "decide push or clear pocket" verb Pro flagged as missing.
+
+### Stunlock prevention
+
+Without cooldown, player could chain hits during AIM_FIRE → CHASE → re-LOS
+→ AIM_FIRE → cancel → ... in a tight loop. Heavy never fires.
+
+With 1.5s `aim_cancel_timer`: post-cancel, Heavy CHASE for ≥1.5s. Player
+gets full pre-emptive value (no Heavy shot incoming) but Heavy still creates
+pressure via movement/positioning. Heavy fires occasionally during CHASE
+too (per existing fire_cooldown=0.8 logic in `_heavy_chase_tick`).
+
+### Score
+
+Unchanged at 30/50. `[STRUCTURE-DEFERRED → iter 60]` for:
+- Crit 5 anchor 3 ("Combat micro-decisions while ascending; playtest cited")
+- Crit 8 anchor 4 ("Camera shake + above layer + 'hits feel solid / punchy' — feel-verified")
+- Crit 6 anchor 4 ("band-marker enemy whose appearance changes player behavior" — strengthens since Heavy now offers a clearer tactical choice)
+
+### Substrate freeze check
+
+- Hard scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- Heavy + AIM_FIRE check in `take_damage` runs before `_flash_hit` so
+  cancel-during-aim takes priority over flash skip (iter 41 logic)
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd`
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 52 candidate: varying damage by enemy type (Heavy bullet does 2,
+  Light/Fast do 1) — completes crit 3 anchor 4 structural side ("damage
+  values vary by enemy type"). [STRUCTURE-DEFERRED → iter 60] for "felt
+  fair" [FEEL] cite.
+- 8 sprint iters remaining
+
+---

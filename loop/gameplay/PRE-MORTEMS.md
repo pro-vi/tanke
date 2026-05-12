@@ -1355,7 +1355,39 @@ H2-RULE claims (3):
 2. Crit 7 stale row corrected (was 0, should have been 3 since iter 34)
 3. AUDIT lifts pass Pro reword test — each anchor wording maps to specific code-cited evidence (no rationalization through vague "general progress" reading)
 
-**Post-iter:** [filled at iter 51]
+**Post-iter (iter 51 start):** AUDIT shipped. Score 30/50. Heading into Pro H4 "decision quality" sharpener.
+
+---
+
+## Iter 051 — BUILD — Heavy aim-cancel on hit (player tactical agency)
+
+Tag: `[STRUCTURE-DEFERRED → iter 60]` — feeds crit 5 anchor 3 ("Combat micro-decisions while ascending") + crit 8 anchor 4 ("hits feel solid / punchy") + crit 6 anchor 5 (role-distinction depth).
+
+Diagnose: Pro Consult 006 H4 critique held — "Player verbs sound mostly like 'drive upward, shoot, dodge,' not 'scout, bait, break LOS, decide push or clear.'" Heavy LKP (iter 47) addressed scout/bait/break LOS. Iter 51 addresses "decide": when Heavy enters AIM_FIRE wind-up (red telegraph 0.45s), shooting Heavy DURING wind-up should INTERRUPT the burst. Player gets tactical reward for accurate aim during red window.
+
+Going in, biggest expected miss: **cancel feels TOO good — player can stunlock Heavy by chaining hits during AIM_FIRE → CHASE → AIM_FIRE cycles**. If Heavy enters AIM_FIRE again after CHASE, player can re-cancel. This trivializes Heavy. Mitigation: post-cancel, add brief CHASE_COOLDOWN where Heavy doesn't re-enter AIM_FIRE for ~1.5s (gives Heavy time to actually engage). Implementation: track `_aim_cancel_cooldown` timer; LOS true blocked while cooldown > 0.
+
+Secondary risk: hit-cancel makes Heavy's wind-up feel like punishment for being visible — player learns "don't let Heavy aim, shoot it instead." That's the INTENDED tactical lesson (Pro's "bait" / "decide push" verb). Good design.
+
+Design:
+- `take_damage`: check Heavy + AIM_FIRE → call `_heavy_aim_cancel()` BEFORE `_flash_hit()`
+- `_heavy_aim_cancel()`:
+  - Transition State.AIM_FIRE → State.CHASE
+  - Reset `_state_time, _direction_timer, _burst_remaining, _burst_timer`
+  - Clear red telegraph via `_clear_aim_telegraph()`
+  - Apply brief white stagger flash (overrides aim color)
+  - Set `_aim_cancel_cooldown = 1.5` (new var)
+- In `_heavy_chase_tick`: decrement cooldown; if > 0, BLOCK `_player_in_line_of_sight()` from triggering AIM_FIRE re-entry (effectively "stunned out of aim")
+- Light/Fast unaffected (they don't have AIM_FIRE state)
+
+H2-RULE claims (3):
+1. Hitting Heavy during AIM_FIRE wind-up cancels the burst (no shot fired)
+2. Heavy returns to CHASE post-cancel; cooldown prevents instant re-AIM_FIRE for 1.5s
+3. Build clean: make test + headless --quit-after 60 exit 0
+
+No score lift this iter — anchors require [FEEL] cite for crit 5/8. Tag for iter-60.
+
+**Post-iter:** [filled at iter 52]
 
 ---
 

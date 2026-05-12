@@ -36,6 +36,10 @@ enum State { CHASE, AIM_FIRE }
 # player reaction time to break LOS or commit to a dodge.
 @export var aim_fire_reaction_time: float = 0.45
 @export var aim_telegraph_color: Color = Color(1.6, 0.5, 0.5, 1.0)
+# iter 51: aim-cancel on hit. Shooting Heavy during AIM_FIRE wind-up cancels
+# the burst — player tactical reward for accurate aim during red telegraph.
+# Cooldown prevents instant re-AIM_FIRE (stunlock prevention).
+@export var aim_cancel_cooldown: float = 1.5
 
 var hp: int = max_hp
 var direction: int = Constants.Dir.D  # start facing down (comes from top)
@@ -54,6 +58,7 @@ var _burst_timer: float = 0.0
 var _lkp: Variant = null  # Vector2 when set, null when no LKP
 var _reached_lkp: bool = false
 var _search_until: float = 0.0  # _state_time threshold past which SEARCH expires
+var _aim_cancel_timer: float = 0.0  # iter 51: stuns Heavy out of AIM_FIRE after hit-cancel
 @export var lkp_reach_radius: float = 12.0
 @export var lkp_search_duration: float = 2.5
 @onready var _sprite: Sprite2D = $Sprite2D
@@ -196,7 +201,10 @@ func _heavy_chase_tick(delta: float) -> void:
 	# iter 47: LKP-aware CHASE. LOS check first; on TRUE, save LKP + transition
 	# to AIM_FIRE. LOS FALSE → direction picks come from _choose_direction_heavy_chase
 	# which uses LKP state machine (CHASE_TO_LKP / SEARCH / WANDER).
-	if _player_in_line_of_sight():
+	# iter 51: aim-cancel cooldown blocks re-AIM_FIRE entry for stunlock prevention.
+	if _aim_cancel_timer > 0.0:
+		_aim_cancel_timer -= delta
+	if _aim_cancel_timer <= 0.0 and _player_in_line_of_sight():
 		_save_lkp()
 		_enter_aim_fire()
 		return
@@ -419,7 +427,32 @@ func take_damage(amount: int) -> void:
 		_spawn_death_effect()
 		queue_free()
 		return
+	# iter 51: Heavy mid-AIM_FIRE → cancel wind-up, brief stun cooldown.
+	# Cancel feedback IS the visual (white stagger flash overrides red telegraph);
+	# regular _flash_hit gets skipped per iter-41 Heavy-AIM_FIRE rule anyway.
+	if enemy_type == "Heavy" and _state == State.AIM_FIRE:
+		_heavy_aim_cancel()
+		return
 	_flash_hit()
+
+
+# iter 51: Heavy hit-cancel during AIM_FIRE. Interrupts wind-up burst,
+# transitions back to CHASE, applies brief stagger flash, arms cooldown
+# to prevent immediate re-AIM_FIRE entry (stunlock guard).
+func _heavy_aim_cancel() -> void:
+	_state = State.CHASE
+	_state_time = 0.0
+	_direction_timer = 0.0
+	_burst_remaining = 0
+	_burst_timer = 0.0
+	_clear_aim_telegraph()
+	_aim_cancel_timer = aim_cancel_cooldown
+	# White stagger flash (overrides red — visual signal of successful cancel)
+	if _sprite != null:
+		var a: float = _sprite.modulate.a
+		_sprite.modulate = Color(2.0, 2.0, 2.0, a)
+		var tween: Tween = _sprite.create_tween()
+		tween.tween_property(_sprite, "modulate", Color(1, 1, 1, a), 0.15)
 
 
 # iter 41: visual juice — brief white modulate on non-kill damage. Skip when
