@@ -1563,7 +1563,33 @@ H2-RULE claims (3):
 2. `reachable_cells=804, rows_climbed=29, playable=true` (matches baseline)
 3. No HALT triggered — sprint can proceed to iter 59 last-look then iter 60 PLAYTEST
 
-**Post-iter:** [filled at iter 59]
+**Post-iter (iter 59 start):** Substrate verified, build clean.
+
+---
+
+## Iter 059 — META — Final-look pre-PLAYTEST
+
+Tag: `[STRUCTURE]` (META iter, no score lift, last sprint iter).
+
+Trigger: iter 60 fires PLAYTEST next. Iter 59 = pre-flight check.
+
+Going in, biggest expected miss: **iter-60-playtest-prompt-draft.md has a stale `[run]` log format** missing iter-57 seed addition. Mitigation: re-read and fix before firing.
+
+Checks performed:
+1. `make test` exit 0 ✓
+2. `godot --headless --quit-after 60` exit 0 ✓
+3. Iter-60-playtest-prompt-draft.md re-read — found seed missing from [run] log guide. Fixed.
+4. Substrate hash from iter 58 still valid (no code changes iter 59).
+5. STATE.md score 30/50; pending lift gates documented in playtest prompt draft.
+
+H2-RULE claims (3):
+1. Build clean + headless clean
+2. Playtest prompt draft updated with iter-57 seed instrumentation in [run] log section
+3. Iter 60 fire-ready — STATE phase will transition to AWAITING_USER_PLAYTEST at iter-60 fire time
+
+No score lift. Sprint ends iter 60.
+
+**Post-iter:** [filled at iter 61 after user playtest response]
 
 ---
 

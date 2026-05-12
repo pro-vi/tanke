@@ -62,13 +62,14 @@ Halt rule: iter 63 if no response.
 
 ## Iter-60 [run] log interpretation guide
 
-`[run] depth=N time=M:SS kills=K aim_cancels=A ascent_rate=R rows/s stall_total=T.Ts (P%)`
+`[run] depth=N time=M:SS kills=K aim_cancels=A ascent_rate=R rows/s stall_total=T.Ts (P%) seed=S`
 
 - `depth`: hit anchor 1-5 of crit 1/4 progression
 - `kills`: balances "kill-loop" awareness without HUD live-count (death-screen only per iter 30 Pro Consult 005 H4)
 - `aim_cancels`: iter 56 instrumentation. How many Heavy aim-cancels landed. >0 = player engaged Heavy tactical decision (crit 5 + 6 + 8 cite gate). 0 = player never tried OR Heavy too rare.
 - `stall_total / P%`: if P > 30%, player struggled with ascent pressure (suggest iter 61 tuning); if P < 10%, ascent was smooth
 - `ascent_rate`: rows/s. Iter-31 baseline was ~0.3 rows/s. Higher = aggressive ascender, lower = cautious player.
+- `seed`: iter 57 instrumentation. RNG seed for the run. If user reports a weird run, I can reproduce iter 61+ for root-cause investigation.
 
 ## Score targets if all 5 cites land favorably
 

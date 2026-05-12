@@ -4434,3 +4434,77 @@ ALL FIELDS MATCH iter-0 baseline:
 - 1 sprint iter remaining
 
 ---
+
+## Iter 059 — META — Final-look pre-PLAYTEST
+
+**Mode:** META
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 30/50 (unchanged)
+
+### Trigger
+
+Iter 60 fires PLAYTEST next. Iter 59 = pre-flight check.
+
+### Checks
+
+1. `make test` exit 0 ✓
+2. `godot --headless --quit-after 60` exit 0 ✓
+3. Iter-60-playtest-prompt-draft.md re-read. Found `[run]` log guide
+   stale (missing iter-57 seed addition). **Fixed**: added `seed=S` to
+   format string + interpretation guide.
+4. Substrate hash carry-over from iter 58 — still f873ae60….
+5. Sprint score trajectory documented:
+
+### Sprint score trajectory (iter 39 → 59)
+
+| Iter | Score | Δ | Source |
+|------|-------|---|--------|
+| 38 (start) | 20/50 | — | Pre-sprint |
+| 40 | 21/50 | +1 | Crit 6 1→3 [STRUCTURE] Fast 3rd type |
+| 43 | 22/50 | +1 | Crit 10 1→2 [STRUCTURE-DEFERRED] death summary |
+| 46 | 24/50 | +2 | Rubric rename: crit 8 +1, crit 10 +1 |
+| 49 | 26/50 | +2 | Crit 9 1→3 [STRUCTURE] HP bar + retro correction |
+| 50 | 30/50 | +4 | AUDIT: crit 2 +3, crit 3 +1, crit 9 +1 |
+| 59 (now) | 30/50 | 0 | Iter 51-58: tune + instrumentation + verification |
+
+**+10 over sprint** (20 → 30/50).
+
+### Pending lift gates for iter 60 [FEEL] cites
+
+| Criterion | Current | Lift gated on |
+|-----------|---------|---------------|
+| Crit 4 Depth feedback | 2 | Q4/Q5 cite "varied rhythm" / "felt authored" → 3 |
+| Crit 5 Forward survivability | 1 | Q4 cite "I was deciding" → 3 |
+| Crit 6 Enemy variety | 3 | Q1 cite "distinguished 3 types" → 4; Q4 cite "used walls to bait Heavy" → 5 |
+| Crit 8 Impact/feedback | 3 | Q2 cite "punchy" / "hits feel solid" → 4 |
+| Crit 10 Run loop closure | 3 | Q3 cite "I want one more" → 4; "beat my best" → 5 |
+
+Best-case all-favorable: 30 → 36-40/50.
+
+### Substrate freeze check
+
+- Hard scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- H1 tripwire unchanged at 2
+- Hash anchor `f873ae60…` carries from iter 58 verification
+
+### Files touched
+
+- Modified: `loop/gameplay/iter-60-playtest-prompt-draft.md` (seed in [run] log)
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 120s (short — iter 60 is the playtest fire)
+- Iter 60 = mandatory PLAYTEST per sprint authorization (user directive
+  iter 38: "lets schedule the next playtest in loop 60")
+  - Build verification (one final pass)
+  - Output playtest prompt to user from
+    `loop/gameplay/iter-60-playtest-prompt-draft.md` § "Prompt to paste"
+  - STATE phase → AWAITING_USER_PLAYTEST
+  - NO ScheduleWakeup (AWAIT per v2 PROMPT §Step 7)
+  - Halt rule: iter 63 if no response
+- Sprint ends iter 60
+
+---
