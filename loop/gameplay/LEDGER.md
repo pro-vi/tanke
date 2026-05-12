@@ -6270,3 +6270,50 @@ early-return).
 - 16 sprint iters remain
 
 ---
+
+## Iter 084 — BUILD — Speed-boost cyan tint + unified player-tint priority
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged)
+
+### Change
+
+Unified `sprite.self_modulate` decision at end of _physics_process with
+priority: shield > speed > white.
+
+| State | Color |
+|-------|-------|
+| `_shield_timer > 0` | Pale blue (0.7, 0.85, 1.0) |
+| `_speed_boost_timer > 0` (no shield) | Cyan (0.55, 0.95, 1.0) — matches Fast pickup color |
+| Neither | White (1, 1, 1) |
+
+Shield priority makes sense: invuln is the rarer/stronger signal —
+visual dominates when both active. If shield expires while speed still
+running, tint shifts blue → cyan smoothly next frame.
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd` (~+8 lines refactor)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 85+ — sprint surface mostly saturated. 15 iters until iter 99.
+  Could ship final small audit, or no-op iters until iter 95 final-prep
+  window.
+- 15 sprint iters remain
+
+---

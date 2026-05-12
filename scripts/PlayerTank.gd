@@ -89,15 +89,18 @@ func _physics_process(delta: float) -> void:
 			_speed_boost_multiplier = 1.0
 			_speed_boost_timer = 0.0
 	# iter 82: tick down shield invulnerability
-	# iter 83: pale-blue self_modulate while shielded; restore white on expiry
 	if _shield_timer > 0.0:
 		_shield_timer -= delta
-		if sprite != null:
-			sprite.self_modulate = Color(0.7, 0.85, 1.0, 1.0)
-		if _shield_timer <= 0.0:
+		if _shield_timer < 0.0:
 			_shield_timer = 0.0
-			if sprite != null:
-				sprite.self_modulate = Color(1, 1, 1, 1)
+	# iter 84: unified tint update with priority: shield > speed > white
+	if sprite != null:
+		if _shield_timer > 0.0:
+			sprite.self_modulate = Color(0.7, 0.85, 1.0, 1.0)
+		elif _speed_boost_timer > 0.0:
+			sprite.self_modulate = Color(0.55, 0.95, 1.0, 1.0)
+		else:
+			sprite.self_modulate = Color(1, 1, 1, 1)
 
 	if _dead:
 		_handle_restart_input()

@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 83 → 99)
-iteration: 83
-sprint_progress: 21 BUILD + 1 META + 1 AUDIT. Shield visual indicator iter 83.
+phase: SPRINT (iter 84 → 99)
+iteration: 84
+sprint_progress: 22 BUILD + 1 META + 1 AUDIT. Speed-boost tint added (iter 84).
 final_prep_window: iter 95-98 reserved for META/AUDIT/final-look before iter 99 PLAYTEST
 hash_anchor_drift: f873ae60... (iter 0-65, warmup=first_push=playable) → 8224ebda... (iter 66+, first_push has +0.04 brick variance). Multi-seed playable preserved.
 sprint_authorization: "User directive iter 60: 'next playtest at ITER 99' + priority: local map > enemy types > feedback/polish > roguelite mechanics"
