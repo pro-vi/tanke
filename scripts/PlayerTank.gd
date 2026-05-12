@@ -238,15 +238,27 @@ func _die() -> void:
 	var is_new_best: bool = depth > prior_best
 	if is_new_best:
 		_save_best_depth(depth)
+	# iter 73: best-time tracking (only count runs that reach depth >= 10
+	# to filter trivial deaths). best_time = LONGEST survival in seconds at
+	# any qualifying run.
+	var prior_best_time: int = _load_best_time()
+	var is_new_best_time: bool = depth >= 10 and t > prior_best_time
+	if is_new_best_time:
+		_save_best_time(t)
 	# iter 43: render run summary on death label (iter 44: + BEST line)
 	# iter 71: also show dark backing panel for readability
 	if _death_label != null:
 		var best_line: String
 		if is_new_best:
-			best_line = "\n* NEW BEST!  (was %d)" % prior_best
+			best_line = "\n* NEW BEST DEPTH!  (was %d)" % prior_best
 		else:
 			best_line = "\nBEST %d" % prior_best
-		_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nCANCELS %d\nSTALL %d%%%s\n\n[R] RESTART" % [depth, t / 60, t % 60, kills, aim_cancels, int(stall_pct), best_line]
+		var best_time_line: String
+		if is_new_best_time:
+			best_time_line = "\n* NEW BEST TIME!  (was %d:%02d)" % [prior_best_time / 60, prior_best_time % 60]
+		else:
+			best_time_line = "\nBEST TIME %d:%02d" % [prior_best_time / 60, prior_best_time % 60]
+		_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nCANCELS %d\nSTALL %d%%%s%s\n\n[R] RESTART" % [depth, t / 60, t % 60, kills, aim_cancels, int(stall_pct), best_line, best_time_line]
 		_death_label.visible = true
 	if _death_panel != null:
 		_death_panel.visible = true
@@ -277,6 +289,24 @@ func _save_best_depth(d: int) -> void:
 	var err: int = cfg.save(_STATS_CFG_PATH)
 	if err != OK:
 		push_warning("[stats] ConfigFile.save err=%d" % err)
+
+
+# iter 73: best-time persistence (longest survival on a run with depth >= 10)
+func _load_best_time() -> int:
+	var cfg: ConfigFile = ConfigFile.new()
+	var err: int = cfg.load(_STATS_CFG_PATH)
+	if err == OK:
+		return int(cfg.get_value("run", "best_time", 0))
+	return 0
+
+
+func _save_best_time(t: int) -> void:
+	var cfg: ConfigFile = ConfigFile.new()
+	cfg.load(_STATS_CFG_PATH)
+	cfg.set_value("run", "best_time", t)
+	var err: int = cfg.save(_STATS_CFG_PATH)
+	if err != OK:
+		push_warning("[stats] best_time save err=%d" % err)
 
 
 func _handle_restart_input() -> void:

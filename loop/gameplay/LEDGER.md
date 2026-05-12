@@ -5550,3 +5550,92 @@ No font_size change — small text stays small for HUD density.
 - 27 sprint iters remain
 
 ---
+
+## Iter 073 — BUILD — Best-time persistence (crit 10 anchor 4-5 path reinforcement)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — crit 10 anchor 4-5 path reinforcement, gated on iter-99 cite)
+
+### Trigger
+
+Iter 72 schedule note: best-time alongside best-depth. Provides additional
+hook for iter-99 retry cite (crit 10 anchor 4 "I want one more" /
+anchor 5 "beat my best").
+
+### Code (scripts/PlayerTank.gd)
+
+New helpers:
+- `_load_best_time() -> int` — reads `user://stats.cfg` `run/best_time` key
+- `_save_best_time(t: int)` — preserves other keys on save
+
+`_die()` extended:
+- Loads `prior_best_time`
+- Updates if `depth >= 10 AND t > prior_best_time` (depth filter prevents
+  trivial deaths from inflating best_time)
+- Death label gets new `BEST TIME M:SS` line with `* NEW BEST TIME! (was N)`
+  marker when applicable
+- Existing `BEST` line renamed to `BEST DEPTH` for clarity vs new line
+
+### Death screen layout (post-iter-73)
+
+```
++--------------------------------+
+|        YOU DIED                |
+|                                |
+|        DEPTH 23                |
+|        TIME 0:45               |
+|        KILLS 7                 |
+|        CANCELS 2               |
+|        STALL 31%               |
+|        BEST 19                 |  ← best DEPTH (renamed for clarity)
+|        BEST TIME 0:32          |  ← NEW iter 73
+|                                |
+|        [R] RESTART             |
++--------------------------------+
+```
+
+### Why depth >= 10 filter
+
+Without filter, a player who spawns + dies immediately at depth 0 in
+2 seconds would set best_time=2s. Filter ensures best_time reflects
+ACTUAL run duration on a non-trivial attempt.
+
+### Anchor 4-5 path
+
+Two persistent stats now show retroactive comparison:
+- Player tries another run, compares against their best depth + best time
+- "I want one more" cite (anchor 4) reinforced by having clearer
+  measurable goals on each restart
+- "Beat my best" cite (anchor 5) gets twin axes — depth AND time
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+- `user://stats.cfg` schema extended (new key `run/best_time`); existing
+  `run/best_depth` preserved by `cfg.load()` before save
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd` (~+20 lines: 2 helpers + _die() ext)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 74 candidate: explore more ascender stats? Or pivot to a small
+  Q5 priority 4 hint ("explore roguelite mechanics"). User said
+  "explore" implying NOT before playtest. Stick to polish — perhaps
+  band-marker SFX-like impact via screen shake on band transition
+  (composes with iter-64 HUD overlay).
+- 26 sprint iters remain
+
+---
