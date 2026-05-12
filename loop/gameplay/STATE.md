@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 56 → 60)
-iteration: 56
-consult_006: ADOPTED. consult_007: ADOPTED iter 56 — Pro broke H2 (keep 5Q trim wording), held H1/H3/H4. Recommendation (b) tune only. No new features 57-59.
+phase: SPRINT (iter 57 → 60)
+iteration: 57
+consult_006: ADOPTED. consult_007: ADOPTED. Tune-only protective iter 57-59 per recommendation (b).
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"

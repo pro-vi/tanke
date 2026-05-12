@@ -1522,7 +1522,31 @@ H2-RULE claims (3):
 
 No score lift (Pro-permitted instrumentation, not feature).
 
-**Post-iter:** [filled at iter 57]
+**Post-iter (iter 57 start):** Aim-cancel counter + trim shipped. Build clean.
+
+---
+
+## Iter 057 — BUILD-tune — Seed instrumentation in [run] log
+
+Tag: `[STRUCTURE]` (Pro Consult 007 H1 caveat — diagnostic instrumentation).
+
+Trigger: protective tune-only iter per Pro Consult 007 recommendation (b). Iter 56 shipped aim-cancel counter. Iter 57 adds seed to [run] log — if iter-60 user reports a weird run, the seed allows me to reproduce in iter-61 root-cause investigation.
+
+Going in, biggest expected miss: **ProceduralLevel.level_seed might be unset** (=0) on read if level_seed export hasn't been touched by RNG seeding code yet. Mitigation: ProceduralLevel.gd:38-40 sets `level_seed = randi()` in _ready before any other code reads it — should be set by the time PlayerTank._die() fires (death happens mid-game, not at boot).
+
+Design:
+- PlayerTank._die(): read `get_parent().level_seed` (best-effort, default 0)
+- Include `seed=N` in [run] print
+- Add compact `SEED N` line to death label (optional; might make label too tall)
+
+H2-RULE claims (3):
+1. [run] log includes `seed=N` matching the headless `level_seed: N` boot print
+2. Build clean: make test + headless quit exit 0
+3. Death label still readable at 320×240 (label position 96,72; not bleeding off-screen)
+
+No score lift.
+
+**Post-iter:** [filled at iter 58]
 
 ---
 

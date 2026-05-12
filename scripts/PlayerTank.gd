@@ -219,6 +219,7 @@ func _die() -> void:
 		stall_pct = 100.0 * _stall_time_total / _run_time
 	# iter 43: kills lookup from Spawner sibling (best-effort)
 	# iter 56: aim-cancels counter from same Spawner
+	# iter 57: seed from ProceduralLevel parent
 	var kills: int = 0
 	var aim_cancels: int = 0
 	var spawner: Node = get_parent().get_node_or_null("Spawner")
@@ -227,7 +228,10 @@ func _die() -> void:
 			kills = int(spawner.enemies_killed)
 		if "aim_cancels_landed" in spawner:
 			aim_cancels = int(spawner.aim_cancels_landed)
-	print("[run] depth=%d time=%d:%02d kills=%d aim_cancels=%d ascent_rate=%.2f rows/s stall_total=%.1fs (%.0f%%)" % [depth, t / 60, t % 60, kills, aim_cancels, ascent_rate, _stall_time_total, stall_pct])
+	var level_seed: int = 0
+	if "level_seed" in get_parent():
+		level_seed = int(get_parent().level_seed)
+	print("[run] depth=%d time=%d:%02d kills=%d aim_cancels=%d ascent_rate=%.2f rows/s stall_total=%.1fs (%.0f%%) seed=%d" % [depth, t / 60, t % 60, kills, aim_cancels, ascent_rate, _stall_time_total, stall_pct, level_seed])
 	# iter 44: persistent best-depth tracking
 	var prior_best: int = _load_best_depth()
 	var is_new_best: bool = depth > prior_best

@@ -4297,3 +4297,58 @@ Unchanged at 30/50. Pro-permitted instrumentation; no anchor lift.
 - 3 sprint iters remain after this one.
 
 ---
+
+## Iter 057 — BUILD-tune — Seed instrumentation in [run] log
+
+**Mode:** BUILD (Pro-permitted instrumentation per Consult 007 H1 caveat)
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 30/50 (unchanged)
+
+### Trigger
+
+Protective tune-only iter per Pro Consult 007 rec (b). Iter 56 shipped
+aim-cancel counter. Iter 57 adds seed to `[run]` log so iter-60 user can
+report repeatable runs.
+
+### Code (~+5 lines)
+
+**scripts/PlayerTank.gd `_die()`**:
+- Reads `level_seed` from `get_parent()` (ProceduralLevel) via `"level_seed" in get_parent()` check + cast
+- `[run]` print now includes `seed=N` at end
+
+Death label NOT modified — already getting tall with 7 lines + best.
+
+### Format
+
+`[run] depth=N time=M:SS kills=K aim_cancels=A ascent_rate=R rows/s stall_total=T.Ts (P%) seed=S`
+
+Seed matches headless boot `level_seed: S` line.
+
+### Substrate freeze check
+
+- Read-only access to ProceduralLevel.level_seed (no write) — hard
+  substrate not modified.
+- H1 tripwire unchanged at 2.
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- `"level_seed" in get_parent()` check is safe — returns false if absent,
+  level_seed stays 0 default.
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd`
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 58-59: continued protective iters. Could be no-ops if nothing
+  surfaces, OR pivot to README/loop-doc cleanup, OR a small visible
+  polish pass (HP bar segment ticks for HP=3 visibility).
+- 2 sprint iters remaining
+
+---
