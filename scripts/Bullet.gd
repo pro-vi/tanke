@@ -45,20 +45,23 @@ func _on_body_entered(body: Node) -> void:
 # faded out over 0.12s. Parented to bullet's parent so it outlives queue_free.
 # z_index 60 keeps it above tiles/bullets but below HUD.
 func _spawn_impact_spark() -> void:
+	# iter 69 (F010 user iter-60 Q2 "noise artifact"): smaller, warmer,
+	# briefer spark. 3×3 yellow instead of 4×4 white; 0.08s instead of 0.12s.
+	# Aims for "muzzle flash" reading rather than "bright spam."
 	var parent_node: Node = get_parent()
 	if parent_node == null or not is_instance_valid(parent_node):
 		return
 	var spark: ColorRect = ColorRect.new()
-	spark.size = Vector2(4, 4)
-	spark.color = Color(1.0, 1.0, 1.0, 1.0)
-	spark.position = global_position - Vector2(2, 2)
-	spark.pivot_offset = Vector2(2, 2)
+	spark.size = Vector2(3, 3)
+	spark.color = Color(1.0, 0.95, 0.3, 1.0)  # warm yellow
+	spark.position = global_position - Vector2(1.5, 1.5)
+	spark.pivot_offset = Vector2(1.5, 1.5)
 	spark.z_index = 60
 	parent_node.add_child(spark)
 	var tween: Tween = spark.create_tween()
 	tween.set_parallel(true)
-	tween.tween_property(spark, "scale", Vector2(1.5, 1.5), 0.12)
-	tween.tween_property(spark, "modulate:a", 0.0, 0.12)
+	tween.tween_property(spark, "scale", Vector2(1.3, 1.3), 0.08)
+	tween.tween_property(spark, "modulate:a", 0.0, 0.08)
 	tween.chain().tween_callback(spark.queue_free)
 
 

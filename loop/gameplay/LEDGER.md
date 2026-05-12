@@ -5282,3 +5282,66 @@ within ~3s of crossing depth 8. F009 cite "less heavy" should resolve.
 - 31 sprint iters remain
 
 ---
+
+## Iter 069 — BUILD — F010 spark polish (Phase C early)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — F010 partial; full credit gated iter-99)
+
+### Trigger
+
+F010 user iter-60 Q2: "noise artifact in front of each tank." Bullet
+impact spark reads as jank, not feedback. Iter-69 tones it down:
+smaller, warmer, briefer.
+
+### Change (scripts/Bullet.gd `_spawn_impact_spark`)
+
+| Property | Iter 41 | Iter 69 |
+|----------|---------|---------|
+| size | 4×4 | **3×3** |
+| color | white (1,1,1) | **warm yellow (1.0, 0.95, 0.3)** |
+| pivot | (2,2) | (1.5,1.5) |
+| scale tween | 1.0 → 1.5 | 1.0 → 1.3 |
+| duration | 0.12s | **0.08s** (33% shorter) |
+
+Net: -25% area at start, -33% peak scale, -33% lifetime, warmer hue.
+Should read as muzzle flash / impact pop, not pixelated noise.
+
+### Limitation
+
+Full F010 remediation may need actual sprite assets (e.g., 4-frame burst
+animation, X-cross shape). That's out of scope (no SFX/sprite generation
+in this loop). Iter-69 is the best the structural-only approach can do.
+
+If iter-99 user still reports "noise" → iter-100+ revisits with one of:
+- Cap concurrent sparks (queue old ones if N > 6)
+- Even smaller size (2×2)
+- Skip spark on env-only collisions (only show on hit-tank)
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/Bullet.gd`
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 70 candidate: Heavy red telegraph color tone-down — current
+  (1.6, 0.5, 0.5) saturates over 1.0; may contribute to "noise" feel.
+  Tune to (1.3, 0.4, 0.4) for less harsh wind-up tint.
+- 30 sprint iters remain
+
+---
