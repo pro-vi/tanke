@@ -5146,3 +5146,76 @@ user iter-60 priority. New anchor documented in STATE.md `hash_anchor_drift`.
 - 33 sprint iters remain
 
 ---
+
+## Iter 067 — BUILD — Fast cyan tint (F009 partial fix — Phase B early)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — F009 remediation; full credit gated on iter-99 cite)
+
+### Trigger
+
+Phase B sneak-in iter (planned Phase B was iter 79-88; this is Phase A→B
+transition). F009 from iter-60 user playtest: "i see a yellow one"
+(singular) — user couldn't distinguish Light from Fast. Both sprite
+frames render similar at 320×240. Visual color tint disambiguates.
+
+### Code (Enemy.gd + Spawner.gd)
+
+**Enemy.gd**:
+- New `@export var sprite_tint: Color = Color(1, 1, 1, 1)` (white default)
+- `_ready()`: applies `_sprite.self_modulate = sprite_tint`
+- **Why `self_modulate` not `modulate`**: hit-flash (iter 41) and aim-telegraph (iter 38) both use `modulate`. Setting `self_modulate` independently preserves type tint through those temporary effects.
+
+**Spawner.gd ENEMY_TYPES**:
+- Light: `sprite_tint = (1.0, 1.0, 1.0)` white (default — current "yellow" sprite)
+- Heavy: `sprite_tint = (1.0, 1.0, 1.0)` white (its red AIM_FIRE telegraph is sufficient ID)
+- Fast: `sprite_tint = (0.55, 0.95, 1.0)` **cyan** — clearly distinct from Light's yellow
+
+**`_telegraph_then_spawn`**: pushes sprite_tint to enemy on instantiate.
+
+### Visual outcome
+
+Player will now see THREE distinguishable enemy types at a glance:
+1. **Light** (yellow base sprite, white tint) — most common, 1-shot
+2. **Fast** (yellow base sprite, **cyan tint**) — fast, sprays bullets
+3. **Heavy** (yellow base sprite, white normal, **red telegraph during AIM_FIRE**)
+
+User's "yellow one" cite separates into "white yellow" vs "cyan yellow."
+
+### Why self_modulate works
+
+Godot 4 CanvasItem has TWO color properties:
+- `modulate`: composes through child chain
+- `self_modulate`: affects only this node, NOT children
+
+Hit-flash and aim-telegraph set `modulate` to white/red/etc. Final
+rendered color = `self_modulate × modulate`. So Fast = cyan (self) × white (modulate) = cyan baseline; during hit-flash = cyan × (2,2,2) = bright cyan flash.
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- self_modulate is a documented Godot 4 CanvasItem property
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd` (1 export + 2 _ready lines)
+- Modified: `scripts/Spawner.gd` (3 sprite_tint entries + 1 set line)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 68 candidate: Heavy density tuning (raise weight in first_push
+  band 0.2 → 0.3 to address user "less heavy" cite from Q1)
+- 32 sprint iters remain
+
+---

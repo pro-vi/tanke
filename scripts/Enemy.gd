@@ -12,6 +12,11 @@ enum State { CHASE, AIM_FIRE }
 @export var bullet_scene: PackedScene
 @export var bullet_target_mask: int = 3  # Environment (1) + Player (2)
 @export var bullet_damage: int = 1  # iter 52: per-type damage (Heavy=2, others=1)
+# iter 67 (Phase B early, F009 remediation per user iter-60 Q1): per-type
+# sprite tint via self_modulate (independent of modulate used by hit-flash
+# and aim-telegraph). Light=white default, Fast=cyan, Heavy=white (its red
+# AIM_FIRE telegraph is sufficient distinction).
+@export var sprite_tint: Color = Color(1, 1, 1, 1)
 @export var grid: float = 8.0  # half-cell snap on turn
 # Visual
 @export var sprite_base_frame: int = 8
@@ -73,6 +78,10 @@ func _ready() -> void:
 	_fire_timer = randf() * fire_cooldown  # stagger initial volleys
 	_choose_direction_toward_player()
 	_update_sprite_for_direction()
+	# iter 67: apply per-type sprite tint via self_modulate (independent of
+	# the modulate channel used by hit-flash + aim-telegraph)
+	if _sprite != null:
+		_sprite.self_modulate = sprite_tint
 
 
 func _physics_process(delta: float) -> void:

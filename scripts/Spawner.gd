@@ -30,6 +30,7 @@ const ENEMY_TYPES: Array = [
 		"fire_cooldown": 3.5,  # iter 26: fires rarely (was 1.5)
 		"direction_commit_time": 3.0,  # iter 26: commits to a lane (was 0.8)
 		"bullet_damage": 1,  # iter 52
+		"sprite_tint": Color(1.0, 1.0, 1.0, 1.0),  # iter 67: white (default)
 	},
 	{
 		"name": "Heavy",
@@ -40,6 +41,7 @@ const ENEMY_TYPES: Array = [
 		"fire_cooldown": 0.8,
 		"direction_commit_time": 0.8,
 		"bullet_damage": 2,  # iter 52: corridor-denier hits harder
+		"sprite_tint": Color(1.0, 1.0, 1.0, 1.0),  # iter 67: white (telegraph handles ID)
 	},
 	# iter 40: 3rd type "Fast" — harassment rusher. Continuous fire while
 	# moving (no state machine, no aim, no telegraph). Distinct from Light
@@ -54,6 +56,7 @@ const ENEMY_TYPES: Array = [
 		"fire_cooldown": 1.0,
 		"direction_commit_time": 0.8,
 		"bullet_damage": 1,  # iter 52: volume-based pressure, not per-bullet
+		"sprite_tint": Color(0.55, 0.95, 1.0, 1.0),  # iter 67: cyan (F009 fix)
 	},
 ]
 
@@ -379,6 +382,7 @@ func _telegraph_then_spawn(pos: Vector2) -> void:
 	enemy.set("fire_cooldown", type_data.fire_cooldown)
 	enemy.set("direction_commit_time", type_data.direction_commit_time)  # iter 26
 	enemy.set("bullet_damage", type_data.bullet_damage)  # iter 52
+	enemy.set("sprite_tint", type_data.sprite_tint)  # iter 67
 	enemy.global_position = pos
 	enemy.tree_exited.connect(_on_enemy_freed)
 	parent_node.add_child(enemy)
