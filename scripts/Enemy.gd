@@ -41,7 +41,7 @@ enum State { CHASE, AIM_FIRE }
 # player, and shows red telegraph for this duration BEFORE first shot. Gives
 # player reaction time to break LOS or commit to a dodge.
 @export var aim_fire_reaction_time: float = 0.45
-@export var aim_telegraph_color: Color = Color(1.6, 0.5, 0.5, 1.0)
+@export var aim_telegraph_color: Color = Color(1.3, 0.4, 0.4, 1.0)
 # iter 51: aim-cancel on hit. Shooting Heavy during AIM_FIRE wind-up cancels
 # the burst — player tactical reward for accurate aim during red telegraph.
 # Cooldown prevents instant re-AIM_FIRE (stunlock prevention).

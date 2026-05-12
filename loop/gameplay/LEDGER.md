@@ -5345,3 +5345,53 @@ If iter-99 user still reports "noise" → iter-100+ revisits with one of:
 - 30 sprint iters remain
 
 ---
+
+## Iter 070 — BUILD — Heavy red telegraph tone-down (F010 cont)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — F010 polish)
+
+### Change
+
+`Enemy.gd aim_telegraph_color`: Color(1.6, 0.5, 0.5) → Color(1.3, 0.4, 0.4)
+
+Red channel saturation reduced from 1.6× (60% HDR boost) to 1.3× (30%
+HDR boost). Green/blue reduced 0.5 → 0.4. Net: less HDR pop, more
+"warning red" tone, less harsh on the eyes.
+
+### Trade-off
+
+Telegraph still visible/distinct (red on yellow tank base = high
+contrast). Less aggressive saturation reduces the "noise" feel without
+losing the signal value. Iter-99 user will confirm.
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd` (1 line)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 71 candidate: F011 typography. Death label + HUD labels need
+  better font. Godot 4 default rendering at 320×240 is pixelated low-qty.
+  Options: (a) Custom bitmap font asset (out of scope, no font assets),
+  (b) larger Label font_size + tighter spacing, (c) better positioning
+  for visual hierarchy. Best feasible: increase font_size on key labels
+  + add semi-transparent dark background panel to death label.
+- 29 sprint iters remain
+
+---

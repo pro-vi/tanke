@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 69 → 99) — MAP-FOCUSED per user iter-60 directive
-iteration: 69
-banded_biome: WIRED + variances. Fast cyan (67). Heavy density (68). Spark polish (69 F010).
+phase: SPRINT (iter 70 → 99) — MAP-FOCUSED per user iter-60 directive
+iteration: 70
+banded_biome: WIRED + variances. F010 polish: spark (69) + Heavy telegraph (70).
 hash_anchor_drift: f873ae60... (iter 0-65, warmup=first_push=playable) → 8224ebda... (iter 66+, first_push has +0.04 brick variance). Multi-seed playable preserved.
 sprint_authorization: "User directive iter 60: 'next playtest at ITER 99' + priority: local map > enemy types > feedback/polish > roguelite mechanics"
 sprint_complete_prior: yes (iter 39-60 sprint, score 20 → 32/50 incl iter-60 cite)
