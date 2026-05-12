@@ -6744,3 +6744,58 @@ Net: 2 partial improvements (seed 100 + 12345), 8 unchanged.
 - 9 sprint iters remain
 
 ---
+
+## Iter 091 — BUILD-tune — Final warmup tightening (Legibility Lock iter 3)
+
+**Mode:** BUILD (tune)
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged)
+
+### Change
+
+scripts/Spawner.gd warmup max_alive 3 → **2**.
+
+Truly sparse onboarding: at most 2 concurrent enemies. Combined with
+interval_mult 1.5, this means warmup band (depth 0-8) has very low
+density. Player learns mechanics against 1-2 lights at a time.
+
+### Mechanical band distinction COMPLETE (Pro Consult 008 iter 89-91)
+
+| Band | Terrain | Enemy mix | Pace | Cap | Identity |
+|------|---------|-----------|------|-----|----------|
+| warmup (0-8) | empty 0.58, brick 0.16 | Light only | 1.5× slow | 2 | Sparse onboarding |
+| first_push (8-20) | empty 0.46, **brick 0.28** | Light 0.5, Heavy 0.3, Fast 0.2 | 1.0× | 10 | Brick maze tightens |
+| heavy_gate (20-40) | empty 0.48, steel 0.12 | **Heavy 0.6**, Light 0.2, Fast 0.2 | **0.7× fast** | **6** | Heavy-dominant stop-and-aim |
+| rush (40+) | empty 0.58, grass 0.20 | **Fast 0.7**, Light 0.2, Heavy 0.1 | **0.6× fastest** | **18** | Fast chaos |
+
+Each band has visibly + mechanically distinct identity.
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd` (1 field)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 92 = VISUAL BUDGET PASS (Pro Consult 008 plan):
+  - Remove dead code (_spawn_speed_pickup, _speed_boost_* vars)
+  - Tone down or remove competing visual effects:
+    * Consider removing camera shake from band-marker (iter-75) — too noisy?
+    * Reduce milestone flash duration (iter-30)
+    * Audit pickup tint priorities
+- 8 sprint iters remain
+
+---

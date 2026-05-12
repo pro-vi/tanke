@@ -77,7 +77,7 @@ const DEPTH_BANDS: Array = [
 		"depth_max": 8,
 		"type_weights": {"Light": 1.0, "Heavy": 0.0, "Fast": 0.0},
 		"interval_mult": 1.5,  # iter 90: slower spawn pace for onboarding
-		"max_alive": 3,  # iter 90: even sparser concurrent threats
+		"max_alive": 2,  # iter 91: truly sparse onboarding — 1-2 enemies max
 		"guarantee_first_type": null,
 	},
 	{
