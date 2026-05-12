@@ -1451,7 +1451,28 @@ H2-RULE claims (3):
 
 No score lift (feedback completion is structural for crit 8 anchor 3 already met). [STRUCTURE-DEFERRED → iter 60] composes with iter-52 cite for crit 3 anchor 4.
 
-**Post-iter:** [filled at iter 54]
+**Post-iter (iter 54 start):** Heavy bullet color shipped. Build clean.
+
+---
+
+## Iter 054 — META — Iter-60 playtest template draft + sprint summary
+
+Tag: `[STRUCTURE]` (META process iter — no code, no score lift).
+
+Trigger: iter 60 is mandatory PLAYTEST per sprint authorization. Pro Consult 006 H5 expanded the standard 2-question template to a 4-5 question diagnostic tour. Drafting the playtest prompt NOW means iter-60 fires cleanly without last-minute writing — and forces me to think through what evidence I'll be asking the user to provide.
+
+Going in, biggest expected miss: **template too long** — user gets fatigued by Q5 and gives shallow answers across the board. Mitigation: each question gets a 1-sentence frame + ~30s answer budget; total user time ≤3 minutes. Backup: if user reads template and pushes back ("too many questions"), iter 60 falls back to 2-question core.
+
+Output: `loop/gameplay/iter-60-playtest-prompt-draft.md` — ready to copy-paste at iter 60 fire time.
+
+H2-RULE claims (3):
+1. Playtest template covers all major iter-39-53 ships (3rd type / sparks / shake / death summary / best / LKP / landmarks / HP bar / aim-cancel / damage variation / Heavy bullet color)
+2. Each question tied to specific rubric criterion with falsification logic
+3. Template includes build verification command + halt rule reminder
+
+No score lift (META iter).
+
+**Post-iter:** [filled at iter 55]
 
 ---
 

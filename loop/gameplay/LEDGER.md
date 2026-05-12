@@ -4097,3 +4097,76 @@ Unchanged at 30/50. Composes with [STRUCTURE-DEFERRED → iter 60] for:
 - 6 sprint iters remaining
 
 ---
+
+## Iter 054 — META — Iter-60 playtest template draft + sprint summary
+
+**Mode:** META
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 30/50 (unchanged — META iter, no scoring per v2 §Step 5)
+
+### Trigger
+
+Iter 60 is mandatory PLAYTEST per sprint authorization (user iter 38).
+Pro Consult 006 H5 expanded playtest from 2-question template to 4-5
+question diagnostic tour. Drafting NOW means iter-60 fires cleanly + I'm
+forced to think through what evidence I'm asking the user for, which
+clarifies what to ship in iter 56-59 polish.
+
+### Deliverable
+
+`loop/gameplay/iter-60-playtest-prompt-draft.md` — ready to copy-paste at
+iter 60 fire time. Includes:
+
+- Pre-fire build verification commands (`make test` + headless quit)
+- 5-question diagnostic tour (Q1-Q5 per Pro H5 template) — each ≤30s
+- Sprint summary of iter 39-59 visible ships for user context
+- Per-question falsification-clause checklist (what reverts vs lifts)
+- `[run]` log interpretation guide (depth/kills/stall/ascent_rate)
+- Score targets table (current 30/50 → best-case ~36-40/50 post-playtest)
+
+### Question structure
+
+| Q | Criterion | Pro framing |
+|---|-----------|-------------|
+| 1 | crit 6 enemy variety | "Which enemy types did you notice, and how did you tell them apart?" |
+| 2 | crit 8 feedback | "Name one moment where hit/fire feedback helped or confused you" |
+| 3 | crit 10 run loop | "Did death screen / best-depth make you want to retry?" |
+| 4 | CORE STONE | "Did you feel you were making decisions, or mostly reacting?" |
+| 5 | forced choice | "What should be improved first?" (4 options) |
+
+Q4 is the LOAD-BEARING question — answers Pro's H4 "is the loop hollow"
+critique definitively.
+
+### Pre-mortem for the playtest itself
+
+Expected miss: **template too long** — user fatigues by Q5. Mitigation:
+prompt format keeps each question short + offers `[run]` log as
+quick-quantitative bonus. If user pushes back ("too many"), iter-60
+falls back to Q1+Q4 as core.
+
+### Score lift gates (per response)
+
+Best-case all-5-cite lift: 30/50 → ~36-40/50. Crit 5 (1→3), crit 6 (3→4 or
+5), crit 8 (3→4), crit 10 (3→4 or 5), crit 4 (2→3) all gated on specific
+cite language.
+
+### Substrate freeze check
+
+- No code changes (META). Hard substrate untouched.
+- H1 tripwire unchanged at 2.
+
+### Files touched
+
+- Created: `loop/gameplay/iter-60-playtest-prompt-draft.md`
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 120s (META mode per v2 §Step 7)
+- Iter 55 = CONSULT 007 pre-playtest. Will fire fire-and-forget with
+  current state summary + ask Pro for final-call checks before iter-60
+  playtest.
+- 5 sprint iters remaining (55-59 + iter 60 PLAYTEST)
+
+---

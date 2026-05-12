@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 53 → 60)
-iteration: 53
-consult_006: ADOPTED. Iter 47-53 work: LKP, landmarks, HP bar, AUDIT, aim-cancel, damage variation, bullet color.
+phase: SPRINT (iter 54 → 60)
+iteration: 54
+consult_006: ADOPTED. Iter 47-53 work shipped. Iter 54 META: playtest template drafted.
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"
