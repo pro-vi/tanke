@@ -6227,3 +6227,46 @@ drop) so cumulative pickup frequency stays balanced.
 - 17 sprint iters remain
 
 ---
+
+## Iter 083 — BUILD — Shield active visual indicator (player pale-blue tint)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged)
+
+### Change
+
+PlayerTank._physics_process now sets `sprite.self_modulate` to pale blue
+`(0.7, 0.85, 1.0)` while `_shield_timer > 0`; restores to white on expiry.
+
+Uses `self_modulate` channel (independent of iter-19 hit-flash modulate),
+matching the iter-67 enemy-tint pattern. Final rendered color =
+self_modulate × modulate. Player tinted blue when shielded, gets bright
+white flash on hit (which doesn't happen during shield due to take_damage
+early-return).
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd` (~+5 lines tint update)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 84-94 candidates: very limited remaining. Could ship boost-active
+  visual on player (cyan tint during speed boost), audit-light cycle, or
+  let iters 84-94 be lighter / no-op.
+- 16 sprint iters remain
+
+---
