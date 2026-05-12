@@ -6317,3 +6317,67 @@ running, tint shifts blue → cyan smoothly next frame.
 - 15 sprint iters remain
 
 ---
+
+## Iter 085 — AUDIT — Polish-saturation check + light-cadence transition
+
+**Mode:** AUDIT (light)
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged)
+
+### Sprint accomplishments inventory
+
+23 BUILD iters since iter 61 sprint start:
+- Phase A (map, 5 iters): biome variants, banded biome wired, band-marker HUD, themed gates, first_push variance
+- Phase B (enemies, 2 iters): Fast cyan tint, Heavy density tuning
+- Phase C (polish, 4 iters): spark, telegraph, death-screen typography, HUD outline
+- Misc tuning/instrumentation (4): best-time, band shake, restart pulse, milestone band-themed
+- Roguelite (5 iters): HP pickup, speed pickup, shield pickup, activation toasts, player tint indicators
+
+Score progression: 20 → 30 (iter 50 AUDIT) → 32 (iter 60 playtest Q4 cite). +12 over sprint window so far.
+
+### Pending iter-99 cite gates
+
+| Criterion | Current | Best-case post-playtest cite |
+|-----------|---------|------------------------------|
+| 4. Depth feedback | 2 | 3 (varied rhythm) |
+| 6. Enemy variety | 3 | 4 (F009 if distinguishable now), 5 (LKP cite) |
+| 8. Impact/feedback | 3 | 4 (Q2 noise resolved) |
+| 10. Run loop closure | 3 | 4-5 (Q3 retry cite) |
+| (New) F009/F010/F011/F012 | open | F009 close if "yellow/cyan distinct"; F012 close if "felt authored" |
+
+### Light cadence reasoning
+
+14 iters until iter 99. Reserved iter 95-98 for final-prep window
+(META, optional CONSULT 008, AUDIT, final-look). Iter 85-94 (10 iters)
+have low marginal value — polish surface is saturated, no clear next
+ship that would materially affect iter-99 cite outcomes.
+
+Extending ScheduleWakeup to ~25min slows iter-clock cadence while
+respecting user's iter-99 directive. Each iter past iter 84 will likely
+be:
+- No-op META documentation
+- OR small consistency check
+- OR rare sparkly polish that doesn't risk Q2 noise concern
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup ~1500s (25 min) — light cadence
+- Iter 86+ likely no-op AUDIT cycles until iter 95 final-prep window
+
+---
