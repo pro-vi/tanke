@@ -580,6 +580,44 @@ Asked for breaks/holds per H + recommendation for iter 87-94 (8 iters before ite
 
 ### Status
 
-PENDING (fired iter 87, response expected iter 88).
+ADOPTED (read iter 88; 200s gen, Pro Extended Thinking).
+
+### Pro response synthesis
+
+| H | Verdict | Pro's lead-in (paraphrased) |
+|---|---------|------------------------------|
+| H1 | **HOLDS** | Complexity is not "three pickups" — it's pickups + enemy source mapping + durations + tint priority. First-time iter-99 user won't infer "Heavy=HP, Fast=speed, Light=shield." Sharp critique: "thing appeared, grab thing, immediate effect obvious" — don't require player to learn drop provenance. |
+| H2 | **HOLDS** | Pattern is "signal accretion." Listed 15+ visual elements: enemy color/size/behavior, band tint, gate color, camera shake, milestone flash, death label, HUD outlines, pickup tint, pickup toast, speed tint, shield tint, best-time stats, debug. "Every element individually defensible while the whole screen becomes semi-noisy." +2 score over 30 iters = warning most work is hypothetical value. |
+| H3 | **HOLDS** partially | Band markers are not map variety — "progression cosmetics plus pacing wrappers." But changing procgen substrate now is a trap (destabilization risk). Fix: make 4 LevelConfig variants feel MECHANICALLY distinct, not just visually. |
+| H4 | OPTION B WRONG | "No bullet pierce. No fourth pickup. No new enemy. That would convert an already-saturated loop into a feature sampler." Option C wrong (wastes integration time). Option A necessary but insufficient. |
+
+### Sharp recommendation: "Legibility Lock" iter 87-94
+
+| Iter | Theme | Action |
+|------|-------|--------|
+| 87-88 | Pickup audit | Distinct icons, single short toast, no drop-source reliance. Cut weakest pickup. **Pro's cut candidate: SPEED** (Fast owns cyan, temp speed alters control feel) |
+| 89-91 | Mechanical band distinction | Use existing knobs only. Warmup sparse/readable. First_push brick emphasis. Heavy_gate stop-and-aim pressure. Rush visibly favors Fast/light chaos. NO procgen touch. |
+| 92 | Visual budget | Remove/tone down anything competing with enemy ID: excess band tint, pickup tint priority, milestone flash, camera shake |
+| 93 | Playtest prompt | 3 questions only: enemies / pickups / map sections |
+| 94 | Freeze | Only bug fixes |
+
+### Adoption (iter 88)
+
+**Iter 88 (this iter):** CUT speed pickup mechanic.
+- scripts/Enemy.gd: removed Fast → _spawn_speed_pickup branch in _spawn_death_effect
+- scripts/PlayerTank.gd: kept var declarations but reduced apply_speed_boost to no-op pass (backward compat, no actual effect)
+- Speed-related tint/timer logic still in _physics_process but never triggers because timer never set non-zero
+
+**Iter 89-91**: mechanical band distinction (next 3 iters)
+**Iter 92**: visual budget pruning (specific layers TBD)
+**Iter 93**: playtest prompt 3-question reduction
+**Iter 94**: freeze
+
+### Lessons
+
+1. **"Signal accretion" is the polish failure mode** — small LOC ≠ small cognitive cost. Pro's specific call-out of 15+ visual elements competing for player attention is the diagnostic frame I was missing.
+2. **+2 score over 30 iters is a warning, not pride** — most ships were STRUCTURE-DEFERRED. Real value only materializes via iter-99 user cite. Continuing to ship adds without subtracting compounds the risk.
+3. **Pro's "Heavy = HP source" specific concern** — making Heavy the visually-loudest enemy ALSO the most rewarding kill amplifies attention domination. Subtle critique I didn't see.
+4. **Cut candidate logic** — Speed pickup competes with Fast enemy color (both cyan family). Pickup that doesn't visually distinguish from its drop source is the worst kind of UI.
 
 ---

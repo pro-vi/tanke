@@ -6486,3 +6486,89 @@ Fire-and-forget, key `tanke-iter-87-consult-late-sprint`.
 - 12 sprint iters remain
 
 ---
+
+## Iter 088 — META + BUILD (cut) — Consult 008 ADOPTED + Speed pickup REMOVED
+
+**Mode:** META + BUILD-cut (signal-pruning per Pro Consult 008)
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — cut, not lift)
+
+### Trigger
+
+Pro Consult 008 read iter 88 (200s gen). H1/H2/H3 all hold:
+- Signal accretion is the failure mode (Pro listed 15+ competing visual elements)
+- +2 score over 30 iters = warning most work is STRUCTURE-DEFERRED hypothetical
+- Pickup learning curve too high for first-time iter-99 user
+- Map variety is cosmetic-only; mechanical distinction needed in 4 bands
+
+Pro recommendation: "Legibility Lock" 8-iter pass. CUT Speed pickup,
+make 4 LevelConfig variants MECHANICALLY distinct, prune visual budget,
+reduce playtest to 3 questions, freeze at iter 94.
+
+### Adopt: cut speed pickup (this iter)
+
+**scripts/Enemy.gd**:
+- `_spawn_death_effect`: removed `elif enemy_type == "Fast" and randf() < 0.15: _spawn_speed_pickup(parent_node)` branch
+- `_spawn_speed_pickup()` function retained (dead code) — defensive in case
+  any other reference exists; can be deleted in iter-92 visual-budget pass
+
+**scripts/PlayerTank.gd**:
+- `apply_speed_boost(duration, multiplier)`: reduced to `pass` no-op
+- `_speed_boost_timer` / `_speed_boost_multiplier` declarations retained
+  (never set non-default since iter 88; cyan tint priority in
+  _physics_process never triggers)
+
+### Rationale (Pro's reasoning, adopted verbatim)
+
+> "My cut candidate is Speed, because Fast already owns cyan/urgency
+> and temporary speed can subtly alter control feel during combat. HP
+> and Shield are easier to understand."
+
+Two reasons confirmed:
+1. Visual collision: Speed pickup cyan ≈ Fast enemy cyan tint → first-time
+   user can't distinguish "Fast enemy" from "Fast's dropped item"
+2. Control-feel disruption: +50% player speed mid-combat changes input
+   responsiveness, complicating decision-quality just as user is in
+   high-cognitive-load moment
+
+### Sprint roadmap revised (Pro Consult 008)
+
+| Iter | Phase | Plan |
+|------|-------|------|
+| 87 | CONSULT | (Done — Consult 008 fired) |
+| 88 | META + cut | (Done — Speed pickup removed) |
+| 89-91 | Mechanical band distinction | Tune Spawner band parameters: warmup sparse, first_push brick, heavy_gate stop-and-aim, rush Fast-dominant |
+| 92 | Visual budget | Remove/tone down: dead code paths, milestone flash competition, redundant tint layers |
+| 93 | Playtest prompt 3Q | Reduce 5Q → 3Q (enemies / pickups / map sections) |
+| 94 | Freeze | Only bug fixes |
+| 95-98 | Final-prep | META/AUDIT/final-look |
+| 99 | PLAYTEST | Mandatory user playtest |
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+- Speed-pickup REMOVAL is intentional behavior reduction; not adding code
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd` (~3 line removal + comment)
+- Modified: `scripts/PlayerTank.gd` (apply_speed_boost → pass)
+- Modified: `loop/gameplay/{STATE,LEDGER,creative-consults}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 89: start mechanical band distinction. First target: tune
+  `warmup` band to feel sparse/readable vs current "playable.tres mix"
+  (which makes it indistinguishable from playable.tres baseline)
+- 11 sprint iters remain
+
+---

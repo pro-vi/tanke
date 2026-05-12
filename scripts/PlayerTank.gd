@@ -7,6 +7,8 @@ signal died
 @export var speed: int = 32
 # iter 79: speed-boost roguelite pickup state. multiplier active for
 # _speed_boost_timer seconds.
+# iter 88 (Pro Consult 008 Legibility Lock): speed-boost mechanic REMOVED.
+# Kept var declarations as dead code for backward compat (never set non-default).
 var _speed_boost_timer: float = 0.0
 var _speed_boost_multiplier: float = 1.0
 # iter 82: shield-pickup invulnerability window. take_damage early-returns
@@ -202,14 +204,11 @@ func heal(amount: int) -> void:
 	_show_pickup_toast("HP+%d" % amount, Color(0.3, 0.95, 0.4, 1.0))
 
 
-# iter 79 (Q5 priority 4): speed-boost pickup application. Replaces any active
-# boost (doesn't stack). Duration counted in _physics_process.
-func apply_speed_boost(duration: float, multiplier: float) -> void:
-	if _dead:
-		return
-	_speed_boost_timer = duration
-	_speed_boost_multiplier = multiplier
-	_show_pickup_toast("SPEED+", Color(0.55, 0.95, 1.0, 1.0))
+# iter 79 → CUT iter 88 (Pro Consult 008 Legibility Lock): speed boost mechanic
+# removed. apply_speed_boost kept as no-op to avoid breaking any external
+# callers (none currently exist after iter-88 Enemy.gd revert).
+func apply_speed_boost(_duration: float, _multiplier: float) -> void:
+	pass
 
 
 # iter 82 (Q5 priority 4): shield pickup grants brief invulnerability.

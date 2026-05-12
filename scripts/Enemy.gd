@@ -509,10 +509,10 @@ func _spawn_death_effect() -> void:
 	# chance for HP pickup. Player walking over → +1 HP (clamped to max_hp).
 	if enemy_type == "Heavy" and randf() < 0.25:
 		_spawn_hp_pickup(parent_node)
-	# iter 79: Fast 15% drop chance for speed boost. +50% for 5s.
-	elif enemy_type == "Fast" and randf() < 0.15:
-		_spawn_speed_pickup(parent_node)
 	# iter 82: Light 10% drop chance for shield. 2s invulnerability.
+	# iter 88 (Pro Consult 008 "Legibility Lock"): Speed pickup CUT — Fast
+	# already owns cyan/urgency, temp speed alters control feel during combat
+	# (cognitive burden + visual collision with Fast enemy tint).
 	elif enemy_type == "Light" and randf() < 0.10:
 		_spawn_shield_pickup(parent_node)
 
