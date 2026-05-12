@@ -5219,3 +5219,66 @@ rendered color = `self_modulate × modulate`. So Fast = cyan (self) × white (mo
 - 32 sprint iters remain
 
 ---
+
+## Iter 068 — BUILD — Heavy density tuning (F009 cite "less heavy" addressed)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — full F009 credit gated on iter-99 cite)
+
+### Trigger
+
+User iter-60 Q1 cite: "i see less heavy though." Heavy density too low
+at depths user reached. iter-67 fixed Light/Fast visual distinction;
+iter-68 raises Heavy spawn frequency.
+
+### Change (scripts/Spawner.gd DEPTH_BANDS first_push)
+
+| Field | Iter 67 | Iter 68 |
+|-------|---------|---------|
+| Light weight | 0.6 | **0.5** |
+| Heavy weight | 0.2 | **0.3** |
+| Fast weight | 0.2 | 0.2 |
+| guarantee_first_type | null | **"Heavy"** |
+
+Net: +0.1 Heavy, -0.1 Light. Plus guarantee_first_type=Heavy makes the
+FIRST enemy after crossing depth 8 (first_push entry) a Heavy —
+explicit "heavies have arrived" signal at band transition.
+
+### Band-marker composition
+
+When player crosses depth 8:
+1. Iter-64 band-marker HUD overlay: "ENTERING FIRST_PUSH" yellow tint
+2. Iter-65 next gate at depth 20 has yellow→orange transition (gate at 20 is heavy_gate-band-colored)
+3. Iter-68 first spawn after crossing is **guaranteed Heavy** (with red AIM_FIRE telegraph + 2× damage + cyan-tinted Fast siblings)
+
+Player sees: band-marker text + Heavy spawn-with-telegraph + Fast cyan
+within ~3s of crossing depth 8. F009 cite "less heavy" should resolve.
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+- No new bands or types — just weight tuning + guarantee setter
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- Oracle hash unchanged (band weights affect Spawner, not ProceduralLevel)
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd` (1 weight dict + guarantee_first_type)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 69 candidate: rush.tres variance verification (multi-seed test
+  since rush is at depth 40+ — outside oracle window so won't affect hash)
+- 31 sprint iters remain
+
+---

@@ -80,10 +80,10 @@ const DEPTH_BANDS: Array = [
 	{
 		"name": "first_push",
 		"depth_max": 20,
-		"type_weights": {"Light": 0.6, "Heavy": 0.2, "Fast": 0.2},  # iter 40: introduce Fast
+		"type_weights": {"Light": 0.5, "Heavy": 0.3, "Fast": 0.2},  # iter 68: +0.1 Heavy (Q1 "less heavy")
 		"interval_mult": 1.0,
 		"max_alive": 10,
-		"guarantee_first_type": null,
+		"guarantee_first_type": "Heavy",  # iter 68: signal "heavies arrive" at first_push entry
 	},
 	{
 		"name": "heavy_gate",
