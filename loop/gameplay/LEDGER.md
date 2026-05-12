@@ -6572,3 +6572,88 @@ Two reasons confirmed:
 - 11 sprint iters remain
 
 ---
+
+## Iter 089 — BUILD-tune — Mechanical band distinction (Legibility Lock iter 1)
+
+**Mode:** BUILD (tune-only, Legibility Lock per Consult 008)
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — mechanical legibility ≠ score lift)
+
+### Trigger
+
+Pro Consult 008: "make the four map bands play differently using only
+existing knobs. Warmup sparse/readable. First_push brick variance.
+Heavy_gate stop-and-aim pressure. Rush Fast/light chaos. Do not touch
+the generator substrate; tune encounter signatures."
+
+### Changes
+
+**configs/band-first-push.tres** — brick emphasis:
+| Field | iter 88 | iter 89 |
+|-------|---------|---------|
+| empty | 0.50 | **0.46** |
+| brick | 0.22 | **0.28** |
+| grass | 0.13 | **0.11** |
+
+Brick density now +56% over warmup baseline (0.18 → 0.28). Player at
+depth 8+ feels "the maze tightens" via destructible obstacles.
+
+**scripts/Spawner.gd DEPTH_BANDS heavy_gate** — stop-and-aim pressure:
+| Field | iter 88 | iter 89 |
+|-------|---------|---------|
+| Light weight | 0.25 | **0.20** |
+| Heavy weight | 0.5 | **0.6** |
+| Fast weight | 0.25 | **0.20** |
+| interval_mult | 0.85 | **0.7** |
+| max_alive | 8 | **6** |
+
+Heavy dominance + denser spawn cadence + fewer concurrent enemies =
+sustained per-Heavy engagement instead of mass swarm. Forces stop-and-
+aim per Pro's band identity.
+
+### Multi-seed validation (first_push brick change)
+
+15-seed sweep: all baseline-playable seeds still playable.
+- seed 42: T rc=29 r=668 (was 684, -16 reachable)
+- seed 10: T rc=29 r=780 (was 824, -44)
+- seed 7: T rc=25 (same partial regression as iter 66)
+- All other seeds: same playability status as baseline
+- seed 100: same baseline F rc=9 failure (unchanged)
+
+Reachability gate preserved (all playable seeds rc >= 11 >> MIN=10).
+
+### Heavy_gate Spawner changes don't affect oracle
+
+Spawner is runtime-only; oracle tests procedural generation only.
+Band weight + interval + max_alive changes don't impact hash.
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+- band-first-push.tres is a NEW config (iter 62) — modifying it is sanctioned
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- 15-seed oracle sweep clean
+
+### Files touched
+
+- Modified: `configs/band-first-push.tres` (3 fields)
+- Modified: `scripts/Spawner.gd` (heavy_gate dict: 5 fields)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 90-91: continue mechanical band distinction. Candidates:
+  - Warmup: lower interval_mult further OR raise empty more
+  - Rush: more Fast weight OR more max_alive
+  - Possibly add band-marker enemy difference (warmup spawns NO Heavy; rush spawns NO Light)
+- 10 sprint iters remain
+
+---

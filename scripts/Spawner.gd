@@ -91,10 +91,10 @@ const DEPTH_BANDS: Array = [
 	{
 		"name": "heavy_gate",
 		"depth_max": 40,
-		"type_weights": {"Light": 0.25, "Heavy": 0.5, "Fast": 0.25},  # iter 40: Fast harasses while Heavy denies
-		"interval_mult": 0.85,
-		"max_alive": 8,  # fewer but heavier — denial pressure
-		"guarantee_first_type": "Heavy",  # band-marker
+		"type_weights": {"Light": 0.20, "Heavy": 0.6, "Fast": 0.20},  # iter 89: more Heavy-dominant (stop-and-aim)
+		"interval_mult": 0.7,  # iter 89: denser spawns for sustained pressure
+		"max_alive": 6,  # iter 89: fewer concurrent → forces individual engagement
+		"guarantee_first_type": "Heavy",
 	},
 	{
 		"name": "rush",
