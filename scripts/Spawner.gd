@@ -122,6 +122,16 @@ const DEPTH_BANDS: Array = [
 @export var depth_gate_post_color: Color = Color(1.0, 0.85, 0.2, 0.9)
 @export var depth_gate_text_color: Color = Color(1.0, 0.95, 0.5, 1.0)
 var _last_gate_depth: int = 0
+# Band-marker visual cue (iter 64, Phase A iter 3, user iter-60 Q5 priority 1
+# "interesting local map"). On band transition, flash band-themed color tint
+# + center label "ENTERING <BAND>" for ~2s. Makes ascent feel authored —
+# user remembers "I pushed into heavy_gate" not "the maze kept scrolling."
+const BAND_COLORS: Dictionary = {
+	"warmup": Color(0.6, 0.9, 0.6, 1.0),       # pale green — peaceful
+	"first_push": Color(1.0, 0.95, 0.5, 1.0),  # light yellow — caution
+	"heavy_gate": Color(1.0, 0.55, 0.2, 1.0),  # orange — danger
+	"rush": Color(1.0, 0.35, 0.35, 1.0),       # red — high pressure
+}
 
 var _player: Node2D
 var _camera: Camera2D
@@ -248,6 +258,7 @@ func _try_spawn() -> void:
 		print("[spawner] band ENTER %s at depth %d" % [band.name, _max_depth_reached])
 		_last_band_name = band.name
 		_band_first_spawn_pending = true
+		_spawn_band_marker(band.name)  # iter 64
 	# iter 27: per-band max_alive override
 	var band_cap: int = int(band.get("max_alive", max_enemies))
 	var cap_hit: bool = _enemies_alive >= band_cap
@@ -430,6 +441,54 @@ func _check_depth_gates() -> void:
 		return
 	_last_gate_depth = next_gate
 	_spawn_depth_gate(next_gate)
+
+
+# iter 64: band-marker HUD overlay on band transition. Brief tinted screen
+# flash + center label "ENTERING <BAND>" that fades. NOT spawned for the
+# initial warmup band (already there at start). Skip first transition.
+var _band_marker_count: int = 0
+
+
+func _spawn_band_marker(band_name: String) -> void:
+	# Skip the very first band-enter event (initial warmup at game start).
+	_band_marker_count += 1
+	if _band_marker_count <= 1:
+		return
+	var parent_node: Node = get_parent()
+	if parent_node == null or not is_instance_valid(parent_node):
+		return
+	var tint_color: Color = BAND_COLORS.get(band_name, Color(1.0, 1.0, 1.0, 1.0))
+	# Dedicated CanvasLayer above HUD (layer 10) for full-screen overlay
+	var canvas: CanvasLayer = CanvasLayer.new()
+	canvas.layer = 10
+	parent_node.add_child(canvas)
+	# Full-screen tint (alpha 0.18 starts, fades to 0 over 0.5s)
+	var tint: ColorRect = ColorRect.new()
+	tint.size = Vector2(320, 240)
+	tint.position = Vector2.ZERO
+	tint.color = Color(tint_color.r, tint_color.g, tint_color.b, 0.18)
+	tint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	canvas.add_child(tint)
+	# Center label
+	var label: Label = Label.new()
+	label.text = "ENTERING %s" % band_name.to_upper()
+	label.position = Vector2(96, 110)
+	label.size = Vector2(128, 20)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_color_override("font_color", tint_color)
+	label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	label.add_theme_constant_override("outline_size", 2)
+	canvas.add_child(label)
+	# Tween: tint fades over 0.5s; label visible 1.5s then fades to 0 over 0.5s; canvas frees after
+	var tween: Tween = canvas.create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(tint, "modulate:a", 0.0, 0.5)
+	tween.tween_property(label, "modulate:a", 1.0, 0.0)  # ensure visible at start
+	tween.chain()
+	tween.tween_interval(1.2)
+	tween.tween_property(label, "modulate:a", 0.0, 0.6)
+	tween.chain()
+	tween.tween_callback(canvas.queue_free)
 
 
 func _spawn_depth_gate(depth_rows: int) -> void:

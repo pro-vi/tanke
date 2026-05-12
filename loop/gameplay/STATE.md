@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 63 → 99) — MAP-FOCUSED per user iter-60 directive
-iteration: 63
-banded_biome: WIRED (warmup=playable.tres mix preserves baseline hash; first_push/heavy_gate/rush varied for gameplay depths beyond oracle window)
+phase: SPRINT (iter 64 → 99) — MAP-FOCUSED per user iter-60 directive
+iteration: 64
+banded_biome: WIRED + band-marker HUD overlays on transition (iter 64)
 sprint_authorization: "User directive iter 60: 'next playtest at ITER 99' + priority: local map > enemy types > feedback/polish > roguelite mechanics"
 sprint_complete_prior: yes (iter 39-60 sprint, score 20 → 32/50 incl iter-60 cite)
 last_completed_playtest_iter: 60 (user cited: Q4 routing decisions; Q5 map-first directive)

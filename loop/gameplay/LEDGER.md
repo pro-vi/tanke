@@ -4898,3 +4898,90 @@ When varied warmup was tried (config 1), `vert_structure_lift` jumped 2.63 → 3
 - Sprint 36 iters remain
 
 ---
+
+## Iter 064 — BUILD — Band-marker HUD overlays on transition (Phase A iter 3)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — visible at iter-99 playtest)
+
+### Trigger
+
+Phase A iter 3. User iter-60 Q5 priority 1: "interesting local map." Pro
+Consult 006 H4: "make ascent feel authored enough that the player
+remembers 'I pushed past 120m'." Iter 63 wired banded biome (terrain
+variance lives at depth 20+). Iter 64 adds VISIBLE TRANSITION events so
+player perceives entering a new band, not just "more tiles."
+
+### Code (scripts/Spawner.gd, ~+50 lines)
+
+New `BAND_COLORS` dict mapping band name → tint color:
+- warmup → pale green (peaceful)
+- first_push → light yellow (caution rising)
+- heavy_gate → orange (danger)
+- rush → red (high pressure)
+
+New `_band_marker_count` var (skips initial warmup-spawn marker).
+
+New `_spawn_band_marker(band_name)`:
+- Creates dedicated CanvasLayer at layer=10 (above HUD)
+- Full-screen 320×240 ColorRect tinted at alpha 0.18, fades to 0 over 0.5s
+- Centered Label "ENTERING <BAND>" with band-color font + black outline
+- Tween: tint fades 0.5s, label visible 1.2s then fades 0.6s
+- Auto-frees after sequence (queue_free callback)
+
+Called from existing band-transition site in `_try_spawn()` (where the
+print "band ENTER" already fires). Pairs structurally.
+
+### Visual flow
+
+1. Player ascends past depth 8 → enters first_push band
+2. Spawner detects via `band.name != _last_band_name`
+3. Calls `_spawn_band_marker("first_push")`
+4. Screen briefly tints yellow (0.18 alpha) + "ENTERING FIRST_PUSH" label
+   center
+5. Tint fades 0.5s. Label persists 1.2s then fades 0.6s. Total 2.3s event.
+6. CanvasLayer frees itself
+7. Player continues — they noticed the transition
+
+Same on depth 20 → heavy_gate (orange) and depth 40 → rush (red).
+
+### Skip-first logic
+
+`_band_marker_count` tracks fires. First detected transition (game start
+→ warmup) is skipped — player doesn't need to see "ENTERING WARMUP" at
+spawn. Effective: 3 transitions visible per run (warmup→first_push at
+depth 8, first_push→heavy_gate at 20, heavy_gate→rush at 40).
+
+### Why HUD overlay not world-static
+
+World-static landmarks (gate posts, iter 48) work for "where I've been"
+context. Band markers are "what I'm entering" — temporal, attention-
+grabbing. HUD overlay forces eyes-up moment. Matches the design intent.
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓ (iter 63 already wired biome)
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- Tween chain syntax valid (set_parallel + chain + tween_callback queue_free)
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd`
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 65 candidate: depth-gate post style differentiation per band (each
+  band's gates use band color). Composes with iter-48 gate visual.
+- 35 sprint iters remain
+
+---
