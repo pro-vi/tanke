@@ -6799,3 +6799,88 @@ Each band has visibly + mechanically distinct identity.
 - 8 sprint iters remain
 
 ---
+
+## Iter 092 — BUILD-prune — Visual budget pass (Legibility Lock iter 4)
+
+**Mode:** BUILD (prune — removing surface, not adding)
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — pruning shouldn't lift)
+
+### Pro Consult 008 directive
+
+"Iter 92: visual-budget pass. Remove or tone down any effect that
+competes with enemy ID: excessive band tint, pickup tint priority,
+milestone flash, camera shake, or repeated HUD noise."
+
+### Removals (dead code from iter-88 Speed cut)
+
+1. **scripts/Enemy.gd**: `_spawn_speed_pickup()` function deleted (~40 lines)
+2. **scripts/PlayerTank.gd**:
+   - `_speed_boost_timer` + `_speed_boost_multiplier` var declarations deleted
+   - `_physics_process` speed-boost timer tick block deleted
+   - `_physics_process` unified-tint speed-elif branch deleted
+   - Movement: `effective_speed = speed × multiplier` simplified to `speed × 1.0`
+   - `apply_speed_boost(d, m)` stub function deleted
+
+### Tone-downs
+
+3. **scripts/Spawner.gd**: `_kick_camera_for_band()` function deleted + its call site in `_spawn_band_marker()` removed
+   - Pro called out camera shake as competing-with-enemy-ID noise
+   - Reserves shake exclusively for iter-42 player-damage event (semantic anchor)
+4. **scripts/PlayerTank.gd**: depth-milestone flash peak scale 1.8 → **1.4**
+   - Less dramatic visual interrupt during ascent
+
+### Visual budget after pruning
+
+Remaining visual events:
+- Iter-19 player hit-flash (red modulate) — preserved (damage event)
+- Iter-21 enemy death yellow burst — preserved (kill event)
+- Iter-30 milestone flash (now 1.4 peak, band-themed) — toned down
+- Iter-38 Heavy AIM_FIRE red telegraph — preserved (vital signal)
+- Iter-41 bullet impact spark (yellow 3×3 0.08s) — preserved
+- Iter-42 player-damage camera shake — preserved (damage anchor)
+- Iter-43 death screen — preserved
+- Iter-49 HP bar + low-HP red — preserved
+- Iter-53 Heavy bullet orange tint — preserved
+- Iter-64 band-marker HUD overlay tint — preserved (no shake now)
+- Iter-65 themed gate posts — preserved
+- Iter-67 enemy color tint (Fast cyan) — preserved
+- Iter-71 death-screen typography — preserved
+- Iter-76 pulsing restart hint — preserved
+- Iter-77 milestone flash band color — preserved
+- Iter-82 shield pickup green visual — preserved
+- Iter-83 player shield blue tint — preserved
+- Iter-86 sprite scale variance — preserved
+
+Cut iter 92: ❌ Speed pickup, ❌ band-marker camera shake, ⬇️ milestone flash scale
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- All speed-related identifiers grep clean (no stragglers)
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd` (-40 lines, _spawn_speed_pickup deleted)
+- Modified: `scripts/PlayerTank.gd` (-15 lines, speed-boost state + apply_speed_boost stub deleted)
+- Modified: `scripts/Spawner.gd` (-14 lines, _kick_camera_for_band deleted + call removed)
+- Modified: `scripts/PlayerTank.gd` (milestone flash peak 1.8 → 1.4)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+Net code reduction: ~70 lines.
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 93 = playtest prompt 3Q reduction per Pro Consult 008
+- 7 sprint iters remain
+
+---

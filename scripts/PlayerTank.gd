@@ -5,12 +5,6 @@ signal hp_changed(new_hp: int, max_hp: int)
 signal died
 
 @export var speed: int = 32
-# iter 79: speed-boost roguelite pickup state. multiplier active for
-# _speed_boost_timer seconds.
-# iter 88 (Pro Consult 008 Legibility Lock): speed-boost mechanic REMOVED.
-# Kept var declarations as dead code for backward compat (never set non-default).
-var _speed_boost_timer: float = 0.0
-var _speed_boost_multiplier: float = 1.0
 # iter 82: shield-pickup invulnerability window. take_damage early-returns
 # while _shield_timer > 0.
 var _shield_timer: float = 0.0
@@ -84,23 +78,15 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if _iframe_timer > 0.0:
 		_iframe_timer -= delta
-	# iter 79: tick down speed-boost duration; expire when 0
-	if _speed_boost_timer > 0.0:
-		_speed_boost_timer -= delta
-		if _speed_boost_timer <= 0.0:
-			_speed_boost_multiplier = 1.0
-			_speed_boost_timer = 0.0
 	# iter 82: tick down shield invulnerability
 	if _shield_timer > 0.0:
 		_shield_timer -= delta
 		if _shield_timer < 0.0:
 			_shield_timer = 0.0
-	# iter 84: unified tint update with priority: shield > speed > white
+	# iter 84/92: unified tint update — shield > white (speed cut iter 88)
 	if sprite != null:
 		if _shield_timer > 0.0:
 			sprite.self_modulate = Color(0.7, 0.85, 1.0, 1.0)
-		elif _speed_boost_timer > 0.0:
-			sprite.self_modulate = Color(0.55, 0.95, 1.0, 1.0)
 		else:
 			sprite.self_modulate = Color(1, 1, 1, 1)
 
@@ -145,9 +131,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		sprite.stop()
 
-	# iter 79: apply speed boost if active
-	var effective_speed: float = float(speed) * _speed_boost_multiplier
-	velocity = input_vector * effective_speed
+	velocity = input_vector * float(speed)
 	sprite.set_dir_set(input_vector)
 
 	var collision: KinematicCollision2D = move_and_collide(velocity * delta)
@@ -204,11 +188,8 @@ func heal(amount: int) -> void:
 	_show_pickup_toast("HP+%d" % amount, Color(0.3, 0.95, 0.4, 1.0))
 
 
-# iter 79 → CUT iter 88 (Pro Consult 008 Legibility Lock): speed boost mechanic
-# removed. apply_speed_boost kept as no-op to avoid breaking any external
-# callers (none currently exist after iter-88 Enemy.gd revert).
-func apply_speed_boost(_duration: float, _multiplier: float) -> void:
-	pass
+# iter 79 → CUT iter 88 → DELETED iter 92 (Pro Consult 008 visual budget):
+# apply_speed_boost stub removed. Speed pickup was cut iter 88; stub had no callers.
 
 
 # iter 82 (Q5 priority 4): shield pickup grants brief invulnerability.
@@ -541,10 +522,11 @@ func _update_run_hud() -> void:
 func _flash_depth_milestone(d: int) -> void:
 	if _depth_label == null:
 		return
+	# iter 92 (visual budget): peak scale 1.8 → 1.4 (less dramatic flash)
 	var band_color: Color = _band_color_for_depth(d)
 	var tween: Tween = create_tween()
 	tween.set_parallel(true)
-	tween.tween_property(_depth_label, "scale", Vector2(1.8, 1.8), 0.12)
+	tween.tween_property(_depth_label, "scale", Vector2(1.4, 1.4), 0.12)
 	tween.tween_property(_depth_label, "modulate", band_color, 0.12)
 	tween.chain().set_parallel(true)
 	tween.tween_property(_depth_label, "scale", Vector2.ONE, 0.4)

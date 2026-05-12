@@ -466,9 +466,8 @@ func _spawn_band_marker(band_name: String) -> void:
 	if parent_node == null or not is_instance_valid(parent_node):
 		return
 	var tint_color: Color = BAND_COLORS.get(band_name, Color(1.0, 1.0, 1.0, 1.0))
-	# iter 75: small camera kick for tactile band-transition feel. Independent
-	# of iter-42 player-damage shake (smaller magnitude, shorter duration).
-	_kick_camera_for_band(parent_node)
+	# iter 92 (Pro Consult 008 visual budget): band-marker camera shake REMOVED.
+	# Reserves shake for the damage event (iter 42) — meaningful semantic anchor.
 	# Dedicated CanvasLayer above HUD (layer 10) for full-screen overlay
 	var canvas: CanvasLayer = CanvasLayer.new()
 	canvas.layer = 10
@@ -502,19 +501,8 @@ func _spawn_band_marker(band_name: String) -> void:
 	tween.tween_callback(canvas.queue_free)
 
 
-func _kick_camera_for_band(level_root: Node) -> void:
-	var camera: Camera2D = level_root.get_node_or_null("Camera2D") as Camera2D
-	if camera == null:
-		return
-	# 3 small randomized kicks, decay 2px → 0 over 0.15s, snap to zero
-	var tween: Tween = camera.create_tween()
-	var step_dur: float = 0.15 / 3.0
-	for i in 3:
-		var t: float = float(i) / 2.0
-		var amp: float = 2.0 * (1.0 - t)
-		var off: Vector2 = Vector2(randf_range(-amp, amp), randf_range(-amp, amp))
-		tween.tween_property(camera, "offset", off, step_dur)
-	tween.tween_property(camera, "offset", Vector2.ZERO, 0.04)
+# iter 92 (visual budget): _kick_camera_for_band removed per Pro Consult 008
+# — reduces "noise artifact" surface; only damage events shake camera.
 
 
 func _spawn_depth_gate(depth_rows: int) -> void:

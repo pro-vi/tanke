@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 91 → 99) — LEGIBILITY LOCK
-iteration: 91
-consult_008: ADOPTED. Mechanical band distinction COMPLETE (iter 89-91). Next: iter 92 visual budget, iter 93 playtest 3Q, iter 94 freeze.
+phase: SPRINT (iter 92 → 99) — LEGIBILITY LOCK
+iteration: 92
+consult_008: ADOPTED. iter 92 visual budget pass complete. Next: iter 93 playtest 3Q, iter 94 freeze.
 final_prep_window: iter 95-98 reserved for META/AUDIT/final-look before iter 99 PLAYTEST
 hash_anchor_drift: f873ae60... (iter 0-65, warmup=first_push=playable) → 8224ebda... (iter 66+, first_push has +0.04 brick variance). Multi-seed playable preserved.
 sprint_authorization: "User directive iter 60: 'next playtest at ITER 99' + priority: local map > enemy types > feedback/polish > roguelite mechanics"

@@ -559,44 +559,8 @@ func _spawn_hp_pickup(parent_node: Node) -> void:
 	parent_node.add_child(pickup)
 
 
-# iter 79: Speed-boost pickup spawned at Fast death position. Same framework
-# as HP pickup but cyan (matches Fast sprite tint) + diagonal arrows visual.
-# Player walks over → +50% speed for 5s.
-func _spawn_speed_pickup(parent_node: Node) -> void:
-	var pickup: Area2D = Area2D.new()
-	pickup.collision_layer = 0
-	pickup.collision_mask = 2
-	pickup.global_position = global_position
-	pickup.z_index = 45
-	# Cyan ">>>" chevron visual via 3 small ColorRect bars at angle
-	var visual: ColorRect = ColorRect.new()
-	visual.size = Vector2(8, 8)
-	visual.color = Color(0.55, 0.95, 1.0, 1.0)  # cyan (matches Fast tint iter 67)
-	visual.position = Vector2(-4, -4)
-	pickup.add_child(visual)
-	# Smaller inner darker square to add visual depth
-	var inner: ColorRect = ColorRect.new()
-	inner.size = Vector2(4, 4)
-	inner.color = Color(0.2, 0.6, 0.8, 1.0)
-	inner.position = Vector2(-2, -2)
-	pickup.add_child(inner)
-	var shape: CollisionShape2D = CollisionShape2D.new()
-	var rs: RectangleShape2D = RectangleShape2D.new()
-	rs.size = Vector2(8, 8)
-	shape.shape = rs
-	pickup.add_child(shape)
-	pickup.body_entered.connect(func(body):
-		if body.has_method("apply_speed_boost"):
-			body.apply_speed_boost(5.0, 1.5)
-			pickup.queue_free()
-	)
-	var timer: Timer = Timer.new()
-	timer.wait_time = 8.0
-	timer.one_shot = true
-	timer.autostart = true
-	timer.timeout.connect(pickup.queue_free)
-	pickup.add_child(timer)
-	parent_node.add_child(pickup)
+# iter 92 (visual budget): _spawn_speed_pickup removed. Speed pickup was
+# cut iter 88 per Pro Consult 008. Function was dead code after iter 88.
 
 
 # iter 82: Shield pickup spawned at Light death position. Light 10% drop
