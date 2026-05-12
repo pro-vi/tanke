@@ -5499,3 +5499,54 @@ asset pipeline. Out of scope for current loop.
 - 28 sprint iters remain
 
 ---
+
+## Iter 072 — BUILD — HUD label outline parity (F011 cont)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged)
+
+### Trigger
+
+Iter-71 added outline to death label. Iter-72 brings HP/DEPTH/TIME
+labels in line: black outline + size 2. Readable against any terrain
+background (grass, brick, steel, water tile mixes).
+
+### Code (scripts/PlayerTank.gd _setup_hud)
+
+Three labels get `font_outline_color = Color(0, 0, 0, 1)` +
+`outline_size = 2`:
+- `_hp_label` (top-left, HP X/Y)
+- `_depth_label` (top-right, DEPTH N)
+- `_time_label` (top-right below depth, TIME M:SS)
+
+No font_size change — small text stays small for HUD density.
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd` (6 lines: 3 labels × 2 overrides each)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 73 candidate: small Phase D-ish work. Sprint has 27 iters remaining
+  which is a lot of runway. Could refactor Spawner.gd (too long now) or
+  add a small playtest-deferred candidate (best-time tracking in
+  stats.cfg alongside best-depth). Best-time is mild — easy ship + iter-99
+  cite path for crit 10 anchor 4.
+- 27 sprint iters remain
+
+---

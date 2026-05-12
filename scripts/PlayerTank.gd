@@ -329,6 +329,8 @@ func _setup_hud() -> void:
 	_hp_label.position = Vector2(4, 10)  # iter 49: moved below bar
 	_hp_label.text = "HP %d/%d" % [hp, max_hp]
 	_hp_label.add_theme_color_override("font_color", Color.WHITE)
+	_hp_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	_hp_label.add_theme_constant_override("outline_size", 2)
 	canvas.add_child(_hp_label)
 	# iter 71 (F011 typography): dark semi-transparent backing panel behind
 	# death label improves readability against any terrain. Larger font_size
@@ -359,12 +361,16 @@ func _setup_hud() -> void:
 	_depth_label.position = Vector2(232, 4)
 	_depth_label.text = "DEPTH 0"
 	_depth_label.add_theme_color_override("font_color", Color.WHITE)
+	_depth_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	_depth_label.add_theme_constant_override("outline_size", 2)
 	canvas.add_child(_depth_label)
 	_time_label = Label.new()
 	_time_label.name = "TimeLabel"
 	_time_label.position = Vector2(232, 16)
 	_time_label.text = "TIME 0:00"
 	_time_label.add_theme_color_override("font_color", Color.WHITE)
+	_time_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	_time_label.add_theme_constant_override("outline_size", 2)
 	canvas.add_child(_time_label)
 	add_child(canvas)
 	hp_changed.connect(_on_hp_changed_hud)
