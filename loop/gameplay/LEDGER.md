@@ -5828,3 +5828,72 @@ Aligned with Q3 directive "make it pretty not focusing on manipulation."
 - 22 sprint iters remain
 
 ---
+
+## Iter 077 — BUILD — Depth-milestone flash band-themed color
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — visual consistency)
+
+### Pivot rationale
+
+Iter 76 schedule note suggested rush.tres multi-seed verification, but
+rush band is depth 40+ which oracle (30-row test window) doesn't reach.
+Without playtest data, can't meaningfully verify. Pivoting to small
+consistency win: band-themed milestone flash.
+
+### Change (scripts/PlayerTank.gd `_flash_depth_milestone`)
+
+Was: fixed green flash `(0.4, 1.0, 0.4, 1.0)` on every depth multiple of 10
+Now: band-themed color via `_band_color_for_depth(depth)`:
+- depth < 8 (warmup): green
+- depth < 20 (first_push): yellow
+- depth < 40 (heavy_gate): orange
+- depth >= 40 (rush): red
+
+New helper `_band_color_for_depth(d)` mirrors Spawner's logic from iter 65
+(kept inline rather than cross-script coupling).
+
+### Visual story
+
+Player ascending past depth 10/20/30/40/50:
+- d=10: yellow flash (in first_push band)
+- d=20: still yellow (boundary)
+- d=30: orange flash (heavy_gate band)
+- d=40: orange (boundary)
+- d=50: red flash (rush band)
+
+Composes with:
+- Iter-64 band-marker HUD overlays
+- Iter-65 band-themed gate posts
+- Iter-75 band-marker camera shake
+- Iter-77 (new) milestone flash color
+
+All four band-derived visual elements share the BAND_COLORS palette.
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd` (+~10 lines helper, signature param renamed)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 78 candidate: review what other small wins remain. Honestly the
+  polish layer is saturated. Could pivot to META audit again, or BUILD
+  micro-improvement.
+- 21 sprint iters remain
+
+---

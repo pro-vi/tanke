@@ -457,16 +457,31 @@ func _update_run_hud() -> void:
 # iter 30 (Pro Consult 005 META — "readable upward intent"): when player
 # crosses a depth milestone (multiple of depth_milestone_step), briefly
 # scale + recolor the DEPTH label. Cues the climb visually.
-func _flash_depth_milestone(_depth: int) -> void:
+# iter 77: flash color now band-themed (matches iter-64 band markers +
+# iter-65 themed gates). Composes with other visual band cues.
+func _flash_depth_milestone(d: int) -> void:
 	if _depth_label == null:
 		return
+	var band_color: Color = _band_color_for_depth(d)
 	var tween: Tween = create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(_depth_label, "scale", Vector2(1.8, 1.8), 0.12)
-	tween.tween_property(_depth_label, "modulate", Color(0.4, 1.0, 0.4, 1.0), 0.12)
+	tween.tween_property(_depth_label, "modulate", band_color, 0.12)
 	tween.chain().set_parallel(true)
 	tween.tween_property(_depth_label, "scale", Vector2.ONE, 0.4)
 	tween.tween_property(_depth_label, "modulate", Color.WHITE, 0.4)
+
+
+# iter 77: maps depth → band color matching Spawner._band_color_for_depth.
+# Kept inline (small fn) to avoid cross-script coupling for visual logic.
+func _band_color_for_depth(d: int) -> Color:
+	if d < 8:
+		return Color(0.6, 0.9, 0.6, 1.0)       # warmup green
+	if d < 20:
+		return Color(1.0, 0.95, 0.5, 1.0)      # first_push yellow
+	if d < 40:
+		return Color(1.0, 0.55, 0.2, 1.0)      # heavy_gate orange
+	return Color(1.0, 0.35, 0.35, 1.0)         # rush red
 
 
 # BC forest convention: tank is concealed (low alpha) when standing on a grass

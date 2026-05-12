@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 76 → 99)
-iteration: 76
-sprint_progress: 15 BUILD + 1 META since iter 62. Iter 76 pulsing restart hint.
+phase: SPRINT (iter 77 → 99)
+iteration: 77
+sprint_progress: 16 BUILD + 1 META since iter 62. Iter 77 milestone flash band-themed.
 final_prep_window: iter 95-98 reserved for META/AUDIT/final-look before iter 99 PLAYTEST
 hash_anchor_drift: f873ae60... (iter 0-65, warmup=first_push=playable) → 8224ebda... (iter 66+, first_push has +0.04 brick variance). Multi-seed playable preserved.
 sprint_authorization: "User directive iter 60: 'next playtest at ITER 99' + priority: local map > enemy types > feedback/polish > roguelite mechanics"
