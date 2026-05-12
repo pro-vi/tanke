@@ -6953,3 +6953,75 @@ Total best-case: 32 → 35/50.
 - 6 sprint iters remain (94-98 buffer + 99 PLAYTEST)
 
 ---
+
+## Iter 094 — META — FREEZE (Legibility Lock final iter)
+
+**Mode:** META (freeze per Pro Consult 008)
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — freeze)
+
+### Pro Consult 008 directive
+
+"Iter 94: freeze. Only bug fixes after."
+
+### State verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- Oracle on seed 42:
+  - **tile_hash: `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291`** (new anchor — drifted from `8224ebda…` due to iter-89/90 band-warmup + first_push tuning)
+  - playable: True, rc=29
+  - reachable_cells: 676 (down slightly from 684 due to first_push brick increase)
+  - cc_count=51, vert_structure_lift=2.141
+
+### Hash drift log
+
+- Iter 0-65: `f873ae60ee3c420c57cdef5762acdad857b1a763ec50b76db80971ef4503e797` (baseline)
+- Iter 66+: `8224ebda441304d1…` (first_push brick 0.18 → 0.22)
+- Iter 89+: `23d6a2ec3bf2821f…` (first_push brick 0.22 → 0.28; warmup empty 0.55 → 0.58; warmup water 0.08 → 0.07)
+
+All hash drift was intentional per Pro Consult 008 mechanical band distinction work. Playability gate preserved (rc >= 10 on all baseline-playable seeds).
+
+### FREEZE rule
+
+Per Pro Consult 008: only bug fixes from this iter onward. No new features.
+Iter 95-98 reserved for:
+- Final METAs / AUDITs
+- Iter-99 prompt last-look
+- Build verification
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Sprint accomplishments since iter 61 (final count)
+
+29 BUILD + 4 META + 3 AUDIT = 36 iters of work.
+
+Score progression: 30 (iter 50 AUDIT pre-playtest) → 32 (iter 60 Q4 cite) → 32 (iter 94 freeze, no further [FEEL] cites).
+
+Pending iter-99 cite gates (3 questions):
+- Crit 4 anchor 3 → 3 if Q3 "map sections feel different"
+- Crit 5 anchor 4 → 4 if Q2 "pickups helped" 
+- Crit 6 anchor 4 → 4 if Q1 "could tell types apart"
+
+Best-case post iter-99: 32 → 35/50 (+3 from cite gates).
+
+### Files touched
+
+- Modified: `loop/gameplay/{STATE,LEDGER}.md` only
+- No code changes
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 95 = META final-prep (verify iter-99-playtest-prompt-draft.md ready)
+- Iter 96-97 = buffer (no-op or final tweaks if bugs surface)
+- Iter 98 = pre-fire final-look
+- Iter 99 = PLAYTEST fires
+- 5 sprint iters remain
+
+---
