@@ -7052,3 +7052,16 @@ Best-case post iter-99: 32 → 35/50 (+3 from cite gates).
 - 4 sprint iters remain
 
 ---
+
+## Iter 096 — META — Buffer (no-op, FREEZE)
+
+**Mode:** META (buffer)
+**Date:** 2026-05-12
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (frozen)
+
+Build verified. No changes.
+
+3 sprint iters remain.
+
+---
