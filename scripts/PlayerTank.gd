@@ -161,6 +161,15 @@ func take_damage(amount: int) -> void:
 		_start_screen_shake()
 
 
+# iter 78 (Q5 priority 4): heal called by HP pickup overlap. Clamped to max_hp.
+# No effect if already dead.
+func heal(amount: int) -> void:
+	if _dead or amount <= 0:
+		return
+	hp = mini(hp + amount, max_hp)
+	hp_changed.emit(hp, max_hp)
+
+
 # Visual damage cue (iter 19): bright red pulse + alternating alpha blink
 # during the iframe window. Suppresses forest_hide for the duration so the
 # flash isn't masked by grass concealment.

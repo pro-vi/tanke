@@ -500,6 +500,52 @@ func _spawn_death_effect() -> void:
 	tween.tween_property(burst, "modulate:a", 0.0, 0.3)
 	tween.tween_property(burst, "scale", Vector2(1.6, 1.6), 0.3)
 	tween.chain().tween_callback(burst.queue_free)
+	# iter 78 (Q5 priority 4 "explore roguelite mechanics"): Heavy 25% drop
+	# chance for HP pickup. Player walking over → +1 HP (clamped to max_hp).
+	if enemy_type == "Heavy" and randf() < 0.25:
+		_spawn_hp_pickup(parent_node)
+
+
+# iter 78: HP pickup spawned at Heavy death position. Inline Area2D (no
+# separate scene). Despawns after 8s. Adds tactical decision: detour for
+# HP after defeating Heavy, or push past.
+func _spawn_hp_pickup(parent_node: Node) -> void:
+	var pickup: Area2D = Area2D.new()
+	pickup.collision_layer = 0
+	pickup.collision_mask = 2  # player layer
+	pickup.global_position = global_position
+	pickup.z_index = 45
+	# Green plus-symbol visual: 2 perpendicular ColorRects (horiz + vert bars)
+	var horiz: ColorRect = ColorRect.new()
+	horiz.size = Vector2(8, 3)
+	horiz.color = Color(0.3, 0.95, 0.4, 1.0)
+	horiz.position = Vector2(-4, -1.5)
+	pickup.add_child(horiz)
+	var vert: ColorRect = ColorRect.new()
+	vert.size = Vector2(3, 8)
+	vert.color = Color(0.3, 0.95, 0.4, 1.0)
+	vert.position = Vector2(-1.5, -4)
+	pickup.add_child(vert)
+	# Collision shape (8x8 square — covers the plus extent)
+	var shape: CollisionShape2D = CollisionShape2D.new()
+	var rs: RectangleShape2D = RectangleShape2D.new()
+	rs.size = Vector2(8, 8)
+	shape.shape = rs
+	pickup.add_child(shape)
+	# body_entered: heal player, free pickup
+	pickup.body_entered.connect(func(body):
+		if body.has_method("heal"):
+			body.heal(1)
+			pickup.queue_free()
+	)
+	# 8s despawn timer
+	var timer: Timer = Timer.new()
+	timer.wait_time = 8.0
+	timer.one_shot = true
+	timer.autostart = true
+	timer.timeout.connect(pickup.queue_free)
+	pickup.add_child(timer)
+	parent_node.add_child(pickup)
 
 
 func _choose_direction_toward_player() -> void:

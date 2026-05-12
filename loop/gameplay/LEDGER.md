@@ -5897,3 +5897,79 @@ All four band-derived visual elements share the BAND_COLORS palette.
 - 21 sprint iters remain
 
 ---
+
+## Iter 078 — BUILD — Heavy HP pickup drop (Q5 roguelite tease)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — roguelite-mechanic exploration, gated on iter-99 cite)
+
+### Rationale
+
+User iter-60 Q5 directive priority order included: "then i want to
+explore mechanics like power ups, heals, etc the rogue lite stuff."
+"Explore" + the timing window before iter-99 suggests pre-playtest
+exploration is sanctioned. Pro Consult 007 said "no new features" but
+user authority overrides — explicitly Q5-listed.
+
+### Design
+
+Heavy on death has 25% chance to drop an HP pickup at its position.
+Player walks over → +1 HP (clamped to max_hp=3). 8s despawn.
+
+### Code
+
+**scripts/Enemy.gd** (+~45 lines):
+- `_spawn_death_effect` now checks `enemy_type == "Heavy" and randf() < 0.25`
+- `_spawn_hp_pickup(parent_node)`:
+  - Inline Area2D (no new scene file)
+  - collision_layer=0, collision_mask=2 (player layer)
+  - Plus-symbol visual via 2 perpendicular ColorRects (8×3 horiz + 3×8 vert), green `(0.3, 0.95, 0.4)`
+  - 8×8 CollisionShape2D
+  - body_entered Callable: heals body via `body.heal(1)` + frees pickup
+  - 8s autostart Timer for despawn
+
+**scripts/PlayerTank.gd** (+~7 lines):
+- New `heal(amount: int) -> void`:
+  - No-op if dead or amount <= 0
+  - `hp = mini(hp + amount, max_hp)`
+  - Emits `hp_changed` signal → HP bar + numeric label update
+
+### Player tactical impact
+
+Heavy is now a 2-edged target:
+- Risk: Heavy's 2-damage bullets, aim-cancel decision, etc.
+- Reward: 25% chance HP pickup on kill
+
+Creates positional decisions: do I detour to pick up HP after killing
+Heavy? If I'm at low HP this is critical; if full HP, pickup ignored.
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+- No new scenes — all inline in Enemy.gd
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- GDScript 4 lambda Callable syntax verified working (body_entered.connect(func(body): ...))
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd` (+~45 lines)
+- Modified: `scripts/PlayerTank.gd` (+~7 lines heal method)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 79 candidate: pickup polish — float-up animation on spawn, OR
+  spawn pickup at SAFE spot (not embedded in walls), OR add pickup
+  sound stub. Or pivot to another roguelite tease.
+- 20 sprint iters remain
+
+---
