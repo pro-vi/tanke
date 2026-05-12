@@ -76,8 +76,8 @@ const DEPTH_BANDS: Array = [
 		"name": "warmup",
 		"depth_max": 8,
 		"type_weights": {"Light": 1.0, "Heavy": 0.0, "Fast": 0.0},
-		"interval_mult": 1.25,
-		"max_alive": 4,  # onboarding density
+		"interval_mult": 1.5,  # iter 90: slower spawn pace for onboarding
+		"max_alive": 3,  # iter 90: even sparser concurrent threats
 		"guarantee_first_type": null,
 	},
 	{
@@ -99,10 +99,10 @@ const DEPTH_BANDS: Array = [
 	{
 		"name": "rush",
 		"depth_max": 9999,
-		"type_weights": {"Light": 0.25, "Heavy": 0.15, "Fast": 0.6},  # iter 40: Fast-dominant harassment phase
-		"interval_mult": 0.7,
-		"max_alive": 16,
-		"guarantee_first_type": "Fast",  # iter 40: signal the rush phase with harassment, not lane-invader
+		"type_weights": {"Light": 0.2, "Heavy": 0.1, "Fast": 0.7},  # iter 90: more Fast-dominant chaos
+		"interval_mult": 0.6,  # iter 90: faster cadence — more enemies on screen
+		"max_alive": 18,  # iter 90: higher cap for chaos
+		"guarantee_first_type": "Fast",
 	},
 ]
 

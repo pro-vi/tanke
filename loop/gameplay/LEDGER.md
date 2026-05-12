@@ -6657,3 +6657,90 @@ Band weight + interval + max_alive changes don't impact hash.
 - 10 sprint iters remain
 
 ---
+
+## Iter 090 — BUILD-tune — Warmup sparser + rush more chaos (Legibility Lock iter 2)
+
+**Mode:** BUILD (tune)
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged)
+
+### Warmup band (sparser/readable per Pro)
+
+First attempt: empty 0.55→0.62, brick 0.18→0.14, merge 0.40→0.45. Multi-seed
+test BROKE seeds 10 and 3 (T→F). Reverted.
+
+Final tune: empty 0.55→0.58, brick 0.18→0.16, water 0.08→0.07. Lighter
+tune preserves all 10 seeds playable; seed 100 actually IMPROVED F→T.
+
+Spawner warmup band:
+- interval_mult 1.25 → **1.5** (even slower spawn cadence)
+- max_alive 4 → **3** (sparser concurrent threats)
+
+Warmup now genuinely feels like "onboarding": more open terrain + slower
+spawn + lower density. Player learns 4-dir movement + shooting against
+1-2 enemies at a time.
+
+### Rush band (Fast-dominant chaos per Pro)
+
+Spawner rush band:
+- Light weight 0.25 → **0.20**
+- Heavy weight 0.15 → **0.10**
+- Fast weight 0.6 → **0.70**
+- interval_mult 0.7 → **0.6** (faster spawn)
+- max_alive 16 → **18** (more concurrent)
+
+Rush phase at depth 40+ is now visibly Fast-dominant — 70% of spawns
+are continuous-fire harassers, lots on screen simultaneously.
+
+### Multi-seed playability (final state)
+
+10-seed sweep, warmup lighter tune + Spawner changes (Spawner doesn't
+affect oracle):
+
+| Seed | Result |
+|------|--------|
+| 42 | T rc=29 |
+| 10 | T rc=29 |
+| 100 | **T rc=11** (was F rc=9) — improved! |
+| 1000 | T rc=29 |
+| 9999 | T rc=29 |
+| 12345 | T rc=13 (was 11) — improved |
+| 7 | T rc=25 |
+| 3 | T rc=29 |
+| 999 | T rc=29 |
+| 555 | T rc=29 |
+
+Net: 2 partial improvements (seed 100 + 12345), 8 unchanged.
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+- band-warmup.tres and Spawner.gd are gameplay layer (sanctioned)
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- 10-seed sweep clean (no regressions, 2 improvements)
+
+### Files touched
+
+- Modified: `configs/band-warmup.tres` (4 fields)
+- Modified: `scripts/Spawner.gd` (warmup + rush band dicts)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 91 candidate: Legibility Lock iter 3 — band-marker enemy
+  guarantee per Pro ("rush should visibly favor Fast/light chaos") —
+  ensure first spawn after entering rush is Fast (already true via
+  guarantee_first_type), but possibly add "purge non-Fast on band enter"
+  or other affordance. OR Heavy_gate has guarantee_first_type=Heavy
+  already.
+- 9 sprint iters remain
+
+---

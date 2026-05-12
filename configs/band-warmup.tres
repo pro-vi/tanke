@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1")
 merge_probability = 0.40
-empty_weight = 0.55
-brick_weight = 0.18
+empty_weight = 0.58
+brick_weight = 0.16
 steel_weight = 0.07
 grass_weight = 0.12
-water_weight = 0.08
+water_weight = 0.07
