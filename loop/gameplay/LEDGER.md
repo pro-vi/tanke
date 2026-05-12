@@ -6455,3 +6455,34 @@ Player now has 3 axes for distinguishing Light/Fast/Heavy:
 - 13 sprint iters remain
 
 ---
+
+## Iter 087 — CONSULT — Pre-emptive late-sprint check (Consult 008 PENDING)
+
+**Mode:** CONSULT
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged)
+
+### Trigger
+
+Planned iter 96 per iter-74 META roadmap. Firing iter 87 (9 iters early)
+to leave runway to act on findings. Sprint surface is saturated; Pro
+input is highest-value use of remaining iters.
+
+### Prompt
+
+Four hypotheses:
+- H1: pickup-mechanic-overload risk
+- H2: combinatorial complexity overwhelms first-time user
+- H3: map priority unmet at algorithm level (wrapper-only)
+- H4: best use of 12 remaining iters
+
+Fire-and-forget, key `tanke-iter-87-consult-late-sprint`.
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 88 reads Pro response, branches per recommendation
+- 12 sprint iters remain
+
+---

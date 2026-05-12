@@ -561,3 +561,25 @@ No new gameplay features iter 56-59. Narrow tuning pass:
 4. **"Procedural generation is becoming a hiding place"** — Pro's H4 sharp critique. Substrate freeze is real, but I can tune around it (landmark cadence, encounter pacing). Future iter aspiration.
 
 ---
+
+## Consult 008 — Iter 87 — GPT-Pro extended thinking — LATE-SPRINT CHECK
+
+**Date:** 2026-05-11
+**Trigger:** Pre-emptive late-sprint pulse (planned iter 96 per iter-74 META, fired iter 87 to leave time to act on findings).
+**Tab key:** `tanke-iter-87-consult-late-sprint`
+**Mode:** `extended-pro` fire-and-forget
+
+### Hypotheses
+
+H1: 3 pickup mechanics overcomplicate combat decision space
+H2: Sprint pattern of small ships → combinatorial complexity overwhelms iter-99 user
+H3: Map priority addressed via wrapper-around-Eller's, not algorithm. Risk: "still samey" cite at iter 99.
+H4: 12 iters remain. Best use: (a) playtest prompt META, (b) one more substantive ship, (c) no-op, (d) other.
+
+Asked for breaks/holds per H + recommendation for iter 87-94 (8 iters before iter 95 final-prep window).
+
+### Status
+
+PENDING (fired iter 87, response expected iter 88).
+
+---
