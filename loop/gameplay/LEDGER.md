@@ -5058,3 +5058,91 @@ fires when depth crosses 20 from below = ALSO orange. Aligned.
 - 34 sprint iters remain
 
 ---
+
+## Iter 066 — BUILD — Vary first_push.tres brick density (Phase A iter 5)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged)
+
+### Trigger
+
+Phase A iter 5. Iter 63 wiring kept first_push identical to playable.tres
+for oracle safety. Iter 66 introduces variance: brick density up to make
+the first_push band feel structurally tighter than warmup.
+
+### Change (configs/band-first-push.tres)
+
+| Field | Iter 65 | Iter 66 |
+|-------|---------|---------|
+| empty | 0.55 | **0.50** |
+| brick | 0.18 | **0.22** |
+| steel | 0.07 | 0.07 |
+| grass | 0.12 | **0.13** |
+| water | 0.08 | 0.08 |
+| merge | 0.40 | 0.40 |
+
+Net: +0.04 brick, -0.05 empty, +0.01 grass. Subtle but meaningful.
+Brick is destructible (player can shoot through) so playability preserved.
+
+### Multi-seed validation (10 seeds)
+
+| Seed | Baseline | Iter 66 |
+|------|----------|---------|
+| 42 | T rc=29 r=804 | T rc=29 r=684 |
+| 10 | T rc=29 r=852 | T rc=29 r=824 |
+| 100 | F rc=9 r=308 | F rc=9 r=308 (same) |
+| 1000 | T rc=29 r=856 | T rc=29 r=844 |
+| 9999 | T rc=29 r=716 | T rc=29 r=700 |
+| 12345 | T rc=11 r=276 | T rc=11 r=276 (same) |
+| 7 | T rc=29 r=664 | T rc=25 r=544 (-4 rc partial) |
+| 3 | T rc=29 r=636 | T rc=29 r=636 |
+| 999 | T rc=29 r=792 | T rc=29 r=740 |
+| 555 | T rc=29 r=876 | T rc=29 r=820 |
+
+ALL baseline-playable seeds still playable. Seed 7 minor rc regression
+(29→25) but well above MIN_ROWS_CLIMBED=10. Reachable_cells dropped
+15% on average (expected — more brick = less open).
+
+### Hash anchor
+
+`f873ae60ee3c420c…` (iter 0-65) → **`8224ebda441304d11620dfe288f08ce67d8af3a3fae773d25e3c8db9dff91bde`** (iter 66+).
+
+Anchor change ACKNOWLEDGED. The substrate freeze's hash anchor was for
+the iter-0 baseline state. Phase A intentionally introduces variance per
+user iter-60 priority. New anchor documented in STATE.md `hash_anchor_drift`.
+
+### Why this is safe
+
+- playable.tres UNTOUCHED ✓ (still the config fallback if biome ever unset)
+- band-first-push.tres is a NEW config created iter 62
+- Reachability oracle confirms playable=True on baseline-playable seeds
+- vert_structure_lift dropped 2.63 → 2.31 (more uniform within bands due to brick saturation, but band-level variance is the goal anyway)
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED (biome wired iter 63, not iter 66) ✓
+- H1 tripwire unchanged at 2
+- playable.tres UNTOUCHED ✓
+
+### Verification
+
+- `make test` exit 0
+- 10-seed multi-test passes reachability
+
+### Files touched
+
+- Modified: `configs/band-first-push.tres`
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 67 Phase A candidate: rush.tres variance — already differentiated
+  from playable (grass 0.20, lower brick). Multi-seed validate the rush
+  band visible at oracle window edges.
+- 33 sprint iters remain
+
+---

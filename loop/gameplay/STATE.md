@@ -23,9 +23,10 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 65 → 99) — MAP-FOCUSED per user iter-60 directive
-iteration: 65
-banded_biome: WIRED + band-marker HUD + band-themed gate posts (iter 65)
+phase: SPRINT (iter 66 → 99) — MAP-FOCUSED per user iter-60 directive
+iteration: 66
+banded_biome: WIRED + variances (warmup=baseline, first_push=brick-heavy iter 66, heavy_gate=steel-corridors, rush=grass-open)
+hash_anchor_drift: f873ae60... (iter 0-65, warmup=first_push=playable) → 8224ebda... (iter 66+, first_push has +0.04 brick variance). Multi-seed playable preserved.
 sprint_authorization: "User directive iter 60: 'next playtest at ITER 99' + priority: local map > enemy types > feedback/polish > roguelite mechanics"
 sprint_complete_prior: yes (iter 39-60 sprint, score 20 → 32/50 incl iter-60 cite)
 last_completed_playtest_iter: 60 (user cited: Q4 routing decisions; Q5 map-first directive)
