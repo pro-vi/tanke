@@ -7025,3 +7025,30 @@ Best-case post iter-99: 32 → 35/50 (+3 from cite gates).
 - 5 sprint iters remain
 
 ---
+
+## Iter 095 — META — Final-prep verification (no-op)
+
+**Mode:** META (final-prep verification, FREEZE in effect)
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — frozen)
+
+### Verifications
+
+- `make test` exit 0 ✓
+- `godot --headless --quit-after 60` exit 0 ✓
+- iter-99-playtest-prompt-draft.md re-reviewed: current with iter-92 state, 3Q format correct
+
+### Files touched
+
+- Modified: `loop/gameplay/{STATE,LEDGER}.md` only (no code)
+
+### Schedule
+
+- ScheduleWakeup 1200s (20min — frozen, no urgent work)
+- Iter 96-97: continued buffer
+- Iter 98: pre-fire final-look
+- Iter 99: PLAYTEST fires
+- 4 sprint iters remain
+
+---

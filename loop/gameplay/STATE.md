@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 94 → 99) — FREEZE
-iteration: 94
-consult_008: ADOPTED + LEGIBILITY LOCK COMPLETE. Iter 94 freeze locked. iter 95-98 final-prep buffer.
+phase: SPRINT (iter 95 → 99) — FREEZE, final-prep buffer
+iteration: 95
+consult_008: ADOPTED. FREEZE in effect since iter 94. iter 95 META final-prep verified.
 hash_anchor: 23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291 (iter 89-90 band tuning)
 final_prep_window: iter 95-98 reserved for META/AUDIT/final-look before iter 99 PLAYTEST
 hash_anchor_drift: f873ae60... (iter 0-65, warmup=first_push=playable) → 8224ebda... (iter 66+, first_push has +0.04 brick variance). Multi-seed playable preserved.
