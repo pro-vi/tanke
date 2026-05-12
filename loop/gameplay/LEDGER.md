@@ -4025,3 +4025,75 @@ Unchanged at 30/50. `[STRUCTURE-DEFERRED → iter 60]` for:
 - 7 sprint iters remaining
 
 ---
+
+## Iter 053 — BUILD — Heavy bullet visual differentiation (orange tint)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 30/50 (unchanged — feedback completion for iter-52 deferred cite)
+
+### Diagnose
+
+Iter 52 shipped Heavy=2dmg / Light/Fast=1dmg. All bullets render identically
+— player can't visually distinguish high-damage threats mid-air. Iter 53
+adds orange tint to damage≥2 bullets so iter-52's mechanical variation is
+SEEN.
+
+### Code (scripts/Bullet.gd, ~+5 lines)
+
+`start()` now applies orange modulate `Color(1.0, 0.5, 0.3, 1.0)` to
+Sprite2D when `damage >= 2`. Default (damage=1) keeps white.
+
+Player bullets default damage=1 (PlayerTank doesn't override) — render
+white.
+
+### Composing layer (player feedback budget)
+
+| Element | Iter | Purpose |
+|---------|------|---------|
+| Bullet impact spark | 41 | "your shot hit something" |
+| Enemy hit-flash | 41 | "your shot hurt an enemy" |
+| Heavy red telegraph | 38 | "Heavy is about to fire" |
+| Camera shake on damage | 42 | "you took a hit" |
+| Low-HP red HUD shift | 49 | "you're in danger" |
+| **Heavy bullet orange tint** | **53** | **"that bullet does extra damage"** |
+
+Iter 53 completes the feedback layer — every damage-relevant event now has
+a visual cue.
+
+### Score
+
+Unchanged at 30/50. Composes with [STRUCTURE-DEFERRED → iter 60] for:
+- Crit 3 anchor 4 (damage variation "felt fair" cite)
+- Crit 6 anchor 4 (band-marker Heavy "changes player behavior" — orange
+  bullets are now part of Heavy's distinctive presentation)
+- Crit 8 anchor 4 (combat-feedback satisfies "hits feel solid" cite)
+
+### Substrate freeze check
+
+- Hard scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- `damage` is `@export var damage: int = 1` (set on instance via `bullet.set("damage", ...)`)
+- Sprite2D access via `$Sprite2D` — bullet scene structure verified
+
+### Files touched
+
+- Modified: `scripts/Bullet.gd`
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 54 candidate: small Light role sharpener OR clean-up reading of
+  existing scripts. Sprint is in good shape; iter 54 could also be light
+  AUDIT pass (no new code) before iter 55 CONSULT 007.
+- 6 sprint iters remaining
+
+---

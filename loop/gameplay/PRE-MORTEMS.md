@@ -1425,7 +1425,33 @@ H2-RULE claims (3):
 
 No score lift (anchor 4 needs [FEEL]).
 
-**Post-iter:** [filled at iter 53]
+**Post-iter (iter 53 start):** Damage variation shipped. Build clean.
+
+---
+
+## Iter 053 — BUILD — Heavy bullet visual differentiation
+
+Tag: `[STRUCTURE]` for crit 8 anchor 3 reinforcement (multi-event impact layer extended) + composes with iter-52 deferred cite.
+
+Diagnose: Iter 52 shipped Heavy=2dmg / Light/Fast=1dmg. But all bullets look IDENTICAL (same sprite, same color). Player can't distinguish high-damage threats at a glance — the mechanical decision-quality from iter 52 is invisible without visual feedback. Iter 53 ships orange tint for damage≥2 bullets so Heavy's threat is identifiable mid-air.
+
+Going in, biggest expected miss: **orange modulate doesn't read at 320×240 native scale** — 4×3 pixel bullets are tiny, color shift might just look like noise. Mitigation: use saturated warm color `(1.0, 0.5, 0.3)` — at small size, brightness matters more than hue. If iter-60 user says "didn't notice difference," iter 61 makes Heavy bullets BIGGER (different sprite region) instead of just color-tinted.
+
+Secondary risk: orange Heavy bullets clash visually with red Heavy AIM_FIRE telegraph — player sees red sprite + orange bullet, might confuse signals. Mitigation: Heavy telegraph is sprite-modulate (whole enemy), bullets are tiny moving objects — visually distinct. Pro's H4 push: visible-cause-of-damage matters more than aesthetic separation.
+
+Design:
+- `Bullet.gd start()`: if `damage >= 2`, set `$Sprite2D.modulate = Color(1.0, 0.5, 0.3, 1.0)` (warm orange)
+- Default (damage=1): no modulate (white)
+- Player bullets: default damage=1 → white, no change
+
+H2-RULE claims (3):
+1. Heavy bullets render with orange tint, Light/Fast with default white
+2. Build clean + headless boot exit 0
+3. Player bullets remain white (PlayerTank doesn't set damage > 1)
+
+No score lift (feedback completion is structural for crit 8 anchor 3 already met). [STRUCTURE-DEFERRED → iter 60] composes with iter-52 cite for crit 3 anchor 4.
+
+**Post-iter:** [filled at iter 54]
 
 ---
 

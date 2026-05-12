@@ -17,6 +17,12 @@ func start(pos: Vector2, dir: int, target_mask: int = -1) -> void:
 		collision_mask = target_mask
 	_lifetime_timer.wait_time = lifetime
 	_lifetime_timer.start()
+	# iter 53: high-damage bullets (Heavy =2) get a warm orange tint so player
+	# can identify the threat mid-air. Makes iter-52 damage variation visible.
+	if damage >= 2:
+		var sprite: Sprite2D = $Sprite2D
+		if sprite != null:
+			sprite.modulate = Color(1.0, 0.5, 0.3, 1.0)
 
 
 func _physics_process(delta: float) -> void:
