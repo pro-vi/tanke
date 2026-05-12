@@ -4352,3 +4352,85 @@ Seed matches headless boot `level_seed: S` line.
 - 2 sprint iters remaining
 
 ---
+
+## Iter 058 — AUDIT — Substrate integrity check (paranoid sanity)
+
+**Mode:** AUDIT
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 30/50 (unchanged — substrate check, no scoring)
+
+### Trigger
+
+Protective tune-only iter per Pro Consult 007. Iter 57 shipped seed
+instrumentation. Iter 58 = paranoid substrate verification: re-run
+reachability oracle on seed 42 to confirm `tile_hash` matches iter-0
+baseline. 58 iters of work; verify nothing drifted.
+
+### Oracle run
+
+```bash
+godot --headless --path . --script res://loop/test_runner.gd -- --seed 42 --json
+```
+
+Output:
+```json
+{
+  "tile_hash": "f873ae60ee3c420c57cdef5762acdad857b1a763ec50b76db80971ef4503e797",
+  "playable": true,
+  "reachable_cells": 804,
+  "rows_climbed": 29,
+  "min_reachable_row": 0,
+  "cc_count": 49, "cc_avg": 12.08, "cc_max": 60,
+  "eller_sets": 15, "eller_avg_size": 1.33, "eller_max_size": 3,
+  "vert_structure_lift": 2.634,
+  "brick": 220, "steel": 128, "grass": 188, "water": 56
+}
+```
+
+### Match status
+
+ALL FIELDS MATCH iter-0 baseline:
+- `tile_hash`: `f873ae60ee3c420c…` ✓
+- `playable: true` ✓
+- `reachable_cells: 804` ✓
+- `rows_climbed: 29` ✓
+- `cc_count/avg/max: 49/12.08/60` ✓
+- `eller_sets/avg/max: 15/1.33/3` ✓
+- `vert_structure_lift: 2.634` ✓
+- Tile counts (brick=220, steel=128, grass=188, water=56) ✓
+
+**Substrate INTACT after 58 iters of work.** No halt required.
+
+### Verification
+
+- `make test` exit 0 (carryover from iter 57; no new code)
+- Oracle exit 0
+- All claims in PRE-MORTEM landed
+
+### Substrate freeze check
+
+- Hard scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- WaterSet TileSet edits iter 37 (F007 fix) did NOT affect generation —
+  WaterSet has `physics_layer_0/collision_layer = 512` but tile painting
+  geometry is unchanged. Oracle confirms.
+- H1 tripwire unchanged at 2
+
+### Files touched
+
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md` only
+- No code changes
+
+### Schedule
+
+- ScheduleWakeup 240s (AUDIT mode wakeup but using 240s since iter 59
+  is last sprint iter)
+- Iter 59 = LAST sprint iter before iter 60 PLAYTEST. Final-look or
+  small final polish. Could:
+  - Re-read iter-60 playtest prompt one more time for any tightening
+  - Pre-fire build verification (make test + headless quit)
+  - Document the sprint's score trajectory and pending cite gates
+- 1 sprint iter remaining
+
+---

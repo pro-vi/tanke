@@ -1546,7 +1546,24 @@ H2-RULE claims (3):
 
 No score lift.
 
-**Post-iter:** [filled at iter 58]
+**Post-iter (iter 58 start):** Seed in [run] shipped. Build clean.
+
+---
+
+## Iter 058 — AUDIT — Substrate integrity check (paranoid sanity)
+
+Tag: `[STRUCTURE]` (AUDIT iter — paranoid substrate check before iter 60).
+
+Trigger: protective tune-only iter per Pro Consult 007. Iter 57 shipped seed instrumentation. Iter 58 is a paranoid substrate check — re-run reachability oracle on seed 42 to confirm hash matches iter-0 baseline. 58 iters of work; verifying nothing drifted.
+
+Going in, biggest expected miss: **hash drift** — some iter 47+ change subtly affected procedural gen (impossible since gen logic is frozen, but verifying). Mitigation: oracle returns canonical hash; mismatch triggers halt + investigation per v2 §HALT CONDITIONS ("Hard substrate violated — auto-revert and halt").
+
+H2-RULE claims (3):
+1. Oracle returns `tile_hash = f873ae60ee3c420c57cdef5762acdad857b1a763ec50b76db80971ef4503e797` (matches iter-0 baseline)
+2. `reachable_cells=804, rows_climbed=29, playable=true` (matches baseline)
+3. No HALT triggered — sprint can proceed to iter 59 last-look then iter 60 PLAYTEST
+
+**Post-iter:** [filled at iter 59]
 
 ---
 

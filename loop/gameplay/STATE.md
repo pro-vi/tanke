@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 57 → 60)
-iteration: 57
-consult_006: ADOPTED. consult_007: ADOPTED. Tune-only protective iter 57-59 per recommendation (b).
+phase: SPRINT (iter 58 → 60)
+iteration: 58
+consult_006: ADOPTED. consult_007: ADOPTED. Substrate hash verified iter 58 — still f873ae60…
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"
