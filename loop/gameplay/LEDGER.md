@@ -5709,3 +5709,56 @@ honor that directive.
 - 24 sprint iters remain (75-98 + iter 99 PLAYTEST)
 
 ---
+
+## Iter 075 — BUILD — Band-marker camera shake (tactile band transition)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — polish layer addition)
+
+### Change
+
+Spawner._spawn_band_marker now calls _kick_camera_for_band(level_root)
+in addition to the HUD overlay + (iter-75 new) light shake.
+
+_kick_camera_for_band:
+- 3 small randomized kicks, decay 2px → 0 over 0.15s
+- Snap to (0,0) over 0.04s
+- Smaller + briefer than iter-42 player-damage shake (3px / 0.25s)
+- Independent — tweens Camera2D.offset directly
+
+### Composition
+
+Band transition now layered tactile event:
+- HUD overlay (iter 64): tint flash + "ENTERING <BAND>" label 2.3s
+- Gate posts (iter 65): persistent band-themed posts at next gate row
+- Camera shake (iter 75 NEW): brief 2px kick
+
+Same shake mechanism as iter-42 damage but tuned softer to signal
+"transition event" rather than "you took damage."
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd` (+13 lines: helper + 1 call site)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 76 candidate: bullet trail (small fading copies behind moving
+  bullets, 1-2 frames worth)
+- 23 sprint iters remain
+
+---
