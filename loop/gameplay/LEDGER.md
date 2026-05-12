@@ -4985,3 +4985,76 @@ grabbing. HUD overlay forces eyes-up moment. Matches the design intent.
 - 35 sprint iters remain
 
 ---
+
+## Iter 065 — BUILD — Band-themed depth-gate post colors (Phase A iter 4)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged)
+
+### Trigger
+
+Phase A iter 4. Iter 48 shipped depth-gate posts (every 20 rows, fixed
+yellow). Iter 64 added band-marker HUD overlays. Iter 65 unifies the
+landmark visual language: depth-gate posts/labels now use band-derived
+colors matching iter-64 BAND_COLORS.
+
+### Code (scripts/Spawner.gd)
+
+New `_band_color_for_depth(depth: int) -> Color`:
+- depth < 8 → warmup green (no gates spawn this shallow)
+- depth < 20 → first_push yellow
+- depth < 40 → heavy_gate orange  (gate at depth 20 fires here)
+- depth >= 40 → rush red          (gates at depth 40, 60, 80, ...)
+
+`_spawn_depth_gate(depth)` updated:
+- Computes band_color via `_band_color_for_depth`
+- Post color = band color with alpha 0.9
+- Label text_color = band color with alpha 1.0
+- Print includes band_color for debug
+
+### Visual hierarchy (composed)
+
+| Element | Trigger | Color source |
+|---------|---------|--------------|
+| Iter 30 depth-milestone flash (every 10 rows) | PlayerTank crosses | Fixed yellow flash |
+| Iter 48 depth gates (every 20 rows) | Spawner ascent | **Band-themed (iter 65)** |
+| Iter 64 band-marker HUD overlay | Spawner band transition | **Band-themed** |
+| Iter 63 terrain mix per band | ProceduralLevel gen | Varied by band |
+
+All four layers now share the BAND_COLORS palette:
+- warmup green
+- first_push yellow
+- heavy_gate orange
+- rush red
+
+Player ascending: yellow gate at depth 20 → orange band-marker + orange
+gate at depth 20 (entering heavy_gate) → orange gate at depth 40 → red
+band-marker + red gate (entering rush) → red gates from there on.
+
+Wait — gate at depth 20 enters heavy_gate (orange) but iter-64 band-marker
+fires when depth crosses 20 from below = ALSO orange. Aligned.
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- Substrate frozen scripts UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Files touched
+
+- Modified: `scripts/Spawner.gd`
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 66 candidate: more interesting first_push.tres variance (currently
+  identical to playable.tres). Safe to vary now that iter-63 multi-seed
+  validation passed warmup=playable.tres — first_push is also surface-
+  ish but slightly deeper. Test seed-sweep before committing.
+- 34 sprint iters remain
+
+---

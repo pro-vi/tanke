@@ -495,13 +495,19 @@ func _spawn_depth_gate(depth_rows: int) -> void:
 	var parent_node: Node = get_parent()
 	if parent_node == null or not is_instance_valid(parent_node):
 		return
+	# iter 65: derive band-themed colors from depth — gate at depth 20 enters
+	# heavy_gate (orange), depth 40 enters rush (red), etc. Composes with
+	# iter-64 band-marker HUD overlays for cohesive band visual identity.
+	var band_color: Color = _band_color_for_depth(depth_rows)
+	var post_color: Color = Color(band_color.r, band_color.g, band_color.b, 0.9)
+	var text_color: Color = Color(band_color.r, band_color.g, band_color.b, 1.0)
 	# World-y of gate row (player ascended depth_rows × 16 px from start)
 	var gate_y: float = _player_start_y - float(depth_rows) * 16.0
 	# Two posts at viewport edges (inside map walls at x=-4 and x=324)
 	for px in [4.0, 308.0]:
 		var post: ColorRect = ColorRect.new()
 		post.size = Vector2(8, 16)
-		post.color = depth_gate_post_color
+		post.color = post_color
 		post.position = Vector2(px, gate_y - 8.0)  # centered on gate row
 		post.z_index = 30
 		parent_node.add_child(post)
@@ -509,7 +515,20 @@ func _spawn_depth_gate(depth_rows: int) -> void:
 	var label: Label = Label.new()
 	label.text = "* DEPTH %d *" % depth_rows
 	label.position = Vector2(120.0, gate_y - 6.0)
-	label.add_theme_color_override("font_color", depth_gate_text_color)
+	label.add_theme_color_override("font_color", text_color)
 	label.z_index = 31
 	parent_node.add_child(label)
-	print("[landmark] gate depth %d at y=%d" % [depth_rows, int(gate_y)])
+	print("[landmark] gate depth %d at y=%d band_color=%s" % [depth_rows, int(gate_y), band_color])
+
+
+# iter 65: map gate depth → band color. Gate at depth 20 enters heavy_gate
+# (orange). Depth 40 enters rush (red). Pre-20 gates would use first_push
+# yellow but with depth_gate_step=20, no gate spawns before depth 20.
+func _band_color_for_depth(depth: int) -> Color:
+	if depth < 8:
+		return BAND_COLORS.get("warmup", Color(1.0, 1.0, 1.0, 1.0))
+	if depth < 20:
+		return BAND_COLORS.get("first_push", Color(1.0, 0.95, 0.5, 1.0))
+	if depth < 40:
+		return BAND_COLORS.get("heavy_gate", Color(1.0, 0.55, 0.2, 1.0))
+	return BAND_COLORS.get("rush", Color(1.0, 0.35, 0.35, 1.0))
