@@ -7172,3 +7172,83 @@ iter 102 if no user response (99 + 3).
   - Document user direction for iter 100+
 
 ---
+
+## Iter 100 — META — Playtest evaluation + LOOP HALT for user design directive
+
+**Mode:** META (post-playtest evaluation + user-directed halt)
+**Date:** 2026-05-12
+**Branch:** `exp/godot4-loop`
+**Score:** **34/50** (was 32, +2 from iter-99 cites)
+
+### User iter-99 response (verbatim)
+
+> I can see the green little tents, they look pretty fast, and I see the heavy tents, I need to shoot them twice, and I see the normal tents. The HP definitely helps, the shield, does it last only a bit of time, because, I don't know, it's just not obvious, because if it only lasts a little bit of time, then it doesn't feel useful. The map section feels different in the way that there are more enemies, I didn't realize whether they had an effect on the actual map construction. I didn't copy, but I got to like 40-ish, I had like 20 kills, so I think we are making good progress. But this is also the time to reflect on the loop, I don't think we should proceed with the same prompt. And I think it's time to, like we have sort of replicated the basic mechanics of Battle City, but in a progressive manner, so I think it's a little bit of time to actually think about what we want this game to be, and what drastic difference, what drastic change we can make to the Battle City game, because for example, like, should turning be more friction? And for example, should there be, like, should we make turrets a first primitive, that one doesn't need to chain, one doesn't need to, you know, the movement is only for the hull, the hull, and then you have the turret controlled maybe with the mouse, sort of auto aims, but then it breaks the primitive of the game, so I don't know yet.
+
+### Cite analysis
+
+**Q1 (enemies) LANDED**:
+- "green little tents [tanks], look pretty fast" — Fast cyan × yellow sprite reads greenish at 320×240
+- "heavy tents, shoot them twice" — Heavy 2 HP cited via behavior
+- "normal tents" — Light implicitly
+- **Crit 6: 3 → 4 [FEEL]** — anchor 4 (band-marker whose appearance changes player behavior) — user changed behavior ("shoot twice") for Heavy. Three types distinguished.
+- F009 RESOLVED.
+
+**Q2 (pickups) MIXED**:
+- "HP definitely helps" — positive cite
+- "shield... if it only lasts a little bit, doesn't feel useful" — negative cite
+- **Crit 5 HOLDS at 3** — HP alone isn't anchor 4's "forward-friendly mechanics" verbatim
+- **F013 NEW**: Shield duration insufficient or visual indicator inadequate for player perception
+
+**Q3 (map) PARTIAL**:
+- "feels different — more enemies" — varied rhythm via spawn density [FEEL] cited
+- "didn't realize whether they had an effect on the actual map construction" — terrain band variance NOT perceived
+- **Crit 4: 2 → 3 [FEEL]** — anchor 3 varied rhythm met via spawn variation
+- **F014 NEW (Pro Consult 008 H3 CONFIRMED VERBATIM)**: terrain band variance invisible to player. "Same corridor with warmer paint is still samey." Wrapper-around-Eller's insufficient.
+
+**Bonus stats**: depth ~40 (reached rush band) + ~20 kills. Solid engagement.
+
+### Score change
+
+| Criterion | Before | After | Δ | Citation |
+|-----------|--------|-------|---|----------|
+| 4. Depth feedback | 2 | **3** | +1 | `[FEEL]` Q3 cite "more enemies per section" = varied rhythm |
+| 6. Enemy variety | 3 | **4** | +1 | `[FEEL]` Q1 cite "green fast / heavy 2-shot / normal" = 3 distinct types |
+| **Total** | **32** | **34** | **+2** | Close to best-case 35. Crit 5 anchor 4 partial (HP yes, Shield no). |
+
+### User META directive — LOOP HALT
+
+User explicitly halted current loop prompt: "this is the time to reflect on the loop, I don't think we should proceed with the same prompt."
+
+User raised drastic-change candidates:
+1. **Turning friction** — momentum tank, smooth turning
+2. **Turret-hull split** — hull moves, turret aims independently (mouse / auto-aim)
+3. Acknowledged either "breaks the primitive of the game"
+
+**Current loop status**: HALTED. Awaiting user design direction.
+
+### Design pivot context
+
+Sprint iter 0-99 has replicated and polished BC primitive within roguelike-ascender frame. Score 0 → 34/50. The user observation is correct: within BC primitive, we've shown what's possible. Further BC-primitive iteration has diminishing returns.
+
+Pro Consult 006 H4 + Consult 008 both flagged underlying loop thinness — combat decisions exist (LKP bait, aim-cancel, HP-pickup priority) but the FUNDAMENTAL VERB is BC's (cardinal grid + rotation-via-movement + facing-direction-shoot). To genuinely differentiate, the primitive needs change.
+
+### Falsifications log
+
+- **F013**: Shield 2s + visual tint not enough to register as useful (user cite Q2)
+- **F014**: Terrain band variance invisible vs spawn variance visible — Pro Consult 008 H3 confirmed verbatim (user cite Q3)
+
+### Substrate freeze check
+
+- No code changes this iter
+- H1 tripwire unchanged at 2
+
+### Files touched
+
+- Modified: `loop/gameplay/{STATE,LEDGER}.md` only
+
+### Schedule
+
+- **NO ScheduleWakeup** — loop HALTED per user directive
+- Awaiting user design direction before next iter
+
+---
