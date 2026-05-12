@@ -23,9 +23,12 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 98 → 99) — FREEZE, pre-fire final-look
-iteration: 98
-consult_008: ADOPTED. FREEZE since iter 94. Iter 99 PLAYTEST next.
+phase: AWAITING_USER_PLAYTEST
+iteration: 99
+playtest_requested_iter: 99
+halt_iter_if_no_response: 102
+sprint_complete: yes (iter 61-99 Legibility Lock sprint per Pro Consult 006 + 008; score 32/50 entering)
+consult_008: ADOPTED. FREEZE in effect since iter 94. Iter 99 PLAYTEST fired.
 hash_anchor: 23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291
 final_prep_window: iter 95-98 reserved for META/AUDIT/final-look before iter 99 PLAYTEST
 hash_anchor_drift: f873ae60... (iter 0-65, warmup=first_push=playable) → 8224ebda... (iter 66+, first_push has +0.04 brick variance). Multi-seed playable preserved.

@@ -7077,3 +7077,98 @@ Build verified. No changes. 2 sprint iters remain.
 Build verified, hash matches anchor (23d6a2ec...), playable=True. Iter 99 fires playtest.
 
 ---
+
+## Iter 099 — PLAYTEST — Legibility Lock sprint conclusion (39-iter sprint complete)
+
+**Mode:** PLAYTEST
+**Date:** 2026-05-12
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (entering playtest; lifts gated on user cite)
+
+### Sprint summary (iter 61 → 99)
+
+User-authorized 39-iter sprint (iter 60: "next playtest at iter 99").
+Final count: **29 BUILD + 5 META + 3 AUDIT = 37 iters of work**.
+Score progression: 30 → 32/50 (+2 from iter-60 Q4 [FEEL] cite).
+
+### Major work clusters
+
+**Phase A (iter 62-66) — Map content**:
+- BandedBiomeConfig.gd + 4 LevelConfig variants
+- Banded biome wired to ProceduralLevel.tscn
+- HUD band-marker overlays + themed gate posts
+
+**Phase B (iter 67-68) — Enemy F009**:
+- Fast cyan tint
+- Heavy density tuning + guarantee_first_type
+
+**Phase C (iter 69-77) — Polish/tuning**:
+- F010 spark + Heavy telegraph tone-down
+- F011 death typography panel + outline
+- HUD outline parity
+- Best-time tracking, band-marker camera shake, restart pulse, milestone band-themed
+
+**Q5 Roguelite (iter 78-86)** — pre-Consult-008:
+- HP pickup (Heavy 25%)
+- Speed pickup (Fast 15%) — CUT iter 88
+- Shield pickup (Light 10%)
+- Pickup activation toasts
+- Player tint indicators (shield blue, speed cyan)
+- Enemy sprite scale variance
+
+**Consult 008 + Legibility Lock (iter 87-94)**:
+- iter 87 CONSULT 008 fired pre-emptively
+- iter 88 ADOPTED + Speed pickup CUT
+- iter 89-91 Mechanical band distinction (warmup sparse + first_push brick + heavy_gate Heavy-dominant + rush Fast chaos)
+- iter 92 Visual budget pass (~-70 lines: dead code removal + band shake removal + milestone flash tone-down)
+- iter 93 Playtest 5Q → 3Q
+- iter 94 FREEZE
+
+**Buffer (iter 95-98)**: no-op, FREEZE preserved.
+
+### Final pre-flight
+
+- `make test` exit 0 ✓
+- `godot --headless --quit-after 60` exit 0 ✓
+- Substrate hash `23d6a2ec3bf2821f…` matches iter-89 anchor ✓
+- iter-99-playtest-prompt-draft.md ready ✓
+
+### Prompt issued
+
+3-question diagnostic per Pro Consult 008 H5 reduction. Q1 enemies / Q2 pickups / Q3 map mechanically-distinct.
+
+### Pending [FEEL] lift gates
+
+| Criterion | Current | Lift on |
+|-----------|---------|---------|
+| 4. Depth feedback | 2 | Q3 cite "map sections felt different" → 3 |
+| 5. Forward survivability | 3 | Q2 cite "pickups helped" → 4 |
+| 6. Enemy variety | 3 | Q1 cite "could tell types apart" → 4 |
+
+Best-case all-favorable: 32 → 35/50.
+
+### Halt rule
+
+iter 102 if no user response (99 + 3).
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Files touched
+
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+- No code changes
+
+### Schedule
+
+- **NO ScheduleWakeup** (AWAIT user response per v2 PROMPT §Step 7)
+- On response (iter 100):
+  - Evaluate Q1-Q3 cites against falsification clauses
+  - Apply lifts where favorable
+  - Apply reverts where unfavorable
+  - Document user direction for iter 100+
+
+---
