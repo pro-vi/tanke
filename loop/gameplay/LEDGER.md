@@ -6884,3 +6884,72 @@ Net code reduction: ~70 lines.
 - 7 sprint iters remain
 
 ---
+
+## Iter 093 — META — Playtest prompt 3Q reduction (Legibility Lock iter 5)
+
+**Mode:** META (playtest prompt rewrite per Pro Consult 008)
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — META iter)
+
+### Pro Consult 008 directive
+
+"Iter 93: update the playtest prompt around three questions only:
+'Did you understand enemies?', 'Did pickups help or distract?', 'Did
+map sections feel different?'"
+
+### Deliverable
+
+Created `loop/gameplay/iter-99-playtest-prompt-draft.md` (separate from
+iter-60-playtest-prompt-draft.md to preserve history). Three diagnostic
+questions:
+
+1. **Q1 (enemies)**: "Did you understand the 3 enemy types? Could you
+   tell Light from Fast from Heavy at a glance?" → F009 + crit 6 anchor 4 cite gate
+2. **Q2 (pickups)**: "Did the HP and Shield pickups help — or feel like
+   distraction/noise?" → crit 5 anchor 4 cite gate (note: only 2 pickups
+   remain post iter-88 Speed cut)
+3. **Q3 (map)**: "Did the 4 map sections feel mechanically different, or
+   still 'same maze, different colors'?" → F012 + crit 4 anchor 3 cite gate
+
+### Sprint conclusion preamble
+
+Updated content sections reflect iter 61-92 work:
+- 4 bands mechanically distinct (iter 89-91 Pro Legibility Lock)
+- F009 visual: cyan + size + behavior (iter 67/86)
+- Speed pickup CUT iter 88
+- Visual budget reduced iter 92
+
+### Score targets
+
+If all 3 cites favorable:
+- Crit 4: 2 → 3 (+1)
+- Crit 5: 3 → 4 (+1)
+- Crit 6: 3 → 4 (+1)
+
+Total best-case: 32 → 35/50.
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0 (no code change)
+
+### Files touched
+
+- Created: `loop/gameplay/iter-99-playtest-prompt-draft.md`
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 94 = FREEZE (Pro Consult 008 directive: "Only bug fixes after").
+  Iter 94 work likely just verification: `make test`, oracle hash check,
+  sprint summary documentation.
+- 6 sprint iters remain (94-98 buffer + 99 PLAYTEST)
+
+---
