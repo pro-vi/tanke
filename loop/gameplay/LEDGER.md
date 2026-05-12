@@ -6095,3 +6095,59 @@ confirmation.
 - 18 sprint iters remain
 
 ---
+
+## Iter 081 — AUDIT — Substrate integrity verification
+
+**Mode:** AUDIT (light)
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — AUDIT iter)
+
+### Oracle output (seed 42)
+
+```
+tile_hash: 8224ebda441304d11620dfe288f08ce67d8af3a3fae773d25e3c8db9dff91bde
+playable: True
+rows_climbed: 29
+reachable_cells: 684
+cc_count: 51
+vert_structure_lift: 2.309
+```
+
+### Match check
+
+Hash matches iter-66 anchor `8224ebda…` exactly. Substrate integrity
+preserved across 14 iters (67-80) of script-only ships:
+- iter 67-80: PlayerTank.gd, Enemy.gd, Spawner.gd, Bullet.gd only
+- No new .tres files
+- No ProceduralLevel.tscn modifications since iter-63 biome wiring
+
+### Verification
+
+- `make test` exit 0 ✓
+- Oracle exit 0 ✓
+- Hash drift: NONE ✓
+- Reachability metrics: all match iter-66 baseline ✓
+
+### Sprint status
+
+19 BUILD + 2 META iters shipped since iter 61. 18 iters until iter-99
+PLAYTEST. Phase A/B/C/Roguelite all addressed. Final-prep window
+reserved for iter 95-98.
+
+### Files touched
+
+- Modified: `loop/gameplay/{STATE,LEDGER}.md` only
+- No code changes (AUDIT-only iter)
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 82-94 candidates: very limited high-value remaining. Options:
+  - Refactor duplicate pickup code (risky late-sprint)
+  - Add 3rd pickup type (more roguelite variety)
+  - Tune existing pickup drop rates based on... nothing (no playtest data)
+  - No-op iters (just document)
+- 18 sprint iters remain
+
+---
