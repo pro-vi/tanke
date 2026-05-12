@@ -5,6 +5,10 @@ signal hp_changed(new_hp: int, max_hp: int)
 signal died
 
 @export var speed: int = 32
+# iter 79: speed-boost roguelite pickup state. multiplier active for
+# _speed_boost_timer seconds.
+var _speed_boost_timer: float = 0.0
+var _speed_boost_multiplier: float = 1.0
 @export var gun_cooldown: int = 100
 @export var Bullet: PackedScene
 @export var max_hp: int = 3
@@ -75,6 +79,12 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if _iframe_timer > 0.0:
 		_iframe_timer -= delta
+	# iter 79: tick down speed-boost duration; expire when 0
+	if _speed_boost_timer > 0.0:
+		_speed_boost_timer -= delta
+		if _speed_boost_timer <= 0.0:
+			_speed_boost_multiplier = 1.0
+			_speed_boost_timer = 0.0
 
 	if _dead:
 		_handle_restart_input()
@@ -117,7 +127,9 @@ func _physics_process(delta: float) -> void:
 	else:
 		sprite.stop()
 
-	velocity = input_vector * speed
+	# iter 79: apply speed boost if active
+	var effective_speed: float = float(speed) * _speed_boost_multiplier
+	velocity = input_vector * effective_speed
 	sprite.set_dir_set(input_vector)
 
 	var collision: KinematicCollision2D = move_and_collide(velocity * delta)
@@ -168,6 +180,15 @@ func heal(amount: int) -> void:
 		return
 	hp = mini(hp + amount, max_hp)
 	hp_changed.emit(hp, max_hp)
+
+
+# iter 79 (Q5 priority 4): speed-boost pickup application. Replaces any active
+# boost (doesn't stack). Duration counted in _physics_process.
+func apply_speed_boost(duration: float, multiplier: float) -> void:
+	if _dead:
+		return
+	_speed_boost_timer = duration
+	_speed_boost_multiplier = multiplier
 
 
 # Visual damage cue (iter 19): bright red pulse + alternating alpha blink

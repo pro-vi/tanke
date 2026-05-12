@@ -5973,3 +5973,71 @@ Heavy? If I'm at low HP this is critical; if full HP, pickup ignored.
 - 20 sprint iters remain
 
 ---
+
+## Iter 079 — BUILD — Fast speed-boost pickup drop (Q5 roguelite cont)
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged)
+
+### Trigger
+
+Iter 78 shipped HP pickup. Iter 79 adds second roguelite mechanic per
+Q5 "explore" directive: Fast 15% chance to drop speed-boost pickup.
+
+### Design
+
+Fast on death has 15% chance to drop speed-boost pickup at its position.
+Player walks over → +50% speed for 5 seconds. 8s despawn.
+
+### Code
+
+**scripts/Enemy.gd**:
+- `_spawn_death_effect`: branches into `_spawn_hp_pickup` (Heavy) OR
+  `_spawn_speed_pickup` (Fast)
+- `_spawn_speed_pickup(parent)`: same Area2D framework as HP pickup
+  - Cyan visual (matches Fast tint from iter 67): outer 8×8 + inner 4×4 dark cyan
+  - body_entered Callable: `body.apply_speed_boost(5.0, 1.5)` + free
+  - 8s despawn timer
+
+**scripts/PlayerTank.gd** (+~15 lines):
+- New vars: `_speed_boost_timer: float`, `_speed_boost_multiplier: float = 1.0`
+- `_physics_process` ticks down timer; on expire, restore multiplier to 1.0
+- Movement now uses `effective_speed = speed × _speed_boost_multiplier`
+- New `apply_speed_boost(duration, multiplier)` method
+
+### Tactical impact
+
+Both Heavy (25% HP+1) and Fast (15% speed+50% × 5s) now offer reward
+incentive. Player decisions:
+- Engage Heavy at low HP → high reward (heal)
+- Engage Fast → speed window for next encounter
+- Boost active during ascent = more rows per minute = better depth
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/Enemy.gd` (+~40 lines)
+- Modified: `scripts/PlayerTank.gd` (+~15 lines)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 80 candidate: visual indicator for active speed boost (HUD label
+  "SPEED BOOST 5.0s" or temporary player sprite glow) so player knows
+  they're affected. Or other small polish.
+- 19 sprint iters remain
+
+---
