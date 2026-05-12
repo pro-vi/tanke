@@ -23,9 +23,12 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 59 → 60)
-iteration: 59
-consult_006: ADOPTED. consult_007: ADOPTED. Substrate hash verified. Iter 60 = PLAYTEST fire-ready.
+phase: AWAITING_USER_PLAYTEST
+iteration: 60
+playtest_requested_iter: 60
+halt_iter_if_no_response: 63
+sprint_complete: yes (iter 39-60 sprint, score 20 → 30/50)
+consult_006: ADOPTED. consult_007: ADOPTED.
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"

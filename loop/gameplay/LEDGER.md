@@ -4508,3 +4508,95 @@ Best-case all-favorable: 30 → 36-40/50.
 - Sprint ends iter 60
 
 ---
+
+## Iter 060 — PLAYTEST — Sprint conclusion (21-iter sprint complete)
+
+**Mode:** PLAYTEST
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 30/50 (entering playtest; lifts gated on user cite)
+
+### Sprint summary (iter 39 → 60)
+
+User-authorized 21-iter sprint (iter 38: "lets schedule the next playtest
+in loop 60"). Completed on schedule. Score 20 → 30/50 (+10).
+
+### Major ships
+
+| Iter | Ship | Score Δ |
+|------|------|---------|
+| 39 | META sprint setup | — |
+| 40 | 3rd enemy type Fast (harassment rusher) | crit 6 1→3 +1 |
+| 41 | Bullet impact spark + enemy hit-flash | — (deferred) |
+| 42 | Camera shake on player damage | — (deferred) |
+| 43 | Death screen run summary | crit 10 1→2 +1 |
+| 44 | Persistent best-depth via user://stats.cfg | — (deferred) |
+| 45 | CONSULT 006 (Pro mid-sprint review) | — |
+| 46 | META rubric rename (crits 8/9/10 reworded) | crit 8 +1, crit 10 +1 = +2 |
+| 47 | Heavy LKP de-omniscience (Pro primary) | — (deferred) |
+| 48 | Depth pressure landmarks (Pro secondary) | — (deferred) |
+| 49 | HP bar graphical + low-HP red shift | crit 9 1→3 +2 |
+| 50 | AUDIT (buried lifts) | crit 2 +3, crit 3 +1, crit 9 +1 = +4 |
+| 51 | Heavy aim-cancel on hit during AIM_FIRE | — (deferred) |
+| 52 | Damage variation Heavy=2 / Light/Fast=1 | — (deferred) |
+| 53 | Heavy bullet orange tint | — (deferred) |
+| 54 | META playtest template draft | — |
+| 55 | CONSULT 007 (Pro pre-playtest pulse) | — |
+| 56 | Aim-cancel counter + 5Q trim | — |
+| 57 | Seed in [run] log (diagnostic) | — |
+| 58 | AUDIT substrate verification (f873ae60… intact) | — |
+| 59 | META final-look | — |
+
+### Final pre-flight
+
+- `make test` exit 0 ✓
+- `godot --headless --quit-after 60` exit 0 ✓
+- Substrate hash `f873ae60…` unchanged from iter 0 ✓
+- Playtest prompt finalized in `loop/gameplay/iter-60-playtest-prompt-draft.md`
+
+### Prompt issued
+
+5-question diagnostic tour per Pro Consult 006 H5 template. Each Q ≤30s
+user time. Q4 LOAD-BEARING (decisions vs reactions — answers Pro H4
+hollow-loop critique). Q5 forced-choice for iter-61+ direction.
+
+[run] log instrumented with `depth / time / kills / aim_cancels / ascent_rate / stall / seed`.
+
+### Pending [FEEL] lift gates
+
+| Criterion | Current | Lift on |
+|-----------|---------|---------|
+| Crit 4 Depth feedback | 2 | Q4/Q5 cite "varied rhythm" / "felt authored" → 3 |
+| Crit 5 Forward survivability | 1 | Q4 cite "I was deciding" → 3 |
+| Crit 6 Enemy variety | 3 | Q1 cite "distinguished 3 types" → 4 |
+| Crit 8 Impact/feedback | 3 | Q2 cite "punchy" / "hits feel solid" → 4 |
+| Crit 10 Run loop closure | 3 | Q3 cite "I want one more" → 4 |
+
+Best-case all-favorable: 30 → 36-40/50.
+
+### Halt rule
+
+iter 63 if no user response (60 + 3 = 63, per v2 PROMPT §USER-LOOK PROTOCOL).
+
+### Substrate freeze check
+
+- Hard scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- H1 tripwire unchanged at 2
+
+### Files touched
+
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+- No code changes
+
+### Schedule
+
+- **NO ScheduleWakeup** (AWAIT user response per v2 PROMPT §Step 7)
+- On response (iter 61):
+  - Evaluate Q1-Q5 cites against falsification clauses
+  - Apply lifts where cites favorable
+  - Apply reverts where cites unfavorable
+  - Document Q5 forced-choice as iter-61+ direction
+  - Update STATE to next phase per response
+
+---

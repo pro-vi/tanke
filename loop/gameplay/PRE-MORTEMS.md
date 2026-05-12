@@ -1589,7 +1589,28 @@ H2-RULE claims (3):
 
 No score lift. Sprint ends iter 60.
 
-**Post-iter:** [filled at iter 61 after user playtest response]
+**Post-iter (iter 60 start):** Build clean, ready to fire.
+
+---
+
+## Iter 060 — PLAYTEST — Sprint conclusion (mandatory, 21-iter sprint complete)
+
+Tag: `[STRUCTURE]` (PLAYTEST iter — output prompt + await response).
+
+Mandatory PLAYTEST per user directive iter 38 ("lets schedule the next playtest in loop 60"). 21-iter sprint complete. Score trajectory 20 → 30/50 (+10).
+
+Going in, biggest expected miss: **user provides shallow answers** because 5Q feels like a survey rather than feedback request. Pro H2 critique addressed via terse wording. If user pushes back or gives one-line answers, iter 61 strategy: take what's offered, focus iter-61 BUILD on whatever Q5 forced-choice picks.
+
+Falsification clauses ready per `loop/gameplay/iter-60-playtest-prompt-draft.md`. Each Q maps to specific anchor lift gate.
+
+H2-RULE claims (3):
+1. Build verified clean: make test exit 0, godot --headless --quit-after 60 exit 0
+2. Playtest prompt issued to user in chat (5 questions per Pro Consult 006 H5 template)
+3. STATE phase = AWAITING_USER_PLAYTEST, halt rule iter 63
+
+NO ScheduleWakeup. AWAIT per v2 §Step 7.
+
+**Post-iter:** [filled at iter 61 after user response]
 
 ---
 
