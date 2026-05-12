@@ -38,6 +38,7 @@ var _hp_label: Label
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
+var _death_panel: ColorRect = null  # iter 71: dark backing panel behind death label
 # Roguelike ascender state (iter 11 — Pro Consult 003 reframe)
 var _start_y: float = 0.0
 var _min_y_reached: float = 0.0
@@ -238,6 +239,7 @@ func _die() -> void:
 	if is_new_best:
 		_save_best_depth(depth)
 	# iter 43: render run summary on death label (iter 44: + BEST line)
+	# iter 71: also show dark backing panel for readability
 	if _death_label != null:
 		var best_line: String
 		if is_new_best:
@@ -246,6 +248,8 @@ func _die() -> void:
 			best_line = "\nBEST %d" % prior_best
 		_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nCANCELS %d\nSTALL %d%%%s\n\n[R] RESTART" % [depth, t / 60, t % 60, kills, aim_cancels, int(stall_pct), best_line]
 		_death_label.visible = true
+	if _death_panel != null:
+		_death_panel.visible = true
 	died.emit()
 
 
@@ -326,12 +330,27 @@ func _setup_hud() -> void:
 	_hp_label.text = "HP %d/%d" % [hp, max_hp]
 	_hp_label.add_theme_color_override("font_color", Color.WHITE)
 	canvas.add_child(_hp_label)
+	# iter 71 (F011 typography): dark semi-transparent backing panel behind
+	# death label improves readability against any terrain. Larger font_size
+	# + black outline for impact + presence.
+	_death_panel = ColorRect.new()
+	_death_panel.name = "DeathPanel"
+	_death_panel.position = Vector2(56, 56)
+	_death_panel.size = Vector2(208, 130)
+	_death_panel.color = Color(0.0, 0.0, 0.0, 0.65)  # dark semi-transparent
+	_death_panel.visible = false
+	canvas.add_child(_death_panel)
 	_death_label = Label.new()
 	_death_label.name = "DeathLabel"
 	# iter 43: position raised to make room for multi-line run summary
-	_death_label.position = Vector2(96, 72)
+	_death_label.position = Vector2(72, 64)
+	_death_label.size = Vector2(176, 116)
+	_death_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_death_label.text = "YOU DIED\n[R] RESTART"
-	_death_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.3))
+	_death_label.add_theme_color_override("font_color", Color(1.0, 0.95, 0.95))
+	_death_label.add_theme_color_override("font_outline_color", Color(0.6, 0.1, 0.1, 1.0))
+	_death_label.add_theme_constant_override("outline_size", 2)
+	_death_label.add_theme_font_size_override("font_size", 12)
 	_death_label.visible = false
 	canvas.add_child(_death_label)
 	# Roguelike ascender HUD (iter 11) — top-right

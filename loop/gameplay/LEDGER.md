@@ -5395,3 +5395,107 @@ losing the signal value. Iter-99 user will confirm.
 - 29 sprint iters remain
 
 ---
+
+## Iter 071 — BUILD — F011 death label typography polish
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** 32/50 (unchanged — F011 partial)
+
+### Trigger
+
+F011 user iter-60 Q3 cite: "the text / font is not good - make it
+pretty not focusing on manipulation yet." Death screen presentation
+is a blocker before retry-feel can be evaluated.
+
+### Constraints
+
+- No font assets available (GDScript-only loop, no MLX-SD per stone)
+- Godot 4 default font at 320×240 is pixelated low-quality
+- Limited HUD real estate
+
+### Approach (without custom font assets)
+
+1. **Dark semi-transparent panel** behind death label — readability
+   against any terrain background
+2. **font_size override** to 12 (default 16 → 12 fits multi-line layout
+   in 208×130 panel cleanly)
+3. **Black/dark-red outline** on text for impact contrast
+4. **Centered horizontal alignment** within panel
+5. **Off-white font color** (1.0, 0.95, 0.95) — slightly warmer than pure white
+
+### Code (scripts/PlayerTank.gd, ~+15 lines)
+
+New `_death_panel: ColorRect`:
+- Position (56, 56), size (208, 130)
+- Color (0, 0, 0, 0.65) — dark semi-transparent
+- Visible only on _die()
+
+`_death_label` rewired:
+- Position (72, 64), size (176, 116) — inside panel
+- horizontal_alignment = CENTER
+- font_color (1.0, 0.95, 0.95) off-white
+- font_outline_color (0.6, 0.1, 0.1) dark red
+- outline_size 2
+- font_size 12 (down from default 16 to fit)
+
+`_die()`: shows both panel and label.
+
+### Layout
+
+```
++-----------------------------+
+|                             |  (Dark panel, alpha 0.65)
+|        YOU DIED             |  ← off-white text + dark red outline
+|                             |
+|        DEPTH 23             |
+|        TIME 0:45            |
+|        KILLS 7              |
+|        CANCELS 2            |
+|        STALL 31%            |
+|        BEST 19              |
+|                             |
+|        [R] RESTART          |
++-----------------------------+
+```
+
+### Limitation
+
+Without bitmap font assets, can't fully address user's "make it pretty"
+ask. This is best-effort with built-in Godot Label primitives. If
+iter-99 user cites typography as ongoing issue → would require: (a) png
+bitmap font from open source (e.g. m6x11 / PixelArial), (b) actual
+asset pipeline. Out of scope for current loop.
+
+### Substrate freeze check
+
+- Hard scripts UNTOUCHED ✓
+- ProceduralLevel.tscn UNTOUCHED ✓
+- H1 tripwire unchanged at 2
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd` (+~15 lines)
+- Modified: `loop/gameplay/{STATE,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 72 candidate: META mid-Phase audit, OR Phase D early start.
+  Phase C only had 3 iters (69 spark, 70 telegraph, 71 typography).
+  Phase D pre-playtest typically iter 96-98 per iter-61 roadmap. Iter
+  72-95 has 24 iters of slack — could pivot to roguelite mechanics
+  (Q5 priority 4: "explore mechanics like power ups, heals") despite
+  Q5 ordering map > enemies > polish > then-roguelite. But user
+  ordering implies "after playtest" for roguelite. Stick to roadmap:
+  iter 72-78 finish Phase A polish, iter 79-88 deeper Phase B, iter
+  89-95 more Phase C, iter 96-98 final META, iter 99 PLAYTEST.
+- 28 sprint iters remain
+
+---
