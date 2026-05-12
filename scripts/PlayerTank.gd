@@ -35,6 +35,8 @@ var _iframe_timer: float = 0.0
 var _dead: bool = false
 var _restart_armed: bool = false
 var _hp_label: Label
+var _hp_bar_bg: ColorRect = null
+var _hp_bar_fg: ColorRect = null
 var _death_label: Label
 # Roguelike ascender state (iter 11 — Pro Consult 003 reframe)
 var _start_y: float = 0.0
@@ -295,9 +297,23 @@ func _on_hurtbox_body_entered(body: Node) -> void:
 func _setup_hud() -> void:
 	var canvas: CanvasLayer = CanvasLayer.new()
 	canvas.name = "HUD"
+	# iter 49: HP bar (graphical) above numeric text. Anchor 3 of crit 9
+	# requires HP shown via bar; anchor 1's numeric stays as hybrid.
+	_hp_bar_bg = ColorRect.new()
+	_hp_bar_bg.name = "HPBarBG"
+	_hp_bar_bg.size = Vector2(34, 6)
+	_hp_bar_bg.position = Vector2(3, 3)
+	_hp_bar_bg.color = Color(0.15, 0.15, 0.15, 0.85)
+	canvas.add_child(_hp_bar_bg)
+	_hp_bar_fg = ColorRect.new()
+	_hp_bar_fg.name = "HPBarFG"
+	_hp_bar_fg.size = Vector2(32, 4)
+	_hp_bar_fg.position = Vector2(4, 4)
+	_hp_bar_fg.color = Color(0.3, 0.9, 0.3, 1.0)  # green; turns red at low HP
+	canvas.add_child(_hp_bar_fg)
 	_hp_label = Label.new()
 	_hp_label.name = "HPLabel"
-	_hp_label.position = Vector2(4, 4)
+	_hp_label.position = Vector2(4, 10)  # iter 49: moved below bar
 	_hp_label.text = "HP %d/%d" % [hp, max_hp]
 	_hp_label.add_theme_color_override("font_color", Color.WHITE)
 	canvas.add_child(_hp_label)
@@ -329,6 +345,14 @@ func _setup_hud() -> void:
 func _on_hp_changed_hud(new_hp: int, the_max_hp: int) -> void:
 	if _hp_label != null:
 		_hp_label.text = "HP %d/%d" % [new_hp, the_max_hp]
+	# iter 49: update bar width + low-HP color shift (anchor 4 partial)
+	if _hp_bar_fg != null and the_max_hp > 0:
+		var ratio: float = clampf(float(new_hp) / float(the_max_hp), 0.0, 1.0)
+		_hp_bar_fg.size = Vector2(32.0 * ratio, 4.0)
+		if ratio < 0.34:
+			_hp_bar_fg.color = Color(0.95, 0.25, 0.25, 1.0)  # red at low HP
+		else:
+			_hp_bar_fg.color = Color(0.3, 0.9, 0.3, 1.0)  # green otherwise
 
 
 func _update_run_hud() -> void:

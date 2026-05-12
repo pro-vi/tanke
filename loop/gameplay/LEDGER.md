@@ -3656,3 +3656,96 @@ Honest hold at 2.
 - 11 sprint iters remaining (49-59 + iter 60 PLAYTEST)
 
 ---
+
+## Iter 049 — BUILD — HP bar (graphical) + crit 9 retro-correction
+
+**Mode:** BUILD
+**Date:** 2026-05-11
+**Branch:** `exp/godot4-loop`
+**Score:** **26/50** (was 24; +2 crit 9 1→3 [STRUCTURE])
+
+### Diagnose
+
+Iter-46 rename pass undercounted crit 9 anchor 2. Post-rename anchor 2 reads
+"HP shown + DEPTH + TIME labels readable at 320×240" — already met
+structurally by HP text + DEPTH + TIME labels (all iter-11+). Anchor 3
+explicitly distinguishes graphical bar.
+
+Iter 49 ships HP bar → anchor 3 met. Combines with retro correction for
++2 lift.
+
+### Code (scripts/PlayerTank.gd, +~30 lines)
+
+- New vars: `_hp_bar_bg: ColorRect`, `_hp_bar_fg: ColorRect`
+- `_setup_hud()`:
+  - 34×6 dark gray BG ColorRect at (3, 3)
+  - 32×4 green FG ColorRect at (4, 4)
+  - HP numeric text moved to (4, 10) below bar (hybrid: anchor 1 + anchor 3)
+- `_on_hp_changed_hud()` extended:
+  - Update FG bar width = `32 × (hp / max_hp)`
+  - Color shifts to red `(0.95, 0.25, 0.25)` when `ratio < 0.34`,
+    green `(0.3, 0.9, 0.3)` otherwise — anchor 4 partial ("low-HP
+    warning state cue")
+
+### Score
+
+| Criterion | Before | After | Δ | Citation |
+|-----------|--------|-------|---|----------|
+| 9. HUD / state communication | 1 | **3** | +2 | Retro correction +1 (anchor 2 was met but undercount in iter-46 rename: HP text + DEPTH + TIME); new lift +1 [STRUCTURE] anchor 3 (HP bar graphical). Partial anchor 4 via low-HP red shift. |
+| **Total** | **24** | **26** | **+2** | |
+
+### Self-deception check
+
+Anchor 2 wording: "HP shown + DEPTH + TIME labels readable at 320×240." HP
+text + DEPTH + TIME labels = verbatim met. Pro would grant.
+
+Anchor 3 wording: "HP shown via bar (graphical, not just text) + DEPTH +
+TIME." Green/red FG bar with width-modulation on hp_changed = verbatim met.
+Pro would grant.
+
+Both lifts honest. Not 3+ anchors across rubric (anti-pattern threshold is
+3+ feel-criteria moving in one iter); this is ONE criterion moving 2 steps
+via ONE ship + 1 rubric-reading correction.
+
+### Anchor 4 partial credit?
+
+Anchor 4: "Best-depth visible during run OR low-HP warning state cue
+(color shift / blink)." Low-HP red shift implements the second clause.
+But anchor 4 reads "during run" vs. iter-44 best-depth which is
+death-screen only. Conservative: low-HP red is partial fulfillment of
+anchor 4. Holding at 3 rather than claiming 4 — Pro might insist on
+"warning state cue" being more than color (blink, pulse, sound).
+
+Self-deception check on potential 4: "if I showed Pro the red color
+shift at hp/max<0.34, would they grant 3→4?" Probably hold the line —
+anchor 4 says "color shift / blink" so single color shift is anchor-4-
+fulfillment. But conservatism: structural lift to 3, defer 4 to iter-60
+cite or visible blink/pulse polish iter.
+
+### Verification
+
+- `make test` exit 0
+- `godot --headless --quit-after 60` exit 0
+- hp_changed signal already emits on every take_damage (iter-3 wired); bar
+  updates automatically.
+
+### Substrate freeze check
+
+- Hard scripts untouched ✓
+- ProceduralLevel.tscn untouched ✓
+- H1 tripwire unchanged at 2
+
+### Files touched
+
+- Modified: `scripts/PlayerTank.gd`
+- Modified: `loop/gameplay/{STATE,PRE-MORTEMS,LEDGER}.md`
+
+### Schedule
+
+- ScheduleWakeup 240s
+- Iter 50 = mid-sprint AUDIT (planned ~iter 50 per iter-39 sprint roadmap).
+  Re-score all 10 criteria with fresh evidence. Document rubric-debt
+  resolutions.
+- 10 sprint iters remaining (50-59 + iter 60 PLAYTEST)
+
+---

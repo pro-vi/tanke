@@ -23,9 +23,9 @@
 ## Phase
 
 ```
-phase: SPRINT (iter 48 → 60)
-iteration: 48
-consult_006: ADOPTED. Heavy LKP shipped iter 47. Depth landmarks shipped iter 48. Iter 49+ open for surfacing.
+phase: SPRINT (iter 49 → 60)
+iteration: 49
+consult_006: ADOPTED. Heavy LKP iter 47. Depth landmarks iter 48. HP bar iter 49.
 prompt_version: v2 (active iter 38+)
 preloop_complete: yes
 sprint_authorization: "User directive iter 38: 'lets schedule the next playtest in loop 60' — 21-iter sprint authorized"
@@ -38,7 +38,7 @@ falsifications_pending_playtest: crit 6 anchor 3 [STRUCTURE] lift falsification 
 rubric_debt: crit 8 anchor 3 (XP gems language stale post-iter-11 reframe), anchor 4 "UI counter increments" (kill count dropped iter 30) — flag for AUDIT iter ~50
 mandatory_playtest_iter: 60
 halt_iter_if_no_response: 63
-score: 24/50 (iter 40 +1 crit 6; iter 43 +1 crit 10; iter 46 +2 via rubric rename — crit 8 2→3 [STRUCTURE] multi-event impact layer + crit 10 2→3 [STRUCTURE] best-depth + NEW BEST highlight)
+score: 26/50 (iter 40 +1 crit 6; iter 43 +1 crit 10; iter 46 +2 via rubric rename; iter 49 +2 crit 9 1→3 [STRUCTURE] HP bar + retro correction)
 ```
 
 ---
@@ -96,9 +96,9 @@ don't count against this tripwire. Tripwire trigger likely iter 5-7.
 | 6. Enemy variety | **3** | Iter 40 [STRUCTURE] anchor 3: 3 types with distinct movement AND firing patterns — Light (lane-invader, 3.5s rare fire, 3s lane-commit) / Heavy (paused-aim corridor-denier, 0.45s wind-up + telegraph + burst, vision-gated) / Fast (continuous-fire harasser, 1.0s fire while moving, no aim, no LOS check). Falsification clause iter 60: if user does NOT distinguish Fast → revert 3→2. |
 | 7. Compulsion loop (was Run pacing) | 0 | Needs playtest |
 | 8. Impact / feedback / readability (iter 46 rename) | **3** | Iter 46 [STRUCTURE] anchor 3: multi-event impact layer — bullet impact spark on every collision (iter 41) + enemy hit-flash on non-kill (iter 41) + depth milestone visual cue (iter 30). Carries forward iter-19 hit-flash + iter-21 enemy death (anchors 1-2). Anchor 4 (camera shake on damage + above layer "feel-verified") gates on iter-60 playtest cite for shake's punch. |
-| 9. HUD / state communication (iter 46 rename) | 1 | Anchor 1 met: HP text (iter 3). Anchor 2 partial: HP shown + DEPTH + TIME labels readable (iter 11). HP-bar (anchor 3) NOT shipped — text only. Hold at 1 pending HP bar OR iter-60 cite. |
+| 9. HUD / state communication (iter 46 rename) | **3** | Iter 49 [STRUCTURE] anchor 3: "HP shown via bar (graphical, not just text) + DEPTH + TIME" — green/red HP bar at HUD top-left + numeric HP text hybrid below + DEPTH + TIME labels. Retro-correction iter-46 undercount (anchor 2 was already met). Anchor 4 partial: low-HP red color shift implements "low-HP warning state cue." |
 | 10. Run loop closure (iter 46 rename; anchors tightened) | **3** | Iter 46 [STRUCTURE] anchor 3 (post-rename): "Death screen shows best-depth + NEW BEST highlight when run > prior — code-citable" — iter 44 ship matches verbatim. Carries: anchor 2 (depth+time+kills+stall) iter 43. Anchors 4-5 require iter-60 playtest cite ("I want one more" / "I want to beat my best"). |
-| **Total** | **24/50** | Iter 46 +2: crit 8 2→3 [STRUCTURE] + crit 10 2→3 [STRUCTURE] via rubric rename per Pro Consult 006 H3 |
+| **Total** | **26/50** | Iter 49 +2: crit 9 1→3 [STRUCTURE] (retro 2 + HP bar 3) |
 
 ---
 
