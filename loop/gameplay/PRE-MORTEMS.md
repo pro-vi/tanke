@@ -1472,7 +1472,32 @@ H2-RULE claims (3):
 
 No score lift (META iter).
 
-**Post-iter:** [filled at iter 55]
+**Post-iter (iter 55 start):** Playtest template drafted. Build clean.
+
+---
+
+## Iter 055 — CONSULT — Pre-playtest pulse check (Consult 007)
+
+Tag: `[STRUCTURE]` (CONSULT iter, no score lift).
+
+Pre-playtest review per iter-39 sprint roadmap (planned iter 55). Fire-and-forget agentify_query, key=`tanke-iter-55-consult-preplaytest`. Tab capacity 8/12 — no clean-up needed.
+
+Going in, biggest expected miss: **Pro will say "ship Light role-distinction sharpener"** as the 4th BUILD iter (56-59) target — Pro flagged Light/Fast thinness in Consult 006 H4 and the iter 53 Heavy bullet color is half-step. Expecting Pro to also surface a Q-template critique (probably drop Q2 or Q3 as redundant).
+
+4 hypotheses presented:
+- H1: Ship NO new features iter 56-59, tune only
+- H2: Drop playtest from 5Q to 3Q (Q1+Q4+Q5 core)
+- H3: Heavy may dominate player attention budget (over-correction risk)
+- H4: Map/Eller-substrate samey-ness is biggest playtest risk (untouchable)
+
+Asked Pro for breaks/holds per H + one recommendation: (a) ship a feature, (b) tune parameters, (c) AUDIT/META only, (d) something else for iter 56-59.
+
+H2-RULE claims (3):
+1. Pro consult fires successfully (queryId returned)
+2. Response read at iter 56 (240s wakeup); adoption logged in creative-consults.md as Consult 007
+3. At least 1 of H1-H4 broken by Pro, triggering iter-56+ direction adjustment OR Pro confirms all 4 hold (= shipping conservatism is the right move)
+
+**Post-iter:** [filled at iter 56]
 
 ---
 

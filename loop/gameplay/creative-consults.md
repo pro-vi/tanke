@@ -498,3 +498,28 @@ ADOPTED (read iter 46; 80s gen, Pro Extended Thinking).
 4. **CONSULT mid-sprint pays off when budget is right.** 5 BUILDs in, 14 to go, was the right moment — early enough to redirect, late enough to have concrete progress.
 
 ---
+
+## Consult 007 — Iter 55 — GPT-Pro extended thinking — PRE-PLAYTEST PULSE CHECK
+
+**Date:** 2026-05-11
+**Trigger:** Planned pre-playtest review per iter-39 sprint roadmap. 4 BUILD iters remain (56-59) before iter-60 mandatory PLAYTEST. Score 30/50 with 5 [STRUCTURE-DEFERRED → iter 60] gates pending user cite.
+**Tab key:** `tanke-iter-55-consult-preplaytest`
+**Mode:** `extended-pro` fire-and-forget
+**Tab capacity:** 8/12 — no clean-up needed
+
+### Prompt focus
+
+4 labeled hypotheses presented neutrally:
+- **H1**: Ship NO new features iter 56-59 — tune existing parameters only
+- **H2**: Drop playtest from 5Q to 3Q (Q1+Q4+Q5 core)
+- **H3**: Heavy over-correction risk — dominates player attention budget
+- **H4**: Map/Eller-substrate samey-ness is biggest playtest risk (untouchable)
+
+Asked for breaks/holds per H + one recommendation for iter 56-59:
+(a) ship feature, (b) tune params, (c) AUDIT/META, (d) other.
+
+### Status
+
+PENDING (fired iter 55, response expected iter 56). Adoption decision and lessons logged after read.
+
+---
