@@ -447,3 +447,77 @@ Iter 8 closing must re-issue PLAYTEST request and explicitly flag counter status
 - Adding criteria that don't tie to PROMPT deliverables (would be silent ceiling-raising for its own sake).
 - Procedural hash anchor drift (would mean code edits crept in — AUDIT is rubric work only).
 - Forgetting to re-issue playtest (would let the halt-rule sneak up without warning).
+
+---
+
+## Iter 010 — META (resume + playtest + directive override)
+
+**Mode:** META (PROMPT § Step 3: "Process / discipline iter. Cite the meta-trigger.")
+
+**Meta-trigger:** User's iter-9.5 directive verbatim:
+
+> "title can nav but is ugly. stage 1 shooting my own eagle trigger game over. we cant keep asking me for playtest the loop needs to keep running, and you figure out way to test or collect items that you cant for me to review at the end"
+
+Two distinct payloads in one message:
+1. **Partial playtest data** — Q1: "can nav but is ugly"; Q2: "shooting my own eagle trigger game over" (recognition half implicit).
+2. **Process directive** — Suspend the 3-iter PLAYTEST halt rule. Adopt a REVIEW-QUEUE pattern where I collect items I can't verify alone, and the user reviews the queue at arc close.
+
+**Why META, not PLAYTEST or BUILD:**
+- The directive itself is process work (rule-suspension + new queue mechanism). PLAYTEST mode would only process the cite data.
+- BUILD would skip the process change.
+- META lets me handle both halves cleanly.
+
+**Plan:**
+
+1. **Score the playtest cites that landed:**
+   - C6 → 4: "can nav" without fumbling = anchor 4 ("Mode selection feels intentional in playtest"). User's "ugly" remark is aesthetic, not navigability — doesn't downgrade.
+   - C11 → 1: anchor 1 ("visually present in canonical positions — code-cited") now has implicit human confirmation — they treated Stage 1 as Stage 1 without objection. Was held at 0 strictly until human present; now relaxed.
+   - C10 anchor 1 retag: [STRUCTURE-DEFERRED] → [FEEL] (the "plays" half is now playtest-cited).
+   - C2 stays at 3: eagle game-over mechanic verified, but no explicit "felt like BC's eagle" cite. Anchor 4 unfulfilled.
+
+2. **Document the directive override** in LEDGER iter 10:
+   - 3-iter PLAYTEST halt rule SUSPENDED for the remainder of arc 3.
+   - This is sprint-authorization equivalent (arc-2 carry mechanism), but open-ended.
+   - The override is operational only — PROMPT.md isn't rewritten under fire; document the amendment in STATE.md and LEDGER. Future PROMPT v3 candidate can codify if the pattern proves stable.
+
+3. **Create `loop/originals/REVIEW-QUEUE.md`** — append-only list of items needing human eyes:
+   - Initial items:
+     - TitleScreen called "ugly" — anchor options + propose 2-3 visual variants for user to pick from
+     - Q2 recognition cite still missing — user didn't explicitly say "Stage 1 looks like BC"; flag for explicit ask at arc close
+     - Any future iter's items added here.
+
+4. **Un-HALT**: STATE.md phase HALTED → loop. HALTED.md stays as historical record (the halt DID happen; iter-10 is the resumption).
+
+5. **Re-issue queue handling each iter going forward** — REVIEW-QUEUE.md gets cited in LEDGER each iter that adds items.
+
+**Falsifiable claim:**
+
+After iter 10:
+- STATE.md phase = loop (no longer HALTED).
+- `loop/originals/REVIEW-QUEUE.md` exists with ≥2 initial items.
+- Score: 38/60 (was 36/60; +2 from C6 +1 and C11 +1).
+- Procedural hash anchor `23d6a2ec…` preserved.
+- `make test` exit 0.
+- Iter 11 wakeup scheduled.
+
+Generalization clause: the directive-override mechanism (suspend halt rule + REVIEW-QUEUE) must work for the *expected* iter shape, not just iter 10. Iter 11 will be a BUILD iter (Spawner integration) that surfaces ≥1 new queue item to validate the pattern.
+
+**Most-likely failure modes:**
+
+- **F1 [STRUCTURE]**: scoring the playtest data dishonestly. The user's reply has a lot of ambiguity — "can nav but ugly" is mixed feedback. If I lift C6 to 5 by stretching "without instruction," that's Goodhart. *Mitigation*: stay at C6=4 (anchor 4 is what's actually cited; anchor 5 strictly requires "no instruction" but I did instruct in iter 9's halt message). C11 strict at 1 (anchor 1 only, not 3+).
+- **F2 [STRUCTURE]**: REVIEW-QUEUE becomes a dumping ground. If every iter adds items without ever closing them, the queue rots. *Mitigation*: queue items have a STATUS (open/closed/superseded); end-of-arc review batch-closes; loop progress doesn't depend on queue closure.
+- **F3 [MIXED]**: Directive override could be read as I'm avoiding the halt rule rather than honoring user override. *Detection*: would a fresh reviewer see the operational amendment as honest? *Mitigation*: cite the user's exact words in LEDGER; explicitly note that this overrides PROMPT.md's halt rule.
+- **F4 [FEEL]**: "ugly" is a real signal I shouldn't ignore by treating it as a queue item. The TitleScreen feel matters for identity (C11). Could iter 10 polish the title without playtest? Risky — Goodhart bait. *Mitigation*: queue it with anchor options for the user to pick the visual direction; don't iterate blindly.
+
+**Substrate guards:**
+- No code edits.
+- RUBRIC.md unchanged (this iter doesn't rename anchors).
+- `loop/originals/REVIEW-QUEUE.md` NEW (process artifact).
+- HALTED.md preserved (historical record).
+- Procedural hash anchor preserved.
+
+**What would count as "iter 10 failed":**
+- Score inflation past 38/60 without anchor justification.
+- REVIEW-QUEUE not actually created.
+- HALTED.md deleted (would erase the historical halt event — bad).
+- Forgetting to schedule iter 11.

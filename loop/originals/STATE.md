@@ -3,16 +3,16 @@
 ## Phase
 
 ```
-phase: HALTED
-iteration: 9 (HALT iter; PLAYTEST 3-iter rule fired; see loop/originals/HALTED.md)
+phase: loop (RESUMED iter 10; HALTED.md retained as historical record)
+iteration: 10 (META — resume + playtest + directive override — complete; iter 11 scheduled)
 arc: 3 (Originals — BC NES stages import)
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 36/60  (final score at halt)
-playtest_halt_counter: 3 of 3 — TRIPPED
+score: 38/60
+playtest_halt_rule: SUSPENDED per user iter-10 directive — REVIEW-QUEUE pattern active
 ```
 
-**LOOP HALTED.** PROMPT halt rule: "A PLAYTEST request unfulfilled for 3 iters → `HALTED.md` and stop." See `loop/originals/HALTED.md` for full state, resume options (A: fulfill playtest, B: sprint authorization, C: playtest waiver), and outstanding-work surface. No further wakeup scheduled until user re-engages.
+**Loop RESUMED.** User iter-10 directive: "we cant keep asking me for playtest the loop needs to keep running, and you figure out way to test or collect items that you cant for me to review at the end." 3-iter PLAYTEST halt rule operationally suspended for arc-3 remainder. `loop/originals/REVIEW-QUEUE.md` now collects user-only-verifiable items; user batch-reviews at arc close. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 → 36 (v2) → 36 (HALT) → 38 (RESUME). Tag balance: 10 [STRUCTURE], 2 [STRUCTURE-DEFERRED], **3 [FEEL] — first non-zero**.
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -60,23 +60,23 @@ Hash anchor `23d6a2ec…` is the regression detector.
 
 ---
 
-## Current Scores (post iter 008 AUDIT — Rubric v2, 60-point ceiling)
+## Current Scores (post iter 010 — first feel cites)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
 | 1. Loader correctness | **4** | |
-| 2. Eagle gameplay | **3** | Anchor 4+ awaits PLAYTEST |
+| 2. Eagle gameplay | **3** | Anchor 3 now [FEEL]-cited (user verified game-over fires). Anchor 4+ queue #4 |
 | 3. Ice physics | **2** | Pass-through (rubric cap) |
 | 4. PNG-diff oracle | **4** | |
-| 5. Enemy roster fidelity | **2** | Lift via renamed anchor 2 (formula form OK) |
-| 6. Mode selection | **3** | Anchor 4+ awaits PLAYTEST |
+| 5. Enemy roster fidelity | **2** | iter-11 BUILD target: Spawner integration → 3 |
+| 6. Mode selection | **4** | Lift — anchor 4 [FEEL]-cited ("can nav" without fumbling). Anchor 5 unfulfilled (I instructed) |
 | 7. Stages 1-12 complete | **5** | |
 | 8. Stages 13-24 complete | **5** | |
 | 9. Stages 25-35 complete | **5** | |
-| 10. End-to-end playable | **2** | |
-| 11. Identity / BC fidelity *(new)* | **0** | Anchor 1 cite available via PNG-diff but holding at 0 until PLAYTEST fulfills feel-cite anchor 3+ |
-| 12. Arc-2 feedback metrics *(new)* | **1** | Anchor 1 ✓ — per-stage terrain counts tabulated iter 1 |
-| **Total** | **36/60** | post iter 008 AUDIT |
+| 10. End-to-end playable | **2** | Anchor 1 retag [STRUCTURE-DEFERRED] → [FEEL] |
+| 11. Identity / BC fidelity | **1** | Lift — anchor 1 cite-able + human-present non-objection. Anchor 3+ queue #2 |
+| 12. Arc-2 feedback metrics | **1** | iter-11+ BUILD target: tools/og_metrics.py |
+| **Total** | **38/60** | post iter 010 |
 
 ---
 
@@ -110,6 +110,39 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 010 META complete (2026-05-15).
+
+User directive (verbatim, iter-9.5):
+  "title can nav but is ugly. stage 1 shooting my own eagle trigger game
+  over. we cant keep asking me for playtest the loop needs to keep
+  running, and you figure out way to test or collect items that you
+  cant for me to review at the end"
+
+Two payloads processed:
+- Partial playtest data → score lifts (C6 3→4, C11 0→1; first 3 [FEEL] cites).
+- Process directive → 3-iter halt rule SUSPENDED for arc-3 remainder;
+  REVIEW-QUEUE.md created with 4 initial items.
+
+Files:
+- loop/originals/REVIEW-QUEUE.md (NEW) — 4 items open
+- loop/originals/STATE.md — phase HALTED → loop
+- loop/originals/HALTED.md PRESERVED (historical record)
+- loop/originals/PRE-MORTEMS.md + LEDGER.md appended
+
+Verification:
+- Procedural hash anchor 23d6a2ec… preserved.
+- make test exit 0.
+
+Score: 36 → 38/60 (+2). Tag balance flip: [FEEL] cites 0 → 3.
+
+Commit: chore(originals): iter 010 — META — resume + playtest scoring +
+REVIEW-QUEUE.
+
+Iter 11 wakeup scheduled 240s — BUILD target: Spawner integration
+(arc-2 soft-substrate write, C5 → 3 + C10 → 3).
+```
 
 ```
 Iter 009 HALT (2026-05-15).
@@ -295,6 +328,36 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 11 — BUILD (Spawner integration + arc-2 soft-substrate write):
+  - Step 1: PRE-MORTEM (Spawner extension risk; arc-2 hash anchor must hold).
+  - Step 2: DIAGNOSE — C5 at 2 (Spawner integration → 3); C10 at 2
+            (natural clear-condition fires → reachability of stages 1-10
+            in single session → 3). Critical: arc-2 ProceduralLevel.tscn
+            also uses Spawner.gd — edit must NOT change procedural
+            behavior (hash anchor regression detector).
+  - Step 3: SELECT MODE — BUILD with explicit arc-2 substrate write per
+            PROMPT Layer 2 spec ("Spawner.gd — wave / spawn logic, will
+            be EXTENDED for OG per-stage rosters; arc-3's only soft-
+            substrate write into arc-2 layer").
+  - Step 4: ACT:
+      1. Spawner.gd reads optional stage_number; if set (OG mode) uses
+         Roster.armored_probability(stage) per spawn; else (procedural
+         mode) preserves current behavior exactly.
+      2. Wire Spawner into OriginalLevel.tscn; pass stage_number from
+         OriginalLevel.gd.
+      3. Enemy clear-condition: when 20 enemies (TOTAL_ENEMIES_PER_STAGE)
+         have died and no more on map, fire stage_cleared signal → 
+         StageDirector.advance_stage() → reload scene with K+1.
+      4. Regression: procedural hash anchor 23d6a2ec… MUST be preserved
+         (make test + oracle re-run).
+  - Step 5: SCORE — C5 → 3, C10 → 3 (if headless verification of single-
+            session multi-stage advance works).
+  - Step 6: COMMIT — chore(originals): iter 011 — BUILD — Spawner integration
+  - Step 7: SCHEDULE — 240s wakeup for iter 12 (CAPABILITY: og_metrics.py
+            for C12 → 3, OR continued BUILD on whatever surfaces).
+```
 
 ```
 PAUSED. Loop halted per PROMPT 3-iter PLAYTEST rule.
