@@ -35,7 +35,7 @@ const ATLAS_SOURCE := 0
 const ATLAS_COORDS := Vector2i(0, 0)
 
 
-static func parse_stage(level: Node, stage_number: int, col_offset: int = 7, row_offset: int = 2) -> Dictionary:
+static func parse_stage(level: Node, stage_number: int, col_offset: int = 7, row_offset: int = 2, stages_dir_override: String = "") -> Dictionary:
 	var result := {
 		"ok": false,
 		"stage": stage_number,
@@ -48,7 +48,16 @@ static func parse_stage(level: Node, stage_number: int, col_offset: int = 7, row
 		"unknown": 0,
 		"error": "",
 	}
-	var path: String = ProjectSettings.globalize_path("res://") + TANKS_STAGES_REL + str(stage_number)
+	# iter 013: optional stages_dir_override lets edge-case tests point at
+	# /tmp fixtures without writing into .research/repos/Tanks/ (H2 tripwire).
+	# Default behavior (override empty) reads the canonical source — preserves
+	# the iter-1-through-12 behavior bit-identical.
+	var path: String
+	if stages_dir_override == "":
+		path = ProjectSettings.globalize_path("res://") + TANKS_STAGES_REL + str(stage_number)
+	else:
+		var sep: String = "" if stages_dir_override.ends_with("/") else "/"
+		path = stages_dir_override + sep + str(stage_number)
 	result.path = path
 	var f := FileAccess.open(path, FileAccess.READ)
 	if f == null:

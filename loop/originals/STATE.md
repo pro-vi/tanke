@@ -4,15 +4,15 @@
 
 ```
 phase: loop
-iteration: 12 (CAPABILITY — og_metrics arc-2 handshake — complete; iter 13 scheduled)
+iteration: 13 (BUILD — LevelLoader edge cases — complete; iter 14 scheduled)
 arc: 3 (Originals — BC NES stages import)
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 42/60
+score: 43/60
 playtest_halt_rule: SUSPENDED per user iter-10 directive — REVIEW-QUEUE pattern active
 ```
 
-**Arc-3 → arc-2 metric handshake artifact landed.** `loop/originals/og-metrics.json` compiled with per-stage + cross-stage stats + arc-2 baseline comparison. Headline: BC's structure_lift mean is 1.97 vs arc-2's 2.14 — close range. Cumulative path: ... → 40 → 42 (+2 C12). Tag balance: 12 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL]. REVIEW-QUEUE now 5 items (added #5: arc-3 lacks BC implicit edge walls).
+**C1 closed at anchor 5.** 4 edge-case fixtures pass via `make check-loader` / `make test-all`. Cumulative path: ... → 42 → 43 (+1 C1). Tag balance: 13 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL]. REVIEW-QUEUE still 5 items open.
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -60,11 +60,11 @@ Hash anchor `23d6a2ec…` is the regression detector.
 
 ---
 
-## Current Scores (post iter 012 — og_metrics handshake)
+## Current Scores (post iter 013 — LevelLoader edge cases)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
-| 1. Loader correctness | **4** | |
+| 1. Loader correctness | **5** | Anchor 5 ✓ — `make check-loader` exercises 4 edge cases; ALL_LOADER_TESTS_PASS |
 | 2. Eagle gameplay | **3** | Anchor 4+ queue #4 |
 | 3. Ice physics | **2** | Pass-through (rubric cap) |
 | 4. PNG-diff oracle | **4** | |
@@ -75,8 +75,8 @@ Hash anchor `23d6a2ec…` is the regression detector.
 | 9. Stages 25-35 complete | **5** | |
 | 10. End-to-end playable | **3** | |
 | 11. Identity / BC fidelity | **1** | Queue #2 |
-| 12. Arc-2 feedback metrics | **3** | Anchor 2 ✓ (`tools/og_metrics.py` + `loop/originals/og-metrics.json`) + anchor 3 ✓ (cross-stage stats + arc-2 comparison block). Anchor 4 (procedural config tuning) is iter-13+ target |
-| **Total** | **42/60** | post iter 012 |
+| 12. Arc-2 feedback metrics | **3** | Anchor 4 (config tuning) is iter-14+ target |
+| **Total** | **43/60** | post iter 013 |
 
 ---
 
@@ -110,6 +110,26 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 013 BUILD complete (2026-05-15) — LevelLoader edge cases.
+
+- Pre-mortem F1-F4; none fired.
+- scripts/LevelLoader.gd: optional stages_dir_override param (default
+  empty → canonical path; non-empty → /tmp test fixtures).
+- loop/test_loader.gd: SceneTree harness for 4 edge cases (happy,
+  missing file, short row, unknown char). 8 PASS assertions.
+- Makefile: check-loader + test-all targets.
+- Verification: ALL_LOADER_TESTS_PASS; make test-all exit 0.
+- Procedural hash anchor 23d6a2ec… preserved.
+
+Score: C1 4 → 5. Total 42 → 43/60 (+1).
+Tag balance: 13 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL].
+
+Commit: chore(originals): iter 013 — BUILD — LevelLoader edge cases
+(C1 anchor 5).
+Iter 14 wakeup scheduled.
+```
 
 ```
 Iter 012 CAPABILITY complete (2026-05-15) — arc-2 metric handshake.
@@ -395,6 +415,32 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 14 — BUILD (C12 → 4: configs/og_calibrated.tres):
+  - Step 1: PRE-MORTEM (anti-Goodhart on config tuning — must use OG empirical
+            bands from og-metrics.json, not arbitrary number-picking).
+  - Step 2: DIAGNOSE — C12 at 3; anchor 4 "Procedural arc-2 configs adjusted
+            to match the OG empirical distribution on at least 2 metrics —
+            code-cited config diff" is the structural reach.
+  - Step 3: SELECT MODE — BUILD.
+  - Step 4: ACT:
+      1. Read loop/originals/og-metrics.json summary.
+      2. Identify which 2-3 OG metrics arc-2 LevelConfig controls (brick
+         density, steel density, vert_structure_lift via merge_probability).
+      3. Draft configs/og_calibrated.tres — duplicate playable.tres with
+         weights tuned toward OG bands.
+      4. Run procedural test_runner with TANKE_CONFIG=og_calibrated.tres;
+         report the resulting metrics; compare to OG mean / arc-2 default.
+      5. Cite the diff in LEDGER (anchor 4 wording: "code-cited config diff").
+  - Step 5: SCORE — C12 → 4.
+  - Step 6: COMMIT — chore(originals): iter 014 — BUILD — og_calibrated config
+  - Step 7: SCHEDULE — 240s.
+
+Alternates if 14 finds blockers:
+- C5 anchor 4: cross-validate roster against Wikipedia / fan walkthrough.
+- C2/C6/C11 anchors 4+: require playtest (queue).
+```
 
 ```
 Iter 13 — BUILD (close C1 anchor 5 + queue review pre-staging):

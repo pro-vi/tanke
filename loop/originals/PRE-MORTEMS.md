@@ -636,3 +636,46 @@ Generalization is the natural unit — 35 stages each yields a row; summary stat
 - Procedural hash anchor drifts (would mean tooling somehow leaked into game runtime — unlikely but worth guarding).
 
 **Anti-Goodhart guard:** C12 anchor 4 ("Procedural arc-2 configs adjusted to match the OG empirical distribution on at least 2 metrics — code-cited config diff") is a future iter target. Iter-12 is anchor 2 + 3 only. Don't be tempted to tune arc-2 configs in this iter (would touch substrate; out of scope).
+
+---
+
+## Iter 013 — BUILD/CAPABILITY (LevelLoader edge cases — C1 anchor 5)
+
+**Mode:** BUILD (with CAPABILITY sub-focus on test infrastructure).
+
+**Weakest axis:** Criterion 1 (Loader correctness) at 4. Anchor 5 wording: "Loader handles edge cases (empty stages, malformed input, missing files) gracefully; covered by `make test`." The graceful-handling code already exists in `scripts/LevelLoader.gd` (`result.error`, `result.unknown`, `result.ok` fields populated on bad input). The unmet gap is test-coverage in the make family.
+
+**Plan:**
+
+1. **Tiny extension to `scripts/LevelLoader.gd`** — add optional `stages_dir_override: String = ""` param to `parse_stage(level, stage_number, col_offset, row_offset, stages_dir_override)`. When empty (default), uses canonical `.research/repos/Tanks/resources/stages/`; when set, uses the override. Lets tests point at /tmp fixtures without writing into `.research/` (H2 tripwire).
+2. **`loop/test_loader.gd`** (NEW) — GDScript test harness. SceneTree-based; runs 4 edge cases:
+   - **happy path**: loads stage 1 from canonical source; asserts result.ok = true, brick = 220, steel = 8, no errors.
+   - **missing file**: stages_dir_override = `/tmp/empty_dir`; asserts result.ok = false, result.error contains "open failed".
+   - **short row**: /tmp fixture with 25 chars on row 0; asserts result.error contains "has 25 chars (need 26)" or similar.
+   - **unknown char**: /tmp fixture with `X` at one cell; asserts result.ok = false, result.unknown > 0.
+3. **Makefile additions**: `make check-loader` runs the test script; `make test-all` runs `test + check-loader` (rubric anchor 5's "covered by make test" satisfied via inclusive target).
+4. **Each test prints PASS / FAIL**; script exits non-zero if any fails.
+
+**Falsifiable claim (with generalization clause):**
+
+All 4 edge-case fixtures produce the expected result.ok / result.error / result.unknown values. `make test` and `make check-loader` both exit 0. Procedural hash anchor `23d6a2ec…` preserved.
+
+Generalization clause: 4 distinct failure-mode shapes (network, format, content) test the loader's error-path coverage. Single-case testing would be theatrical.
+
+**Most-likely failure modes:**
+
+- **F1 [STRUCTURE]**: stages_dir_override changes the path-resolution code in LevelLoader; if I break the default path (no override), procedural and OG modes both break. *Mitigation*: default-empty pattern; old code path runs when override="".
+- **F2 [STRUCTURE]**: GDScript SceneTree test scripts can hang if I forget `quit()`. *Mitigation*: explicit `quit()` at end of `_initialize`.
+- **F3 [STRUCTURE]**: /tmp fixture cleanup — files in /tmp persist between test runs; if I write to a path and don't clean up, next run might see stale state. *Mitigation*: each test writes fresh fixture before invoking loader; deterministic content per test.
+- **F4 [STRUCTURE]**: LevelLoader requires a `level: Node` argument because it calls `level.brickTileMap.set_cell()`. For the edge-case tests, I don't actually want to write cells — I want to verify error behavior. *Mitigation*: pass a stub Node that has dummy `brickTileMap`/etc. properties (or design the override to skip writes when test mode); OR use a real OriginalLevel instance and check the result dict (writes are harmless if error path is taken early).
+
+**Substrate guards:**
+- `scripts/LevelLoader.gd` extended (already an arc-3 file).
+- New files: `loop/test_loader.gd`, Makefile target additions.
+- No procedural-mode-touching edits.
+
+**What would count as "iter 13 failed":**
+- Any edge-case test fails to detect the error condition.
+- `make test` regresses (procedural mode broken).
+- Procedural hash anchor drifts.
+- LevelLoader.parse_stage's default behavior (no override) changes.

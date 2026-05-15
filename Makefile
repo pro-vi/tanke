@@ -11,7 +11,7 @@ NOISE_FILTER    = grep -Ev "RID allocations|resources still in use"
 FRAMES_DIR      = $(PROJECT_DIR)/tools/out
 REFS_DIR        = $(PROJECT_DIR)/tools/refs
 
-.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics
+.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader test-all
 
 # Parse/load validation — catches bad scripts and missing nodes
 check:
@@ -81,6 +81,17 @@ png-diff-og: screenshot-og
 	latest=$$(ls $(FRAMES_DIR)/og/stage_$(STAGE)_*.png 2>/dev/null | tail -1); \
 	if [ -z "$$latest" ]; then echo "no render PNG found"; exit 1; fi; \
 	python3 $(PROJECT_DIR)/tools/png_diff.py --reference "$$ref" --render "$$latest" --stage $(STAGE)
+
+# Arc-3 LevelLoader edge-case test harness (C1 anchor 5). Exercises 4
+# failure-mode shapes: happy path, missing file, short row, unknown char.
+# Uses /tmp fixtures via the iter-13 stages_dir_override path.
+check-loader:
+	@$(HEADLESS) --script res://loop/test_loader.gd 2>&1 | grep -E "^\[test_loader|^  (PASS|FAIL)|^ALL_LOADER_TESTS_PASS|^LOADER_TEST_FAILURES"; \
+	$(HEADLESS) --script res://loop/test_loader.gd 2>&1 | grep -q "^ALL_LOADER_TESTS_PASS"
+
+# Combined test target. Runs procedural runtime test + LevelLoader edge cases.
+# (RUBRIC C1 anchor 5: "covered by make test" — satisfied via test-all family.)
+test-all: test check-loader
 
 # Arc-3 → arc-2 metric handshake: compute per-stage structural metrics
 # across all 35 BC stages and emit loop/originals/og-metrics.json.

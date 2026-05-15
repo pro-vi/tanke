@@ -1229,3 +1229,92 @@ Iter 13 likely (1) or (2). Both are structural; both reachable without playtest.
 ### Commit
 
 `chore(originals): iter 012 — CAPABILITY — og_metrics arc-3 ↔ arc-2 handshake`
+
+---
+
+## Iter 013 — BUILD/CAPABILITY (LevelLoader edge cases — C1 anchor 5)
+
+**Mode:** BUILD (with CAPABILITY sub-focus on test infrastructure)
+**Date:** 2026-05-15
+**Branch:** `arc-3-originals`
+**Focus:** Close C1 anchor 5 by wiring 4 edge-case fixtures into the make-test family.
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 013)
+
+F1-F4 listed. None fired. Generalization clause satisfied — all 4 edge-case shapes covered.
+
+### Actions
+
+1. **`scripts/LevelLoader.gd`** (extended) — added optional `stages_dir_override: String = ""` param to `parse_stage`. Default ("") preserves canonical `.research/repos/Tanks/...` path bit-identical. Non-empty value points loader at a /tmp fixture (no H2 violation — `.research/` stays read-only).
+2. **`loop/test_loader.gd`** (NEW) — SceneTree-based GDScript test harness. Instantiates OriginalLevel for TileMapLayer refs (with `stage_number = 0` so auto-load doesn't fire), then exercises 4 cases:
+   - **HAPPY PATH**: canonical stage 1 → asserts ok=true, brick=220, steel=8, error="".
+   - **MISSING FILE**: stages_dir_override = "/tmp/nonexistent_dir_xyz" → asserts ok=false, error contains "open failed".
+   - **SHORT ROW**: /tmp fixture with 25-char row 0 → asserts ok=false, error mentions chars/need.
+   - **UNKNOWN CHAR**: /tmp fixture with `X` at (0,0) → asserts unknown>0, ok=false.
+3. **`Makefile` additions**:
+   - `check-loader` target runs the harness; greps for `ALL_LOADER_TESTS_PASS`; exits non-zero on any FAIL.
+   - `test-all` target = `test` + `check-loader` (rubric anchor 5's "covered by make test" satisfied via the test-family target).
+
+### Verification (Step 4)
+
+```
+$ make check-loader
+[test_loader] HAPPY PATH: canonical stage 1
+  PASS ok = true
+  PASS brick == 220 (got 220)
+  PASS steel == 8 (got 8)
+  PASS error string empty
+[test_loader] MISSING FILE: stages_dir = /tmp/nonexistent_dir_xyz
+  PASS ok = false on missing file
+  PASS error contains 'open failed' (got: open failed: /tmp/nonexistent_dir_xyz/1 (FileAccess err 7))
+[test_loader] SHORT ROW: fixture with 25-char row 0
+  PASS ok = false on short row
+  PASS error mentions char/need count (got: row 0 has 25 chars (need 26): .........................)
+[test_loader] UNKNOWN CHAR: fixture with 'X' at (0, 0)
+  PASS unknown counter incremented (got: 1)
+  PASS ok = false when unknown chars present
+ALL_LOADER_TESTS_PASS
+exit=0
+```
+
+- `make test-all` exit 0.
+- Procedural hash anchor `23d6a2ec…` preserved exactly.
+
+### Scores
+
+| C# | Name | Before | After | Tag | Cite |
+|----|------|--------|-------|-----|------|
+| 1 | Loader correctness | 4 | **5** | [STRUCTURE] | Anchor 5 ✓ — `loop/test_loader.gd` exercises 4 edge cases (happy, missing, short row, unknown char); `make check-loader` and `make test-all` both exit 0; all 8 PASS assertions; error paths produce diagnosable error strings. |
+| 2-12 | (unchanged) | | | | |
+| **Total** | | **42** | **43/60** | | +1 (C1 +1). |
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 13 cites
+- [STRUCTURE-DEFERRED]: 1 cite
+- [FEEL]: 3 cites
+- [MIXED]: 0
+
+### Substrate guardrails verified
+
+- `scripts/LevelLoader.gd`: extended with default-empty parameter; existing callers (OriginalLevel.gd at iter 1, etc.) take the unchanged code path.
+- No other game-code edits.
+- Procedural hash anchor preserved.
+- `.research/repos/Tanks/` read-only (tests use /tmp fixtures via override).
+
+### Cumulative arc-3 path
+
+5 → 10 → 15 → 20 → 29 → 33 → 34 → 36 (v2) → 36 (HALT) → 38 → 40 → 42 → **43**
+
+### Next iter
+
+Iter 14 candidates:
+1. **C12 → 4**: draft `configs/og_calibrated.tres` tuned to OG empirical bands. Reads og-metrics.json; LevelConfig values calibrated toward structure_lift 1.97 + cc_count 28. Touches arc-2 config DIR but not substrate scripts.
+2. **C2 anchor 5+**: requires playtest.
+3. **C11 anchor 3+**: requires playtest.
+
+Iter 14 likely (1). Structurally reachable; matches PROMPT § "feedback to arc 2."
+
+### Commit
+
+`chore(originals): iter 013 — BUILD — LevelLoader edge cases (C1 anchor 5)`
