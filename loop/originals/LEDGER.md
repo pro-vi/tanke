@@ -160,3 +160,98 @@ Pre-mortem due at iter 2 start. Halt-rule countdown: PLAYTEST gate not yet open 
 ### Commit
 
 `chore(originals): iter 001 — BUILD/CAPABILITY — LevelLoader + OriginalLevel + test_runner --scene/--og-stage`
+
+---
+
+## Iter 002 — BUILD / CAPABILITY (PNG-diff oracle)
+
+**Mode:** BUILD (with CAPABILITY sub-focus on `tools/png_diff.py`)
+**Date:** 2026-05-15
+**Branch:** `arc-3-originals`
+**Focus:** PNG-diff oracle (criterion 4) — unblocks PNG-diff floor on criteria 7/8/9
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 002)
+
+Carry from iter-001 Nat-13 meta: **falsifiable claim must include a generalization clause — N > 1 test cases drawn from the actual variation space, not just the example case.** This iter applies the cure.
+
+Falsifiable claim: tool runs on **stages 1, 4, 7, 17** (deliberate variety: brick+steel only / four-terrain / steel-heavy / first-ice) producing coherent reports; self-diff returns 0%; <30% mismatch on real reference (the iter-2 plausibility threshold).
+
+**Result: claim verified, generalization clause satisfied, anchor pre-mortem F2/F3 both partially fired and mitigated:**
+- F1 (StrategyWiki anti-bot): did NOT fire — CDN URL with a normal user-agent fetched cleanly.
+- F2 (palette classifier confusion): partially fired — stage 4 produces a "forest → steel" misclassification (1 cell); root cause is the placeholder TANKE_ANCHORS forest color. Below the 5% threshold; iter-3 work to refine.
+- F3 (render-resolution mismatch): pre-empted by `_auto_region` that picks crop offset from image size — also fixed a self-diff crash that the pre-mortem didn't predict (208×208 vs 320×240 region mismatch).
+- F4 (pixel-vs-tile diff): non-issue — tool designed at tile-classification granularity from the start.
+
+### Actions
+
+1. **`tools/refs/`** (NEW) — cached StrategyWiki reference PNGs. Stages 01/04/07/17 fetched via `curl` against `cdn.wikimg.net`. Each 208×208 indexed-color (`P` mode) per synthesis spec.
+2. **`tools/png_diff.py`** (NEW) — PIL pipeline. CLI: `--reference REF --render RND [--stage K] [--ascii-source PATH] [--no-mask-player] [--json]`. Classifies each 8-px sub-brick (676 cells = 26×26) to {empty, brick, steel, forest, water, ice} via per-palette nearest-color match. Auto-detects palette (NES black-background vs tanke gray-background) by sampling crop origin. Outputs mismatch %, per-cell mismatch list, confusion matrix; with `--ascii-source`, adds triple-diff (ASCII source vs ref vs render). Exit code 0 if `<5%`, 1 if `≥5%`, 2 on error.
+3. **`scripts/OriginalLevel.gd`** — env var `TANKE_OG_STAGE` already wired in iter 1; verified the `make screenshot-og` path actually overrides `stage_number` correctly (the env override fires before `_ready` runs `LevelLoader.parse_stage`).
+4. **`Makefile`** (EXTENDED) — added `screenshot-og STAGE=K` (renders OriginalLevel.tscn with TANKE_OG_STAGE=K via the existing `--write-movie` capture path) + `png-diff-og STAGE=K` (depends on screenshot-og; runs png_diff.py against `tools/refs/Battle_City_StageKK.png`). Procedural `screenshot`, `test`, `check`, `analyze`, `diff` targets untouched.
+
+### Verification (Step 4)
+
+| Stage | Ref-vs-render | ASCII-vs-ref | ASCII-vs-render | Notes |
+|-------|---------------|--------------|-----------------|-------|
+| 1 | **0.299%** ✓ | 0.0% | 0.299% | 2 cells: empty→steel + empty→ice (PlayerTank leak outside mask) |
+| 4 | **0.448%** ✓ | 0.0% | 0.448% | 3 cells: forest→steel + forest→ice + forest→empty (TANKE_ANCHORS forest color placeholder; refine iter 3+) |
+| 7 | **0.299%** ✓ | 0.0% | 0.299% | Same 2-cell PlayerTank artifact pattern as stage 1 |
+| 17 | 32.239% (expected) | 1.194% | 31.045% | **206 ice→empty confusions = the loader skipping ice (known limitation; phase-1 decision pending). Tool correctly detects loader gap.** |
+
+**Self-diff sanity baselines** (pre-mortem promise): NES ref vs itself → 0.0% mismatch; tanke render vs itself → 0.0% mismatch. Both pass.
+
+**Edge cases handled** (anchor-5 prep): missing reference PNG → exit 2 with clear message; unsupported image size → exit 2 with clear message.
+
+**Procedural hash anchor `23d6a2ec…` preserved exactly.** `make test` exit 0. Arc-2 baseline intact.
+
+### Scores (Step 5)
+
+| C# | Name | Before | After | Tag | Cite |
+|----|------|--------|-------|-----|------|
+| 1 | Loader correctness | 4 | **4** | [STRUCTURE] | Unchanged. PNG-level diff additionally confirms the iter-1 cell-count cite at sub-brick granularity (0.299–0.448% on stages 1/4/7, exact 206-cell ice gap on stage 17). Anchor 5 (`make test` covers edge cases) still requires loader edge cases in the make test target — incomplete. |
+| 2 | Eagle gameplay | 0 | 0 | — | Iter 3+. |
+| 3 | Ice physics | 0 | 0 | — | Iter-2 evidence shows ice-skip is the dominant stage-17 mismatch source; the loop now has empirical pressure for the phase-1 ice-decision iter. Still no anchor 1 (explicit decision iter not yet held). |
+| 4 | PNG-diff oracle | 0 | **3** | [STRUCTURE] | Anchor 1: tool exists, runs on one stage, reports % ✓. Anchor 2: reads StrategyWiki PNG, classifies tiles, accuracy hand-verified on 1 stage ✓ (verified on 4). Anchor 3: per-stage report with mismatch % and per-coord diffs ✓. Anchor 4: integrated into loop workflow ("every IMPORT iter runs it") — *capable* via `make png-diff-og` but no IMPORT iter has fired yet to demonstrate the cite. Anchor 5: handles palette variants ✓ + missing reference ✓ + size variants ✓; "stage rotation" N/A for canonical BC. Conservative 3/5 — anchor 4 lands in the first IMPORT iter. |
+| 5 | Enemy roster fidelity | 0 | 0 | — | Iter 3+ sub-research. |
+| 6 | Mode selection | 0 | 0 | — | Iter 5+. |
+| 7 | Stages 1-12 complete | 0 | 0 | — | PNG-diff floor now permits stages 1/4/7 (3 stages <5%). But full-6-gate completion still blocked by gates 4 (eagle) and 6 (roster). Floor permits up to 3 once gates 4+6 land. |
+| 8 | Stages 13-24 complete | 0 | 0 | — | Same; PNG-diff floor permits 0 stages here (stage 17 is the only verified one and it fails the 5% threshold due to known ice-skip). |
+| 9 | Stages 25-35 complete | 0 | 0 | — | No stages diffed in this third yet. |
+| 10 | End-to-end playable run | 1 | 1 | [STRUCTURE-DEFERRED] | Unchanged; "plays" awaits PLAYTEST. |
+| **Total** | | **5** | **8/50** | | |
+
+### Tag balance (cumulative across iters 1+2)
+
+- [STRUCTURE]: 2 cites (C1 iter 1, C4 iter 2). Arc-3 expected pattern (terrain match is code-verifiable).
+- [STRUCTURE-DEFERRED]: 1 cite (C10).
+- [FEEL]: 0.
+- [MIXED]: 0.
+
+### Substrate guardrails verified
+
+- All Layer 1 + Layer 2 substrate UNTOUCHED.
+- `.research/repos/Tanks/` — read-only access only (H2 tripwire respected).
+- `tools/refs/` — NEW directory for cached references; contents are derivative of canonical sources (StrategyWiki PNGs).
+- `Makefile` — extended with TWO new targets; existing procedural targets unchanged.
+- Procedural hash anchor `23d6a2ec…` preserved.
+
+### Nat-13 meta carry forward
+
+Iter-2 pre-mortem opened with the generalization-clause cure. The clause held: tool was tested on 4 deliberately-varied stages, not just stage 1. Two implicit predictions verified that would have been missed on stage 1 alone:
+1. Forest-color classification needs refinement (caught on stage 4, invisible on stage 1).
+2. The loader's ice-skip is the dominant stage-17 mismatch (caught on stage 17, invisible on stage 1).
+
+The discipline produced two iter-3+ work items that pure stage-1 testing would have shipped without surfacing. **Cure validated.**
+
+### Next iter
+
+Iter 3 priorities:
+1. **Phase-1 ice decision iter** (criterion 3) — the synthesis flagged this; the iter-2 stage-17 result makes it concrete. Decision: pass-through (cap C3 at 2) OR slide-physics (path to C3=5). Recommend pass-through for v1 to unblock criteria 7/8/9 floor (the 206-cell ice gap is the dominant stage-17 failure; making the loader place a distinct ice tile fixes the diff even with pass-through semantics).
+2. **Eagle entity** (criterion 2) — `scripts/Eagle.gd` + `scenes/Eagle.tscn`; HP=1; eagle_destroyed signal. Per-stage canonical eagle position derives from the brick-fortress `#..#` pattern at rows 24-25.
+3. **PNG-diff workflow demo** (criterion 4 → 4) — first IMPORT iter that cites the diff result inline.
+
+PLAYTEST gate: still not open (no mode-select). No halt-rule countdown.
+
+### Commit
+
+`chore(originals): iter 002 — BUILD/CAPABILITY — png_diff oracle + 4-stage generalization`

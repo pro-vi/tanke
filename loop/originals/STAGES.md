@@ -13,23 +13,21 @@ gates pass:
 When ALL six gates pass for stage K, mark `[x]` here AND in the LEDGER
 iter that completed it.
 
-**Iter 001 status (2026-05-15):** gates 1+2+3 verified for all 35 stages
-via automated cell-count diff (`grep -o '<symbol>'` on source vs
-`LevelLoader.parse_stage()` emit counts) + reachability oracle pass.
-Gates 4 (eagle), 5 (PNG diff), 6 (enemy roster) all pending —
-no checkbox flips until those land.
+**Iter 001 status:** gates 1+2+3 verified for all 35 stages via automated cell-count diff (`grep -o '<symbol>'` on source vs `LevelLoader.parse_stage()` emit counts) + reachability oracle pass.
+
+**Iter 002 status:** gate 5 (PNG diff <5%) verified for stages **1, 4, 7** via `tools/png_diff.py` against StrategyWiki references (0.299–0.448% mismatch). Stage 17 PNG-diff at 32.239% — known limitation: loader skips ice cells; phase-1 ice-decision iter pending. Gates 4 (eagle), 6 (enemy roster) still pending across the board — no full-completion checkbox flips yet.
 
 ---
 
 ## First third (criterion 7 — 12 stages)
 
-- [ ] Stage 1  — symbols `#@`     — gates 1+2+3 ✓ (iter 001); 220#/8@/0%/0~/0-
+- [ ] Stage 1  — symbols `#@`     — gates 1+2+3 ✓ (iter 001); 220#/8@/0%/0~/0-; **gate 5 ✓ iter 002 (0.299%)**
 - [ ] Stage 2  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 184#/48@/40%/0~/0-
 - [ ] Stage 3  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 126#/26@/152%/0~/0-
-- [ ] Stage 4  — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); 262#/16@/56%/12~/0-
+- [ ] Stage 4  — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); 262#/16@/56%/12~/0-; **gate 5 ✓ iter 002 (0.448%)**
 - [ ] Stage 5  — symbols `#@~`    — gates 1+2+3 ✓ (iter 001); 136#/26@/0%/60~/0-
 - [ ] Stage 6  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 148#/32@/100%/0~/0-
-- [ ] Stage 7  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 8#/174@/28%/0~/0-
+- [ ] Stage 7  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 8#/174@/28%/0~/0-; **gate 5 ✓ iter 002 (0.299%)**
 - [ ] Stage 8  — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); 152#/20@/60%/88~/0-
 - [ ] Stage 9  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 64#/92@/72%/0~/0-
 - [ ] Stage 10 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); 218#/40@/112%/24~/0-
@@ -42,7 +40,7 @@ no checkbox flips until those land.
 - [ ] Stage 14 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001)
 - [ ] Stage 15 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
 - [ ] Stage 16 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 17 — symbols `#@-`    — gates 1+2+3 ✓ (iter 001); **206 ice cells skipped** (phase-1 decision pending)
+- [ ] Stage 17 — symbols `#@-`    — gates 1+2+3 ✓ (iter 001); **206 ice cells skipped**; gate 5 ✗ iter 002 (32.239% — blocked by ice-skip; awaits phase-1 ice decision)
 - [ ] Stage 18 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
 - [ ] Stage 19 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
 - [ ] Stage 20 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001)

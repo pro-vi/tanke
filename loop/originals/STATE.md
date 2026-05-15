@@ -4,11 +4,11 @@
 
 ```
 phase: loop
-iteration: 1 (BUILD/CAPABILITY scaffolding — complete; iter 2 scheduled)
+iteration: 2 (BUILD/CAPABILITY png_diff oracle — complete; iter 3 scheduled)
 arc: 3 (Originals — BC NES stages import)
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 5/50  (C1=4 [STRUCTURE], C10=1 [STRUCTURE-DEFERRED])
+score: 8/50  (C1=4, C4=3, C10=1 — all [STRUCTURE] or [STRUCTURE-DEFERRED])
 ```
 
 ---
@@ -62,12 +62,12 @@ Hash anchor `23d6a2ec…` is the regression detector.
 | 1. Loader correctness | **4** | All 35 stages parse exact (iter 001); anchor 5 awaits `make test` coverage of edge cases |
 | 2. Eagle gameplay | 0 | No Eagle.gd / Eagle.tscn |
 | 3. Ice physics | 0 | Loader skips `-` silently; phase-1 decision iter still pending |
-| 4. PNG-diff oracle | 0 | tools/png_diff.py doesn't exist |
+| 4. PNG-diff oracle | **3** | Tool exists; auto-detects palette; tested on stages 1/4/7/17 (anchor 3 — per-stage report + per-coord mismatch + confusion matrix); anchor 4 awaits first IMPORT iter |
 | 5. Enemy roster fidelity | 0 | Per-stage data not extracted from Tanks src |
 | 6. Mode selection | 0 | No title/picker scene |
-| 7. Stages 1-12 complete | 0 | Gates 1+2+3 ✓ for all 12; PNG-diff floor blocks score lift |
-| 8. Stages 13-24 complete | 0 | Gates 1+2+3 ✓ for all 12; PNG-diff floor blocks score lift |
-| 9. Stages 25-35 complete | 0 | Gates 1+2+3 ✓ for all 11; PNG-diff floor blocks score lift |
+| 7. Stages 1-12 complete | 0 | Gates 1+2+3 ✓ all 12; gate 5 ✓ stages 1/4/7 (iter 002); full-completion still blocked by gates 4 (eagle) + 6 (roster) |
+| 8. Stages 13-24 complete | 0 | Gates 1+2+3 ✓ all 12; gate 5 ✗ stage 17 (ice-skip); gates 4/6 pending |
+| 9. Stages 25-35 complete | 0 | Gates 1+2+3 ✓ all 11; PNG-diff not yet run on this third; gates 4/6 pending |
 | 10. End-to-end playable | **1** | Stage 1 loads headless [STRUCTURE-DEFERRED]; "plays" awaits PLAYTEST |
 | **Total** | **5/50** | iter 001 baseline |
 
@@ -105,21 +105,23 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ## Last Action
 
 ```
-Iter 001 BUILD/CAPABILITY complete (2026-05-15).
+Iter 002 BUILD/CAPABILITY complete (2026-05-15).
 
-- Pre-mortem filed with 4 [STRUCTURE] failure modes; none fired.
-- LevelLoader.gd: static parse_stage; OS-layer FileAccess (bypasses res-filter).
-- OriginalLevel.gd: extends Level.gd; inherits _replace_blocks() (H1 respected).
-- OriginalLevel.tscn: parallel to ProceduralLevel.tscn; 4 TileMapLayers, no Spawner.
-- test_runner.gd: EXTENDED with --scene PATH and --og-stage K flags + defensive
-  ps/level_seed lookups for OG scene; procedural code path untouched.
-- Verification: procedural hash anchor 23d6a2ec… preserved exactly; make test exit 0.
-- Verification: 35/35 stages parse with exact per-cell terrain match against
-  grep -o counts on source; all 35 playable=true. Four stages have ice (skipped).
-- Scores: C1=4 [STRUCTURE], C10=1 [STRUCTURE-DEFERRED]; total 5/50.
-- Commit: chore(originals): iter 001 — BUILD/CAPABILITY — LevelLoader +
-  OriginalLevel + test_runner --scene/--og-stage.
-- Iter 2 wakeup scheduled.
+- Pre-mortem opened with Nat-13 generalization-clause cure (4 deliberate test stages).
+- tools/refs/: 4 StrategyWiki PNGs cached (stages 1/4/7/17).
+- tools/png_diff.py: PIL tile-classifier; auto-detect palette (NES vs tanke);
+  triple-diff mode with --ascii-source; exit codes 0 / 1 / 2.
+- Makefile: NEW screenshot-og STAGE=K and png-diff-og STAGE=K targets.
+- 4-stage generalization: stages 1/4/7 at 0.299–0.448% (all <5%); stage 17 at
+  32.239% (expected — 206 ice→empty matches loader's known ice-skip).
+- Self-diff sanity baselines: both 0.0% mismatch.
+- Edge-case handling: missing reference, unsupported size — both exit 2.
+- Verification: procedural hash anchor 23d6a2ec… preserved; make test exit 0.
+- Scores: C1=4 [STRUCTURE], C4=3 [STRUCTURE] (lift +3), C10=1 [STRUCTURE-DEFERRED];
+  total 8/50.
+- Commit: chore(originals): iter 002 — BUILD/CAPABILITY — png_diff oracle +
+  4-stage generalization.
+- Iter 3 wakeup scheduled.
 ```
 
 ---
@@ -133,25 +135,36 @@ None (new arc).
 ## Next Action
 
 ```
-Iter 2 — BUILD / CAPABILITY (PNG-diff oracle + eagle scaffolding):
-  - Step 1: PRE-MORTEM (append iter-002 block to PRE-MORTEMS.md; H2 RULE v2 tags)
-  - Step 2: DIAGNOSE — weakest axis = criterion 4 (PNG-diff oracle) at 0;
-              criteria 7/8/9 floor-blocked until 4 ≥ 2.  Also weak: criterion 2 (eagle).
-  - Step 3: SELECT MODE — BUILD with CAPABILITY focus.
-  - Step 4: ACT — build in this order:
-      1. tools/png_diff.py: PIL pipeline that reads a 208×208 reference PNG,
-         classifies each 16×16 tile to one of {empty, brick, steel, forest, water, ice},
-         compares to our rendered stage. Iter-2 minimum: runs on stage 1 + reports
-         per-tile mismatch %. Downloads StrategyWiki Battle_City_Stage01.png to
-         tools/refs/ (gitignored or .research-aligned).
-      2. Headless render of OriginalLevel stage 1 → PNG (existing screenshot path
-         repurposed, or new make target). Compare to reference.
-      3. (Stretch) scripts/Eagle.gd + scenes/Eagle.tscn skeleton — HP=1,
-         eagle_destroyed signal. Placement deferred to iter 3 (per-stage eagle coords).
-  - Step 5: SCORE — Criterion 4 lift (anchor 1 minimum; anchor 2 if accuracy
-              hand-verified). Criteria 7/8/9 STILL 0 until per-stage PNG diff < 5%.
-  - Step 6: COMMIT — chore(originals): iter 002 — BUILD/CAPABILITY — png_diff oracle + (eagle skeleton)
-  - Step 7: SCHEDULE — 240s wakeup for iter 3
+Iter 3 — BUILD (phase-1 ice decision + eagle entity):
+  - Step 1: PRE-MORTEM (iter-003 block with generalization clause for eagle
+            placement: per-stage eagle coord derivation from #..# brick fortress
+            pattern across stages 1, 4, 35 — vary stage to verify the rule).
+  - Step 2: DIAGNOSE — weakest axis joint:
+            (a) criterion 3 (ice physics) at 0 — iter-2 PNG-diff made the
+                ice gap concrete (206 cells dominate stage-17 mismatch)
+            (b) criterion 2 (eagle gameplay) at 0 — unblocks stage gate 4
+                and is the BC identity anchor (PROMPT anti-pattern: defer eagle).
+  - Step 3: SELECT MODE — BUILD (with explicit ice-decision sub-step;
+            no CAPABILITY new tooling unless eagle exposes a need).
+  - Step 4: ACT:
+      1. ICE DECISION: recommend pass-through for v1 (criterion 3 cap = 2/5).
+         Document the decision; extend LevelLoader to set_cell on a new
+         IceTileMapLayer (decorative, no collision); add Ice TileMapLayer to
+         OriginalLevel.tscn. Re-render stage 17, re-diff — should drop to <5%.
+      2. EAGLE ENTITY: scripts/Eagle.gd (HP=1, eagle_destroyed signal);
+         scenes/Eagle.tscn (16×16 sprite, StaticBody2D for bullet collision).
+         Position from per-stage canonical coord: detect the #..# fortress
+         row in the parsed grid; place eagle at the empty cells inside.
+         GENERALIZATION CHECK: verify on stages 1 + 4 + 35 (eagle position is
+         canonical in BC; same fortress shape used across all stages).
+      3. PNG-diff re-run on stages 1, 4, 7, 17 after both changes — should
+         remain <5% (or stage 17 should DROP to <5% after ice-rendering lands).
+  - Step 5: SCORE — Criterion 3 → 1 or 2 (decision iter); criterion 2 → 2 or 3
+            (eagle code-cited; "feels like BC eagle" needs PLAYTEST for higher);
+            criterion 4 → 4 (first IMPORT-style iter that runs png-diff-og and
+            cites result inline; anchor 4 demonstration).
+  - Step 6: COMMIT — chore(originals): iter 003 — BUILD — ice decision (pass-through) + Eagle entity
+  - Step 7: SCHEDULE — 240s wakeup for iter 4 (likely first true IMPORT iter)
 ```
 
 ---

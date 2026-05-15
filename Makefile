@@ -4,12 +4,14 @@ HEADLESS        = $(GODOT) --headless --path $(PROJECT_DIR)
 RENDERER        = $(GODOT) --path $(PROJECT_DIR) --rendering-method forward_plus
 
 PROC_SCENE     := scenes/ProceduralLevel.tscn
+OG_SCENE       := scenes/OriginalLevel.tscn
 TEST_FRAMES    ?= 120
 CAPTURE_FRAMES ?= 5
 NOISE_FILTER    = grep -Ev "RID allocations|resources still in use"
 FRAMES_DIR      = $(PROJECT_DIR)/tools/out
+REFS_DIR        = $(PROJECT_DIR)/tools/refs
 
-.PHONY: check test screenshot analyze run diff
+.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og
 
 # Parse/load validation — catches bad scripts and missing nodes
 check:
@@ -54,6 +56,31 @@ diff:
 	 b=$$(ls $(FRAMES_DIR)/frame_b*.png 2>/dev/null | tail -1); \
 	 if [ -z "$$a" ] || [ -z "$$b" ]; then echo "ERROR: capture failed"; exit 1; fi; \
 	 python3 $(PROJECT_DIR)/tools/analyze_frame.py --diff "$$a" "$$b"
+
+# Arc-3 (originals) screenshot: render OriginalLevel.tscn for STAGE=K.
+# Output: $(FRAMES_DIR)/og/stage_KK_NNN.png (NNN = frame number from --write-movie).
+# Stage is passed via TANKE_OG_STAGE env var (read by scripts/OriginalLevel.gd).
+# Usage: make screenshot-og STAGE=1
+screenshot-og:
+	@if [ -z "$(STAGE)" ]; then echo "usage: make screenshot-og STAGE=K"; exit 1; fi
+	@mkdir -p $(FRAMES_DIR)/og
+	@rm -f $(FRAMES_DIR)/og/stage_$(STAGE)_*.png $(FRAMES_DIR)/og/stage_$(STAGE)_*.wav
+	@TANKE_OG_STAGE=$(STAGE) $(RENDERER) \
+		--write-movie $(FRAMES_DIR)/og/stage_$(STAGE)_.png \
+		--fixed-fps 1 --quit-after $(CAPTURE_FRAMES) \
+		$(OG_SCENE) 2>/dev/null || true
+	@latest=$$(ls $(FRAMES_DIR)/og/stage_$(STAGE)_*.png 2>/dev/null | tail -1); \
+	if [ -n "$$latest" ]; then echo "captured: $$latest"; else echo "ERROR: no frames written"; exit 1; fi
+
+# Arc-3 PNG diff: render OG stage K, compare to tools/refs/Battle_City_Stage<KK>.png.
+# Usage: make png-diff-og STAGE=1
+png-diff-og: screenshot-og
+	@k=$$(printf "%02d" $(STAGE)); \
+	ref="$(REFS_DIR)/Battle_City_Stage$$k.png"; \
+	if [ ! -f "$$ref" ]; then echo "missing reference: $$ref"; exit 1; fi; \
+	latest=$$(ls $(FRAMES_DIR)/og/stage_$(STAGE)_*.png 2>/dev/null | tail -1); \
+	if [ -z "$$latest" ]; then echo "no render PNG found"; exit 1; fi; \
+	python3 $(PROJECT_DIR)/tools/png_diff.py --reference "$$ref" --render "$$latest" --stage $(STAGE)
 
 # Launch the game (editor)
 run:
