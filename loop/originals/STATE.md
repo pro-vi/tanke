@@ -4,14 +4,15 @@
 
 ```
 phase: loop
-iteration: 6 (BUILD TitleScreen + eagle game-over — complete; iter 7 scheduled)
+iteration: 7 (BUILD StageDirector + spawn correction — complete; iter 8 scheduled)
 arc: 3 (Originals — BC NES stages import)
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 33/50  (C1=4, C2=3, C3=2, C4=4, C5=1, C6=3, C7=5, C8=5, C9=5, C10=1)
+score: 34/50  (C1=4, C2=3, C3=2, C4=4, C5=1, C6=3, C7=5, C8=5, C9=5, C10=2)
+playtest_halt_counter: 1 of 3 (iter 6 opened gate; iter 7 first unfulfilled)
 ```
 
-**FIRST PLAYTEST GATE OPEN.** USER-LOOK PROTOCOL trigger: mode-select + stage-1 load both work. Iter 7 should issue PLAYTEST request and AWAIT. Halt-rule countdown: 3 unfulfilled iters → `HALTED.md`. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 (+4 in iter 6). Ceiling watch: 33/50; iter 7 likely +1-2 if playtest happens; iter 8+ probably triggers CEILING RULE if PLAYTEST feel-cites land cleanly.
+**PLAYTEST gate open, no user response yet. Halt-rule counter: 1/3.** Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (+1 in iter 7, C10 anchor-2 via StageDirector). Ceiling watch: 34/50 (would trigger at 35); iter 8 likely either PLAYTEST score-lift (if user responds) or AUDIT to resolve C5 rubric/data shape mismatch.
 
 ---
 
@@ -57,21 +58,21 @@ Hash anchor `23d6a2ec…` is the regression detector.
 
 ---
 
-## Current Scores (post iter 006)
+## Current Scores (post iter 007)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
-| 1. Loader correctness | **4** | All 35 stages parse exact |
-| 2. Eagle gameplay | **3** | Anchor 3 ✓ — GAME OVER overlay + R reload + Esc back-to-title. Anchor 4 awaits PLAYTEST |
+| 1. Loader correctness | **4** | |
+| 2. Eagle gameplay | **3** | Anchor 4 (feel-cited) awaits PLAYTEST |
 | 3. Ice physics | **2** | Pass-through (rubric cap) |
-| 4. PNG-diff oracle | **4** | Stable at anchor 4 |
-| 5. Enemy roster fidelity | **1** | Source located; per-stage encoding pending |
-| 6. Mode selection | **3** | Anchor 1+2+3 ✓ — TitleScreen renders text + cursor; both modes target valid scenes. Anchor 4+5 await PLAYTEST |
+| 4. PNG-diff oracle | **4** | |
+| 5. Enemy roster fidelity | **1** | Anchor-2 letter unmet (no per-stage .tres); spirit exceeded (formula in Roster.gd covers all 35). **Rubric mismatch logged for iter-8 AUDIT** |
+| 6. Mode selection | **3** | Anchor 4+5 await PLAYTEST |
 | 7. Stages 1-12 complete | **5** | |
 | 8. Stages 13-24 complete | **5** | |
 | 9. Stages 25-35 complete | **5** | |
-| 10. End-to-end playable | **1** | [STRUCTURE-DEFERRED]; PLAYTEST gate NOW OPEN — first request issued in iter 7 |
-| **Total** | **33/50** | post iter 006 |
+| 10. End-to-end playable | **2** | Anchor 2 ✓ — StageDirector + dev N-key advance code-cited. [STRUCTURE-DEFERRED] for natural clear-condition (Spawner integration iter 9+) |
+| **Total** | **34/50** | post iter 007 |
 
 ---
 
@@ -105,6 +106,31 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 007 BUILD alternate complete (2026-05-15).
+
+- PLAYTEST gate open since iter 6; iter 7 = 1/3 unfulfilled.
+- Pre-mortem with generalization clause on stage bookends (1, 18, 35).
+- scripts/StageDirector.gd — current_stage tracker; advance/restart/goto;
+  arc_complete signal on STAGE_MAX.
+- scripts/Roster.gd — Tanks formula constants + armored_probability(stage)
+  + is_armored_spawn(stage). Cites file:line; RUBRIC MISMATCH NOTE for
+  iter-8 AUDIT (anchor 2 wants .tres encoding; BC roster is uniform formula).
+- OriginalLevel.gd extended — instantiates StageDirector; dev N-key →
+  _advance_to_next_stage sets TANKE_OG_STAGE env + reloads scene;
+  arc_complete → ARC COMPLETE green overlay.
+- OriginalLevel.tscn — PlayerTank (124, 220) → (124, 212), matches Tanks
+  canonical (8, 24) tile coord per iter-4 cite.
+- Verification: 4-stage re-diff post-spawn-fix all neutral-to-improved;
+  Roster formula bookends match iter-4 (0.1000/0.2249/0.3499);
+  procedural hash anchor 23d6a2ec… preserved; make test exit 0.
+- Re-issued PLAYTEST request in closing message.
+- Scores: C10 1→2. Total 33 → 34/50 (+1).
+- Commit: chore(originals): iter 007 — BUILD — StageDirector + Roster +
+  spawn correction.
+- Iter 8 wakeup scheduled.
+```
 
 ```
 Iter 006 BUILD complete (2026-05-15).
@@ -226,6 +252,36 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 8 — branch by user availability:
+
+  IF playtest response landed (gate fulfilled):
+    Step 1: PRE-MORTEM (process feel-cites).
+    Step 2: DIAGNOSE — C2/C6/C10 anchor-4 lifts possible.
+    Step 3: SELECT MODE — PLAYTEST.
+    Step 4: ACT — score feel-tagged anchors; cite user phrasing.
+    Step 5: SCORE.  Likely +2-4 points → hits CEILING RULE → iter 9 = AUDIT.
+    Step 6: COMMIT.
+    Step 7: SCHEDULE — 240s.
+
+  IF still no playtest response (halt counter → 2/3):
+    Step 1: PRE-MORTEM (AUDIT pre-amble; surface 3 reframe candidates).
+    Step 2: DIAGNOSE — rubric/data shape mismatches; ceiling proximity.
+    Step 3: SELECT MODE — AUDIT.
+    Step 4: ACT:
+      - Re-score all 10 criteria with fresh evidence.
+      - Resolve C5 anchor-2 rubric mismatch (rephrase or rename).
+      - Check for other anchor wordings that don't fit BC's data shape.
+      - Decide: add 2 new criteria (e.g., "identity test" + "arc-2 metric
+        handshake") OR raise anchor 4/5 wordings.
+    Step 5: SCORE — likely flat or small shift; AUDIT typically doesn't
+            raise score unless it surfaces under-reported wins.
+    Step 6: COMMIT — chore(originals): iter 008 — AUDIT — rubric reframe
+    Step 7: SCHEDULE — 120s (AUDIT cadence per PROMPT).
+
+  EITHER WAY: re-issue PLAYTEST request in iter-8 closing if gate still open.
+```
 
 ```
 Iter 7 — PLAYTEST request (USER-LOOK protocol — FIRST playtest):

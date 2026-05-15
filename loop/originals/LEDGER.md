@@ -673,3 +673,104 @@ If playtest is not run in iter 7-8-9, halt-rule fires at iter 9.
 ### Commit
 
 `chore(originals): iter 006 — BUILD — TitleScreen mode-select + Eagle game-over`
+
+---
+
+## Iter 007 — BUILD alternate (PLAYTEST gate open, no user response yet)
+
+**Mode:** BUILD
+**Date:** 2026-05-15
+**Branch:** `arc-3-originals`
+**Focus:** StageDirector skeleton (C10 anchor 2) + spawn correction + Roster.gd helper. Re-issue PLAYTEST request.
+
+### PLAYTEST gate state
+
+OPEN since iter 6. **Iter 7 = first unfulfilled iter (1 of 3 before halt-rule fires).** No user response received as of iter-7 wakeup.
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 007)
+
+Falsifiable claim verified:
+- StageDirector instantiable; formula constants encoded.
+- Roster.armored_probability(1) = 0.1000, (18) = 0.2249, (35) = 0.3499 — matches iter-4 cite exactly.
+- Player spawn correction lands without regression (4 sample stages re-diffed; all match or improve).
+- Procedural hash anchor 23d6a2ec… preserved.
+- `make test` exit 0.
+
+### Actions
+
+1. **`scripts/StageDirector.gd`** (NEW) — `class_name StageDirector` with `advance_stage()`, `restart()`, `goto_stage(K)`. Tracks 1..35; emits `arc_complete` on advance from STAGE_MAX. Stateless beyond `current_stage`.
+2. **`scripts/Roster.gd`** (NEW) — encodes Tanks formula constants (`ARMORED_SLOPE=0.00735`, `ARMORED_INTERCEPT=0.09265`, `TOTAL_ENEMIES_PER_STAGE=20`, `MAX_SIMULTANEOUS=4`, `STAGES_COUNT=35`). `armored_probability(stage)` and `is_armored_spawn(stage, rng)` static methods. Header documents the iter-4 cite + RUBRIC MISMATCH note for iter-8 AUDIT.
+3. **`scripts/OriginalLevel.gd`** (extended) — instantiates `StageDirector` after eagle spawn; wires `arc_complete` → `_on_arc_complete` (renders ARC COMPLETE overlay). Dev N-key triggers `_advance_to_next_stage()` which sets `TANKE_OG_STAGE` env + reloads scene — code-cited anchor-2 path.
+4. **`scenes/OriginalLevel.tscn`** — single-line PlayerTank position change `(124, 220)` → `(124, 212)`. Matches Tanks canonical spawn at stage cell (8, 24) mapped through arc-3's 8-px tile grid.
+5. **Re-issued PLAYTEST request** in iter-7 closing message. STATE.md halt-rule counter incremented.
+
+### Verification
+
+- **Roster formula spot-checks** (Nat-13 generalization clause on stage bookends + midpoint): stage 1 → 0.1000, stage 18 → 0.2249, stage 35 → 0.3499 ✓.
+- **StageDirector wiring**: instantiated in OriginalLevel; arc_complete signal connected; advance_stage on STAGE_MAX (=35) emits signal without incrementing — verified via code inspection.
+- **PNG-diff re-run on 4 sample stages** (spawn-correction sanity):
+  - Stage 1: 0.448% → 0.299% (slight improvement)
+  - Stage 4: 0.597% (unchanged)
+  - Stage 17: 1.642% (unchanged)
+  - Stage 32: 1.493% → 1.343% (slight improvement)
+  Net: spawn correction is neutral-to-positive on diff scores.
+- **Procedural hash anchor `23d6a2ec…` preserved exactly.**
+- **`make test` exit 0.**
+
+### Rubric/data shape mismatch (for iter-8 AUDIT)
+
+RUBRIC.md C5 anchor 2 reads: "Roster data encoded in configs/stages/stage_KK.tres for 5+ stages." The iter-4 finding confirmed BC's enemy roster is **formula-driven**, not table-driven — the same formula applies uniformly across all 35 stages. Encoding 35 .tres files that all reference the same coefficient would be redundant duplication, not stronger evidence.
+
+`scripts/Roster.gd` encodes the formula in code form: source-of-truth cited at file:line; functions for runtime use. This is **stronger than the rubric anticipates** (covers all 35, not just 5+) but **doesn't satisfy the letter** of anchor 2 (no .tres files exist).
+
+**Two honest options for iter-8 AUDIT:**
+- (a) Rephrase C5 anchor 2 to "Roster data encoded in source-of-truth form (configs/stages/ OR scripts/Roster.gd) covering ≥5 stages of variation." — relaxes the data-shape requirement.
+- (b) RENAME the criterion: "Enemy roster authenticity" with anchors targeting the *fidelity dimension* (does the per-stage difficulty curve match BC's), not the *encoding shape*.
+
+This iter conservatively stays at **C5 = 1** to avoid silent rubric drift. The decision goes to iter-8 AUDIT.
+
+### Scores
+
+| C# | Name | Before | After | Tag | Cite |
+|----|------|--------|-------|-----|------|
+| 1 | Loader correctness | 4 | 4 | [STRUCTURE] | Unchanged. |
+| 2 | Eagle gameplay | 3 | 3 | [STRUCTURE] | Unchanged (anchor 4 awaits PLAYTEST). |
+| 3 | Ice physics | 2 | 2 | [STRUCTURE] | Rubric cap. |
+| 4 | PNG-diff oracle | 4 | 4 | [STRUCTURE] | Unchanged. |
+| 5 | Enemy roster fidelity | 1 | 1 | [STRUCTURE] | Anchor 2 letter unfulfilled (no .tres files); spirit exceeded (formula in `Roster.gd` covers all 35). **Mismatch logged for iter-8 AUDIT.** |
+| 6 | Mode selection | 3 | 3 | [STRUCTURE] / [STRUCTURE-DEFERRED] | Unchanged. |
+| 7 | Stages 1-12 complete | 5 | 5 | [STRUCTURE] | Unchanged. |
+| 8 | Stages 13-24 complete | 5 | 5 | [STRUCTURE] | Unchanged. |
+| 9 | Stages 25-35 complete | 5 | 5 | [STRUCTURE] | Unchanged. |
+| 10 | End-to-end playable run | 1 | **2** | [STRUCTURE-DEFERRED] | Anchor 2 ("Linear advance — code-cited") ✓ via StageDirector + dev N-key trigger at `OriginalLevel.gd:_advance_to_next_stage`. [STRUCTURE-DEFERRED] tag for "natural clear-condition fires in normal play" — that awaits Spawner integration (iter 9+). |
+| **Total** | | **33** | **34/50** | | +1 (C10 anchor 2). |
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 9 cites.
+- [STRUCTURE-DEFERRED]: 3 cites (C6 anchor-2 runtime, C10 anchor-2 natural-clear, C10 anchor-1 plays).
+- [FEEL]: 0.
+- [MIXED]: 0.
+
+### Substrate guardrails verified
+
+- Hard substrate UNTOUCHED.
+- Arc-2 substrate UNTOUCHED. **Spawner.gd specifically untouched** — the C5 → 3 anchor would require Spawner read of Roster.gd, but that's iter 9+ work and requires more design clarity from playtest.
+- Procedural hash anchor `23d6a2ec…` preserved.
+
+### Halt-rule counter
+
+PLAYTEST gate unfulfilled iters:
+- Iter 7: **1 / 3** ← (this iter)
+- Iter 8: 2/3 if still unfulfilled
+- Iter 9: 3/3 → `HALTED.md` + stop
+
+### Next iter
+
+Iter 8 mode depends on user response by wakeup:
+- **If playtest landed**: PLAYTEST mode → score C2/C6/C10 feel cites; likely +2-3 points → hits ceiling rule → iter-9 AUDIT.
+- **If still no response**: BUILD or AUDIT. Strong candidate for **AUDIT**: re-score with C5 rubric-mismatch resolved; raise anchor definitions where the score is too easy; check if arc-3 close conditions are within reach. Also surfaces whether the "identity test" feedback to arc-2 is rubric-tracked.
+
+### Commit
+
+`chore(originals): iter 007 — BUILD — StageDirector + Roster formula + spawn correction`

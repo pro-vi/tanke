@@ -82,7 +82,7 @@ limit_top = 0
 limit_bottom = 240
 
 [node name="PlayerTank" parent="." instance=ExtResource("3")]
-position = Vector2(124, 220)
+position = Vector2(124, 212)
 collision_mask = 513
 
 [node name="Tiles" type="Node2D" parent="."]

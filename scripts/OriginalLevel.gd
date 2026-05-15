@@ -1,6 +1,7 @@
 extends "res://scripts/Level.gd"
 
 const LevelLoaderT = preload("res://scripts/LevelLoader.gd")
+const StageDirectorT = preload("res://scripts/StageDirector.gd")
 const EagleScene: PackedScene = preload("res://scenes/Eagle.tscn")
 
 # Arc-3 originals-mode scene script. Parallel to ProceduralLevel.gd but
@@ -28,6 +29,12 @@ const EagleScene: PackedScene = preload("res://scenes/Eagle.tscn")
 const EAGLE_SCREEN_POS := Vector2(160, 216)
 var eagle: Node2D = null
 
+# iter 007: StageDirector tracks 1..35 stage progression. Owns the
+# advance_stage / restart / goto_stage state. Dev N-key triggers advance
+# for testing (anchor-2 "linear advance — code-cited"); natural clear
+# condition awaits Spawner integration (iter 9+).
+var stage_director: StageDirectorT = null
+
 
 func _ready() -> void:
 	# Wire player shoot signal (mirrors Level._ready and ProceduralLevel._ready;
@@ -47,6 +54,8 @@ func _ready() -> void:
 		push_error("LevelLoader failed for stage %d: %s" % [stage_number, report.error])
 	_replace_blocks()
 	_spawn_eagle()
+	stage_director = StageDirectorT.new(stage_number)
+	stage_director.arc_complete.connect(_on_arc_complete)
 
 
 func _spawn_eagle() -> void:
@@ -96,9 +105,51 @@ func _show_game_over() -> void:
 
 
 func _process(_delta: float) -> void:
+	# Dev N-key: advance to the next stage. Anchor-2 cite for criterion 10.
+	# Natural clear-condition (all enemies dead) is iter 9+ Spawner work.
+	# Guarded by _game_over so the GAME OVER screen stops accepting it.
+	if not _game_over and Input.is_key_pressed(KEY_N):
+		_advance_to_next_stage()
+		return
 	if not _game_over:
 		return
 	if Input.is_key_pressed(KEY_R):
+		stage_director.restart()
 		get_tree().reload_current_scene()
 	elif Input.is_key_pressed(KEY_ESCAPE):
 		get_tree().change_scene_to_file(TITLE_SCENE)
+
+
+func _advance_to_next_stage() -> void:
+	var next_stage: int = stage_director.advance_stage()
+	if next_stage == stage_number and next_stage == StageDirectorT.STAGE_MAX:
+		return  # arc_complete signal handled by _on_arc_complete
+	OS.set_environment("TANKE_OG_STAGE", str(next_stage))
+	get_tree().reload_current_scene()
+
+
+func _on_arc_complete() -> void:
+	print("originals: ARC COMPLETE — all 35 stages cleared")
+	_game_over = true
+	_show_game_over_arc_complete()
+
+
+func _show_game_over_arc_complete() -> void:
+	_game_over_overlay = CanvasLayer.new()
+	_game_over_overlay.layer = 10
+	add_child(_game_over_overlay)
+	var dim := ColorRect.new()
+	dim.color = Color(0, 0, 0, 0.7)
+	dim.size = Vector2(width, height)
+	_game_over_overlay.add_child(dim)
+	var label := Label.new()
+	label.text = "ARC COMPLETE"
+	label.add_theme_font_size_override("font_size", 24)
+	label.position = Vector2(width * 0.5 - 84, height * 0.5 - 24)
+	label.modulate = Color(0.2, 1.0, 0.4, 1.0)
+	_game_over_overlay.add_child(label)
+	var hint := Label.new()
+	hint.text = "ESC TITLE"
+	hint.position = Vector2(width * 0.5 - 36, height * 0.5 + 16)
+	hint.modulate = Color(0.7, 0.7, 0.7, 1.0)
+	_game_over_overlay.add_child(hint)

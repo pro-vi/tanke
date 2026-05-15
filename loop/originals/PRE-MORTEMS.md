@@ -321,3 +321,58 @@ Projected: 29 + 1 (C2) + 3 (C6) = 33/50. **Below 35 — ceiling won't fire from 
 **Generalization clause check (Nat-13 discipline):**
 
 The clause demands testing both mode transitions from a SINGLE TitleScreen session (not just one direction). If I test Original launch but not Procedural launch, I've validated half the feature. Single-direction success would be theatrical falsifiability — exactly what Nat-13 cured against.
+
+---
+
+## Iter 007 — BUILD alternate (PLAYTEST gate open but unfulfilled)
+
+**Mode:** BUILD (alternate path while PLAYTEST gate remains open).
+
+**PLAYTEST gate state:** OPEN since iter 6; no user response received as of this iter's wakeup. Per HALT CONDITIONS: "PLAYTEST unfulfilled for 3 iters → halt + write HALTED.md". **Iter 7 = 1 of 3 unfulfilled iters.** Iter 8 = 2/3. Iter 9 = 3/3 → halt.
+
+Continuing BUILD work along the structural axis keeps the loop productive while the user looks. Re-issue the playtest request as part of iter-7's deliverable so the gate stays visible.
+
+**Weakest axes (post iter 6, score 33/50):**
+- Criterion 10 (End-to-end playable) at 1 — anchor 2 ("Linear advance from stage to stage works — code-cited") is the structural-only target.
+- Criterion 5 (Enemy roster fidelity) at 1 — anchor 2 is "Roster data encoded in configs/stages/stage_KK.tres for 5+ stages" but the iter-4 finding reveals BC roster is formula-driven, not table-driven. This is a *rubric/data shape mismatch* — anchor 2 doesn't fit BC's actual roster structure. Iter 7 will encode the formula in code (`scripts/Roster.gd`) and surface the mismatch for iter-8 AUDIT consideration.
+
+**Plan:**
+
+1. **`scripts/StageDirector.gd`** (NEW) — minimal director: tracks `current_stage` (1..35); exposes `advance_stage()`, `restart()`, `goto_stage(K)`. Holds the stage progression state machine. Wired into `OriginalLevel.gd._on_eagle_destroyed` (game-over → restart at stage 1).
+2. **PlayerTank spawn correction** — `OriginalLevel.tscn` PlayerTank position from `(124, 220)` to `(120, 212)`. Tanks canonical is `(8 * tile_size.w, 24 * tile_size.h)` = `(8*16, 24*16) = (128, 384)` in Tanks's 416×416 16-px grid. Mapped to arc-3 8-px tiles: stage cell (8, 24) → scene cell (15, 26) → screen pixel (120, 208). Player center should sit on cell center: (120 + 4, 208 + 4) = (124, 212). Close to my pre-mortem prediction of (120, 212); use (120, 212) as the top-left corner offset for the 8×8 player sprite. Pre-check passability remains good (cell row 25 cols 8-9 confirmed in iter 4).
+3. **`scripts/Roster.gd`** (NEW) — encodes the iter-4 formula `p_armored = 0.00735 * stage + 0.09265` as `static func armored_probability(stage_number: int) -> float`. Reusable by future Spawner integration. Cites file:line of Tanks source. Captures the formula in code form — the rubric-stated `configs/stages/stage_KK.tres` encoding would be redundant since the formula is uniform across stages.
+4. **Re-issue PLAYTEST request** — iter 7 closing message surfaces the 2-question playtest. Update STATE.md halt-rule counter to 1/3.
+
+**Falsifiable claim (with generalization clause):**
+
+- `scripts/StageDirector.gd` instantiable; `advance_stage()` increments from 1 through 35 without wrap, then triggers `arc_complete` signal.
+- PlayerTank renders at corrected position; spot-check stage-1 + stage-32 (varied terrain) headless playable=true.
+- `Roster.armored_probability(1) ≈ 0.10`, `Roster.armored_probability(35) ≈ 0.35` (matches iter-4 cite).
+- Procedural hash anchor `23d6a2ec…` preserved.
+- `make test` exit 0.
+
+Generalization clause: StageDirector verified across stages 1, 18, 35 (the bookends + midpoint of arc progression). Roster.armored_probability verified for those same three stage numbers.
+
+**Most-likely failure modes:**
+
+- **F1 [STRUCTURE]**: StageDirector instantiation in OriginalLevel.gd may not be needed for iter-7 minimum if no clear-condition fires (no enemies). Could ship inert. *Mitigation*: that's fine — the wiring is the cite for anchor 2. The runtime test is "advance_stage works in isolation" not "advance_stage fires under normal play" (which awaits Spawner integration in iter 9+).
+- **F2 [STRUCTURE]**: Player spawn correction shifts the iter-3-onwards PNG-diff baseline slightly. The PlayerTank mask in `tools/png_diff.py` covers play-area cells (12-14, 24-25) which is the EAGLE position. The PLAYER position is at play-area cells (8-9, 25-26) — currently masked? No — iter-3 LEDGER noted "the mask now-effectively masks the eagle (since it's the new 'thing in our render that's not in reference')". So the mask is fine for the eagle; player isn't masked. Moving the player by 4 pixels could shift WHICH cells the player overlaps. *Mitigation*: re-run the 35-stage PNG-diff sweep after the spawn move; verify <5% on all 35 still.
+- **F3 [STRUCTURE]**: Roster.gd as a class_name might conflict with iter-1's class_name registration issues. *Mitigation*: use preload pattern (`const RosterT = preload("res://scripts/Roster.gd")`) like LevelLoader did in iter 1.
+- **F4 [STRUCTURE-DEFERRED]**: PLAYTEST gate may close during this iter if user responds mid-iter. If so, this pre-mortem's mode pick (BUILD) should be revised to PLAYTEST. Detection: check user messages before scoring.
+
+**Substrate guards:**
+- Hard substrate UNTOUCHED.
+- Arc-2 substrate UNTOUCHED. Spawner.gd specifically untouched this iter — the integration is reserved for iter 8+ once user provides spawn-rate/style feedback OR halt-rule clarifies arc-3 close.
+- `OriginalLevel.tscn` — single-line edit (PlayerTank position).
+- `OriginalLevel.gd` — extended (StageDirector wiring).
+- New files: `scripts/StageDirector.gd`, `scripts/Roster.gd`.
+
+**Ceiling check:** iter-7 projection:
+- C10 → 2 (linear advance code-cited via StageDirector)
+- C5 → possibly 2 with [STRUCTURE-DEFERRED]/rubric-mismatch note, or stay at 1 if I'm conservative
+
+Projected 34-35/50. **Could trip ceiling rule at iter 7 itself if C5 lifts.** Conservative: keep C5 at 1, defer the rubric reframe to iter-8 AUDIT.
+
+**Anti-Goodhart guard:** StageDirector that just stores a stage number isn't anchor-2-worthy. Anchor 2 says "Linear advance from stage to stage works (clear stage → next loads) — code-cited." The code-cite needs an actual `advance_stage` call wired to a trigger. The trigger doesn't have to fire in normal play (no enemies), but the CALL must exist and be reachable. Concrete: OriginalLevel exposes a public method or input handler that, when invoked, calls `StageDirector.advance_stage()` and `change_scene_to_file()` (or reloads with `--og-stage K+1` mechanism). Without that wiring, claiming anchor 2 is dishonest.
+
+For iter 7: add a dev keybind (e.g., N key) that triggers `advance_stage` for testing. That counts as "code-cited." Tag it [STRUCTURE-DEFERRED] until natural clear-condition lands in iter 9+.
