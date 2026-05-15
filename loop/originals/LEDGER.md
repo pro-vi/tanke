@@ -578,3 +578,98 @@ PLAYTEST gate opens after mode-select lands. First playtest expected iter 6 or 7
 ### Commit
 
 `chore(originals): iter 005 — IMPORT — 22-stage sweep + classifier palette-detector hardening`
+
+---
+
+## Iter 006 — BUILD (TitleScreen + Eagle game-over)
+
+**Mode:** BUILD
+**Date:** 2026-05-15
+**Branch:** `arc-3-originals`
+**Focus:** Mode-selection scene (criterion 6) + eagle game-over state (criterion 2 anchor 3)
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 006)
+
+Falsifiable claim: both Original and Procedural modes launchable from a single TitleScreen session; `make test` still exits 0; procedural hash anchor `23d6a2ec…` preserved; shooting eagle triggers GAME OVER overlay. F1-F5 pre-listed.
+
+**Result: claim verified for structural axes; runtime mode-transition awaits PLAYTEST.** F2 pre-mitigated correctly (make test bypasses main_scene). F5 (raw-keycode approach) avoided InputMap dependency. F1 (double-launch race) cured by `_launching` latch in TitleScreen.gd.
+
+### Actions
+
+1. **`scenes/TitleScreen.tscn`** (NEW) — 320×240 layout: TANKE title (size 24), subtitle, two centered options (ORIGINALS, PROCEDURAL), yellow cursor `>` Label that moves between them, hint text at bottom.
+2. **`scripts/TitleScreen.gd`** (NEW) — `_process()` polls raw keycodes (KEY_UP/DOWN/W/S to navigate, KEY_ENTER/SPACE to launch); `_launching` boolean latch prevents double-fire on async `change_scene_to_file`; targets `OriginalLevel.tscn` (selection 0) or `ProceduralLevel.tscn` (selection 1).
+3. **`scripts/OriginalLevel.gd`** (extended within iter-1 file) — new `_process()` checks for game-over input (R reload, Esc back to title); new `_show_game_over()` builds a CanvasLayer (layer=10) with dim ColorRect + "GAME OVER" Label + restart hint; `_on_eagle_destroyed` now triggers the overlay instead of just logging.
+4. **`project.godot`** — single-line edit: `run/main_scene` from `ProceduralLevel.tscn` to `TitleScreen.tscn`. Pre-existing window-config diff (carried unstaged across iters 1-5) was stashed before this edit and restored after the iter-6 commit, keeping the user's working-tree state untouched.
+
+### Verification
+
+- **Procedural hash anchor `23d6a2ec…` preserved** — `godot --script loop/test_runner.gd -- --seed 42 --json` on default config reproduces the exact 64-char fingerprint.
+- **`make test` exit 0** — Makefile's `test` target loads `$(PROC_SCENE)` directly, bypassing the new TitleScreen as main_scene.
+- **TitleScreen renders** — `--write-movie` capture shows 78 bright pixels in the title area; dominant colors are (255,255,255) for text + (255,255,0)-ish for the cursor. Screen geometry matches scene layout.
+- **OriginalLevel still loads cleanly** with eagle entity: stage 1 oracle reports `brick=220 steel=8 playable=true ice=0`. No script errors from the iter-6 `_process()` / `_show_game_over()` additions.
+- **TitleScreen headless boot**: zero script errors.
+
+### Structural confidence for C6 anchor 2
+
+Anchor 2 ("Both options load their respective mode without crashes") is code-cited via:
+- `change_scene_to_file()` is Godot's canonical scene-transition API
+- Both target paths (`res://scenes/OriginalLevel.tscn`, `res://scenes/ProceduralLevel.tscn`) load cleanly when directly invoked
+- The `_launching` latch prevents the only realistic crash path (double-load race on rapid Enter)
+
+Tagged `[STRUCTURE-DEFERRED]` for the runtime "both modes launchable from ONE session" half — that requires interactive playtest. Headless can't drive scene-change input the way the user can.
+
+### Scores
+
+| C# | Name | Before | After | Tag | Cite |
+|----|------|--------|-------|-----|------|
+| 1 | Loader correctness | 4 | 4 | [STRUCTURE] | Unchanged. |
+| 2 | Eagle gameplay | 2 | **3** | [STRUCTURE] | Anchor 3 ✓ — `OriginalLevel.gd:_on_eagle_destroyed` shows GAME OVER overlay; R reloads; Esc → title. Bullet→eagle hit verified by collision-layer math (eagle layer 1 ∩ bullet mask 9). Anchor 4 (feel-cited) awaits PLAYTEST. |
+| 3 | Ice physics | 2 | 2 | [STRUCTURE] | Rubric cap. |
+| 4 | PNG-diff oracle | 4 | 4 | [STRUCTURE] | Unchanged. |
+| 5 | Enemy roster fidelity | 1 | 1 | [STRUCTURE] | Unchanged (per-stage encoding still pending). |
+| 6 | Mode selection | 0 | **3** | [STRUCTURE] / [STRUCTURE-DEFERRED] | Anchor 1 ✓ (text labels ORIGINALS / PROCEDURAL render). Anchor 2 ✓ [STRUCTURE-DEFERRED] (change_scene_to_file paths verified loadable individually; both-from-one-session awaits PLAYTEST). Anchor 3 ✓ (visible cursor `>` Label code-cited at `TitleScreen.gd:_update_cursor`). |
+| 7 | Stages 1-12 complete | 5 | 5 | [STRUCTURE] | Unchanged. |
+| 8 | Stages 13-24 complete | 5 | 5 | [STRUCTURE] | Unchanged. |
+| 9 | Stages 25-35 complete | 5 | 5 | [STRUCTURE] | Unchanged. |
+| 10 | End-to-end playable run | 1 | 1 | [STRUCTURE-DEFERRED] | Unchanged. Linear stage advance (anchor 2) still needs StageDirector + clear-condition. |
+| **Total** | | **29** | **33/50** | | +4 (C2 +1, C6 +3). |
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 9 cites.
+- [STRUCTURE-DEFERRED]: 2 cites (C6 anchor-2 runtime, C10).
+- [FEEL]: 0.
+- [MIXED]: 0.
+
+### Substrate guardrails verified
+
+- Hard substrate UNTOUCHED.
+- Gameplay substrate (Layer 2) UNTOUCHED.
+- `.research/repos/Tanks/` read-only.
+- Procedural hash anchor `23d6a2ec…` preserved exactly.
+- `project.godot:run/main_scene` change is data; not in substrate freeze list. `make test` continues to load `ProceduralLevel.tscn` directly.
+
+### USER-LOOK PROTOCOL — first PLAYTEST gate now OPEN
+
+Per PROMPT user-look protocol: "Iter 1 (or first iter where mode-select + stage-1 load works): PLAYTEST." Both conditions now hold. The **first PLAYTEST request is officially open** and the 3-iter halt-rule countdown begins from the next iter where action is needed from the user.
+
+Playtest deliverable (from `loop/gameplay/playtest-template.md`-style 2-question format):
+1. Does the TitleScreen feel intentional? Can you navigate to either mode without fumbling?
+2. Does Stage 1 look like Battle City Stage 1 — bilateral brick columns, steel-armored mid-corridor, eagle's brick fortress at bottom-center?
+
+Halt-rule countdown: iter 6 = open. Iter 7 / 8 / 9 unfulfilled = `HALTED.md`.
+
+### Next iter
+
+Iter 7 priorities (in increasing risk to ceiling rule):
+1. **PLAYTEST request** (USER-LOOK protocol) — mandatory; AWAITs user response per Step 7 rule "PLAYTEST: AWAIT user response (no scheduled retry)".
+2. **Player spawn correction** (iter-4 cite): move PlayerTank from (124, 220) to (120, 212) per Tanks's canonical `(8*16, 24*16)` mapped through arc-3 tile-size. Minor STRUCTURE-only fix.
+3. **Roster encoding** (criterion 5 → 2): write per-stage rosters to `configs/stages/stage_KK.tres` for the 35 stages. Uses iter-4-located formula.
+
+If the playtest happens in iter 7 with both Q1 and Q2 positive, C2 and C6 can lift to 4 (feel-cited). That would push to 35/50 → **CEILING RULE fires**, iter 8 = AUDIT with rubric adjustment.
+
+If playtest is not run in iter 7-8-9, halt-rule fires at iter 9.
+
+### Commit
+
+`chore(originals): iter 006 — BUILD — TitleScreen mode-select + Eagle game-over`

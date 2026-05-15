@@ -56,7 +56,49 @@ func _spawn_eagle() -> void:
 	eagle.eagle_destroyed.connect(_on_eagle_destroyed)
 
 
+# iter 006: criterion 2 anchor-3 cite — eagle_destroyed transitions to a
+# game-over overlay; R reloads the scene, Esc returns to the title screen.
+const TITLE_SCENE := "res://scenes/TitleScreen.tscn"
+var _game_over: bool = false
+var _game_over_overlay: CanvasLayer = null
+
+
 func _on_eagle_destroyed() -> void:
-	# iter 003: minimal handler — logs. Game-over state machine lands in iter 4+
-	# alongside the stage-progression director (criterion 10 anchor 2).
-	print("originals: eagle destroyed on stage %d" % stage_number)
+	if _game_over:
+		return
+	_game_over = true
+	print("originals: eagle destroyed on stage %d — GAME OVER" % stage_number)
+	_show_game_over()
+
+
+func _show_game_over() -> void:
+	_game_over_overlay = CanvasLayer.new()
+	_game_over_overlay.layer = 10
+	add_child(_game_over_overlay)
+
+	var dim := ColorRect.new()
+	dim.color = Color(0, 0, 0, 0.7)
+	dim.size = Vector2(width, height)
+	_game_over_overlay.add_child(dim)
+
+	var label := Label.new()
+	label.text = "GAME OVER"
+	label.add_theme_font_size_override("font_size", 24)
+	label.position = Vector2(width * 0.5 - 60, height * 0.5 - 24)
+	label.modulate = Color(1.0, 0.3, 0.2, 1.0)
+	_game_over_overlay.add_child(label)
+
+	var hint := Label.new()
+	hint.text = "R RESTART  ESC TITLE"
+	hint.position = Vector2(width * 0.5 - 72, height * 0.5 + 16)
+	hint.modulate = Color(0.7, 0.7, 0.7, 1.0)
+	_game_over_overlay.add_child(hint)
+
+
+func _process(_delta: float) -> void:
+	if not _game_over:
+		return
+	if Input.is_key_pressed(KEY_R):
+		get_tree().reload_current_scene()
+	elif Input.is_key_pressed(KEY_ESCAPE):
+		get_tree().change_scene_to_file(TITLE_SCENE)

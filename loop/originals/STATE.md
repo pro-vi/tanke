@@ -4,14 +4,14 @@
 
 ```
 phase: loop
-iteration: 5 (IMPORT middle+final third sweep — complete; iter 6 scheduled)
+iteration: 6 (BUILD TitleScreen + eagle game-over — complete; iter 7 scheduled)
 arc: 3 (Originals — BC NES stages import)
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 29/50  (C1=4, C2=2, C3=2, C4=4, C5=1, C6=0, C7=5, C8=5, C9=5, C10=1)
+score: 33/50  (C1=4, C2=3, C3=2, C4=4, C5=1, C6=3, C7=5, C8=5, C9=5, C10=1)
 ```
 
-**35/35 stages pass PNG-diff <5%.** Median 0.448%, max 2.090%. Cumulative path: iter 1 = 5, iter 2 = 10, iter 3 = 15, iter 4 = 20, iter 5 = 29 (+9). **Ceiling rule watch**: at 29/50; iter-6 mode-selection + likely C2 anchor-3 lift could push to ≥35, triggering rubric audit (add 2 criteria, raise anchors, or reframe).
+**FIRST PLAYTEST GATE OPEN.** USER-LOOK PROTOCOL trigger: mode-select + stage-1 load both work. Iter 7 should issue PLAYTEST request and AWAIT. Halt-rule countdown: 3 unfulfilled iters → `HALTED.md`. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 (+4 in iter 6). Ceiling watch: 33/50; iter 7 likely +1-2 if playtest happens; iter 8+ probably triggers CEILING RULE if PLAYTEST feel-cites land cleanly.
 
 ---
 
@@ -57,21 +57,21 @@ Hash anchor `23d6a2ec…` is the regression detector.
 
 ---
 
-## Current Scores (post iter 005)
+## Current Scores (post iter 006)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
-| 1. Loader correctness | **4** | All 35 stages parse exact; ice placed; anchor 5 awaits `make test` edge-case coverage |
-| 2. Eagle gameplay | **2** | Anchors 1+2 ✓; anchor 3 (game-over state) iter 6+ |
-| 3. Ice physics | **2** | Pass-through decision shipped (rubric cap) |
-| 4. PNG-diff oracle | **4** | Anchor 4 ✓; iter 5 palette-detector hardening; anchor 5 "stage rotation" N/A so stay at 4 |
-| 5. Enemy roster fidelity | **1** | Anchor 1 ✓; per-stage data not yet encoded |
-| 6. Mode selection | 0 | No title/picker scene (iter 6 priority) |
-| 7. Stages 1-12 complete | **5** | All 12 pass <5% PNG-diff |
-| 8. Stages 13-24 complete | **5** | All 12 pass <5% PNG-diff |
-| 9. Stages 25-35 complete | **5** | All 11 pass <5% PNG-diff |
-| 10. End-to-end playable | **1** | Stage 1 loads headless [STRUCTURE-DEFERRED]; PLAYTEST gate awaits mode-select |
-| **Total** | **29/50** | post iter 005 |
+| 1. Loader correctness | **4** | All 35 stages parse exact |
+| 2. Eagle gameplay | **3** | Anchor 3 ✓ — GAME OVER overlay + R reload + Esc back-to-title. Anchor 4 awaits PLAYTEST |
+| 3. Ice physics | **2** | Pass-through (rubric cap) |
+| 4. PNG-diff oracle | **4** | Stable at anchor 4 |
+| 5. Enemy roster fidelity | **1** | Source located; per-stage encoding pending |
+| 6. Mode selection | **3** | Anchor 1+2+3 ✓ — TitleScreen renders text + cursor; both modes target valid scenes. Anchor 4+5 await PLAYTEST |
+| 7. Stages 1-12 complete | **5** | |
+| 8. Stages 13-24 complete | **5** | |
+| 9. Stages 25-35 complete | **5** | |
+| 10. End-to-end playable | **1** | [STRUCTURE-DEFERRED]; PLAYTEST gate NOW OPEN — first request issued in iter 7 |
+| **Total** | **33/50** | post iter 006 |
 
 ---
 
@@ -105,6 +105,29 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 006 BUILD complete (2026-05-15).
+
+- Pre-mortem with generalization clause = both modes launchable from one
+  TitleScreen session. F1 cured by _launching latch. F5 cured by raw keycodes.
+- scenes/TitleScreen.tscn + scripts/TitleScreen.gd — mode-picker with title,
+  subtitle, 2 options (ORIGINALS, PROCEDURAL), yellow > cursor, hint text.
+- project.godot run/main_scene → TitleScreen.tscn (pre-existing window-config
+  diff stashed before edit, popped after commit; isolated).
+- OriginalLevel.gd extended: _process polls game-over input (R / Esc);
+  _show_game_over builds CanvasLayer with dim ColorRect + GAME OVER label +
+  restart hint; _on_eagle_destroyed triggers the overlay.
+- Verification: TitleScreen renders (78 bright pixels in title area);
+  procedural hash anchor 23d6a2ec… preserved; make test exit 0;
+  OriginalLevel still loads cleanly (brick=220 steel=8 playable=true).
+- USER-LOOK gate: FIRST PLAYTEST REQUEST officially OPEN.
+- Scores: C2 2→3, C6 0→3. Total 29 → 33/50 (+4).
+- Commit: chore(originals): iter 006 — BUILD — TitleScreen mode-select +
+  Eagle game-over.
+- Stashed project.godot diff restored.
+- Iter 7 wakeup scheduled — likely PLAYTEST request (AWAIT user response).
+```
 
 ```
 Iter 005 IMPORT complete (2026-05-15).
@@ -203,6 +226,39 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 7 — PLAYTEST request (USER-LOOK protocol — FIRST playtest):
+  - Step 1: PRE-MORTEM (iter-007; predict which feel-cites land based on
+            current artifact maturity).
+  - Step 2: DIAGNOSE — weakest axes: C2 anchor 4 (eagle feels like BC's),
+            C6 anchor 4 (mode-select intentional), C10 anchor 1 ("plays"
+            half) — all awaiting feel-cites.
+  - Step 3: SELECT MODE — PLAYTEST. Per PROMPT: "AWAIT user response (no
+            scheduled retry)".
+  - Step 4: ACT — issue the 2-question playtest prompt:
+      Q1: "Does the TitleScreen feel intentional? Can you navigate to either
+           mode without fumbling?"
+      Q2: "Does Stage 1 look like Battle City Stage 1 — bilateral brick
+           columns, steel-armored mid-corridor, eagle's brick fortress at
+           bottom-center?"
+            User runs godot --path . , uses TitleScreen, plays stage 1,
+            reports findings.
+  - Step 5: SCORE — only after playtest response received. Possible lifts:
+            C2 → 4, C6 → 4, C10 → 2 (anchor 1 "plays" feel-cited).
+  - Step 6: COMMIT (after score).
+  - Step 7: SCHEDULE — PLAYTEST does NOT schedule retry. If user doesn't
+            respond, iter 8/9 will fire halt-rule countdown.
+
+CEILING WATCH: if iter 7 lifts to ≥35, iter 8 = AUDIT (add 2 criteria, raise
+4/5 anchors, or RENAME via reframe). Likely candidates: identity/feel
+criteria (does it feel like BC to a fan?), arc-3 → arc-2 metric handshake.
+
+ALTERNATE (if user is not available for PLAYTEST in iter 7): iter 7 can
+be a BUILD iter — roster encoding (criterion 5 → 2) and/or StageDirector
+skeleton (criterion 10 → 2) — both progress without requiring playtest.
+Then iter 8/9 retry the playtest gate before halt-rule fires.
+```
 
 ```
 Iter 6 — BUILD (mode selection scene + eagle game-over state):

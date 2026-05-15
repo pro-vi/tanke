@@ -259,3 +259,65 @@ Iter 5 *is* the generalization clause for iter 4. iter 4 verified 9 new stages d
 - Procedural hash anchor drifts.
 
 A single-stage failure that can be cured by anchor refinement within the iter is an OK outcome (similar to iter-3's stage-17 cure pattern).
+
+---
+
+## Iter 006 — BUILD (TitleScreen + Eagle game-over)
+
+**Mode:** BUILD.
+
+**Weakest axes (post iter 5, score 29/50):**
+- Criterion 6 (Mode selection) at 0 — blocks PLAYTEST gate per USER-LOOK PROTOCOL.
+- Criterion 2 (Eagle gameplay) at 2 — anchor 3 (game-over state) is the next honest lift.
+
+**Plan:**
+
+1. **TitleScreen scene** (`scenes/TitleScreen.tscn` + `scripts/TitleScreen.gd`) — minimal mode-picker: two text labels ("ORIGINALS" and "PROCEDURAL"), Up/Down arrow keys to highlight, Enter/Space to launch via `get_tree().change_scene_to_file()`. Visible cursor (arrow or sprite) marks current selection — anchor-3 cite.
+2. **project.godot edit** — change `run/main_scene` from `ProceduralLevel.tscn` to `TitleScreen.tscn`. This is data, not substrate; `make test` continues using ProceduralLevel directly so the arc-2 baseline is unaffected.
+3. **Eagle game-over state** — in `OriginalLevel.gd`, `_on_eagle_destroyed` shows a "GAME OVER" overlay (CanvasLayer with Label, follows arc-2 PlayerTank death-screen pattern). Accepts R → `get_tree().reload_current_scene()` for restart-to-stage-1; Esc → `change_scene_to_file("res://scenes/TitleScreen.tscn")` for back-to-menu.
+4. **Pre-existing project.godot diff handling**: I'll stash the working-tree window-config diff that's been carried across iters 1-5, make my main_scene edit on a clean baseline, commit, then pop the stash. Keeps the user's working-tree state untouched.
+
+**Falsifiable claim (with generalization clause):**
+
+After iter 6:
+- Launching `godot --path .` opens TitleScreen.
+- Pressing Down arrow + Enter loads ProceduralLevel.tscn (procedural mode unchanged).
+- Pressing Up arrow + Enter loads OriginalLevel.tscn (originals mode unchanged).
+- Both modes launch from the SAME TitleScreen session without restart — this is the generalization clause (single-stage testing would only verify one path).
+- `make test` still exits 0 (procedural baseline preserved — make test loads ProceduralLevel directly, bypassing TitleScreen).
+- Procedural hash anchor `23d6a2ec…` preserved.
+- Shooting the eagle (via player bullet) emits eagle_destroyed → "GAME OVER" overlay appears → R reloads scene cleanly.
+
+**Most-likely failure modes:**
+
+- **F1 [STRUCTURE]**: `change_scene_to_file()` in Godot 4.6 is async; if the player presses Enter twice quickly, double-loading or null-reference crashes possible. *Mitigation*: guard with a `_launching: bool` flag in TitleScreen.gd; set on first Enter, ignore subsequent input until scene change completes.
+- **F2 [STRUCTURE]**: TitleScreen as main_scene breaks `make test` if the test target doesn't bypass it. *Detection*: `make test` exit ≠ 0. *Mitigation*: the Makefile's `test:` target explicitly loads `$(PROC_SCENE)` = `scenes/ProceduralLevel.tscn` directly (bypasses main_scene). Verified pre-build.
+- **F3 [STRUCTURE]**: Eagle game-over restart triggers via `reload_current_scene()` but the level state isn't fully reset (e.g., if iter-7+ adds Spawner, enemies persist). *Iter-6 minimum scope*: there's no Spawner in OG mode yet — restart is just "re-instantiate the scene tree" which Godot does cleanly. *Future-proofing*: document the assumption; future Spawner integration will need explicit cleanup hooks.
+- **F4 [STRUCTURE]**: Player accidentally shoots eagle on stage 1 (eagle is at scene cells 19-20 row 26-27; player spawns at scene 15 row 27 — only ~4 cells away). Could trigger game-over on first frame if shoot key held. *Mitigation*: this is actual BC behavior — you CAN shoot your own eagle. Don't suppress it; it's authentic. Accept as a feature.
+- **F5 [STRUCTURE]**: TitleScreen Input.is_action_just_pressed needs InputMap entries. If "ui_up", "ui_down", "ui_accept" aren't bound (Godot 4 defaults usually include them), the screen is unresponsive. *Mitigation*: use raw key codes via `Input.is_key_pressed(KEY_UP)` etc. — bypasses InputMap dependency. Less Godot-idiomatic but more robust against project-config drift.
+
+**Substrate guards:**
+- `scripts/Level.gd`, `Bullet.gd`, `Spawner.gd`, `Enemy*.gd`, `PlayerTank.gd`, `BrickBlock.gd`: UNTOUCHED.
+- `scripts/OriginalLevel.gd`: extended (game-over handler is currently a stub; adding overlay + restart input).
+- `project.godot`: edit `run/main_scene` (single line; reversible).
+- New files: `scenes/TitleScreen.tscn`, `scripts/TitleScreen.gd`.
+
+**Anti-Goodhart guard:** C6 anchor 4 (mode selection feels intentional in playtest) and anchor 5 (first-time user navigates without instruction) require PLAYTEST. Without playtest cite, C6 caps at 3 ("visible affordance/cursor highlight — code-cited") even if mode-select is fully functional. Same applies to C2 anchor 4+ — caps at 3 without PLAYTEST.
+
+**What would count as "iter 6 failed":**
+- TitleScreen launches but Enter doesn't transition to either scene → fix input/scene-change wiring.
+- ProceduralLevel still loads as default (project.godot change reverted somehow) → re-apply.
+- `make test` regresses → revert main_scene change; investigate.
+- Procedural hash anchor drifts → halt.
+- Eagle game-over overlay doesn't render → fix CanvasLayer wiring.
+
+**Ceiling rule pre-check**: projecting iter-6 score:
+- C2 → 3 (game-over code-cited)
+- C6 → 3 (anchors 1+2+3 all reachable; 4+5 need PLAYTEST)
+- Other criteria unchanged
+
+Projected: 29 + 1 (C2) + 3 (C6) = 33/50. **Below 35 — ceiling won't fire from iter 6.** Iter 7 (PLAYTEST + roster encoding) is the more likely ceiling trigger.
+
+**Generalization clause check (Nat-13 discipline):**
+
+The clause demands testing both mode transitions from a SINGLE TitleScreen session (not just one direction). If I test Original launch but not Procedural launch, I've validated half the feature. Single-direction success would be theatrical falsifiability — exactly what Nat-13 cured against.
