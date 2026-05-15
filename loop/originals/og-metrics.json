@@ -1,0 +1,1168 @@
+{
+  "stages": [
+    {
+      "stage": 1,
+      "counts": {
+        "empty": 448,
+        "brick": 220,
+        "steel": 8,
+        "grass": 0,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.662722,
+        "brick": 0.325444,
+        "steel": 0.011834,
+        "grass": 0.0,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 444,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 180,
+      "vert_pairs_same": 176,
+      "vert_persistence": 0.977778,
+      "vert_iid_expected": 0.932287,
+      "vert_structure_lift": 1.048795,
+      "cc_count": 21,
+      "cc_max": 28,
+      "cc_avg": 10.8571
+    },
+    {
+      "stage": 2,
+      "counts": {
+        "empty": 404,
+        "brick": 184,
+        "steel": 48,
+        "grass": 40,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.597633,
+        "brick": 0.272189,
+        "steel": 0.071006,
+        "grass": 0.059172,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 424,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 206,
+      "vert_pairs_same": 188,
+      "vert_persistence": 0.912621,
+      "vert_iid_expected": 0.510381,
+      "vert_structure_lift": 1.788119,
+      "cc_count": 31,
+      "cc_max": 34,
+      "cc_avg": 8.7742
+    },
+    {
+      "stage": 3,
+      "counts": {
+        "empty": 372,
+        "brick": 126,
+        "steel": 26,
+        "grass": 152,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.550296,
+        "brick": 0.186391,
+        "steel": 0.038462,
+        "grass": 0.224852,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 520,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 229,
+      "vert_pairs_same": 220,
+      "vert_persistence": 0.960699,
+      "vert_iid_expected": 0.429103,
+      "vert_structure_lift": 2.238852,
+      "cc_count": 18,
+      "cc_max": 76,
+      "cc_avg": 16.8889
+    },
+    {
+      "stage": 4,
+      "counts": {
+        "empty": 330,
+        "brick": 262,
+        "steel": 16,
+        "grass": 56,
+        "water": 12,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.488166,
+        "brick": 0.387574,
+        "steel": 0.023669,
+        "grass": 0.08284,
+        "water": 0.017751,
+        "ice": 0.0
+      },
+      "reachable_cells": 330,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 268,
+      "vert_pairs_same": 260,
+      "vert_persistence": 0.970149,
+      "vert_iid_expected": 0.602927,
+      "vert_structure_lift": 1.609066,
+      "cc_count": 18,
+      "cc_max": 226,
+      "cc_avg": 19.2222
+    },
+    {
+      "stage": 5,
+      "counts": {
+        "empty": 454,
+        "brick": 136,
+        "steel": 26,
+        "grass": 0,
+        "water": 60,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.671598,
+        "brick": 0.201183,
+        "steel": 0.038462,
+        "grass": 0.0,
+        "water": 0.088757,
+        "ice": 0.0
+      },
+      "reachable_cells": 450,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 134,
+      "vert_pairs_same": 127,
+      "vert_persistence": 0.947761,
+      "vert_iid_expected": 0.462057,
+      "vert_structure_lift": 2.05118,
+      "cc_count": 22,
+      "cc_max": 26,
+      "cc_avg": 10.0909
+    },
+    {
+      "stage": 6,
+      "counts": {
+        "empty": 396,
+        "brick": 148,
+        "steel": 32,
+        "grass": 100,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.585799,
+        "brick": 0.218935,
+        "steel": 0.047337,
+        "grass": 0.147929,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 492,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 207,
+      "vert_pairs_same": 180,
+      "vert_persistence": 0.869565,
+      "vert_iid_expected": 0.42,
+      "vert_structure_lift": 2.070393,
+      "cc_count": 35,
+      "cc_max": 36,
+      "cc_avg": 8.0
+    },
+    {
+      "stage": 7,
+      "counts": {
+        "empty": 466,
+        "brick": 8,
+        "steel": 174,
+        "grass": 28,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.689349,
+        "brick": 0.011834,
+        "steel": 0.257396,
+        "grass": 0.04142,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 490,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 143,
+      "vert_pairs_same": 129,
+      "vert_persistence": 0.902098,
+      "vert_iid_expected": 0.70576,
+      "vert_structure_lift": 1.278194,
+      "cc_count": 21,
+      "cc_max": 36,
+      "cc_avg": 10.0
+    },
+    {
+      "stage": 8,
+      "counts": {
+        "empty": 356,
+        "brick": 152,
+        "steel": 20,
+        "grass": 60,
+        "water": 88,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.526627,
+        "brick": 0.224852,
+        "steel": 0.029586,
+        "grass": 0.088757,
+        "water": 0.130178,
+        "ice": 0.0
+      },
+      "reachable_cells": 402,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 220,
+      "vert_pairs_same": 180,
+      "vert_persistence": 0.818182,
+      "vert_iid_expected": 0.340312,
+      "vert_structure_lift": 2.404207,
+      "cc_count": 35,
+      "cc_max": 40,
+      "cc_avg": 9.1429
+    },
+    {
+      "stage": 9,
+      "counts": {
+        "empty": 448,
+        "brick": 64,
+        "steel": 92,
+        "grass": 72,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.662722,
+        "brick": 0.094675,
+        "steel": 0.136095,
+        "grass": 0.106509,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 516,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 152,
+      "vert_pairs_same": 134,
+      "vert_persistence": 0.881579,
+      "vert_iid_expected": 0.341336,
+      "vert_structure_lift": 2.582732,
+      "cc_count": 37,
+      "cc_max": 12,
+      "cc_avg": 6.1622
+    },
+    {
+      "stage": 10,
+      "counts": {
+        "empty": 282,
+        "brick": 218,
+        "steel": 40,
+        "grass": 112,
+        "water": 24,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.41716,
+        "brick": 0.322485,
+        "steel": 0.059172,
+        "grass": 0.16568,
+        "water": 0.035503,
+        "ice": 0.0
+      },
+      "reachable_cells": 190,
+      "rows_climbed": 14,
+      "playable": true,
+      "vert_pairs_total": 328,
+      "vert_pairs_same": 285,
+      "vert_persistence": 0.868902,
+      "vert_iid_expected": 0.400964,
+      "vert_structure_lift": 2.167035,
+      "cc_count": 14,
+      "cc_max": 182,
+      "cc_avg": 28.1429
+    },
+    {
+      "stage": 11,
+      "counts": {
+        "empty": 326,
+        "brick": 156,
+        "steel": 38,
+        "grass": 156,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.482249,
+        "brick": 0.230769,
+        "steel": 0.056213,
+        "grass": 0.230769,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 478,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 273,
+      "vert_pairs_same": 251,
+      "vert_persistence": 0.919414,
+      "vert_iid_expected": 0.40911,
+      "vert_structure_lift": 2.24735,
+      "cc_count": 23,
+      "cc_max": 156,
+      "cc_avg": 15.2174
+    },
+    {
+      "stage": 12,
+      "counts": {
+        "empty": 418,
+        "brick": 146,
+        "steel": 28,
+        "grass": 0,
+        "water": 84,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.618343,
+        "brick": 0.215976,
+        "steel": 0.04142,
+        "grass": 0.0,
+        "water": 0.12426,
+        "ice": 0.0
+      },
+      "reachable_cells": 414,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 177,
+      "vert_pairs_same": 150,
+      "vert_persistence": 0.847458,
+      "vert_iid_expected": 0.438015,
+      "vert_structure_lift": 1.934771,
+      "cc_count": 24,
+      "cc_max": 48,
+      "cc_avg": 10.75
+    },
+    {
+      "stage": 13,
+      "counts": {
+        "empty": 368,
+        "brick": 204,
+        "steel": 48,
+        "grass": 56,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.544379,
+        "brick": 0.301775,
+        "steel": 0.071006,
+        "grass": 0.08284,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 408,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 236,
+      "vert_pairs_same": 204,
+      "vert_persistence": 0.864407,
+      "vert_iid_expected": 0.496036,
+      "vert_structure_lift": 1.742628,
+      "cc_count": 23,
+      "cc_max": 58,
+      "cc_avg": 13.3913
+    },
+    {
+      "stage": 14,
+      "counts": {
+        "empty": 372,
+        "brick": 172,
+        "steel": 28,
+        "grass": 80,
+        "water": 24,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.550296,
+        "brick": 0.254438,
+        "steel": 0.04142,
+        "grass": 0.118343,
+        "water": 0.035503,
+        "ice": 0.0
+      },
+      "reachable_cells": 392,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 247,
+      "vert_pairs_same": 209,
+      "vert_persistence": 0.846154,
+      "vert_iid_expected": 0.404086,
+      "vert_structure_lift": 2.093995,
+      "cc_count": 37,
+      "cc_max": 142,
+      "cc_avg": 8.2162
+    },
+    {
+      "stage": 15,
+      "counts": {
+        "empty": 260,
+        "brick": 194,
+        "steel": 18,
+        "grass": 204,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.384615,
+        "brick": 0.286982,
+        "steel": 0.026627,
+        "grass": 0.301775,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 458,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 344,
+      "vert_pairs_same": 290,
+      "vert_persistence": 0.843023,
+      "vert_iid_expected": 0.459828,
+      "vert_structure_lift": 1.833345,
+      "cc_count": 26,
+      "cc_max": 124,
+      "cc_avg": 16.0
+    },
+    {
+      "stage": 16,
+      "counts": {
+        "empty": 428,
+        "brick": 42,
+        "steel": 30,
+        "grass": 176,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.633136,
+        "brick": 0.06213,
+        "steel": 0.044379,
+        "grass": 0.260355,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 600,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 192,
+      "vert_pairs_same": 174,
+      "vert_persistence": 0.90625,
+      "vert_iid_expected": 0.546956,
+      "vert_structure_lift": 1.656897,
+      "cc_count": 26,
+      "cc_max": 92,
+      "cc_avg": 9.5385
+    },
+    {
+      "stage": 17,
+      "counts": {
+        "empty": 286,
+        "brick": 164,
+        "steel": 20,
+        "grass": 0,
+        "water": 0,
+        "ice": 206
+      },
+      "densities": {
+        "empty": 0.423077,
+        "brick": 0.242604,
+        "steel": 0.029586,
+        "grass": 0.0,
+        "water": 0.0,
+        "ice": 0.304734
+      },
+      "reachable_cells": 488,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 319,
+      "vert_pairs_same": 280,
+      "vert_persistence": 0.877743,
+      "vert_iid_expected": 0.458462,
+      "vert_structure_lift": 1.91454,
+      "cc_count": 24,
+      "cc_max": 106,
+      "cc_avg": 16.25
+    },
+    {
+      "stage": 18,
+      "counts": {
+        "empty": 376,
+        "brick": 140,
+        "steel": 120,
+        "grass": 40,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.556213,
+        "brick": 0.207101,
+        "steel": 0.177515,
+        "grass": 0.059172,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 208,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 234,
+      "vert_pairs_same": 196,
+      "vert_persistence": 0.837607,
+      "vert_iid_expected": 0.395556,
+      "vert_structure_lift": 2.117545,
+      "cc_count": 32,
+      "cc_max": 44,
+      "cc_avg": 9.375
+    },
+    {
+      "stage": 19,
+      "counts": {
+        "empty": 342,
+        "brick": 180,
+        "steel": 30,
+        "grass": 124,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.505917,
+        "brick": 0.266272,
+        "steel": 0.044379,
+        "grass": 0.183432,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 462,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 258,
+      "vert_pairs_same": 220,
+      "vert_persistence": 0.852713,
+      "vert_iid_expected": 0.436337,
+      "vert_structure_lift": 1.954254,
+      "cc_count": 38,
+      "cc_max": 124,
+      "cc_avg": 8.7895
+    },
+    {
+      "stage": 20,
+      "counts": {
+        "empty": 402,
+        "brick": 120,
+        "steel": 26,
+        "grass": 64,
+        "water": 64,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.594675,
+        "brick": 0.177515,
+        "steel": 0.038462,
+        "grass": 0.094675,
+        "water": 0.094675,
+        "ice": 0.0
+      },
+      "reachable_cells": 462,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 207,
+      "vert_pairs_same": 185,
+      "vert_persistence": 0.89372,
+      "vert_iid_expected": 0.309926,
+      "vert_structure_lift": 2.883656,
+      "cc_count": 30,
+      "cc_max": 32,
+      "cc_avg": 9.1333
+    },
+    {
+      "stage": 21,
+      "counts": {
+        "empty": 270,
+        "brick": 202,
+        "steel": 52,
+        "grass": 152,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.399408,
+        "brick": 0.298817,
+        "steel": 0.076923,
+        "grass": 0.224852,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 58,
+      "rows_climbed": 2,
+      "playable": false,
+      "vert_pairs_total": 348,
+      "vert_pairs_same": 295,
+      "vert_persistence": 0.847701,
+      "vert_iid_expected": 0.404111,
+      "vert_structure_lift": 2.097695,
+      "cc_count": 12,
+      "cc_max": 152,
+      "cc_avg": 33.8333
+    },
+    {
+      "stage": 22,
+      "counts": {
+        "empty": 396,
+        "brick": 52,
+        "steel": 28,
+        "grass": 200,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.585799,
+        "brick": 0.076923,
+        "steel": 0.04142,
+        "grass": 0.295858,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 592,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 206,
+      "vert_pairs_same": 146,
+      "vert_persistence": 0.708738,
+      "vert_iid_expected": 0.554694,
+      "vert_structure_lift": 1.27771,
+      "cc_count": 63,
+      "cc_max": 8,
+      "cc_avg": 4.4444
+    },
+    {
+      "stage": 23,
+      "counts": {
+        "empty": 478,
+        "brick": 16,
+        "steel": 98,
+        "grass": 84,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.707101,
+        "brick": 0.023669,
+        "steel": 0.14497,
+        "grass": 0.12426,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 558,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 148,
+      "vert_pairs_same": 122,
+      "vert_persistence": 0.824324,
+      "vert_iid_expected": 0.431487,
+      "vert_structure_lift": 1.910429,
+      "cc_count": 28,
+      "cc_max": 60,
+      "cc_avg": 7.0714
+    },
+    {
+      "stage": 24,
+      "counts": {
+        "empty": 258,
+        "brick": 132,
+        "steel": 22,
+        "grass": 48,
+        "water": 0,
+        "ice": 216
+      },
+      "densities": {
+        "empty": 0.381657,
+        "brick": 0.195266,
+        "steel": 0.032544,
+        "grass": 0.071006,
+        "water": 0.0,
+        "ice": 0.319527
+      },
+      "reachable_cells": 502,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 346,
+      "vert_pairs_same": 331,
+      "vert_persistence": 0.956647,
+      "vert_iid_expected": 0.382706,
+      "vert_structure_lift": 2.49969,
+      "cc_count": 20,
+      "cc_max": 216,
+      "cc_avg": 20.9
+    },
+    {
+      "stage": 25,
+      "counts": {
+        "empty": 388,
+        "brick": 204,
+        "steel": 84,
+        "grass": 0,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.573964,
+        "brick": 0.301775,
+        "steel": 0.12426,
+        "grass": 0.0,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 384,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 220,
+      "vert_pairs_same": 196,
+      "vert_persistence": 0.890909,
+      "vert_iid_expected": 0.586806,
+      "vert_structure_lift": 1.518236,
+      "cc_count": 33,
+      "cc_max": 28,
+      "cc_avg": 8.7273
+    },
+    {
+      "stage": 26,
+      "counts": {
+        "empty": 436,
+        "brick": 40,
+        "steel": 64,
+        "grass": 88,
+        "water": 48,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.64497,
+        "brick": 0.059172,
+        "steel": 0.094675,
+        "grass": 0.130178,
+        "water": 0.071006,
+        "ice": 0.0
+      },
+      "reachable_cells": 510,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 164,
+      "vert_pairs_same": 136,
+      "vert_persistence": 0.829268,
+      "vert_iid_expected": 0.273333,
+      "vert_structure_lift": 3.033908,
+      "cc_count": 49,
+      "cc_max": 36,
+      "cc_avg": 4.898
+    },
+    {
+      "stage": 27,
+      "counts": {
+        "empty": 392,
+        "brick": 60,
+        "steel": 176,
+        "grass": 48,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.579882,
+        "brick": 0.088757,
+        "steel": 0.260355,
+        "grass": 0.071006,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 192,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 224,
+      "vert_pairs_same": 192,
+      "vert_persistence": 0.857143,
+      "vert_iid_expected": 0.457251,
+      "vert_structure_lift": 1.874558,
+      "cc_count": 29,
+      "cc_max": 32,
+      "cc_avg": 9.7931
+    },
+    {
+      "stage": 28,
+      "counts": {
+        "empty": 278,
+        "brick": 38,
+        "steel": 20,
+        "grass": 128,
+        "water": 0,
+        "ice": 212
+      },
+      "densities": {
+        "empty": 0.411243,
+        "brick": 0.056213,
+        "steel": 0.029586,
+        "grass": 0.189349,
+        "water": 0.0,
+        "ice": 0.313609
+      },
+      "reachable_cells": 614,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 366,
+      "vert_pairs_same": 322,
+      "vert_persistence": 0.879781,
+      "vert_iid_expected": 0.398803,
+      "vert_structure_lift": 2.206055,
+      "cc_count": 16,
+      "cc_max": 212,
+      "cc_avg": 24.875
+    },
+    {
+      "stage": 29,
+      "counts": {
+        "empty": 392,
+        "brick": 64,
+        "steel": 36,
+        "grass": 88,
+        "water": 96,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.579882,
+        "brick": 0.094675,
+        "steel": 0.053254,
+        "grass": 0.130178,
+        "water": 0.142012,
+        "ice": 0.0
+      },
+      "reachable_cells": 476,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 210,
+      "vert_pairs_same": 190,
+      "vert_persistence": 0.904762,
+      "vert_iid_expected": 0.277128,
+      "vert_structure_lift": 3.264785,
+      "cc_count": 34,
+      "cc_max": 28,
+      "cc_avg": 8.3529
+    },
+    {
+      "stage": 30,
+      "counts": {
+        "empty": 244,
+        "brick": 44,
+        "steel": 28,
+        "grass": 320,
+        "water": 40,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.360947,
+        "brick": 0.065089,
+        "steel": 0.04142,
+        "grass": 0.473373,
+        "water": 0.059172,
+        "ice": 0.0
+      },
+      "reachable_cells": 560,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 402,
+      "vert_pairs_same": 314,
+      "vert_persistence": 0.781095,
+      "vert_iid_expected": 0.571845,
+      "vert_structure_lift": 1.36592,
+      "cc_count": 27,
+      "cc_max": 320,
+      "cc_avg": 16.0
+    },
+    {
+      "stage": 31,
+      "counts": {
+        "empty": 300,
+        "brick": 52,
+        "steel": 4,
+        "grass": 80,
+        "water": 240,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.443787,
+        "brick": 0.076923,
+        "steel": 0.005917,
+        "grass": 0.118343,
+        "water": 0.35503,
+        "ice": 0.0
+      },
+      "reachable_cells": 156,
+      "rows_climbed": 20,
+      "playable": true,
+      "vert_pairs_total": 302,
+      "vert_pairs_same": 240,
+      "vert_persistence": 0.794702,
+      "vert_iid_expected": 0.471933,
+      "vert_structure_lift": 1.68393,
+      "cc_count": 36,
+      "cc_max": 24,
+      "cc_avg": 10.4444
+    },
+    {
+      "stage": 32,
+      "counts": {
+        "empty": 196,
+        "brick": 138,
+        "steel": 22,
+        "grass": 0,
+        "water": 0,
+        "ice": 320
+      },
+      "densities": {
+        "empty": 0.289941,
+        "brick": 0.204142,
+        "steel": 0.032544,
+        "grass": 0.0,
+        "water": 0.0,
+        "ice": 0.473373
+      },
+      "reachable_cells": 512,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 418,
+      "vert_pairs_same": 376,
+      "vert_persistence": 0.899522,
+      "vert_iid_expected": 0.529201,
+      "vert_structure_lift": 1.699772,
+      "cc_count": 17,
+      "cc_max": 320,
+      "cc_avg": 28.2353
+    },
+    {
+      "stage": 33,
+      "counts": {
+        "empty": 440,
+        "brick": 8,
+        "steel": 120,
+        "grass": 108,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.650888,
+        "brick": 0.011834,
+        "steel": 0.177515,
+        "grass": 0.159763,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 544,
+      "rows_climbed": 24,
+      "playable": true,
+      "vert_pairs_total": 172,
+      "vert_pairs_same": 140,
+      "vert_persistence": 0.813953,
+      "vert_iid_expected": 0.469118,
+      "vert_structure_lift": 1.735072,
+      "cc_count": 32,
+      "cc_max": 100,
+      "cc_avg": 7.375
+    },
+    {
+      "stage": 34,
+      "counts": {
+        "empty": 425,
+        "brick": 251,
+        "steel": 0,
+        "grass": 0,
+        "water": 0,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.628698,
+        "brick": 0.371302,
+        "steel": 0.0,
+        "grass": 0.0,
+        "water": 0.0,
+        "ice": 0.0
+      },
+      "reachable_cells": 26,
+      "rows_climbed": 4,
+      "playable": false,
+      "vert_pairs_total": 192,
+      "vert_pairs_same": 192,
+      "vert_persistence": 1.0,
+      "vert_iid_expected": 1.0,
+      "vert_structure_lift": 1.0,
+      "cc_count": 21,
+      "cc_max": 98,
+      "cc_avg": 11.9524
+    },
+    {
+      "stage": 35,
+      "counts": {
+        "empty": 260,
+        "brick": 200,
+        "steel": 8,
+        "grass": 112,
+        "water": 96,
+        "ice": 0
+      },
+      "densities": {
+        "empty": 0.384615,
+        "brick": 0.295858,
+        "steel": 0.011834,
+        "grass": 0.16568,
+        "water": 0.142012,
+        "ice": 0.0
+      },
+      "reachable_cells": 176,
+      "rows_climbed": 6,
+      "playable": false,
+      "vert_pairs_total": 386,
+      "vert_pairs_same": 286,
+      "vert_persistence": 0.740933,
+      "vert_iid_expected": 0.357249,
+      "vert_structure_lift": 2.073998,
+      "cc_count": 25,
+      "cc_max": 192,
+      "cc_avg": 16.64
+    }
+  ],
+  "summary": {
+    "per_metric": {
+      "reachable_cells": {
+        "mean": 413.942857,
+        "stdev": 153.254487,
+        "min": 26.0,
+        "max": 614.0
+      },
+      "rows_climbed": {
+        "mean": 21.885714,
+        "stdev": 5.859991,
+        "min": 2.0,
+        "max": 24.0
+      },
+      "vert_persistence": {
+        "mean": 0.872209,
+        "stdev": 0.06412,
+        "min": 0.708738,
+        "max": 1.0
+      },
+      "vert_iid_expected": {
+        "mean": 0.476146,
+        "stdev": 0.153462,
+        "min": 0.273333,
+        "max": 1.0
+      },
+      "vert_structure_lift": {
+        "mean": 1.967409,
+        "stdev": 0.505486,
+        "min": 1.0,
+        "max": 3.264785
+      },
+      "cc_count": {
+        "mean": 27.914286,
+        "stdev": 10.088932,
+        "min": 12.0,
+        "max": 63.0
+      },
+      "cc_max": {
+        "mean": 98.514286,
+        "stdev": 84.87547,
+        "min": 8.0,
+        "max": 320.0
+      },
+      "cc_avg": {
+        "mean": 13.071,
+        "stdev": 7.019107,
+        "min": 4.4444,
+        "max": 33.8333
+      }
+    },
+    "per_density": {
+      "brick": {
+        "mean": 0.191758,
+        "stdev": 0.108729,
+        "min": 0.011834,
+        "max": 0.387574
+      },
+      "steel": {
+        "mean": 0.068893,
+        "stdev": 0.065123,
+        "min": 0.0,
+        "max": 0.260355
+      },
+      "grass": {
+        "mean": 0.125782,
+        "stdev": 0.105853,
+        "min": 0.0,
+        "max": 0.473373
+      },
+      "water": {
+        "mean": 0.037025,
+        "stdev": 0.07256,
+        "min": 0.0,
+        "max": 0.35503
+      },
+      "ice": {
+        "mean": 0.040321,
+        "stdev": 0.116378,
+        "min": 0.0,
+        "max": 0.473373
+      },
+      "empty": {
+        "mean": 0.536222,
+        "stdev": 0.109568,
+        "min": 0.289941,
+        "max": 0.707101
+      }
+    }
+  },
+  "arc2_comparison": {
+    "vert_structure_lift": {
+      "og_mean": 1.967409,
+      "arc2_iter100_default_seed42": 2.140729
+    },
+    "cc_max": {
+      "og_mean": 98.514286,
+      "arc2_iter100_default_seed42": 60
+    },
+    "cc_count": {
+      "og_mean": 27.914286,
+      "arc2_iter100_default_seed42": 51
+    },
+    "reachable_cells": {
+      "og_mean": 413.942857,
+      "arc2_iter100_default_seed42": 676,
+      "note": "arc-2 oracle reports reachable BFS from PlayerTank spawn (160, 232) on procedural map; OG uses canonical Tanks spawn (col 8, row 24). Counts not 1:1 comparable but orders-of-magnitude consistent."
+    }
+  },
+  "meta": {
+    "source": ".research/repos/Tanks/resources/stages",
+    "generated_by": "tools/og_metrics.py",
+    "rubric_anchor": "C12 anchor 2 (artifact) + anchor 3 (cross-stage stats)"
+  }
+}

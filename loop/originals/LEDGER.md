@@ -1120,3 +1120,112 @@ Iter 12 likely BUILD/CAPABILITY focused on (1).
 ### Commit
 
 `chore(originals): iter 011 — BUILD — Spawner integration (arc-2 soft-substrate write)`
+
+---
+
+## Iter 012 — CAPABILITY (og_metrics.py — arc-3 → arc-2 metric handshake)
+
+**Mode:** CAPABILITY
+**Date:** 2026-05-15
+**Branch:** `arc-3-originals`
+**Focus:** Per-stage structural metrics + cross-stage summary + arc-2 comparison JSON for C12 anchor 2+3.
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 012)
+
+F1-F5 pre-listed. F1 (BFS spawn coord) addressed by using Tanks canonical (8, 24). F4 (determinism) verified via run-twice diff.
+
+**Result: claim verified for anchors 2 + 3.** One unanticipated finding surfaced: my Python BFS is stage-bounded (26×26 BC playfield), whereas the Godot oracle's BFS is viewport-bounded (40×30 viewport that arc-3 wraps the BC stage in). The divergence reveals a real arc-3-vs-BC structural gap.
+
+### Actions
+
+1. **`tools/og_metrics.py`** (NEW) — Python tool, stdlib only:
+   - Reads `.research/repos/Tanks/resources/stages/{1..35}` (read-only).
+   - Per-stage: terrain counts + densities, BFS reachability from (8, 24), vert_persistence + iid_expected + structure_lift, CC count/max/avg.
+   - Cross-stage summary: mean/stdev/min/max per metric.
+   - Arc-2 comparison block: cites arc-2 iter-100 default-config-seed-42 baseline values for direct comparison.
+   - Output: `loop/originals/og-metrics.json` (per RUBRIC C12 anchor 2 wording).
+2. **Makefile `og-metrics` target** — runs the script + previews summary.
+3. **`loop/originals/og-metrics.json`** (NEW, 35 stages + summary + arc-2 cross-ref).
+
+### Verification
+
+- All 35 stages produce JSON entries; zero NaN/None values.
+- Determinism: two consecutive runs produce byte-identical JSON.
+- Cross-stage summary has 8 scalar metrics × {mean, stdev, min, max} + 6 density entries × 4 stats.
+- Procedural hash anchor `23d6a2ec…` preserved.
+- `make test` exit 0.
+
+### Cross-stage summary headline (post-arc-2 handshake comparison)
+
+| Metric | OG mean | OG stdev | OG range | arc-2 iter-100 (default/seed 42) |
+|--------|---------|----------|----------|----------------------------------|
+| vert_structure_lift | **1.967** | 0.505 | [1.000, 3.265] | 2.141 |
+| cc_max | 98.5 | 84.9 | [8, 320] | 60 |
+| cc_count | 27.9 | 10.1 | [12, 63] | 51 |
+| brick density | 0.192 | 0.109 | [0.012, 0.388] | (would derive from arc-2 oracle) |
+
+**Read of the comparison:**
+- **structure_lift**: BC stages are slightly *less* architecturally coherent than arc-2's tuned default. arc-2's empirical target should probably loosen toward 1.97 if it wants to feel "BC-like" instead of "BC-perfect-grid."
+- **cc_max**: BC has *wider variance* and *higher peaks* (320-cell components on stages 30 and 32 — single massive ice fields). arc-2's tighter cc_max of 60 means it's more uniformly fragmented. To match BC, arc-2 could allow occasional giant clusters.
+- **cc_count**: BC has *fewer* but bigger components (28 vs arc-2's 51). Aligned with the cc_max read — BC is block-y, arc-2 is fragmented.
+
+### Unanticipated finding — surfaced as REVIEW-QUEUE #5
+
+**arc-3 OG mode lacks BC's implicit edge walls.** My Python BFS is stage-bounded (26×26 BC playfield); Godot oracle's BFS is viewport-bounded (40×30 arc-3 viewport that wraps the BC stage). The divergence:
+
+| Stage | Python (BC-authentic) | Godot (arc-3 v1) |
+|-------|----------------------|-------------------|
+| 21 | reachable=58, playable=false (rows=2) | reachable=931, playable=true (rows=26) |
+| 34 | reachable=26, playable=false (rows=2) | reachable=885, playable=true (rows=26) |
+| 35 | reachable=176, playable=false (rows=8) | reachable=895, playable=true (rows=26) |
+
+Both measurements are honest of *what they measure*. The stage-bounded answer is BC-authentic (tanks can't escape the playfield in real BC). The viewport-bounded answer reflects arc-3 v1's open border. Queued as item #5 for user direction-pick (add walls / accept leakiness / cosmetic frame only).
+
+### Scores
+
+| C# | Name | Before | After | Tag | Cite |
+|----|------|--------|-------|-----|------|
+| 1 | Loader correctness | 4 | 4 | [STRUCTURE] | |
+| 2 | Eagle gameplay | 3 | 3 | [STRUCTURE] / [FEEL-PARTIAL] | |
+| 3 | Ice physics | 2 | 2 | [STRUCTURE] | |
+| 4 | PNG-diff oracle | 4 | 4 | [STRUCTURE] | |
+| 5 | Enemy roster fidelity | 3 | 3 | [STRUCTURE] | |
+| 6 | Mode selection | 4 | 4 | [STRUCTURE] / [FEEL] | |
+| 7 | Stages 1-12 complete | 5 | 5 | [STRUCTURE] | |
+| 8 | Stages 13-24 complete | 5 | 5 | [STRUCTURE] | |
+| 9 | Stages 25-35 complete | 5 | 5 | [STRUCTURE] | |
+| 10 | End-to-end playable run | 3 | 3 | [STRUCTURE] | |
+| 11 | Identity / BC fidelity | 1 | 1 | [STRUCTURE] / [FEEL-IMPLICIT] | |
+| 12 | Arc-2 feedback metrics | 1 | **3** | [STRUCTURE] | Anchor 1+2+3 all cited. Anchor 2: `tools/og_metrics.py` + `loop/originals/og-metrics.json`. Anchor 3: mean/stdev/min/max across 35 stages for 8 scalars + 6 densities; arc-2 comparison block with iter-100 baseline values. |
+| **Total** | | **40** | **42/60** | | +2 (C12 +2). |
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 12 cites
+- [STRUCTURE-DEFERRED]: 1 cite
+- [FEEL]: 3 cites
+- [MIXED]: 0
+
+### Substrate guardrails verified
+
+- No game-code edits (CAPABILITY mode, tooling only).
+- `.research/repos/Tanks/` read-only.
+- Procedural hash anchor `23d6a2ec…` preserved.
+- `make test` exit 0.
+
+### Cumulative arc-3 path
+
+5 → 10 → 15 → 20 → 29 → 33 → 34 → 36 (v2) → 36 (HALT) → 38 (RESUME) → 40 → **42**
+
+### Next iter
+
+Iter 13 candidates:
+1. **C1 → 5** (anchor 5: "Loader handles edge cases — covered by `make test`"). Add a `make test-loader` or extend `make test` to exercise LevelLoader with missing file + malformed row. Low effort.
+2. **C12 → 4** (anchor 4: "Procedural arc-2 configs adjusted to match the OG empirical distribution on at least 2 metrics — code-cited config diff"). With og-metrics now in hand, draft a new arc-2 config (`configs/og_calibrated.tres`) that tunes toward OG's structure_lift 1.97 + cc_count 28. Touches arc-2 config files but doesn't modify substrate scripts.
+3. **REVIEW-QUEUE #5** (BC edge walls) — opens once user picks a/b/c.
+
+Iter 13 likely (1) or (2). Both are structural; both reachable without playtest.
+
+### Commit
+
+`chore(originals): iter 012 — CAPABILITY — og_metrics arc-3 ↔ arc-2 handshake`

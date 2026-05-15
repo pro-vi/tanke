@@ -578,3 +578,61 @@ Generalization clause: the directive-override mechanism (suspend halt rule + REV
 - More than one stage advance race ("stage_cleared" → reload → "stage_cleared" again on first frame).
 
 **Anti-Goodhart guard:** C5 anchor 3 requires "arc-2 Spawner reads Roster at spawn time; per-stage enemy mix observable in render." Test: render OG stages 1 and 35 with the new Spawner; the armored ratio should statistically lean toward Heavy more on stage 35. Single-render small sample won't show statistical difference cleanly, so I'll verify the code path (Roster called with correct stage_number) rather than the render distribution. C10 anchor 3 ("Stages 1-10 reachable in single session") — headless verification via stage_cleared firing is the cite. Real session-playability needs playtest (queued).
+
+---
+
+## Iter 012 — CAPABILITY (og_metrics.py — arc-3 → arc-2 metric handshake)
+
+**Mode:** CAPABILITY.
+
+**Weakest axis:** Criterion 12 (Arc-2 feedback metrics) at 1. PROMPT § "What arc-3 ALSO does (feedback to arc 2)" explicitly calls for this work. Anchor 2 ("compiled JSON artifact") + anchor 3 ("cross-stage statistics comparable to arc-2's `vert_structure_lift` / `cc_max` numbers") are the reachable lifts.
+
+**Plan:**
+
+1. **`tools/og_metrics.py`** (NEW) — Python tool that:
+   - Reads `.research/repos/Tanks/resources/stages/{1..35}` ASCII grids (read-only per H2).
+   - Computes per-stage metrics paralleling `loop/test_runner.gd`:
+     - Terrain counts + densities (brick / steel / grass / water / ice / empty)
+     - BFS reachability from canonical Tanks spawn (stage col 8, row 24); reports `reachable_cells` count + `playable: bool` (>=10 rows climbed gate from test_runner)
+     - `vert_persistence`: fraction of cells whose below-neighbor shares terrain
+     - `vert_iid_expected`: P(two random placed cells share terrain) — observed-distribution
+     - `vert_structure_lift`: persistence / iid_expected (arc-2 architectural-cohesion metric)
+     - CC analysis: count / max / avg of contiguous same-terrain regions (flood-fill 4-connected)
+   - Emits cross-stage summary (mean / stdev / min / max) per metric across the 35 stages.
+   - Writes `loop/originals/og-metrics.json`.
+
+2. **Makefile target**: `make og-metrics` → runs the tool; idempotent.
+
+3. **No Godot dependency** — pure Python (stdlib only; PIL not needed here since we read ASCII not PNGs). Keeps the arc-2 ↔ arc-3 handshake artifact deterministic and language-portable.
+
+**Falsifiable claim (with generalization clause):**
+
+- All 35 stages produce a per-stage JSON entry; zero NaN/inf/None values.
+- Cross-stage summary has 4 stats (mean/stdev/min/max) for each of ~6-8 metrics.
+- `vert_structure_lift` OG mean is in a comparable order of magnitude to arc-2's iter-100 procedural (2.14 from STATE/LEDGER iter 0).
+- CC stats coherent: cc_count > 0 on every stage; cc_max <= 676 (grid total).
+- Procedural hash anchor `23d6a2ec…` preserved.
+- `make test` exit 0.
+
+Generalization is the natural unit — 35 stages each yields a row; summary stats reveal whether the loader / metric impl handles BC's full terrain-variety surface.
+
+**Most-likely failure modes:**
+
+- **F1 [STRUCTURE]**: BFS implementation differs from `test_runner.gd`'s (Godot uses `level.player.global_position`-derived spawn; mine reads canonical Tanks coord). If my BFS counts differ from a hypothetical Godot run, the comparison validity for arc-2 is weak. *Mitigation*: implement BFS with identical 4-connected logic; document the spawn coord choice; compare against the iter-1 oracle output for stage 1 as a sanity gate.
+- **F2 [STRUCTURE]**: "Playable" gate semantics: test_runner uses `rows_climbed >= MIN_ROWS_CLIMBED (=10)` from spawn. In OG, spawn is at row 24 (bottom); reaching row 14 is the gate. Most stages should satisfy this. *Detection*: stage K returns `playable: false`. *Mitigation*: verify in iter-1 + iter-5 sweep results; OG stages all had `playable: true` from headless oracle, so my Python impl must reproduce that.
+- **F3 [STRUCTURE]**: Vert persistence: arc-2's impl includes the lower-row pair, including the 2x2 block-paving floor. OG ASCII has no such floor — most rows are sparse. Iid_expected might be very high (lots of empty cells → high p_empty² ~ 0.66² ~ 0.44). Structure_lift could vary widely. *Mitigation*: report verbatim; compare summary to arc-2's published 2.14 (default config); document any large divergence as a real signal, not a bug.
+- **F4 [STRUCTURE]**: Python implementation has subtle stdlib gotchas (e.g., dict iteration order, integer division). Output should be deterministic. *Mitigation*: write the script to be deterministic (no rand, no hash, sorted dict iterations); test by running twice and diffing the JSONs.
+- **F5 [STRUCTURE]**: Arc-2 reads JSON file naming — `loop/originals/og-metrics.json` is the canonical location per RUBRIC C12 anchor 2 wording ("loop/originals/og-metrics.json"). Don't put it in `tools/` or `.research/`.
+
+**Substrate guards:**
+- No edits to scripts/ (game code), scenes/, or .research/repos/Tanks/ (read-only).
+- New: `tools/og_metrics.py`, `loop/originals/og-metrics.json`, `Makefile` target.
+- Procedural hash anchor preserved (no Godot code changed).
+
+**What would count as "iter 12 failed":**
+- Any stage produces NaN or crashes the tool.
+- JSON file has malformed structure (not parseable).
+- Cross-stage summary missing.
+- Procedural hash anchor drifts (would mean tooling somehow leaked into game runtime — unlikely but worth guarding).
+
+**Anti-Goodhart guard:** C12 anchor 4 ("Procedural arc-2 configs adjusted to match the OG empirical distribution on at least 2 metrics — code-cited config diff") is a future iter target. Iter-12 is anchor 2 + 3 only. Don't be tempted to tune arc-2 configs in this iter (would touch substrate; out of scope).

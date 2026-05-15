@@ -11,7 +11,7 @@ NOISE_FILTER    = grep -Ev "RID allocations|resources still in use"
 FRAMES_DIR      = $(PROJECT_DIR)/tools/out
 REFS_DIR        = $(PROJECT_DIR)/tools/refs
 
-.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og
+.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics
 
 # Parse/load validation — catches bad scripts and missing nodes
 check:
@@ -81,6 +81,14 @@ png-diff-og: screenshot-og
 	latest=$$(ls $(FRAMES_DIR)/og/stage_$(STAGE)_*.png 2>/dev/null | tail -1); \
 	if [ -z "$$latest" ]; then echo "no render PNG found"; exit 1; fi; \
 	python3 $(PROJECT_DIR)/tools/png_diff.py --reference "$$ref" --render "$$latest" --stage $(STAGE)
+
+# Arc-3 → arc-2 metric handshake: compute per-stage structural metrics
+# across all 35 BC stages and emit loop/originals/og-metrics.json.
+# Usage: make og-metrics
+og-metrics:
+	python3 $(PROJECT_DIR)/tools/og_metrics.py --quiet
+	@echo "summary preview:"
+	@python3 -c "import json; d=json.load(open('loop/originals/og-metrics.json')); [print(f'  {k}: mean={s[\"mean\"]:.3f}  stdev={s[\"stdev\"]:.3f}  range=[{s[\"min\"]:.3f}, {s[\"max\"]:.3f}]') for k, s in d['summary']['per_metric'].items()]"
 
 # Launch the game (editor)
 run:

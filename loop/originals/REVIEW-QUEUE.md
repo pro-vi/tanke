@@ -66,6 +66,32 @@ When closing, cite the LEDGER iter that captured the closure.
 
 ---
 
+### #5 — arc-3 lacks BC's implicit edge walls (surfaced iter 12)
+
+**Opened:** iter 12
+**Source:** `tools/og_metrics.py` stage-bounded BFS vs `loop/test_runner.gd` viewport-bounded BFS divergence.
+
+**Context:** BC's playfield has implicit walls at the 26×26 stage edge — tanks can't escape the playfield. arc-3's OG mode centers the 26×26 stage in the 40×30 viewport but leaves the 7-cell horizontal + 2-cell vertical borders open (no terrain → passable). The Godot reachability oracle therefore reports `playable: true` for all 35 stages because the player can roam through the border, even when the BC stage interior is heavily walled (e.g. stages 21, 34, 35).
+
+**Stage-bounded measurement** (BC-authentic):
+- Stage 21: 58 reachable cells; playable=false (rows_climbed=2)
+- Stage 34: 26 reachable cells; playable=false (rows_climbed=2)
+- Stage 35: 176 reachable cells; playable=false (rows_climbed=8)
+
+**Viewport-bounded measurement** (current arc-3 reality):
+- All 35 stages playable=true; 800+ reachable cells
+
+**Anchor options:**
+- (a) Add invisible StaticBody2D walls at scene cells 7/32 (x) and 2/27 (y) of OriginalLevel.tscn to enforce BC-authentic playfield boundaries.
+- (b) Leave the leakiness; document that arc-3 v1 is "BC stages displayed in a wider viewport." Acceptable if user prefers more breathing room.
+- (c) Render decorative grey-frame around the playfield to visually indicate the boundary, even if tanks can technically cross it.
+
+**What I need from the user:** pick (a/b/c) at queue review. (a) is BC-authentic; (b) is arc-3-pragmatic; (c) is cosmetic compromise.
+
+**STATUS:** open
+
+---
+
 ### #4 — Eagle-felt-like-BC cite (C2 anchor 4-5)
 
 **Opened:** iter 10

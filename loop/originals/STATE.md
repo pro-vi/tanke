@@ -4,15 +4,15 @@
 
 ```
 phase: loop
-iteration: 11 (BUILD — Spawner integration — complete; iter 12 scheduled)
+iteration: 12 (CAPABILITY — og_metrics arc-2 handshake — complete; iter 13 scheduled)
 arc: 3 (Originals — BC NES stages import)
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 40/60
+score: 42/60
 playtest_halt_rule: SUSPENDED per user iter-10 directive — REVIEW-QUEUE pattern active
 ```
 
-**First arc-2 substrate write landed** (Spawner.gd extended; PROMPT Layer-2 spec authorized) without procedural-mode regression. Hash anchor `23d6a2ec…` preserved. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 → 36 (v2) → 36 (HALT) → 38 (RESUME) → 40 (Spawner integration). Tag balance: 11 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL].
+**Arc-3 → arc-2 metric handshake artifact landed.** `loop/originals/og-metrics.json` compiled with per-stage + cross-stage stats + arc-2 baseline comparison. Headline: BC's structure_lift mean is 1.97 vs arc-2's 2.14 — close range. Cumulative path: ... → 40 → 42 (+2 C12). Tag balance: 12 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL]. REVIEW-QUEUE now 5 items (added #5: arc-3 lacks BC implicit edge walls).
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -60,7 +60,7 @@ Hash anchor `23d6a2ec…` is the regression detector.
 
 ---
 
-## Current Scores (post iter 011 — Spawner integration)
+## Current Scores (post iter 012 — og_metrics handshake)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
@@ -68,15 +68,15 @@ Hash anchor `23d6a2ec…` is the regression detector.
 | 2. Eagle gameplay | **3** | Anchor 4+ queue #4 |
 | 3. Ice physics | **2** | Pass-through (rubric cap) |
 | 4. PNG-diff oracle | **4** | |
-| 5. Enemy roster fidelity | **3** | Anchor 3 ✓ — Spawner reads Roster per spawn; per-stage mix observable |
-| 6. Mode selection | **4** | Anchor 5 unfulfilled (instruction-given) |
+| 5. Enemy roster fidelity | **3** | |
+| 6. Mode selection | **4** | |
 | 7. Stages 1-12 complete | **5** | |
 | 8. Stages 13-24 complete | **5** | |
 | 9. Stages 25-35 complete | **5** | |
-| 10. End-to-end playable | **3** | Anchor 3 ✓ — 10-stage advance chain verified programmatically. Anchors 4-5 await playtest |
-| 11. Identity / BC fidelity | **1** | Anchor 3+ queue #2 |
-| 12. Arc-2 feedback metrics | **1** | iter-12+ target: tools/og_metrics.py |
-| **Total** | **40/60** | post iter 011 |
+| 10. End-to-end playable | **3** | |
+| 11. Identity / BC fidelity | **1** | Queue #2 |
+| 12. Arc-2 feedback metrics | **3** | Anchor 2 ✓ (`tools/og_metrics.py` + `loop/originals/og-metrics.json`) + anchor 3 ✓ (cross-stage stats + arc-2 comparison block). Anchor 4 (procedural config tuning) is iter-13+ target |
+| **Total** | **42/60** | post iter 012 |
 
 ---
 
@@ -110,6 +110,43 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 012 CAPABILITY complete (2026-05-15) — arc-2 metric handshake.
+
+- Pre-mortem with F1-F5; F4 (determinism) verified by run-twice diff.
+- tools/og_metrics.py — Python stdlib only, reads .research/repos/Tanks/
+  ASCII grids, computes per-stage counts/densities/reachability (BFS)/
+  vert_persistence/structure_lift/CC stats. 35-stage cross-summary
+  (mean/stdev/min/max) + arc-2 baseline comparison block.
+- loop/originals/og-metrics.json (NEW, per RUBRIC C12 anchor 2).
+- Makefile: make og-metrics target + summary preview.
+
+Cross-stage headlines (BC vs arc-2 iter-100 default/seed 42):
+- vert_structure_lift: BC mean 1.97 (stdev 0.51) vs arc-2 2.14
+  → BC slightly less architecturally-coherent than arc-2 default
+- cc_max: BC 98.5 (stdev 84.9) vs arc-2 60 → BC has wider blob variance
+- cc_count: BC 27.9 vs arc-2 51 → BC fewer but bigger components
+
+Unanticipated finding (REVIEW-QUEUE #5):
+- arc-3 OG mode lacks BC's implicit edge walls. Stages 21/34/35 are
+  unplayable under stage-bounded BFS (BC-authentic) but playable
+  under viewport-bounded BFS (arc-3 v1 leakiness). User picks
+  walls / accept / cosmetic.
+
+Verification:
+- 35/35 stages produce coherent JSON; zero NaN.
+- Two consecutive runs produce byte-identical output (deterministic).
+- Procedural hash anchor 23d6a2ec… preserved exactly.
+- make test exit 0.
+
+Score: C12 1 → 3. Total 40 → 42/60 (+2).
+Tag balance: 12 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL].
+
+Commit: chore(originals): iter 012 — CAPABILITY — og_metrics arc-3 ↔
+arc-2 handshake.
+Iter 13 wakeup scheduled.
+```
 
 ```
 Iter 011 BUILD complete (2026-05-15) — arc-2 substrate write.
@@ -358,6 +395,31 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 13 — BUILD (close C1 anchor 5 + queue review pre-staging):
+  - Step 1: PRE-MORTEM (generalization clause: LevelLoader edge cases
+            covered for 4 input types — happy / missing / short row /
+            unknown char).
+  - Step 2: DIAGNOSE — C1 at 4; anchor 5 "Loader handles edge cases —
+            covered by make test" is the structurally-reachable lift.
+  - Step 3: SELECT MODE — BUILD/CAPABILITY (test target extension).
+  - Step 4: ACT:
+      1. Extend make test (or add make test-loader) to exercise:
+         - missing stage file (LevelLoader returns error path)
+         - short row (returns error)
+         - unknown char (counted in result.unknown)
+      2. Confirm LevelLoader.gd already handles these paths via the
+         result.error / result.unknown counters (no code edit needed).
+      3. Add a small Godot test script + Makefile target.
+  - Step 5: SCORE — C1 → 5 if test target green.
+  - Step 6: COMMIT — chore(originals): iter 013 — BUILD — LevelLoader edge cases
+  - Step 7: SCHEDULE — 240s wakeup for iter 14.
+
+Alternate path: C12 → 4 by drafting configs/og_calibrated.tres tuned
+toward OG empirical bands. Touches arc-2 config dir, not substrate
+scripts. Score lift +1.
+```
 
 ```
 Iter 12 — CAPABILITY (tools/og_metrics.py for C12 arc-2 feedback):
