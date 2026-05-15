@@ -25,12 +25,18 @@ func _ready() -> void:
 	# iter 101 (Codex P2): env-var override applies regardless of scene
 	# default — scene now bakes config/biome, but `make diff` workflow swaps
 	# captures via TANKE_CONFIG/TANKE_BIOME and needs the env var to win.
+	# iter 101 (Codex follow-up P1): TANKE_CONFIG without TANKE_BIOME also
+	# clears scene-default biome, mirroring test_runner's --config behavior;
+	# `make diff` only sets TANKE_CONFIG, so leaving biome intact would let
+	# the baked banded-biome override the requested config.
 	var override_path: String = OS.get_environment("TANKE_CONFIG")
+	var biome_override: String = OS.get_environment("TANKE_BIOME")
 	if override_path != "":
 		config = load(override_path)
+		if biome_override == "":
+			biome = null
 	elif config == null:
 		config = DefaultConfig.duplicate()
-	var biome_override: String = OS.get_environment("TANKE_BIOME")
 	if biome_override != "":
 		biome = load(biome_override)
 	var override_seed: String = OS.get_environment("TANKE_SEED")
