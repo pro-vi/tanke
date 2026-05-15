@@ -868,3 +868,50 @@ Iter 9 mode depends on user response by wakeup:
 ### Commit
 
 `chore(originals): iter 008 — AUDIT — rubric v2 (C5 rename + C11/C12 add)`
+
+---
+
+## Iter 009 — HALT (PLAYTEST 3-iter unfulfilled)
+
+**Mode:** HALT (terminal)
+**Date:** 2026-05-15
+**Branch:** `arc-3-originals`
+
+### Trigger
+
+PROMPT § HALT CONDITIONS, line: "A PLAYTEST request unfulfilled for 3 iters → `HALTED.md` and stop." Iter 7 = 1/3, iter 8 = 2/3, iter 9 = 3/3 → wrote `loop/originals/HALTED.md`.
+
+### State at halt
+
+- Score: **36/60** (rubric v2 post iter-8 AUDIT).
+- Tag balance: 10 [STRUCTURE], 3 [STRUCTURE-DEFERRED], 0 [FEEL].
+- Procedural hash anchor `23d6a2ec…` preserved across all 9 iters.
+- All 35 stages structurally verified (parse + reachable + PNG-diff <5%).
+- Eagle entity, ice rendering, mode-selection, game-over, StageDirector, Roster formula all shipped.
+- Single unsatisfied close gate: PLAYTEST cite (anchors 4-5 of C2/C6/C10/C11).
+
+### Actions
+
+1. **Wrote `loop/originals/HALTED.md`** — full state document; 3 resume options (fulfill playtest / sprint / waive); outstanding-work surface; carry-forward to PROMPT v3 / arc-3 retro.
+2. **Updated `STATE.md`** — phase: HALTED; final score; resume signals.
+3. **No code edits.** No wakeup scheduled.
+
+### Pre-mortem (not filed)
+
+No pre-mortem for HALT — there's no plan to predict. The halt is the literal application of the PROMPT rule.
+
+### Scores
+
+Unchanged from iter 8 (no work this iter).
+
+### Commit
+
+`chore(originals): iter 009 — HALT — playtest 3-iter unfulfilled`
+
+### What the loop is waiting on
+
+The user. The loop has executed every structural path it can fire mechanically. The remaining +24 points on the rubric are split between:
+- ~20 points behind the PLAYTEST gate (C2/C6/C10/C11 anchors 4-5)
+- ~4 points reachable structurally (C1→5, C4→5, C5→3, C12→3+, with Spawner + arc-2-feedback work)
+
+If the user resumes via Option A or B (HALTED.md), iter 10 picks back up. If via Option C, iter 10 is META-RETRO close.

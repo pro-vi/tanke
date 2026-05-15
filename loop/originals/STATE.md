@@ -3,14 +3,16 @@
 ## Phase
 
 ```
-phase: loop
-iteration: 8 (AUDIT — rubric v2 — complete; iter 9 scheduled)
+phase: HALTED
+iteration: 9 (HALT iter; PLAYTEST 3-iter rule fired; see loop/originals/HALTED.md)
 arc: 3 (Originals — BC NES stages import)
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 36/60  (rubric expanded to 12 criteria — see iter-8 LEDGER)
-playtest_halt_counter: 2 of 3 (iter 9 unfulfilled = HALTED.md)
+score: 36/60  (final score at halt)
+playtest_halt_counter: 3 of 3 — TRIPPED
 ```
+
+**LOOP HALTED.** PROMPT halt rule: "A PLAYTEST request unfulfilled for 3 iters → `HALTED.md` and stop." See `loop/originals/HALTED.md` for full state, resume options (A: fulfill playtest, B: sprint authorization, C: playtest waiver), and outstanding-work surface. No further wakeup scheduled until user re-engages.
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -108,6 +110,24 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 009 HALT (2026-05-15).
+
+- PLAYTEST request unfulfilled iter 7, 8, 9 — halt-rule fires.
+- Wrote loop/originals/HALTED.md (full state + resume options A/B/C).
+- STATE.md phase → HALTED.
+- Commit: chore(originals): iter 009 — HALT — playtest 3-iter unfulfilled.
+- NO wakeup scheduled. Loop pauses until user re-engages.
+
+Final score at halt: 36/60 (60%).
+Final tag balance: 10 [STRUCTURE], 3 [STRUCTURE-DEFERRED], 0 [FEEL].
+
+Resume paths:
+  A. User runs godot --path . , plays, replies Q1+Q2, re-fires /loop.
+  B. User authorizes a sprint (e.g. "do K iters before next playtest").
+  C. User waives playtest; I write META-RETRO and close arc-3 at structural ceiling.
+```
 
 ```
 Iter 008 AUDIT complete (2026-05-15).
@@ -275,6 +295,18 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+PAUSED. Loop halted per PROMPT 3-iter PLAYTEST rule.
+
+Resume on user signal:
+  - "I played it, here's Q1/Q2: ..." → iter 10 = PLAYTEST mode
+  - "Sprint K iters" → iter 10 = BUILD/IMPORT under sprint authorization
+  - "Waive playtest" → iter 10 = META-RETRO, arc-3 close at 36/60 ceiling
+  - Anything else → I'll need to interpret based on what you say
+
+No scheduled wakeup. The loop is genuinely paused.
+```
 
 ```
 Iter 9 — BRANCH (HARD halt threshold):
