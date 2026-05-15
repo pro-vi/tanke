@@ -11,7 +11,9 @@ extends RefCounted
 #   @  steel       — indestructible; steelTileMap
 #   %  forest      — decorative + hide rule; grassTileMap
 #   ~  water       — blocks tanks; waterTileMap
-#   -  ice         — DEFERRED to phase-1 decision iter (criterion 3)
+#   -  ice         — iter 003 PHASE-1 DECISION: pass-through (no physics).
+#                    Renders to iceTileMap if the level exposes it; else
+#                    counted in ice_skipped (legacy iter-1 behavior).
 #
 # Tanks's ASCII grid is 26 rows × 26 columns (one char per 8-px sub-brick).
 # tanke viewport is 40×30 cells at 8 px → center horizontally at col_offset=7
@@ -89,8 +91,15 @@ static func parse_stage(level: Node, stage_number: int, col_offset: int = 7, row
 					level.waterTileMap.set_cell(coord, ATLAS_SOURCE, ATLAS_COORDS)
 					result.water += 1
 				"-":
-					# Phase-1 decision iter pending (criterion 3); for now skip.
-					result.ice_skipped += 1
+					# iter 003: pass-through decision — place a decorative ice
+					# cell on iceTileMap when present. Tank physics unaffected
+					# (no collision layer on iceTileMap). Falls back to skip-
+					# count when level lacks an iceTileMap (caps C3 at 2/5).
+					if "iceTileMap" in level and level.iceTileMap != null:
+						level.iceTileMap.set_cell(coord, ATLAS_SOURCE, ATLAS_COORDS)
+						result["ice"] = result.get("ice", 0) + 1
+					else:
+						result.ice_skipped += 1
 				_:
 					result.unknown += 1
 	result.ok = (result.error == "" and result.unknown == 0)

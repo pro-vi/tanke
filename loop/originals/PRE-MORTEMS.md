@@ -105,3 +105,59 @@ This iter applies the cure.
 | 17 | First ice-bearing stage — exercise the "skip ice" path through the classifier |
 
 Tool must run on all four without modification (no per-stage flags). If any single stage requires a tool tweak, the tool is not generalized.
+
+---
+
+## Iter 003 — BUILD (ice pass-through decision + Eagle entity)
+
+**Carry from iter 002:** Generalization clause holds. Iter 3 applies it to both axes — ice decision verified by re-diffing stage 17, eagle placement verified across stages 1, 4, 35 (canonical fortress pattern confirmed identical: `#..#` at cols 11-14 of rows 24-25 across all three).
+
+**Mode:** BUILD.
+
+**Weakest axis (joint):**
+1. Criterion 3 (Ice physics) at 0 — iter-2 PNG-diff made the gap concrete (206 ice cells dominate stage-17 mismatch). Decision iter due.
+2. Criterion 2 (Eagle gameplay) at 0 — PROMPT anti-pattern explicitly names "deferring eagle to after all stages" as a failure mode. Iter 3 is the canonical eagle-build slot.
+
+**Plan:**
+
+1. **ICE DECISION** — choose `pass-through` for v1. Rationale: faithful slide-physics would entail a PlayerTank state-machine modification (arc-2 soft-substrate, requires regression check), and the iter-2 evidence shows the dominant stage-17 cost is the *visual* gap (ice cells render as empty), not the physics gap. Pass-through caps C3 at 2/5 per rubric — this is a deliberate ceiling. The decision is documented in LEDGER and PROMPT-RUBRIC traces.
+2. **Ice texture** — `img/ice_008.png` (16×16, solid gray ~(128,128,128) to land in the existing `TANKE_ANCHORS["ice"] = (200,200,200)` classification window). Generated via PIL.
+3. **Ice TileMapLayer** — add to OriginalLevel.tscn (decorative, NO physics — pass-through means tanks walk over it).
+4. **LevelLoader update** — `-` symbol now writes to `iceTileMap` (currently `ice_skipped++`). No more silent skip.
+5. **Eagle entity** — `scripts/Eagle.gd` (StaticBody2D; HP=1; eagle_destroyed signal; take_damage method matching Bullet's `_on_body_entered` contract). `scenes/Eagle.tscn` (16×16 sprite, CollisionShape2D, collision_layer=1 so Bullet mask=9 catches it).
+6. **Eagle placement rule** — canonical: `cols 12-13, rows 24-25` of the parsed stage (= scene cols 19-20, rows 26-27 after offset). Verified identical across stages 1, 4, 35 — the BC fortress is fixed geometry. OriginalLevel.gd will instantiate Eagle at that scene position after `_replace_blocks()` runs.
+7. **PlayerTank spawn** — move from (160, 220) [overlaps eagle] to (124, 220) [4 cells left of eagle, on bottom row]. Verified passable on stages 1, 4, 35.
+8. **Re-diff** — render stages 1/4/7/17 and re-run `png_diff.py`. Predict: stages 1/4/7 stay under 5% (negligible delta from eagle); stage 17 drops from 32% to <5% (ice cells now render as gray).
+
+**Falsifiable claim (with generalization clause):**
+
+- `make screenshot-og STAGE=K` + `make png-diff-og STAGE=K` for **K in {1, 4, 7, 17}**:
+  - Stage 1: mismatch_pct **<5%** AND eagle sprite visible in render at center-bottom AND eagle has collision (test by code inspection).
+  - Stage 4: mismatch_pct **<5%** AND eagle present at same canonical position.
+  - Stage 7: mismatch_pct **<5%** (sanity — eagle shouldn't break steel-heavy parsing).
+  - Stage 17: mismatch_pct **<5%** (NEW — this is the headline cure; ice cells now render).
+- Procedural hash anchor `23d6a2ec…` preserved (no arc-2 substrate writes).
+- `make test` exit 0.
+
+**Most-likely failure modes:**
+
+- **F1 [STRUCTURE]**: Eagle's collision shape blocks the player. If `collision_mask` interplay between Eagle (layer=1) and PlayerTank (mask probably includes 1) makes the player stuck against the eagle on spawn or movement. *Detection*: render then walk — but I'm not playtesting this iter. Headless check: `make test` still exits 0 (no crash on eagle's _ready). *Mitigation*: keep PlayerTank spawn 4 cells away from eagle; eagle on layer 1 + standard 16×16 shape; deferred verification to first PLAYTEST.
+- **F2 [STRUCTURE]**: Ice TileMapLayer's empty default cell color leaks gray pixels into supposedly-empty cells, causing false-positive ice classifications on tanke render. *Detection*: stages 1/4/7 mismatch_pct *rises* after this iter. *Mitigation*: TileMapLayer only renders cells that have `set_cell` called — empty cells remain transparent. Verify by self-classifying stage 1 render after ice layer added.
+- **F3 [STRUCTURE]**: Eagle position rule wrong for some stage. Per inspection, stages 1/4/35 have the canonical `#..#` at cols 11-14 of rows 24-25 — but I haven't checked stages 2-34. If even one differs, the per-stage rule needs detection logic, not a hardcoded coord. *Detection*: render stages 2/3/5/6/8/9/10/11/12 etc., visually verify eagle lands in the brick "house" of each. *Mitigation*: write a quick survey: `grep` for `#..#` on rows 24-25 across all 35 stages. If 35/35 have it, hardcoded coord is fine. If <35, write fortress-detection in OriginalLevel.gd.
+- **F4 [STRUCTURE]**: Ice texture color mismatch. tanke ice texture at (128,128,128) is sampled by png_diff at center → may classify as "empty" if TANKE_ANCHORS empty=(77,77,77) is closer than ice=(200,200,200) in RGB distance. Distance(128 to 77) = 51*3 = 7803 (squared); distance(128 to 200) = 72*3 = 15552 (squared). Empty wins! **Pre-mortem catches this before the build.** *Mitigation*: either change ice texture to ~(170, 170, 170) so it's closer to the ice anchor, OR update TANKE_ANCHORS["ice"] to match the actual texture color. Choose the second — more honest (anchor color reflects what we render).
+
+**Substrate guards:**
+- `scripts/Level.gd`, `Bullet.gd`, `Enemy*.gd`, `Spawner.gd`, `PlayerTank.gd`, `BrickBlock.gd`, `ProceduralLevel.gd`, `ProceduralStep.gd`, `LevelConfig.gd`, `BiomeConfig.gd`, `LevelDNA.gd`: UNTOUCHED.
+- `loop/test_runner.gd`: UNTOUCHED in this iter.
+- `tools/png_diff.py`: TANKE_ANCHORS["ice"] color value updated (data, not behavior — see F4 mitigation).
+- `OriginalLevel.tscn`: ADD ice TileMapLayer + ADD Eagle instance + MOVE PlayerTank. All additive within the OG scene.
+- `LevelLoader.gd`: `-` symbol now writes to iceTileMap. (Behavior change to the iter-1 loader, but inside the iter-1-introduced file.)
+- New: `scripts/Eagle.gd`, `scenes/Eagle.tscn`, `img/ice_008.png`, `img/eagle_placeholder.png`.
+
+**Anti-Goodhart guard:** stage 17 dropping to <5% AFTER adding ice rendering doesn't actually mean the **ice physics** is solved — only the visual gap is. Criterion 3's anchor 1 ("phase-1 decision iter: pass-through OR slide-physics chosen + ship one — cited") is the score I'm targeting, NOT anchor 3 ("Slide-physics implemented"). Decision-cite ≠ slide-physics. Cap at 2/5.
+
+**What would count as "iter 3 failed":**
+- Stage 17 still >5% mismatch after ice rendering → ice texture or anchor color wrong; iterate within the iter or F-number and revert.
+- Stages 1/4/7 mismatch_pct rises above their iter-2 baselines → eagle or ice layer broke something; revert eagle/ice or fix.
+- Procedural hash anchor drifts → arc-2 substrate violation; halt.
+- Eagle entity is not StaticBody2D-with-take-damage → C2 anchor 2 cite is dishonest.

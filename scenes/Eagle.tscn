@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/Eagle.gd" id="1"]
+[ext_resource type="Texture2D" path="res://img/eagle_007.png" id="2"]
+
+[sub_resource type="RectangleShape2D" id="EagleShape"]
+size = Vector2(16, 16)
+
+[node name="Eagle" type="StaticBody2D"]
+script = ExtResource("1")
+collision_layer = 1
+collision_mask = 0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("EagleShape")

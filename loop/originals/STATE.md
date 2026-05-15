@@ -4,12 +4,14 @@
 
 ```
 phase: loop
-iteration: 2 (BUILD/CAPABILITY png_diff oracle — complete; iter 3 scheduled)
+iteration: 3 (BUILD ice + eagle — complete; iter 4 scheduled)
 arc: 3 (Originals — BC NES stages import)
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 8/50  (C1=4, C4=3, C10=1 — all [STRUCTURE] or [STRUCTURE-DEFERRED])
+score: 15/50  (C1=4, C2=2, C3=2, C4=3, C7=2, C8=1, C10=1 — all [STRUCTURE] or [STRUCTURE-DEFERRED])
 ```
+
+**Iter-2 score correction**: previously reported as 8/50 but the rubric-correct score was 10/50 (C7 should have read 2 — RUBRIC.md asks for 3 gates while STAGES.md tracks 6 gates; I conflated the bars). Cumulative path: iter 1 = 5, iter 2 = 10, iter 3 = 15. The correction is logged in `loop/originals/LEDGER.md` iter 003.
 
 ---
 
@@ -55,21 +57,21 @@ Hash anchor `23d6a2ec…` is the regression detector.
 
 ---
 
-## Current Scores (post iter 001)
+## Current Scores (post iter 003)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
-| 1. Loader correctness | **4** | All 35 stages parse exact (iter 001); anchor 5 awaits `make test` coverage of edge cases |
-| 2. Eagle gameplay | 0 | No Eagle.gd / Eagle.tscn |
-| 3. Ice physics | 0 | Loader skips `-` silently; phase-1 decision iter still pending |
-| 4. PNG-diff oracle | **3** | Tool exists; auto-detects palette; tested on stages 1/4/7/17 (anchor 3 — per-stage report + per-coord mismatch + confusion matrix); anchor 4 awaits first IMPORT iter |
+| 1. Loader correctness | **4** | All 35 stages parse exact; ice now placed (not skipped); anchor 5 awaits `make test` edge-case coverage |
+| 2. Eagle gameplay | **2** | Anchors 1+2 ✓ — eagle at canonical fortress; HP=1; eagle_destroyed signal; take_damage method. Anchor 3 (game-over state) iter 4+ |
+| 3. Ice physics | **2** | Anchors 1+2 ✓ — pass-through decision shipped; ice renders distinctly. Capped at 2/5 per rubric ("ship-but-don't-claim-faithful") |
+| 4. PNG-diff oracle | **3** | Anchor 3 ✓ (iter 002); anchor 4 awaits first IMPORT iter |
 | 5. Enemy roster fidelity | 0 | Per-stage data not extracted from Tanks src |
 | 6. Mode selection | 0 | No title/picker scene |
-| 7. Stages 1-12 complete | 0 | Gates 1+2+3 ✓ all 12; gate 5 ✓ stages 1/4/7 (iter 002); full-completion still blocked by gates 4 (eagle) + 6 (roster) |
-| 8. Stages 13-24 complete | 0 | Gates 1+2+3 ✓ all 12; gate 5 ✗ stage 17 (ice-skip); gates 4/6 pending |
-| 9. Stages 25-35 complete | 0 | Gates 1+2+3 ✓ all 11; PNG-diff not yet run on this third; gates 4/6 pending |
+| 7. Stages 1-12 complete | **2** | Stages 1, 4, 7 pass all 3 rubric gates (parse + reachable + PNG <5%) → anchor 2 (3-5 stages). Corrected from iter-2 under-score |
+| 8. Stages 13-24 complete | **1** | Stage 17 at 1.642% — passes all 3 rubric gates → anchor 1 (1-2 stages) |
+| 9. Stages 25-35 complete | 0 | No stages diffed in this third yet |
 | 10. End-to-end playable | **1** | Stage 1 loads headless [STRUCTURE-DEFERRED]; "plays" awaits PLAYTEST |
-| **Total** | **5/50** | iter 001 baseline |
+| **Total** | **15/50** | post iter 003 |
 
 ---
 
@@ -105,6 +107,32 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ## Last Action
 
 ```
+Iter 003 BUILD complete (2026-05-15).
+
+- Pre-mortem filed with 4 [STRUCTURE] failure modes; F3+F4 pre-mitigated; one
+  unanticipated import-hang surfaced and resolved (godot --headless --import).
+- Phase-1 ICE DECISION: pass-through (caps C3 at 2/5 by design).
+- img/ice_007.png (8×8 gray) + img/eagle_007.png (16×16 placeholder bird).
+- Ice TileMapLayer added to OriginalLevel.tscn; LevelLoader writes '-' cells.
+- scripts/Eagle.gd (StaticBody2D, HP=1, eagle_destroyed signal, take_damage)
+  + scenes/Eagle.tscn (16×16 sprite, collision_layer=1).
+- OriginalLevel.gd: @onready iceTileMap + _spawn_eagle at canonical (160, 216);
+  35-stage fortress survey confirmed #..# at cols 11-14 rows 24-25 is UNIVERSAL.
+- PlayerTank moved from (160, 220) (overlapped eagle) to (124, 220).
+- Re-diff sweep: stages 1/4/7/17 all <5% (1: 0.448%, 4: 0.597%, 7: 0.448%,
+  17: 1.642%). Stage 17 dropped from 32% → 1.6% — iter-3 headline cure.
+- Verification: procedural hash anchor 23d6a2ec… preserved; make test exit 0.
+- Scores: C2 0→2, C3 0→2, C7 0→2 (correction from iter-2 under-score), C8 0→1.
+  Total 8 → 15/50.
+- Iter-2 LEDGER correction: iter-2 should have been 10/50 not 8/50 — I had
+  read STAGES.md's 6-gate completion bar instead of RUBRIC.md's 3-gate scoring
+  bar. Logged in iter-003 LEDGER entry.
+- Commit: chore(originals): iter 003 — BUILD — ice pass-through decision +
+  Eagle entity + 35-stage fortress survey.
+- Iter 4 wakeup scheduled.
+```
+
+```
 Iter 002 BUILD/CAPABILITY complete (2026-05-15).
 
 - Pre-mortem opened with Nat-13 generalization-clause cure (4 deliberate test stages).
@@ -135,36 +163,30 @@ None (new arc).
 ## Next Action
 
 ```
-Iter 3 — BUILD (phase-1 ice decision + eagle entity):
-  - Step 1: PRE-MORTEM (iter-003 block with generalization clause for eagle
-            placement: per-stage eagle coord derivation from #..# brick fortress
-            pattern across stages 1, 4, 35 — vary stage to verify the rule).
-  - Step 2: DIAGNOSE — weakest axis joint:
-            (a) criterion 3 (ice physics) at 0 — iter-2 PNG-diff made the
-                ice gap concrete (206 cells dominate stage-17 mismatch)
-            (b) criterion 2 (eagle gameplay) at 0 — unblocks stage gate 4
-                and is the BC identity anchor (PROMPT anti-pattern: defer eagle).
-  - Step 3: SELECT MODE — BUILD (with explicit ice-decision sub-step;
-            no CAPABILITY new tooling unless eagle exposes a need).
+Iter 4 — IMPORT (first true stage-import iter):
+  - Step 1: PRE-MORTEM (iter-004 block; generalization clause = all 11 remaining
+            first-third stages must pass PNG-diff <5% with current loader).
+  - Step 2: DIAGNOSE — criterion 7 at 2 (3 stages); fastest unblock to 5 is to
+            PNG-diff all 12 first-third stages. Criterion 4 also lifts to 4
+            (anchor 4: "every IMPORT iter cites result"). Optionally also
+            criterion 5 sub-research into Tanks/src/ for enemy roster (gate 6).
+  - Step 3: SELECT MODE — IMPORT (sub-mode of BUILD; PROMPT defines as
+            "iter targets 2-5 stages, runs PNG-diff oracle, updates STAGES.md").
+            Iter 4 will exceed the 2-5 stage minimum — extending to all 12
+            in the first third because the loader already handles all of them.
   - Step 4: ACT:
-      1. ICE DECISION: recommend pass-through for v1 (criterion 3 cap = 2/5).
-         Document the decision; extend LevelLoader to set_cell on a new
-         IceTileMapLayer (decorative, no collision); add Ice TileMapLayer to
-         OriginalLevel.tscn. Re-render stage 17, re-diff — should drop to <5%.
-      2. EAGLE ENTITY: scripts/Eagle.gd (HP=1, eagle_destroyed signal);
-         scenes/Eagle.tscn (16×16 sprite, StaticBody2D for bullet collision).
-         Position from per-stage canonical coord: detect the #..# fortress
-         row in the parsed grid; place eagle at the empty cells inside.
-         GENERALIZATION CHECK: verify on stages 1 + 4 + 35 (eagle position is
-         canonical in BC; same fortress shape used across all stages).
-      3. PNG-diff re-run on stages 1, 4, 7, 17 after both changes — should
-         remain <5% (or stage 17 should DROP to <5% after ice-rendering lands).
-  - Step 5: SCORE — Criterion 3 → 1 or 2 (decision iter); criterion 2 → 2 or 3
-            (eagle code-cited; "feels like BC eagle" needs PLAYTEST for higher);
-            criterion 4 → 4 (first IMPORT-style iter that runs png-diff-og and
-            cites result inline; anchor 4 demonstration).
-  - Step 6: COMMIT — chore(originals): iter 003 — BUILD — ice decision (pass-through) + Eagle entity
-  - Step 7: SCHEDULE — 240s wakeup for iter 4 (likely first true IMPORT iter)
+      1. Fetch StrategyWiki references for stages 2, 3, 5, 6, 8, 9, 10, 11, 12.
+      2. Batch render stages 2-12 via `make screenshot-og STAGE=K` loop.
+      3. Batch run `make png-diff-og STAGE=K` against each; collect mismatch %.
+      4. Update STAGES.md checkmarks for any stage that passes <5%.
+      5. (Stretch) Begin enemy-roster mining: grep .research/repos/Tanks/src/
+         for per-stage spawn data; cite file:line in LEDGER.
+  - Step 5: SCORE — C4 → 4 (first IMPORT iter cites result inline);
+            C7 → 4 or 5 (depending on per-stage pass rate); C5 → 1 if
+            roster-mining sub-research lands.
+  - Step 6: COMMIT — chore(originals): iter 004 — IMPORT — first-third PNG-diff sweep
+  - Step 7: SCHEDULE — 240s wakeup for iter 5 (likely middle-third sweep
+            OR mode-selection scene work if first PLAYTEST gate is needed)
 ```
 
 ---

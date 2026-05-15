@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://b3orig40loop1"]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scripts/OriginalLevel.gd" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/PlayerTank.tscn" id="3"]
@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://btw4ryipmrg4n" path="res://img/steel_007.png" id="5"]
 [ext_resource type="Texture2D" uid="uid://dqcyr7h1gwsw3" path="res://img/grass_007.png" id="6"]
 [ext_resource type="Texture2D" uid="uid://dg7td6i6nfwni" path="res://img/water_007.png" id="7"]
+[ext_resource type="Texture2D" path="res://img/ice_007.png" id="8"]
+[ext_resource type="PackedScene" path="res://scenes/Eagle.tscn" id="9"]
 
 [sub_resource type="TileSetAtlasSource" id="SteelSrc"]
 texture = ExtResource("5")
@@ -53,6 +55,16 @@ tile_size = Vector2i(8, 8)
 physics_layer_0/collision_layer = 512
 sources/0 = SubResource("WaterSrc")
 
+[sub_resource type="TileSetAtlasSource" id="IceSrc"]
+texture = ExtResource("8")
+margins = Vector2i(0, 0)
+texture_region_size = Vector2i(8, 8)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="IceSet"]
+tile_size = Vector2i(8, 8)
+sources/0 = SubResource("IceSrc")
+
 [sub_resource type="RectangleShape2D" id="WallShape"]
 size = Vector2(8, 8000)
 
@@ -70,7 +82,7 @@ limit_top = 0
 limit_bottom = 240
 
 [node name="PlayerTank" parent="." instance=ExtResource("3")]
-position = Vector2(160, 220)
+position = Vector2(124, 220)
 collision_mask = 513
 
 [node name="Tiles" type="Node2D" parent="."]
@@ -86,6 +98,9 @@ tile_set = SubResource("GrassSet")
 
 [node name="Water" type="TileMapLayer" parent="Tiles"]
 tile_set = SubResource("WaterSet")
+
+[node name="Ice" type="TileMapLayer" parent="Tiles"]
+tile_set = SubResource("IceSet")
 
 [node name="Walls" type="Node2D" parent="."]
 

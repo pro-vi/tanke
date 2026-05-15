@@ -255,3 +255,106 @@ PLAYTEST gate: still not open (no mode-select). No halt-rule countdown.
 ### Commit
 
 `chore(originals): iter 002 — BUILD/CAPABILITY — png_diff oracle + 4-stage generalization`
+
+---
+
+## Iter 003 — BUILD (ice pass-through + Eagle entity)
+
+**Mode:** BUILD
+**Date:** 2026-05-15
+**Branch:** `arc-3-originals`
+**Focus:** Phase-1 ice decision (pass-through) + Eagle entity (criterion 2) + player spawn fix + full re-diff sweep
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 003)
+
+Falsifiable claim with generalization clause (Nat-13 cure carried): all 4 stages (1, 4, 7, 17) finish <5% mismatch — including stage 17 which was 32.239% in iter 2. Procedural hash anchor preserved. F1-F4 pre-listed; F3 mitigated pre-build by a 35-stage fortress survey (canonical `#..#` at cols 11-14 of rows 24-25 is UNIVERSAL across all 35 stages — confirmed by `sed` survey before writing eagle code).
+
+**Result: claim verified.** Two pre-listed mitigations triggered correctly:
+- F4 (ice color anchor mismatch) → set tanke ice texture to (200,200,200) exactly matching the existing `TANKE_ANCHORS["ice"]` value. Zero classifier confusion on the new ice cells.
+- F3 (fortress non-canonical) → pre-build survey confirmed 35/35 stages share the fortress pattern. Hardcoded `EAGLE_SCREEN_POS = (160, 216)` is safe.
+
+One unanticipated failure surfaced and was fixed mid-iter:
+- **First-run import hang**: new PNGs (`img/ice_007.png`, `img/eagle_007.png`) and scenes (`Eagle.tscn`) lacked `.import` sidecars; `godot --headless` hung trying to silently import. Pattern: never assume Godot auto-imports new resources in `--headless --script` mode. Mitigation applied: ran `godot --headless --import` once to force-generate sidecars. Also removed two invalid hand-written `uid://` strings I'd put on the new scenes (Godot UIDs must be 13-char `[a-z0-9]` base32; mine contained `g`, `l`). Lesson: leave UIDs blank on new scenes — Godot generates valid ones on first import.
+
+### Actions
+
+1. **`img/ice_007.png`** (NEW) — 8×8 solid `(200,200,200)` RGBA. Matches `TANKE_ANCHORS["ice"]` so classifier reads it as "ice" with zero ambiguity.
+2. **`img/eagle_007.png`** (NEW) — 16×16 placeholder: yellow-gold background with brown bird silhouette (body + 2 wings + head, 4 rectangles via PIL). Visually identifiable; iter-4+ can upgrade to a real NES-style sprite.
+3. **`scenes/Eagle.tscn`** (NEW) — `StaticBody2D` with `collision_layer=1` (Environment) so Bullet's `mask=9` (Environment|Enemy) catches it via `_on_body_entered`. Sprite2D + 16×16 RectangleShape2D collision.
+4. **`scripts/Eagle.gd`** (NEW) — HP=1; `take_damage(amount)` (matches `Bullet._on_body_entered` duck-typed contract; same shape as `BrickBlock.take_damage`); emits `eagle_destroyed` signal then `queue_free`s.
+5. **`scripts/LevelLoader.gd`** (extended within iter-1 introduced file) — `-` symbol now writes to `iceTileMap` if the level exposes one; falls back to `ice_skipped++` otherwise (preserves the iter-1 behavior contract for any caller that doesn't add an Ice TileMapLayer).
+6. **`scripts/OriginalLevel.gd`** (extended within iter-1 file) — added `@onready var iceTileMap: TileMapLayer` (queries `Ice` child of `tiles`), added `_spawn_eagle()` (instantiates Eagle at `EAGLE_SCREEN_POS = (160, 216)` = scene cells 19-20 × 26-27 = play-area cells 12-13 × 24-25, the canonical fortress inner cells), wired `eagle_destroyed` → `_on_eagle_destroyed` (logs only — game-over state machine is iter 4+).
+7. **`scenes/OriginalLevel.tscn`** (extended) — added Ice TileMapLayer + Eagle ext_resource + ice TileSet sub-resources. Moved PlayerTank from `(160, 220)` (which overlapped the eagle) to `(124, 220)` (4 scene cells left of eagle, on bottom row; verified passable on stages 1/4/35).
+8. **No edits to** `Level.gd`, `Bullet.gd`, `Spawner.gd`, `PlayerTank.gd`, `BrickBlock.gd`, or any arc-1/arc-2 substrate.
+
+### Verification (Step 4)
+
+| Stage | Iter-2 diff | Iter-3 diff | Δ | Notes |
+|-------|-------------|-------------|---|-------|
+| 1 | 0.299% | **0.448%** | +0.149% | Eagle + player-spawn move add ~1 cell mismatch outside the mask |
+| 4 | 0.448% | **0.597%** | +0.149% | Same pattern; forest placeholder anchor still the dominant non-trivial confusion |
+| 7 | 0.299% | **0.448%** | +0.149% | Same pattern |
+| 17 | 32.239% | **1.642%** | **−30.6%** | **Headline cure**: 206 ice cells now render. `ascii_vs_render` is 0.448% — render matches ASCII source nearly exactly; the 1.6% vs reference is dominated by `ascii_vs_ref` = 1.194% (reference-PNG residual noise that's not in our control). |
+
+**All 4 stages now under 5%.** Generalization clause fully satisfied.
+
+**Procedural hash anchor `23d6a2ec…` preserved exactly.** `make test` exit 0. Arc-2 baseline intact.
+
+### Scores (Step 5)
+
+| C# | Name | Before | After | Tag | Cite |
+|----|------|--------|-------|-----|------|
+| 1 | Loader correctness | 4 | **4** | [STRUCTURE] | Unchanged. Ice now placed (no longer "skipped") — strengthens the cite but anchor 5 (`make test` covers edge cases) still requires test-target additions. |
+| 2 | Eagle gameplay | 0 | **2** | [STRUCTURE] | Anchor 1 (eagle sprite placed at correct stage position; static decoration) ✓ — eagle visible in all 4 rendered stages. Anchor 2 (HP=1; bullets can hit it; emits eagle_destroyed signal — code-cited) ✓ — `scripts/Eagle.gd:13-21` declares HP+signal+take_damage; collision_layer=1 matches Bullet's mask. Anchor 3 (game-over state on destroy) ✗ — handler currently just prints; iter 4+ work. |
+| 3 | Ice physics | 0 | **2** | [STRUCTURE] | Anchor 1 (phase-1 decision iter — pass-through OR slide — chosen + shipped + cited) ✓ — pass-through chosen, shipped, cited here. Anchor 2 (ice tile renders distinctly) ✓ — gray (200,200,200) tiles visible on stage 17 render. Rubric caps at 2/5 for pass-through: "If pass-through chosen, cap at 2/5 (ship-but-don't-claim-faithful)." |
+| 4 | PNG-diff oracle | 3 | **3** | [STRUCTURE] | Unchanged. Iter 3 demonstrated the workflow (4 stages cited) but anchor 4 wording is "every IMPORT iter runs it and cites result" — iter 3 is BUILD, not IMPORT. First IMPORT iter (iter 4+) will bump to 4. |
+| 5 | Enemy roster fidelity | 0 | 0 | — | Iter 4+ sub-research. |
+| 6 | Mode selection | 0 | 0 | — | Iter 5+. |
+| 7 | Stages 1-12 complete | 0 | **2** | [STRUCTURE] | **Iter-2 LEDGER correction**: I previously under-scored C7 by reading STAGES.md's 6-gate completion bar instead of RUBRIC.md's 3-gate scoring bar. The rubric says C7 = count of stages that "parse via LevelLoader, pass reachability, PNG diff <5% mismatch" — three gates, not six. Stages 1, 4, 7 all hit all three: 3 stages complete → anchor 2 (3-5 stages) ✓. Score 2/5. |
+| 8 | Stages 13-24 complete | 0 | **1** | [STRUCTURE] | Stage 17 now at 1.642% — passes all 3 rubric gates (parse + reachable + PNG <5%). 1 stage of 12 → anchor 1 (1-2 stages) ✓. Score 1/5. |
+| 9 | Stages 25-35 complete | 0 | 0 | — | No stages in this third diffed yet. Iter 4+ should fetch additional references and diff. |
+| 10 | End-to-end playable run | 1 | 1 | [STRUCTURE-DEFERRED] | Unchanged. Stage 1 still loads headless with eagle visible; "plays" half (anchor 1 stricter reading) needs PLAYTEST. Anchor 2 (linear progression) needs StageDirector — iter 4+. |
+| **Total** | | **8** | **15/50** | | Iter-3 lift of 7 (= +2 from C2, +2 from C3, +2 from C7 correction, +1 from C8). |
+
+### LEDGER correction acknowledgment
+
+Iter 2 reported 8/50; the honest score by RUBRIC.md's literal wording was 10/50 (C7=2 should have been awarded then). Iter 3 corrects the bookkeeping while making the C8 lift earned-in-iter. Cumulative arc-3 score history (corrected):
+- Iter 0: 0/50 (no scoring)
+- Iter 1: 5/50 (correct at the time)
+- Iter 2: **10/50** (corrected from 8/50 — C7 should have been 2)
+- Iter 3: **15/50** (C2 +2, C3 +2, C8 +1)
+
+The correction itself is the type of Nat-13 over-strictness the meta lens has surfaced before. Logging here to avoid silent inflation later.
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 6 cites (C1, C2, C3, C4, C7, C8). Arc-3 expected pattern.
+- [STRUCTURE-DEFERRED]: 1 cite (C10).
+- [FEEL]: 0.
+- [MIXED]: 0.
+
+### Substrate guardrails verified
+
+- Hard substrate (Layer 1) UNTOUCHED.
+- Gameplay substrate (Layer 2): Bullet/Enemy/Spawner/PlayerTank/BrickBlock UNTOUCHED. (PlayerTank's *spawn position in OriginalLevel.tscn* moved — scene-level data, not the PlayerTank script.)
+- `.research/repos/Tanks/` read-only.
+- Procedural hash anchor `23d6a2ec…` preserved.
+
+### Stage progress (STAGES.md updates)
+
+Stages with all 5 first-gates (parse + cell-match + reachable + eagle + PNG <5%):
+- 1, 4, 7, 17 ✓ in this iter. Eagle gate technically lands for all 35 simultaneously (canonical position), but PNG-diff only verified for these 4.
+- Gate 6 (enemy roster) still pending across the board.
+
+### Next iter
+
+Iter 4 priorities:
+1. **First IMPORT iter** (criterion 4 → 4): fetch references for stages 2, 3, 5, 6, 8, 9, 10, 11, 12 (the rest of the first third); render + PNG-diff; if all <5%, C7 lifts to 4 (9-11 stages) or 5 (all 12).
+2. **Enemy roster mining** (criterion 5 → 1): grep `.research/repos/Tanks/src/` for canonical per-stage spawn data.
+3. **Game-over signal handling** (criterion 2 → 3, criterion 10 enabler): when eagle_destroyed fires, transition to a game-over state; restart on input.
+
+PLAYTEST gate: still not open (no mode-select). No halt-rule countdown.
+
+### Commit
+
+`chore(originals): iter 003 — BUILD — ice pass-through decision + Eagle entity + 35-stage fortress survey`
