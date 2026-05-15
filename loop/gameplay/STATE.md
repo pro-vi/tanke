@@ -23,7 +23,10 @@
 ## Phase
 
 ```
-phase: HALT_META_REFRAME (user directive iter 99/100: "this is the time to reflect on the loop, I don't think we should proceed with the same prompt")
+phase: ARC_2_CLOSED (retro filed: loop/gameplay/META-RETRO-iter100.md)
+arc_status: arc 2 closed at iter 100; arc 3 directive — copy OG BC levels as separate mode, in loop/originals/, frontier-loop shape with story-loop verification, sources via /research
+arc_3_kickoff: pending /research phase to source clean BC level data (open-source clones + fan ASCII layouts); fidelity bar = layout-exact terrain + behavior-approximate
+arc_3_predecessor: phase: HALT_META_REFRAME (user directive iter 99/100: "this is the time to reflect on the loop, I don't think we should proceed with the same prompt")
 iteration: 100
 playtest_complete: yes (iter 99 → user cite iter 100)
 score: 34/50 (+2 from iter-99 cites: Q1 crit 6 3→4 [FEEL], Q3 crit 4 2→3 [FEEL])
