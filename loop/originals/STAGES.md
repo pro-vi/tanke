@@ -19,22 +19,24 @@ iter that completed it.
 
 **Iter 003 status:** Phase-1 ice decision = **pass-through** (RUBRIC C3 caps at 2/5 by design). Ice now renders as decorative gray cells via `iceTileMap`. Eagle entity (Eagle.gd + Eagle.tscn) instantiated at the canonical fortress center for every stage — survey confirmed the `#..#` fortress at stage cols 11-14 / rows 24-25 is UNIVERSAL across all 35 stages. Gate 4 (eagle) effectively flips for every stage simultaneously. Re-diff sweep: stage 1 0.448% / stage 4 0.597% / stage 7 0.448% / **stage 17 dropped from 32% to 1.642%** (the iter-3 cure). Gate 6 (enemy roster) still pending across all 35.
 
+**Iter 004 status (IMPORT — first-third sweep):** PNG-diff sweep across all 12 first-third stages. **12/12 pass <5% mismatch** (median 0.448%, max 2.090% on stage 2 — dominated by reference-PNG residual noise, our render's `ascii_vs_render` is 0.299%). Criterion 7 → 5/5. **Enemy roster source located** (gate 6 partial unblock): formula-driven, not table-driven; cited at `.research/repos/Tanks/src/app_state/game/game.cpp:518` + `appconfig.h:79-81`. Per-stage encoding still pending — gate 6 stays unchecked until rosters land in `configs/stages/`.
+
 ---
 
 ## First third (criterion 7 — 12 stages)
 
 - [ ] Stage 1  — symbols `#@`     — gates 1+2+3 ✓ (iter 001); 220#/8@/0%/0~/0-; gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 003 (0.448%)**
-- [ ] Stage 2  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 184#/48@/40%/0~/0-
-- [ ] Stage 3  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 126#/26@/152%/0~/0-
+- [ ] Stage 2  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 184#/48@/40%/0~/0-; gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 004 (2.090%)**
+- [ ] Stage 3  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 126#/26@/152%/0~/0-; gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 004 (1.045%)**
 - [ ] Stage 4  — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); 262#/16@/56%/12~/0-; gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 003 (0.597%)**
-- [ ] Stage 5  — symbols `#@~`    — gates 1+2+3 ✓ (iter 001); 136#/26@/0%/60~/0-
-- [ ] Stage 6  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 148#/32@/100%/0~/0-
+- [ ] Stage 5  — symbols `#@~`    — gates 1+2+3 ✓ (iter 001); 136#/26@/0%/60~/0-; gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 004 (0.448%)**
+- [ ] Stage 6  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 148#/32@/100%/0~/0-; gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 004 (0.448%)**
 - [ ] Stage 7  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 8#/174@/28%/0~/0-; gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 003 (0.448%)**
-- [ ] Stage 8  — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); 152#/20@/60%/88~/0-
-- [ ] Stage 9  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 64#/92@/72%/0~/0-
-- [ ] Stage 10 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); 218#/40@/112%/24~/0-
-- [ ] Stage 11 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 12 — symbols `#@~`    — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 8  — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); 152#/20@/60%/88~/0-; gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 004 (0.448%)**
+- [ ] Stage 9  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 64#/92@/72%/0~/0-; gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 004 (0.299%)**
+- [ ] Stage 10 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); 218#/40@/112%/24~/0-; gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 004 (0.448%)**
+- [ ] Stage 11 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 004 (0.448%)**
+- [ ] Stage 12 — symbols `#@~`    — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 004 (0.448%)**
 
 ## Middle third (criterion 8 — 12 stages)
 
@@ -74,7 +76,7 @@ Stages containing each terrain type:
 - Steel `@`: 34 (all except stage 34)
 - Forest `%`: 29 (no forest in 1, 5, 12, 17, 25, 32, 34)
 - Water `~`: 11 (4, 5, 8, 10, 12, 14, 20, 26, 29, 30, 31, 35)
-- Ice `-`: 4 (17, 24, 28, 32) — **phase-1 decision iter pending (criterion 3)**
+- Ice `-`: 4 (17, 24, 28, 32) — iter-3 decision: pass-through; ice renders as decorative gray tiles (C3 = 2/5, capped by rubric)
 
 Cell-count totals per terrain across all 35 stages — automated diff via
 `grep -o` on source vs `LevelLoader.parse_stage()` emit — **100% match,

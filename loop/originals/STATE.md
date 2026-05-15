@@ -4,14 +4,14 @@
 
 ```
 phase: loop
-iteration: 3 (BUILD ice + eagle — complete; iter 4 scheduled)
+iteration: 4 (IMPORT first-third sweep — complete; iter 5 scheduled)
 arc: 3 (Originals — BC NES stages import)
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 15/50  (C1=4, C2=2, C3=2, C4=3, C7=2, C8=1, C10=1 — all [STRUCTURE] or [STRUCTURE-DEFERRED])
+score: 20/50  (C1=4, C2=2, C3=2, C4=4, C5=1, C7=5, C8=1, C10=1 — all [STRUCTURE] or [STRUCTURE-DEFERRED])
 ```
 
-**Iter-2 score correction**: previously reported as 8/50 but the rubric-correct score was 10/50 (C7 should have read 2 — RUBRIC.md asks for 3 gates while STAGES.md tracks 6 gates; I conflated the bars). Cumulative path: iter 1 = 5, iter 2 = 10, iter 3 = 15. The correction is logged in `loop/originals/LEDGER.md` iter 003.
+**Cumulative path** (iter-2 correction logged in iter-3 LEDGER): iter 1 = 5, iter 2 = 10, iter 3 = 15, iter 4 = 20. Steady +5 per iter via PNG-diff floor opening as scaffolding matures.
 
 ---
 
@@ -57,21 +57,21 @@ Hash anchor `23d6a2ec…` is the regression detector.
 
 ---
 
-## Current Scores (post iter 003)
+## Current Scores (post iter 004)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
-| 1. Loader correctness | **4** | All 35 stages parse exact; ice now placed (not skipped); anchor 5 awaits `make test` edge-case coverage |
-| 2. Eagle gameplay | **2** | Anchors 1+2 ✓ — eagle at canonical fortress; HP=1; eagle_destroyed signal; take_damage method. Anchor 3 (game-over state) iter 4+ |
-| 3. Ice physics | **2** | Anchors 1+2 ✓ — pass-through decision shipped; ice renders distinctly. Capped at 2/5 per rubric ("ship-but-don't-claim-faithful") |
-| 4. PNG-diff oracle | **3** | Anchor 3 ✓ (iter 002); anchor 4 awaits first IMPORT iter |
-| 5. Enemy roster fidelity | 0 | Per-stage data not extracted from Tanks src |
+| 1. Loader correctness | **4** | All 35 stages parse exact; ice placed; anchor 5 awaits `make test` edge-case coverage |
+| 2. Eagle gameplay | **2** | Anchors 1+2 ✓ — eagle at canonical fortress; HP=1, signal, take_damage. Anchor 3 (game-over state) iter 5+ |
+| 3. Ice physics | **2** | Pass-through decision shipped (rubric cap) |
+| 4. PNG-diff oracle | **4** | Anchor 4 ✓ — iter 4 is the first IMPORT iter; 12-stage diff table cited inline |
+| 5. Enemy roster fidelity | **1** | Anchor 1 ✓ — roster source located + file:line cited (`game.cpp:518` formula + `appconfig.h:79-81` constants) |
 | 6. Mode selection | 0 | No title/picker scene |
-| 7. Stages 1-12 complete | **2** | Stages 1, 4, 7 pass all 3 rubric gates (parse + reachable + PNG <5%) → anchor 2 (3-5 stages). Corrected from iter-2 under-score |
-| 8. Stages 13-24 complete | **1** | Stage 17 at 1.642% — passes all 3 rubric gates → anchor 1 (1-2 stages) |
-| 9. Stages 25-35 complete | 0 | No stages diffed in this third yet |
-| 10. End-to-end playable | **1** | Stage 1 loads headless [STRUCTURE-DEFERRED]; "plays" awaits PLAYTEST |
-| **Total** | **15/50** | post iter 003 |
+| 7. Stages 1-12 complete | **5** | All 12 first-third stages pass <5% PNG-diff (iter 4 sweep) |
+| 8. Stages 13-24 complete | **1** | Stage 17 only verified so far — iter 5 sweep should lift |
+| 9. Stages 25-35 complete | 0 | No diffs in final third yet |
+| 10. End-to-end playable | **1** | Stage 1 loads headless [STRUCTURE-DEFERRED]; PLAYTEST gate awaits mode-select |
+| **Total** | **20/50** | post iter 004 |
 
 ---
 
@@ -105,6 +105,25 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 004 IMPORT complete (2026-05-15).
+
+- Pre-mortem filed; F3 pre-mitigated by 35-stage spawn-cell passability survey
+  (zero conflicts at play-area cols 8-9 of row 25). F1/F2/F5 didn't fire.
+- Fetched 9 new StrategyWiki references (stages 2, 3, 5, 6, 8, 9, 10, 11, 12).
+- Rendered all 9 stages via make screenshot-og.
+- Full 12-stage first-third PNG-diff sweep — all 12 pass <5% (median 0.448%,
+  max 2.090% on stage 2, dominated by ref-PNG residual noise).
+- Enemy-roster source mining: roster is FORMULA-driven, not table-driven.
+  Cited in LEDGER: appconfig.h:79-81 (20 enemies, max 4 simul, 35 stages)
+  + game.cpp:518 (p_armored = 0.00735 * stage + 0.09265 formula).
+- Verification: procedural hash anchor 23d6a2ec… preserved; make test exit 0.
+- Scores: C4 3→4, C5 0→1, C7 2→5. Total 15 → 20/50 (+5).
+- Commit: chore(originals): iter 004 — IMPORT — first-third sweep (12/12) +
+  enemy-roster source located.
+- Iter 5 wakeup scheduled.
+```
 
 ```
 Iter 003 BUILD complete (2026-05-15).
@@ -163,7 +182,26 @@ None (new arc).
 ## Next Action
 
 ```
-Iter 4 — IMPORT (first true stage-import iter):
+Iter 5 — IMPORT (middle + final third sweep) OR BUILD (mode selection):
+  - Step 1: PRE-MORTEM — generalization clause = all 22 remaining stages
+            (middle-third 13-16, 18-24 = 11; final-third 25-35 = 11) pass <5%.
+  - Step 2: DIAGNOSE — weakest axes: C8 (1, can lift to 5 via sweep),
+            C9 (0, can lift to 5 via sweep), C6 (mode-select) blocks PLAYTEST.
+  - Step 3: SELECT MODE — choice between IMPORT (sweep remaining 22 stages,
+            unlock C8+C9 to ~5 each) and BUILD (mode-selection scene,
+            unlock first PLAYTEST gate).
+            Recommendation: IMPORT (it's mechanical and finishes the
+            terrain story); BUILD mode-select in iter 6 to unblock playtest.
+  - Step 4: ACT (IMPORT path):
+      1. Fetch 22 StrategyWiki references (stages 13-16, 18-24, 25-35).
+      2. Batch render via make screenshot-og loop.
+      3. Batch diff; collect pass-rates.
+      4. Update STAGES.md.
+  - Step 5: SCORE — C8 → ? (likely 5 if pattern holds), C9 → ? (similar);
+            ceiling rule may fire (20 + 4 + 5 = 29; safe from 35 cap).
+  - Step 6: COMMIT — chore(originals): iter 005 — IMPORT — middle+final sweep
+  - Step 7: SCHEDULE — 240s wakeup for iter 6 (mode-selection BUILD)
+```
   - Step 1: PRE-MORTEM (iter-004 block; generalization clause = all 11 remaining
             first-third stages must pass PNG-diff <5% with current loader).
   - Step 2: DIAGNOSE — criterion 7 at 2 (3 stages); fastest unblock to 5 is to

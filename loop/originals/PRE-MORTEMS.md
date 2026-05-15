@@ -161,3 +161,49 @@ Tool must run on all four without modification (no per-stage flags). If any sing
 - Stages 1/4/7 mismatch_pct rises above their iter-2 baselines → eagle or ice layer broke something; revert eagle/ice or fix.
 - Procedural hash anchor drifts → arc-2 substrate violation; halt.
 - Eagle entity is not StaticBody2D-with-take-damage → C2 anchor 2 cite is dishonest.
+
+---
+
+## Iter 004 — IMPORT (first-third PNG-diff sweep)
+
+**Mode:** IMPORT (sub-mode of BUILD per PROMPT Step 3).
+
+**Carry from iter 003:** Eagle is universal (35/35 stages share canonical position). Ice renders distinctly. Stage 17 PNG-diff regression cured. The loader + oracle + scene + eagle scaffolding produces honest <5% mismatch on stages with terrain coverage the iter-2/3 generalization clause stressed: brick-only (1), four-terrain (4), steel-heavy (7), ice-heavy (17). Iter 4 tests whether that scaffolding generalizes to the OTHER first-third stages: 2, 3, 5, 6, 8, 9, 10, 11, 12.
+
+**Weakest axis:** criterion 7 (Stages 1-12 complete) at 2 — fastest unblock to anchor 5 ("all 12 complete") is a sweep of the remaining 9. Criterion 4 (PNG-diff oracle) at 3 — anchor 4 ("integrated into the loop's verification flow — every IMPORT iter runs it and cites result") becomes claimable in this iter precisely because this IS the first IMPORT iter.
+
+**Plan:**
+
+1. Fetch StrategyWiki CDN references for stages 2, 3, 5, 6, 8, 9, 10, 11, 12 (9 new PNGs into `tools/refs/`).
+2. `make screenshot-og STAGE=K` for each of those 9 stages.
+3. `make png-diff-og STAGE=K` against each — collect per-stage mismatch %.
+4. Update `STAGES.md` per-stage gate-5 status.
+5. Stretch goal (criterion 5 → 1): grep `.research/repos/Tanks/src/` for per-stage enemy spawn data; cite file:line.
+
+**Falsifiable claim (with generalization clause):**
+
+All 9 new first-third stages (2, 3, 5, 6, 8, 9, 10, 11, 12) produce PNG-diff mismatch <5% with current loader, current eagle, current ice rendering. *No per-stage adjustment is needed.* If any single stage requires loader or scene tweaks to pass, this iter has surfaced a real loader fragility that iter-3's 4-stage generalization clause didn't catch — F-number the failing stage and produce a structural-decoder hypothesis.
+
+Procedural hash anchor `23d6a2ec…` preserved. `make test` exit 0.
+
+**Most-likely failure modes:**
+
+- **F1 [STRUCTURE]**: Stage 5 has water (60 ~ cells). Iter-2 anchor for tanke water = (64,64,255). I haven't verified our render's actual tanke-rendered water color sample. If it differs from anchor, water cells classify as "ice" or "empty" and stage 5 fails. *Mitigation*: inspect the render's center-pixel water color before scoring; update TANKE_ANCHORS["water"] if needed (anchor data, not behavior).
+- **F2 [STRUCTURE]**: Stages with forest content (2, 3, 6, 8, 9, 10, 11) have the iter-3 "forest → steel" 1-cell confusion in their reference comparisons. Multiple cells could add up. *Detection*: any stage above 5% reveals the forest anchor is wrong. *Mitigation*: refine TANKE_ANCHORS["forest"] from current placeholder (24,200,24) to the actual rendered color via sample pixel inspection on one of these stages. (Same pattern as iter-3 ice fix.)
+- **F3 [STRUCTURE]**: Stage layouts could have player-spawn overlap with brick cells. Currently PlayerTank at (124, 220) = scene cells (15-16, 27-28). If stage K row 25 (= scene row 27) col 8 has a `#` or `@`, the player is stuck in a wall. *Detection*: reachability oracle on that stage returns `playable: false`. *Mitigation*: defensive — pre-check stage row 25 cols 7-9 for any non-`.` chars across all 35 stages. If any conflict exists, redesign player spawn (different cell, or compute per-stage). Spot-check 5 stages by reading stage rows 25 before claiming the sweep result.
+- **F4 [STRUCTURE]**: Enemy-roster mining yields nothing in `Tanks/src/` (might live in resource files or hardcoded constants nested deep). *Mitigation*: scope-reduce — the stretch goal is "located + cited," not "fully extracted." Even finding the file path that has the data counts as criterion-5 anchor 1.
+- **F5 [STRUCTURE]**: Godot --headless render takes ~3-10 sec per stage. 9 stages × ~5 sec = ~45 sec. Tolerable. But if `--write-movie` hangs (as it did pre-iter-2 import), iter 4 stalls. *Detection*: monitor screenshot-og output. *Mitigation*: kill + reimport (same pattern as iter 3).
+
+**Substrate guards:** no edits to hard substrate or arc-2 substrate. Potential edits within iter-3 artifact scope: TANKE_ANCHORS dict in `tools/png_diff.py` (data refinement, not behavior change). New cached PNGs in `tools/refs/`. No Godot scene/script changes are anticipated — the iter-3 OriginalLevel.tscn handles all 35 stages by env-var override.
+
+**What would count as "iter 4 failed":**
+- Any of the 9 stages above 5% AND no anchor-refinement fix produces <5% within the iter.
+- More than one stage failing → loader has real per-stage drift, not just palette noise. Halt + investigate before scoring.
+- Procedural hash anchor drift → substrate violation; halt.
+- Stages 1/4/7/17 regress above their iter-3 baseline by ≥0.5% → eagle/ice integration broke something the iter-3 sweep missed.
+
+**Anti-Goodhart guard:** if I find myself updating TANKE_ANCHORS to "fit" a high-mismatch stage rather than fixing the actual rendering or classifier issue, that's classifier-Goodhart. The anchor refinement is honest *only* when the anchor's current value disagrees with the actual rendered color (i.e., I sampled the render and the anchor's RGB is mismatched to what the renderer outputs).
+
+**Generalization clause check (Nat-13 discipline):**
+
+This iter's 9-stage sweep IS the generalization clause for the iter-3 scaffolding. There's no smaller "test case" subset — we're verifying the previous 3 iters' work generalizes by running it on the actual unverified majority of the first third.

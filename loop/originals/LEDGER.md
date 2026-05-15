@@ -358,3 +358,119 @@ PLAYTEST gate: still not open (no mode-select). No halt-rule countdown.
 ### Commit
 
 `chore(originals): iter 003 — BUILD — ice pass-through decision + Eagle entity + 35-stage fortress survey`
+
+---
+
+## Iter 004 — IMPORT (first-third PNG-diff sweep)
+
+**Mode:** IMPORT (sub-mode of BUILD)
+**Date:** 2026-05-15
+**Branch:** `arc-3-originals`
+**Focus:** Sweep PNG-diff across remaining first-third stages (2, 3, 5, 6, 8, 9, 10, 11, 12) + stretch enemy-roster mining (criterion 5)
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 004)
+
+Generalization clause: all 9 new first-third stages produce <5% mismatch with current loader, eagle, ice rendering — no per-stage adjustment needed. F1-F5 pre-listed. F3 pre-mitigated by 35-stage spawn-cell passability survey (cols 8-9 of row 25 across all 35 stages — zero conflicts).
+
+**Result: claim verified for all 9 stages, zero per-stage adjustment, zero loader tweaks.** F1/F2 (water + forest classifier drift) didn't fire — even stage 5 (60 water cells) and stages 6/8/9/10/11 (forest-heavy) classify under 0.5%. F4 (roster mining yields nothing) didn't fire — formula located + cited.
+
+### Actions
+
+1. **Fetched 9 new StrategyWiki references** to `tools/refs/Battle_City_Stage{02,03,05,06,08,09,10,11,12}.png` — all 208×208 indexed-color, all `http 200` from `cdn.wikimg.net`.
+2. **Rendered 9 stages** via `make screenshot-og STAGE=K` — all produced clean 320×240 outputs in `tools/out/og/`.
+3. **Ran PNG-diff sweep** on all 12 first-third stages (3 from iter 2-3 + 9 new).
+4. **Enemy-roster source-mining** in `.research/repos/Tanks/src/`. Per arc-3 H2 tripwire: READ-ONLY.
+
+### Verification (Step 4) — full first-third diff table
+
+| Stage | mismatch% | ascii_v_ref | ascii_v_render | Top confusion |
+|-------|-----------|-------------|-----------------|----------------|
+| 1 | **0.448** | 0.000 | 0.448 | empty→steel:2 (PlayerTank artifact) |
+| 2 | **2.090** | 1.791 | 0.299 | brick→empty:8 (StrategyWiki PNG has 12 cells the ASCII doesn't — UI markers) |
+| 3 | **1.045** | 0.597 | 0.448 | brick→empty:4 (same ref-PNG-noise pattern) |
+| 4 | **0.597** | 0.000 | 0.597 | forest→steel:1 (TANKE forest anchor placeholder; iter-5 refine) |
+| 5 | **0.448** | 0.000 | 0.448 | empty→steel:2 |
+| 6 | **0.448** | 0.000 | 0.448 | empty→steel:2 |
+| 7 | **0.448** | 0.000 | 0.448 | empty→steel:2 |
+| 8 | **0.448** | 0.000 | 0.448 | empty→steel:2 |
+| 9 | **0.299** | 0.000 | 0.299 | empty→steel:1 |
+| 10 | **0.448** | 0.000 | 0.448 | empty→steel:2 |
+| 11 | **0.448** | 0.000 | 0.448 | empty→steel:2 |
+| 12 | **0.448** | 0.000 | 0.448 | empty→steel:2 |
+
+**All 12 first-third stages pass <5%.** Median mismatch 0.448%, max 2.090% (stage 2; dominated by reference-PNG residual noise of 1.791%, not our render). The `ascii_vs_render` column shows our render matches the canonical Tanks ASCII source nearly perfectly across the board — median 0.448%, max 0.597%.
+
+The "empty→steel:2" pattern recurring across stages 1, 5-8, 10-12 is the PlayerTank sprite leaking 1-2 cells outside the iter-2 mask. Consistent artifact, well below 5%.
+
+**Procedural hash anchor `23d6a2ec…` preserved exactly.** `make test` exit 0.
+
+### Enemy roster source — criterion 5 unblock
+
+Cited file:line from `.research/repos/Tanks/src/` (read-only per H2 tripwire):
+
+1. **`appconfig.h:79`** — `inline unsigned enemies_to_kill_total_count = 20;` — **20 enemies per stage**, constant across all 35.
+2. **`appconfig.h:80`** — `inline unsigned enemies_max_count_on_map = 4;` — max 4 simultaneous enemies.
+3. **`appconfig.h:81`** — `inline unsigned stages_count = 35;` — stage count confirms BC canonical (not Tank 1990's 50).
+4. **`app_state/game/game.cpp:518`** — **enemy type formula**: `SpriteType type = static_cast<SpriteType>(p < (0.00735 * m_current_stage + 0.09265) ? ST_TANK_D : (rand() % (ST_TANK_C - ST_TANK_A + 1) + ST_TANK_A));`
+5. **`appconfig.h:39-43`** — player spawn at tile-coords `(8, 24)` and `(16, 24)` × 16-px tile_size = pixel `(128, 384)` and `(256, 384)` in their 416×416 viewport. *NOTE: my iter-3 PlayerTank at scene (124, 220) is approximately at Tanks's `(8*8, 24*8) + (col_offset*8, row_offset*8) = (120, 208)` — minor mismatch (current y=220 vs canonical y=212). Spot-check correction is iter-5 work.*
+
+**Key finding:** enemy roster is FORMULA-DRIVEN, not per-stage-table. Probability of `ST_TANK_D` (armored, highest health) scales linearly with stage:
+- Stage 1: p_armored = 0.00735 + 0.09265 ≈ **0.10** (10% chance per spawn)
+- Stage 18 (mid): p_armored ≈ 0.225
+- Stage 35: p_armored ≈ 0.349 (35% chance)
+
+4 enemy types: `ST_TANK_A`, `ST_TANK_B`, `ST_TANK_C`, `ST_TANK_D` (basic → armored continuum). arc-2's `EnemyLight` / `EnemyHeavy` map cleanly: Light = A/B/C distribution; Heavy = D. arc-3 integration plan: extend `scripts/Spawner.gd` (arc-2 soft-substrate) to read `stage_number` and apply the per-stage Heavy probability formula. **Reserved for iter 5-6.** (This will be arc-3's only soft-substrate write to arc-2's Spawner per PROMPT Layer-2 spec.)
+
+**Disambiguation correction**: my pre-mortem said "Java source" — the actual Tanks repo is C++ (just like the synthesis's first paragraph implies but later sections drift). Logged here for synthesis correction in iter 5 audit if relevant.
+
+### Scores (Step 5)
+
+| C# | Name | Before | After | Tag | Cite |
+|----|------|--------|-------|-----|------|
+| 1 | Loader correctness | 4 | **4** | [STRUCTURE] | Unchanged. |
+| 2 | Eagle gameplay | 2 | **2** | [STRUCTURE] | Unchanged (anchor 3 game-over state still iter 4+; this iter was IMPORT, not eagle-deepening). |
+| 3 | Ice physics | 2 | **2** | [STRUCTURE] | Rubric-capped at pass-through. |
+| 4 | PNG-diff oracle | 3 | **4** | [STRUCTURE] | Anchor 4 ✓ — "Tool integrated into the loop's verification flow; every IMPORT iter runs it and cites result." This IS the first IMPORT iter; 12-stage table cited inline above; STAGES.md updated. Anchor 5 (stage rotation handling) N/A for canonical BC — practical ceiling. |
+| 5 | Enemy roster fidelity | 0 | **1** | [STRUCTURE] | Anchor 1 ✓ — "Sub-research iter run: per-stage roster located in Tanks source — cited file:line." 4 specific file:line citations above. Anchors 2+ require encoding into `configs/stages/` + Spawner integration. |
+| 6 | Mode selection | 0 | 0 | — | No title/picker scene. |
+| 7 | Stages 1-12 complete | 2 | **5** | [STRUCTURE] | **All 12 stages pass parse + reachable + PNG diff <5%.** Anchor 5 ("All 12 complete"). Cited in table above. |
+| 8 | Stages 13-24 complete | 1 | **1** | [STRUCTURE] | Unchanged (stage 17 verified iter 3; other middle-third stages await iter 5+ sweep). |
+| 9 | Stages 25-35 complete | 0 | 0 | — | No diffs yet in final third. |
+| 10 | End-to-end playable run | 1 | 1 | [STRUCTURE-DEFERRED] | Unchanged. |
+| **Total** | | **15** | **20/50** | | +5 in iter 4 (+1 C4, +1 C5, +3 C7). |
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 7 cites (C1, C2, C3, C4, C5, C7, C8). Arc-3 expected pattern.
+- [STRUCTURE-DEFERRED]: 1 cite (C10).
+- [FEEL]: 0.
+- [MIXED]: 0.
+
+### Substrate guardrails verified
+
+- Hard substrate UNTOUCHED.
+- Gameplay substrate (Layer 2) UNTOUCHED.
+- `.research/repos/Tanks/` read-only (grep + cat only).
+- Procedural hash anchor `23d6a2ec…` preserved.
+- No code edits this iter — only data fetches + diff runs + LEDGER cites.
+
+### Stage progress (STAGES.md updates this iter)
+
+Stages 2, 3, 5, 6, 8, 9, 10, 11, 12 — gate 5 ✓ added for each.
+Gate 6 (enemy roster) — partial unblock: roster source located + cited, but per-stage data not yet encoded to `configs/stages/`. Gate 6 stays unchecked.
+
+### Next iter
+
+Iter 5 priorities:
+1. **Middle-third sweep** (criterion 8 → 5): fetch references for stages 13-16, 18-24 (10 new) + render + diff. Likely all pass <5% based on iter-4 generalization confidence.
+2. **Final-third sweep** (criterion 9 → 5): same for stages 25-35 (11 new).
+3. **Mode selection scene** (criterion 6 → 1+): title screen + Originals/Procedural picker. Unblocks the USER-LOOK PROTOCOL first-playtest gate.
+4. **Player spawn correction**: move PlayerTank from (124, 220) to (120, 212) per Tanks's canonical `(8*16, 24*16)` mapped through arc-3's 8-px tile size.
+
+Pragmatic ordering: probably iter 5 = middle+final third sweep (mechanical, fast); iter 6 = mode selection (enables first PLAYTEST); iter 7 = first PLAYTEST + roster encoding + spawn fix.
+
+PLAYTEST gate still closed — no mode-select. After mode-select lands, the first PLAYTEST request fires; the 3-iter halt-rule countdown begins from there.
+
+### Commit
+
+`chore(originals): iter 004 — IMPORT — first-third sweep (12/12 pass) + enemy-roster source located`
