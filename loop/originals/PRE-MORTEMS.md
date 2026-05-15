@@ -723,3 +723,45 @@ After iter 14:
 **Anti-Goodhart guard:** the calibration must be CITED against OG empirical bands. I'll write the calibration logic transparently in the LEDGER: "OG water density 3.7%, dropping water_weight 0.08 → 0.04 matches arithmetic." If I find myself fudging knobs to get arbitrary "better" metrics without OG citation, that's Goodhart.
 
 **Generalization clause:** The OG bands span 35 stages; arc-2 default is one config-with-seed-42 instance. I'll measure the calibrated config at seed 42 (same as arc-2 hash anchor's basis). For honest comparison I'd want multi-seed but per arc-1 retro: "Single-seed CC measurements are unreliable (CV 35%); structure_lift is reliable (CV 5%)." So structure_lift compares well single-seed; CC needs caveat.
+
+---
+
+## Iter 015 — BUILD (C5 anchor 4 — roster cross-validation)
+
+**Mode:** BUILD.
+
+**Weakest reachable axis:** Criterion 5 at 3. Anchor 4: "Roster accuracy cross-validated against an independent fan-walkthrough source for ≥5 stages."
+
+**Challenge:** Tanks's roster is a STOCHASTIC formula, not deterministic. Canonical BC has a fixed per-stage 20-enemy sequence encoded in the ROM. Fan walkthroughs document the empirical roster. Tanks's `p_armored(stage) = 0.00735 × stage + 0.09265` approximates BC's per-stage armored-tank fraction.
+
+So cross-validation means: does the canonical BC per-stage D-tank count match the formula's prediction (within reasonable error)?
+
+**Plan:**
+
+1. **Fetch independent fan-walkthrough sources** (StrategyWiki BC Walkthrough, Wikipedia BC article, GameFAQs guides). Look for per-stage enemy-type tables.
+2. **Extract per-stage data** for ≥5 sample stages (e.g., 1, 10, 18, 25, 35 — bookends + thirds).
+3. **For each: compute empirical D-tank fraction** (count of D-type out of 20).
+4. **Compare to Tanks formula prediction** (p_armored × 20 = expected D-tank count).
+5. **Cite the match** in `loop/originals/roster-validation.md`.
+6. If ≥5 stages match within reasonable error → C5 anchor 4 cite.
+
+**Falsifiable claim:**
+
+- I can locate per-stage enemy data in an independent fan source.
+- ≥5 stages cross-validate the formula's prediction (within ±20% absolute error — single-stage tolerance).
+- Procedural hash anchor preserved (no code edits).
+
+**Most-likely failure modes:**
+
+- **F1 [STRUCTURE]**: StrategyWiki / GameFAQs are anti-bot-blocked. iter-2 worked around via direct CDN URL pattern. Walkthrough text page may be harder. *Mitigation*: try multiple sources; fall back to Wikipedia which is generally permissive.
+- **F2 [STRUCTURE]**: Fan walkthroughs may not document per-stage roster precisely (often they describe trends like "more heavies in later stages" without exact counts). *Mitigation*: accept fuzzy cross-ref (qualitative trend match) IF that's all the docs provide; document the limitation.
+- **F3 [STRUCTURE]**: Tanks's formula is approximation, not faithful BC ROM. The empirical match may be ±30%, not ±10%. *Mitigation*: be honest about the magnitude of error; cite the formula AS approximation; anchor 4 wording is "cross-validated" which I read as "compared and assessed," not "matched exactly."
+- **F4 [STRUCTURE]**: Tank 1990 confusion. Some BC walkthroughs are actually Tank 1990. *Mitigation*: per arc-3 anti-pattern, reject any source mentioning >35 stages or "Tank 1990" branding.
+
+**Substrate guards:**
+- No code edits.
+- New file: `loop/originals/roster-validation.md`.
+- `.research/repos/Tanks/` read-only.
+- Procedural hash anchor preserved.
+
+**Anti-Goodhart guard:** if the fan-walkthrough numbers say (e.g.) stage 1 has 18 normal + 2 D-tanks (10%) and Tanks formula predicts 10% — that's an honest match. If I find myself fudging error bars to claim a match, that's bad.

@@ -1415,3 +1415,96 @@ Iter 15 likely (1) — quick web/doc cross-ref. Or if user pings with direction-
 ### Commit
 
 `chore(originals): iter 014 — BUILD — og_calibrated config (C12 anchor 4)`
+
+---
+
+## Iter 015 — BUILD (C5 anchor 4 — roster cross-validation) + F001 logged
+
+**Mode:** BUILD
+**Date:** 2026-05-15
+**Branch:** `arc-3-originals`
+**Focus:** Cross-validate Tanks roster formula against independent BC walkthrough (C5 anchor 4) + log F001 falsification.
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 015)
+
+Claim verified for ≥5 stages. F1 (anti-bot) didn't fire — StrategyWiki walkthrough page returned http 200, 87KB. F2 (no per-stage data) didn't fire — page has explicit 4-tank-type tables for all 35. F3 (formula mismatch) DID fire and is logged as F001. F4 (Tank 1990 confusion) didn't fire — 35 stages × 20 enemies confirms canonical BC.
+
+### Actions
+
+1. **Fetched StrategyWiki BC Walkthrough** via curl with browser UA (matches iter-2 reference-PNG fetch pattern). Saved to `/tmp/bc_walkthroughs/sw_walkthrough.html` (ephemeral; H2 respected).
+2. **Parsed all 35 stages** with regex extraction of Basic/Fast/Power/Armor counts.
+3. **Cross-validated** vs Tanks formula `p_armored(K) = 0.00735 × K + 0.09265`:
+   - Mean empirical: 24.14% vs predicted 22.50% (Δ 1.6%).
+   - Trend: early-5-stage mean 9.0% empirical vs 11.5% predicted; late-5-stage mean 38.0% empirical vs 33.5% predicted. **Direction matches.**
+   - Per-stage variance: empirical range [0%, 50%] vs predicted [10%, 35%]. **BC has spike stages** (17, 25, 35 all 50% armor) and **breather stages** (1, 7, 28 = 0-5% armor) the formula smooths through.
+4. **Documented** in `loop/originals/roster-validation.md` (full 35-stage table + analysis + verdict).
+5. **F001 logged** in `loop/originals/FALSIFICATIONS.md` — formula approximates mean + trend but loses per-stage variance. Action: keep formula for arc-3 v1; per-stage table ready to promote to `configs/og_rosters.tres` if arc-3 v2 happens.
+
+### Verification
+
+- Independent source: StrategyWiki BC Walkthrough (CC-BY-SA; http 200; 87KB).
+- 35/35 stages parsed (well over the anchor-4 ≥5 threshold).
+- Source-integrity checked: 20 enemies/stage × 35 stages × 4 tank types matches BC ROM convention (rejects Tank 1990 50-stage interpretation).
+- Procedural hash anchor `23d6a2ec…` preserved.
+- `make test-all` exit 0.
+
+### Scores
+
+| C# | Name | Before | After | Tag | Cite |
+|----|------|--------|-------|-----|------|
+| 1 | Loader correctness | 5 | 5 | [STRUCTURE] | |
+| 2 | Eagle gameplay | 3 | 3 | [STRUCTURE] / [FEEL-PARTIAL] | |
+| 3 | Ice physics | 2 | 2 | [STRUCTURE] | |
+| 4 | PNG-diff oracle | 4 | 4 | [STRUCTURE] | |
+| 5 | Enemy roster fidelity | 3 | **4** | [STRUCTURE] | Anchor 4 ✓ — 35 stages (>5x threshold) cross-validated against StrategyWiki BC Walkthrough. Mean matches (24.1% vs 22.5%); trend direction matches; per-stage variance gap logged as F001. Anchor 5 awaits playtest "this stage is hard like OG stage K" cite. |
+| 6 | Mode selection | 4 | 4 | [STRUCTURE] / [FEEL] | |
+| 7 | Stages 1-12 complete | 5 | 5 | [STRUCTURE] | |
+| 8 | Stages 13-24 complete | 5 | 5 | [STRUCTURE] | |
+| 9 | Stages 25-35 complete | 5 | 5 | [STRUCTURE] | |
+| 10 | End-to-end playable run | 3 | 3 | [STRUCTURE] | |
+| 11 | Identity / BC fidelity | 1 | 1 | [STRUCTURE] / [FEEL-IMPLICIT] | |
+| 12 | Arc-2 feedback metrics | 4 | 4 | [STRUCTURE] | |
+| **Total** | | **44** | **45/60** | | +1 (C5 +1). |
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 15 cites
+- [STRUCTURE-DEFERRED]: 1 cite
+- [FEEL]: 3 cites
+- [MIXED]: 0
+
+### Substrate guardrails verified
+
+- No code edits.
+- `.research/repos/Tanks/` read-only.
+- Procedural hash anchor preserved.
+- New files: `loop/originals/roster-validation.md`, `loop/originals/FALSIFICATIONS.md` (first arc-3 falsification file).
+
+### Cumulative arc-3 path
+
+... → 44 → **45** (+1 C5 anchor 4 via cross-validation)
+
+### Arc-3 close-condition status
+
+PROMPT close: "All 35 stages complete + eagle + ice + end-to-end playable + PNG diff all-passing → arc 3 closes successfully."
+
+- ✓ All 35 stages complete (C7+C8+C9 = 15/15)
+- ✓ Eagle (C2 = 3/5 structural; 4-5 awaits playtest cite)
+- ✓ Ice (C3 = 2/5, rubric-capped)
+- ✓ End-to-end playable (C10 = 3/5; structural close-condition mechanism shipped via StageDirector + Spawner integration)
+- ✓ PNG diff all-passing (35/35 < 5%)
+
+**The close condition is structurally satisfied.** Remaining +15 points are playtest-gated (C2/C6/C10/C11 anchors 4-5) plus C3 rubric cap. Arc-3 META-RETRO is a viable iter-16 candidate if user wants to close at structural ceiling (~50/60 if all reachable lifts taken).
+
+### Next iter
+
+Iter 16 candidates:
+1. **META-RETRO**: write arc-3 closing retrospective at structural ceiling. Document what survives into arc-4 (or whatever's next), close the arc.
+2. **Direct close push**: queue review with user; if any items can be batch-closed (e.g., TitleScreen "ugly" → user picks visual direction; BC edge walls → user picks add walls / accept), each closure lifts criterion scores.
+3. **Continued structural BUILD**: C3 → potentially higher if we revisit ice physics decision; C12 anchor 5 (playtest cite); other small lifts.
+
+Likely (1) — META-RETRO. The arc is close to natural close per its frontier-loop shape (35/35 binary done).
+
+### Commit
+
+`chore(originals): iter 015 — BUILD — roster cross-validation (C5 anchor 4) + F001`

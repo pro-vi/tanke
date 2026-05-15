@@ -4,15 +4,15 @@
 
 ```
 phase: loop
-iteration: 14 (BUILD — og_calibrated config — complete; iter 15 scheduled)
+iteration: 15 (BUILD — roster cross-validation + F001 — complete; iter 16 scheduled)
 arc: 3 (Originals — BC NES stages import)
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 44/60
+score: 45/60
 playtest_halt_rule: SUSPENDED per user iter-10 directive — REVIEW-QUEUE pattern active
 ```
 
-**First arc-3 → arc-2 calibration applied** — `configs/og_calibrated.tres` moves 4 metrics toward OG empirical bands (multi-seed verified). Cumulative path: ... → 43 → 44 (+1 C12 anchor 4). Tag balance: 14 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL].
+**Arc-3 close condition structurally satisfied.** All 35 stages PNG-verified, eagle + ice + StageDirector + Spawner integration shipped, PNG-diff floor green. C5 anchor 4 cross-validated via StrategyWiki (35/35 stages). F001 logged: formula approximates BC mean+trend but loses per-stage variance. Cumulative path: ... → 44 → 45 (+1 C5). Tag balance: 15 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL]. **Iter 16 candidate: META-RETRO at structural ceiling.**
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -60,7 +60,7 @@ Hash anchor `23d6a2ec…` is the regression detector.
 
 ---
 
-## Current Scores (post iter 014 — og_calibrated config)
+## Current Scores (post iter 015 — roster cross-validation)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
@@ -68,15 +68,15 @@ Hash anchor `23d6a2ec…` is the regression detector.
 | 2. Eagle gameplay | **3** | Queue #4 |
 | 3. Ice physics | **2** | Pass-through cap |
 | 4. PNG-diff oracle | **4** | |
-| 5. Enemy roster fidelity | **3** | iter-15 candidate: anchor 4 cross-validation |
+| 5. Enemy roster fidelity | **4** | Anchor 4 ✓ — 35 stages cross-validated via StrategyWiki; F001 logged. Anchor 5 awaits playtest |
 | 6. Mode selection | **4** | |
 | 7. Stages 1-12 complete | **5** | |
 | 8. Stages 13-24 complete | **5** | |
 | 9. Stages 25-35 complete | **5** | |
 | 10. End-to-end playable | **3** | |
 | 11. Identity / BC fidelity | **1** | Queue #2 |
-| 12. Arc-2 feedback metrics | **4** | Anchor 4 ✓ — 4 metrics moved toward OG via og_calibrated.tres (steel bullseye, water/brick/structure_lift all closer). Anchor 5 awaits playtest |
-| **Total** | **44/60** | post iter 014 |
+| 12. Arc-2 feedback metrics | **4** | |
+| **Total** | **45/60** | post iter 015 |
 
 ---
 
@@ -110,6 +110,37 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 015 BUILD complete (2026-05-15) — roster cross-validation.
+
+- Pre-mortem F1-F4; F3 fired and became F001 (formula loses per-stage
+  variance vs BC ROM); F1/F2/F4 didn't fire.
+- StrategyWiki Battle City Walkthrough fetched (http 200, 87KB, CC-BY-SA).
+- All 35 stages parsed for Basic/Fast/Power/Armor counts.
+- Cross-validation:
+  - Mean p_armored: 24.1% empirical vs 22.5% formula (Δ 1.6%)
+  - Trend direction: early 9% → late 38% empirical vs early 11.5% →
+    late 33.5% formula. MATCHES.
+  - Per-stage variance: empirical [0%, 50%] vs formula [10%, 35%].
+    Spike stages (17, 25, 35 at 50%) and breather stages (1, 7, 28 at
+    0-5%) are not captured by the linear formula.
+- Files:
+  - loop/originals/roster-validation.md (full 35-stage table)
+  - loop/originals/FALSIFICATIONS.md (F001 logged — first arc-3 F)
+- Procedural hash anchor 23d6a2ec… preserved. make test-all exit 0.
+
+Score: C5 3 → 4. Total 44 → 45/60 (+1).
+Tag balance: 15 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL].
+
+Commit: chore(originals): iter 015 — BUILD — roster cross-validation
+(C5 anchor 4) + F001.
+
+Arc-3 PROMPT close condition structurally satisfied. Iter 16 candidate:
+META-RETRO at structural ceiling.
+
+Iter 16 wakeup scheduled.
+```
 
 ```
 Iter 014 BUILD complete (2026-05-15) — og_calibrated config.
@@ -441,6 +472,25 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 16 — META-RETRO (arc-3 close at structural ceiling):
+  - Step 1: PRE-MORTEM (note META mode trigger: structural close-condition
+            from PROMPT met; remaining +15 points are playtest-gated; user
+            directive iter-10 says queue + close at structural ceiling.)
+  - Step 2: DIAGNOSE — no weakest-axis lift this iter; this is a process iter.
+  - Step 3: SELECT MODE — META-RETRO.
+  - Step 4: ACT — write loop/originals/META-RETRO-iter016.md following
+            the pattern of arc-1 META-RETRO and arc-2 META-RETRO-iter100.
+            Document: arc shape, what landed, what learned, what survives.
+            Cite REVIEW-QUEUE items still open for future user attention.
+            Score landscape + tag balance final.
+  - Step 5: (no scoring — META iters don't change rubric scores).
+  - Step 6: COMMIT.
+  - Step 7: SCHEDULE — final iter; consider whether to schedule iter 17
+            (if user wants queue-direction-picks processed) or pause loop
+            naturally after retro.
+```
 
 ```
 Iter 15 — BUILD/AUDIT (C5 anchor 4 + queue triage if user pings):
