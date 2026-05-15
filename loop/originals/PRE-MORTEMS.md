@@ -376,3 +376,74 @@ Projected 34-35/50. **Could trip ceiling rule at iter 7 itself if C5 lifts.** Co
 **Anti-Goodhart guard:** StageDirector that just stores a stage number isn't anchor-2-worthy. Anchor 2 says "Linear advance from stage to stage works (clear stage → next loads) — code-cited." The code-cite needs an actual `advance_stage` call wired to a trigger. The trigger doesn't have to fire in normal play (no enemies), but the CALL must exist and be reachable. Concrete: OriginalLevel exposes a public method or input handler that, when invoked, calls `StageDirector.advance_stage()` and `change_scene_to_file()` (or reloads with `--og-stage K+1` mechanism). Without that wiring, claiming anchor 2 is dishonest.
 
 For iter 7: add a dev keybind (e.g., N key) that triggers `advance_stage` for testing. That counts as "code-cited." Tag it [STRUCTURE-DEFERRED] until natural clear-condition lands in iter 9+.
+
+---
+
+## Iter 008 — AUDIT (rubric reframe + pre-emptive ceiling expansion)
+
+**Mode:** AUDIT.
+
+**Trigger conditions for AUDIT this iter:**
+- PROMPT Step 3 says "Every 5 iters or after substrate change." 8 iters in → AUDIT cadence due.
+- Iter-7 logged C5 rubric/data-shape mismatch as needing resolution.
+- Score 34/50 — 1 below ceiling threshold. Pre-emptive expansion is honest if multiple anchors don't fit BC's actual data shape.
+- PLAYTEST gate unfulfilled iter 7 (counter 1/3). Iter 8 = 2/3. Iter 9 = 3/3 → `HALTED.md`.
+
+**Plan:**
+
+1. **Re-score all 10 criteria** with fresh evidence — walk RUBRIC.md anchor by anchor, cite current code/PNG-diff/scene state.
+2. **RENAME C5 anchor 2** from "Roster data encoded in configs/stages/stage_KK.tres for 5+ stages" to "Roster data encoded in source-of-truth form (per-stage .tres OR uniform formula in scripts/Roster.gd) covering ≥5 stages of variation." Resolves iter-7 mismatch. Honest C5 lift to 2 after rename.
+3. **(Conditional) RENAME C4 anchor 5**: the listed "stage rotation" edge case is N/A for canonical BC (35 fixed stages, no rotation variants). Rephrase to actual relevant edge cases. If rephrase aligns with what tools/png_diff.py already handles, C4 could lift to 5.
+4. **ADD 2 new criteria** per CEILING RULE prep:
+   - **C11 — Identity test (BC fidelity)**: "A BC fan recognizes Stage 1 as Battle City Stage 1 in <10 seconds of viewing." Playtest-cited. Captures the arc-3 stone's heart ("a BC fan loads, recognizes Stage 1 instantly").
+   - **C12 — Arc-2 feedback metrics**: "Per-stage structural metrics (brick/steel/water/grass density, room sizes, cc_max, ascent geometry) computed across all 35 OG stages — usable as empirical targets for arc-2's procedural mode." PROMPT's "feedback to arc 2" deliverable explicitly named but not in v1 rubric. STRUCTURE-tagged.
+5. **Total possible** becomes 60 points (12 criteria × 5). Current score lifts to 35/60 (after C5 rename) — still below new 35/60 ceiling-threshold proportional equivalent. Ceiling rule rebalanced.
+
+**Falsifiable claim:**
+
+After this iter:
+- RUBRIC.md has 12 criteria; v2 footer cites the rename + add-2 as the AUDIT rationale.
+- LEDGER.md iter-008 entry tabulates the re-score with cited evidence per criterion.
+- Total score: 35/60 (was 34/50; honest lift via C5 rename; no false inflation).
+- Procedural hash anchor 23d6a2ec… preserved.
+- `make test` exit 0.
+- No code edits (AUDIT is rubric/score work; no runtime artifact).
+
+**Most-likely failure modes:**
+
+- **F1 [MIXED]**: AUDIT might be tempted to over-rewrite criteria for "fit" rather than "fidelity." If I rephrase C4 anchor 5 in a way that just rubber-stamps the current tool, that's classifier-Goodhart (chasing the score). *Detection*: ask "would a fresh reviewer agree this rewording captures the SPIRIT, or am I tuning anchors to a tool I built?" *Mitigation*: keep rephrases minimal; only fix anchors that explicitly don't fit BC's data shape (C4 rotation, C5 .tres). Don't touch C7/8/9 (those work fine).
+- **F2 [STRUCTURE]**: Adding 2 criteria for "identity" and "arc-2 feedback" might be seen as ceiling-inflation. Justification check: identity is in the PROMPT stone ("a BC fan loads, recognizes Stage 1 instantly"). Arc-2 feedback is named explicitly in PROMPT § "What arc-3 ALSO does." Both are PROMPT deliverables the v1 rubric missed. Adding them is rubric-completeness, not score inflation.
+- **F3 [STRUCTURE]**: AUDIT shouldn't change scores on criteria where the underlying code hasn't changed. C5 rename is the one defensible lift. Other criteria stay flat.
+- **F4 [STRUCTURE]**: PROMPT halt rule still ticks during AUDIT mode. Iter 8 = 2/3. *Mitigation*: re-issue PLAYTEST request prominently; halt warning surfaced clearly.
+
+**Substrate guards:**
+- No code edits.
+- RUBRIC.md edits: data, not substrate (rubric IS the measurement instrument; arc-1 retro called this out: "Loop edits its own measurement instrument" — a discipline that worked).
+- Procedural hash anchor must hold (no Godot work this iter).
+
+**CEILING RULE pre-positioning:**
+
+If iter-8 AUDIT renames C5 and adds C11+C12, current state becomes:
+- Old: 34/50 (68%)
+- New: 35/60 (58.3%)
+
+The reframe lowers proportional score (more honest representation of work-remaining) AND raises ceiling. Iter 9+ work on C11/C12 lifts toward 60/60 if all anchors land. The CEILING RULE: "If total hits 35/50 before iter 15, the rubric was too easy. Add 2 criteria..." — exactly what this AUDIT pre-empts.
+
+**Anti-Goodhart guard:**
+
+The AUDIT should preserve the iter-2-through-7 work's honesty. Any score that drops on rescoring must be flagged ("was over-claimed"). Any score that rises (C5 from 1 → 2) must be defensible against the renamed anchor, not the original wording.
+
+**Halt-rule surface:**
+
+PLAYTEST counter:
+- Iter 7: 1/3
+- Iter 8: 2/3 ← (this iter)
+- Iter 9: 3/3 → HALTED.md
+
+Iter 8 closing must re-issue PLAYTEST request and explicitly flag counter status. If iter 9 starts without playtest response, HALT.
+
+**What would count as "iter 8 failed":**
+- Score inflation without anchor justification.
+- Adding criteria that don't tie to PROMPT deliverables (would be silent ceiling-raising for its own sake).
+- Procedural hash anchor drift (would mean code edits crept in — AUDIT is rubric work only).
+- Forgetting to re-issue playtest (would let the halt-rule sneak up without warning).

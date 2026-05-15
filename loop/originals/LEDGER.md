@@ -774,3 +774,97 @@ Iter 8 mode depends on user response by wakeup:
 ### Commit
 
 `chore(originals): iter 007 — BUILD — StageDirector + Roster formula + spawn correction`
+
+---
+
+## Iter 008 — AUDIT (rubric reframe + 2-criterion expansion)
+
+**Mode:** AUDIT
+**Date:** 2026-05-15
+**Branch:** `arc-3-originals`
+**Focus:** Re-score with fresh evidence + RENAME C5 anchor 2 (data-shape fit) + ADD C11/C12 per PROMPT deliverables the v1 rubric missed.
+
+### PLAYTEST gate state
+
+OPEN since iter 6. **Iter 8 = 2 of 3 unfulfilled iters.** Iter 9 unfulfilled → `HALTED.md`. No user response received as of iter-8 wakeup.
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 008)
+
+Claim verified:
+- RUBRIC.md edited: C5 anchor 2 renamed; C11 + C12 added; v2 header.
+- No code edits; procedural hash anchor `23d6a2ec…` preserved; `make test` exit 0.
+- Honest re-score: 36/60 (was 34/50; +2 = C5 rename +1 lift, C12 +1 anchor 1 already-done).
+
+### Rubric v2 changes (in `loop/originals/RUBRIC.md`)
+
+1. **C5 anchor 2 RENAMED**: "Roster data encoded in source-of-truth form (per-stage `.tres` OR uniform formula in `scripts/Roster.gd`) covering ≥5 stages of variation." Rationale: iter-4 finding that BC roster is formula-driven across all 35 stages; encoding 35 .tres files referencing the same formula would be redundant. Anchor 3 also reworded for consistency.
+2. **C5 description note**: synthesis said "Java"; Tanks is C++ (iter-4 correction).
+3. **C11 ADDED — Identity / BC fidelity (feel criterion)**: captures the arc-3 stone heart ("a BC fan recognizes Stage 1 instantly"). Mostly playtest-cited (anchors 3-5).
+4. **C12 ADDED — Arc-2 feedback metrics (structural criterion)**: per PROMPT § "What arc-3 ALSO does." Per-stage structural metrics → empirical targets for arc-2 procedural mode. Resolves arc-2's F014.
+5. **Header updated**: "v2 — iter-8 AUDIT," 12 criteria, total 60.
+6. **Revision Log** updated with 5 iter-8 entries.
+
+### Re-score (Step 4 + 5)
+
+Walked all 12 criteria; cited evidence below.
+
+| C# | Name | Score | Tag | Cite |
+|----|------|-------|-----|------|
+| 1 | Loader correctness | **4** | [STRUCTURE] | Iter-1 grep diff (35/35 exact). Iter-5 35-stage PNG-diff also confirms cell-level fidelity. Anchor 5 (`make test` edge cases) unmet — no error-path coverage in test target. |
+| 2 | Eagle gameplay | **3** | [STRUCTURE] | `Eagle.gd`: HP=1, eagle_destroyed signal, take_damage. `OriginalLevel.gd`: GAME OVER overlay (CanvasLayer, ColorRect dim + Label + hint), R reload, Esc → title. Anchor 4 (feel-cited) awaits PLAYTEST. |
+| 3 | Ice physics | **2** | [STRUCTURE] | Iter-3 pass-through decision + ice TileMapLayer + img/ice_007.png. Rubric caps pass-through at 2/5 ("ship-but-don't-claim-faithful"). |
+| 4 | PNG-diff oracle | **4** | [STRUCTURE] | `tools/png_diff.py`: tile classifier, auto palette (P=NES, RGB=tanke, multi-cell fallback), per-cell mismatch, confusion matrix, exit codes 0/1/2, integrated via `make png-diff-og STAGE=K`. Anchor 4 ("every IMPORT iter cites result") demonstrated at iters 4 + 5. Anchor 5 wording includes "stage rotation" (N/A for canonical BC) — practical ceiling without further rephrase. |
+| 5 | Enemy roster fidelity | **2** | [STRUCTURE] | **Lift from 1** — `scripts/Roster.gd` encodes formula in source-of-truth form covering all 35 stages (RENAMED anchor 2 fits this). `armored_probability(stage)` static method + cited file:line at `.research/repos/Tanks/src/app_state/game/game.cpp:518` + `appconfig.h:79-81`. Iter-7 verification: stage 1 = 0.1000, stage 18 = 0.2249, stage 35 = 0.3499. |
+| 6 | Mode selection | **3** | [STRUCTURE] / [STRUCTURE-DEFERRED] | `TitleScreen.tscn` + `TitleScreen.gd`: TANKE title, ORIGINALS/PROCEDURAL options, yellow `>` cursor moves between them, raw-keycode input, `_launching` latch. Iter-6 render verified (78 bright pixels in title area, white text + yellow cursor). Anchor 2 [STRUCTURE-DEFERRED] for "from one session" runtime test. |
+| 7 | Stages 1-12 complete | **5** | [STRUCTURE] | Iter-4 sweep: 12/12 pass <5% (median 0.448%, max 2.090% on stage 2 dominated by ref-PNG noise). |
+| 8 | Stages 13-24 complete | **5** | [STRUCTURE] | Iter-5 sweep: 12/12 pass <5% (incl. stage 17 at 1.642% post ice-fix; stage 32 at 1.493% post palette-detector fix). |
+| 9 | Stages 25-35 complete | **5** | [STRUCTURE] | Iter-5 sweep: 11/11 pass <5% (median 0.448%). |
+| 10 | End-to-end playable run | **2** | [STRUCTURE-DEFERRED] | Anchor 2 via `StageDirector` + dev N-key advance (iter 7). Natural clear-condition awaits Spawner integration. |
+| 11 | Identity / BC fidelity | **0** | — | **NEW**. Anchor 1 partially via PNG-diff <5% but no playtest cite yet to formally anchor "visually present in canonical positions." Conservative: 0. (Could argue 1 via iter-5 PNG-diff result; staying at 0 until PLAYTEST gate fulfills — keep the discipline strict.) |
+| 12 | Arc-2 feedback metrics | **1** | [STRUCTURE] | **NEW**. Anchor 1 ✓ — per-stage terrain counts already tabulated in iter-1 LEDGER + STAGES.md ("Symbols present per stage (auto-surveyed iter 001)" + 35-stage cell totals). Anchor 2 (compiled JSON artifact) is iter-9+ work. |
+| **Total** | | **36 / 60** | | |
+
+### Re-score vs old rubric
+
+- Old: **34 / 50** (68.0%)
+- New: **36 / 60** (60.0%) ← honest reframe; lower proportional reflects rubric-completeness gain
+- Lift: +2 (C5 +1 via rename, C12 +1 anchor 1 already-done)
+
+### Tag balance (cumulative, post-AUDIT)
+
+- [STRUCTURE]: 10 cites
+- [STRUCTURE-DEFERRED]: 3 cites (C6 anchor-2 runtime, C10)
+- [FEEL]: 0 — still no playtest cite
+- [MIXED]: 0
+
+### Substrate guardrails verified
+
+- No code edits this iter (AUDIT is rubric work).
+- `loop/originals/RUBRIC.md` edited (rubric is the measurement instrument — arc-1 retro: "Loop edits its own measurement instrument" is a discipline that worked).
+- Procedural hash anchor `23d6a2ec…` preserved exactly.
+- `make test` exit 0.
+
+### Halt-rule counter
+
+PLAYTEST gate unfulfilled iters:
+- Iter 7: 1/3
+- Iter 8: **2/3** ← (this iter)
+- Iter 9: 3/3 → **`HALTED.md`** + stop
+
+### CEILING RULE pre-positioning verified
+
+Iter-8 AUDIT *pre-empts* the CEILING RULE: instead of waiting until 35/50 triggers, expanded the rubric to 60 ceiling while score sits at 36 (60%). Re-score is honest because the C5 lift comes from a rephrased anchor that fits the actual data shape, and C12=1 comes from work already done (iter-1 cell-count tabulation).
+
+If the playtest lands and lifts C2 + C6 + C10 + C11 to feel-cite levels, score could reach ~48-50/60 in 1 iter — a more honest representation of "is BC really reproduced" than the v1 rubric's stagecount-heavy weighting.
+
+### Next iter
+
+Iter 9 mode depends on user response by wakeup:
+
+**IF playtest landed**: PLAYTEST mode → score C2/C6/C10/C11 feel cites. Likely +4-6 points. **Halt rule resolved.**
+
+**IF still no response**: HALT — write `loop/originals/HALTED.md` per PROMPT halt rule. Document the arc-3 state at halt; surface what's verified and what awaits user attention. The loop pauses until user resumes.
+
+### Commit
+
+`chore(originals): iter 008 — AUDIT — rubric v2 (C5 rename + C11/C12 add)`

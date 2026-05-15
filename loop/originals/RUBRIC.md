@@ -1,8 +1,9 @@
-# tanke — Originals Loop Rubric (arc 3, v1)
+# tanke — Originals Loop Rubric (arc 3, v2 — iter-8 AUDIT)
 
-10 criteria, 0–5 scale. **Score > 2 on stage-count criteria (7/8/9) requires
+**12 criteria**, 0–5 scale. **Score > 2 on stage-count criteria (7/8/9) requires
 PNG-diff cross-validation pass per stage.** Score > 2 on feel criteria
-(2, 6, 10) requires playtest citation.
+(2, 6, 10, 11) requires playtest citation. Criterion 12 is structural —
+verified by computed metrics + diff against arc-2's existing config band.
 
 **Reachability floor**: any criterion's score is capped at 0 if any included
 stage fails reachability (`playable: false`). Arc-1 carry.
@@ -79,15 +80,15 @@ If pass-through chosen, cap at 2/5 (ship-but-don't-claim-faithful).
 ## 5. Enemy roster fidelity (0–5)
 
 Per-stage enemy spawn counts + types match canonical OG, mined from
-Tanks's Java source.
+Tanks's C++ source. (Synthesis said "Java"; iter-4 corrected to C++.)
 
 | Score | Anchor |
 |-------|--------|
 | 0 | OG mode uses arc-2's existing spawn schedule (no per-stage data) |
 | 1 | Sub-research iter run: per-stage roster located in Tanks source — cited file:line |
-| 2 | Roster data encoded in `configs/stages/stage_KK.tres` for 5+ stages |
-| 3 | All 35 stages have encoded rosters; Spawner.gd extended to read per-stage data |
-| 4 | Roster accuracy cross-validated against Wikipedia / fan walkthrough for ≥5 stages |
+| 2 | Roster data encoded in source-of-truth form (per-stage `.tres` OR uniform formula in `scripts/Roster.gd`) covering ≥5 stages of variation — iter-8 AUDIT rename per iter-4/7 finding that BC roster is formula-driven, not table-driven |
+| 3 | Spawner.gd integration: arc-2 Spawner reads Roster at spawn time; per-stage enemy mix observable in render — code-cited |
+| 4 | Roster accuracy cross-validated against an independent fan-walkthrough source for ≥5 stages |
 | 5 | Roster feels BC-correct in playtest (cited "this stage is hard like OG stage K") |
 
 ---
@@ -168,6 +169,41 @@ Player starts at Stage 1, advances through to Stage 35 in a single session.
 
 ---
 
+## 11. Identity / BC fidelity (0–5) — *feel criterion* — **added iter 8 AUDIT**
+
+Captures the arc-3 stone's heart: "a BC fan loads, recognizes Stage 1 instantly,
+plays linearly through stages 1→35, and says 'yes, that's Battle City.'"
+Structural anchors (1-3) are code-cited; identity anchors (4-5) require playtest.
+
+| Score | Anchor |
+|-------|--------|
+| 0 | Visual rendering bears no recognizable resemblance to BC |
+| 1 | Bricks, steel, eagle, water, forest, ice all *visually present* in the canonical positions for stage 1 — code-cited (e.g., PNG-diff <5%) |
+| 2 | Bilateral brick columns + steel-armored mid-corridor + bottom-center eagle fortress all *render* on the appropriate stages — code-cited |
+| 3 | A first-time tester opening stage 1 recognizes it as Battle City within 10 seconds, without prompting — playtest cited |
+| 4 | A first-time tester names 3+ specific BC-recognition cues unprompted (e.g., "the eagle fortress shape," "the bilateral brick layout") — playtest cited |
+| 5 | The tester says some variant of "yes, that's BC" without being asked. The arc-3 stone is honored — playtest cited |
+
+---
+
+## 12. Arc-2 feedback metrics (0–5) — *structural criterion* — **added iter 8 AUDIT**
+
+Per PROMPT § "What arc-3 ALSO does (feedback to arc 2)": once all 35 stages
+are imported, compute their structural metrics (brick/steel/water/grass density
+distributions, room sizes, cc_max, ascent geometry). These become **empirical
+targets** for arc-2's procedural configs. Resolves arc-2's F014.
+
+| Score | Anchor |
+|-------|--------|
+| 0 | No structural metrics computed for the OG set |
+| 1 | Per-stage terrain counts tabulated (brick/steel/water/grass/ice) — already partially in LEDGER iter 1 sweep |
+| 2 | Per-stage density distributions + reachability stats compiled as a JSON artifact — `tools/og_metrics.py` or `loop/originals/og-metrics.json` |
+| 3 | Cross-stage statistics (mean, stdev, range) for each metric across the 35 OG stages — comparable to arc-2's `vert_structure_lift` / `cc_max` numbers |
+| 4 | Procedural arc-2 configs adjusted to match the OG empirical distribution on at least 2 metrics — code-cited config diff |
+| 5 | Procedural mode tested against the OG empirical bands; player report (playtest) confirms procedural feels "in the BC family" — playtest cited |
+
+---
+
 ## Acceptance template (per stage — referenced by /story-loop verification)
 
 Each stage is a user-story:
@@ -198,3 +234,9 @@ Stage iters typically import 2-5 stages in one iter (BUILD/IMPORT mode).
 | Iter | Change | Reason |
 |------|--------|--------|
 | 0 | Initial arc-3 rubric, 10 criteria, frontier-loop shape | New arc scope: import 35 BC stages with eagle + ice + PNG diff |
+| 8 | RENAME C5 anchor 2 (formula form acceptable) | iter-4/7 found BC roster is formula-driven; per-stage .tres encoding was rubric/data shape mismatch |
+| 8 | ADD criterion 11 (Identity / BC fidelity) | Arc-3 stone heart was not in v1 rubric anchors |
+| 8 | ADD criterion 12 (Arc-2 feedback metrics) | PROMPT § "What arc-3 ALSO does" deliverable was not in v1 rubric anchors |
+| 8 | Note: synthesis-doc said "Java"; Tanks repo is C++ (corrected in iter-4 LEDGER) | Source-doc drift |
+
+Rubric scope after iter 8: 12 criteria × 5 max = **60-point ceiling** (was 50).
