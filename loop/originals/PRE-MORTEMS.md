@@ -521,3 +521,60 @@ Generalization clause: the directive-override mechanism (suspend halt rule + REV
 - REVIEW-QUEUE not actually created.
 - HALTED.md deleted (would erase the historical halt event — bad).
 - Forgetting to schedule iter 11.
+
+---
+
+## Iter 011 — BUILD (Spawner integration — arc-2 soft-substrate write)
+
+**Mode:** BUILD.
+
+**This iter is the only sanctioned arc-3 write into arc-2 substrate.** PROMPT § Layer 2 spec authorizes the edit: "scripts/Spawner.gd — wave / spawn logic (will be EXTENDED for OG per-stage rosters; arc-3's only soft-substrate write into arc-2 layer)." Per PROMPT Step 4: "After any BUILD that changes Bullet/Enemy/Spawner/PlayerTank: `make test` exit 0 + verify procedural mode still works — the arc-2 baseline must not regress; this is arc-3's hash-anchor analog."
+
+**Weakest axes:**
+- Criterion 5 (Enemy roster fidelity) at 2 — anchor 3 ("Spawner.gd integration; arc-2 Spawner reads Roster at spawn time; per-stage enemy mix observable in render — code-cited"). Iter-8 AUDIT renamed this anchor for clarity.
+- Criterion 10 (End-to-end playable) at 2 — anchor 3 ("Stages 1-10 reachable in single session without crashes") needs a natural clear-condition (= all 20 enemies dead). Currently only the dev N-key advance exists.
+
+**Plan:**
+
+1. **Extend `scripts/Spawner.gd` with default-off behavior**:
+   - Add `@export var stage_number: int = 0` — value 0 = procedural mode (current behavior preserved bit-identical); value > 0 = ORIGINALS mode.
+   - Add `signal stage_cleared` — emitted when all 20 enemies destroyed.
+   - Add tracker `var _total_spawns_this_stage: int = 0`.
+   - Add three early-branches keyed on `stage_number > 0`: in `_try_spawn`, `_current_spawn_interval`, `_pick_enemy_type`. Procedural path (default) untouched.
+   - Add `_check_stage_clear()` called from `_on_enemy_killed`.
+2. **Wire into `scenes/OriginalLevel.tscn`**: add a Spawner node with `enemy_scene = res://scenes/Enemy.tscn`, `stage_number = 1` (will be overridden by code from `OriginalLevel.gd`'s `stage_number`).
+3. **Wire `OriginalLevel.gd`**: pass `stage_number` to Spawner before scene `_ready`; connect `stage_cleared` → trigger `_advance_to_next_stage()`.
+4. **Headless integration test**: simulate 20 kills and verify `stage_cleared` fires.
+
+**Falsifiable claim (with generalization clause):**
+
+- Procedural hash anchor `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` UNCHANGED post-edit.
+- `make test` exit 0.
+- OG stage 1 headless: spawner instantiates, spawn cadence fires, enemies appear (verify via test_runner counts).
+- Stage_cleared signal fires when simulated kill-all condition met.
+- Generalization clause: integration smoke-tested on **stages 1, 18, 35** (low, mid, high; varied armored probabilities).
+
+**Most-likely failure modes:**
+
+- **F1 [STRUCTURE] — Hash anchor drift (substrate violation)**: any code path change that affects the procedural seed-42 spawn pattern. The risk is high: Spawner is large, with many entangled state vars. *Detection*: hash anchor comparison after every code change. *Mitigation*: only add NEW code paths gated on `stage_number > 0`; never modify existing branches. Test hash after EACH edit step, not just at the end.
+- **F2 [STRUCTURE] — Band-cap interference**: `_telegraph_then_spawn` re-checks band cap (`_current_band().max_alive`). In OG mode, `_max_depth_reached` is 0 → warmup band → cap 2. Would cap OG at 2 simultaneous instead of Tanks's 4. *Mitigation*: factor out `_current_max_alive()` helper that returns `MAX_SIMULTANEOUS_OG = 4` when `stage_number > 0`, else current band logic.
+- **F3 [STRUCTURE] — Spawn position wrong**: Tanks canonical spawn points are stage cells (1, 1) / (12, 1) / (24, 1). In arc-3 scene coords (col_offset=7, row_offset=2): scene cells (8, 3) / (19, 3) / (30, 3) = pixel (68, 28) / (156, 28) / (244, 28). The existing Spawner uses player-relative top-edge math. *Mitigation*: implement `_find_og_spawn_position()` that picks from the 3 canonical points (random selection); reuses `_telegraph_then_spawn` for the actual spawn logic.
+- **F4 [STRUCTURE] — Clear condition false-positives**: `stage_cleared` should fire when 20 spawned AND 0 alive. If I fire on just "0 alive," early-game (before any spawn) would fire it. *Mitigation*: gate on `_total_spawns_this_stage >= 20 AND _enemies_alive == 0`.
+- **F5 [STRUCTURE] — Stage advance race**: when stage_cleared fires → reload_current_scene reloads OriginalLevel. The Spawner.gd state (counters, etc.) resets cleanly because it's a child of the scene. But if signal connection races with scene change, signal could fire twice. *Mitigation*: latch `_advancing: bool = false` in OriginalLevel.gd; first stage_cleared call sets the latch and triggers advance; subsequent calls noop.
+- **F6 [STRUCTURE] — Procedural-mode regression test scope**: hash anchor is computed from set_cell positions in TileMapLayers. Spawner-spawned ENEMIES don't write to TileMapLayers. So Spawner edits *shouldn't* affect hash. *Verified by inspection*: hash check should pass even if Spawner behavior changed dramatically. But: `make test` exit code also depends on no script errors. A typo in the Spawner edit could break ProceduralLevel _ready.
+
+**Substrate guards:**
+- `scripts/Spawner.gd` — extended with NEW gated branches. Existing code paths byte-unchanged.
+- `scripts/OriginalLevel.gd` — extended (signal connection + advance latch).
+- `scenes/OriginalLevel.tscn` — add Spawner node.
+- All other arc-2 substrate UNTOUCHED.
+- `.research/repos/Tanks/` read-only.
+
+**What would count as "iter 11 failed":**
+- Procedural hash anchor drifts (substrate violation; halt + revert).
+- `make test` exit ≠ 0 (script error in shared substrate).
+- OG mode crashes on stage 1 boot.
+- stage_cleared signal fails to fire OR fires spuriously (clear-condition logic broken).
+- More than one stage advance race ("stage_cleared" → reload → "stage_cleared" again on first frame).
+
+**Anti-Goodhart guard:** C5 anchor 3 requires "arc-2 Spawner reads Roster at spawn time; per-stage enemy mix observable in render." Test: render OG stages 1 and 35 with the new Spawner; the armored ratio should statistically lean toward Heavy more on stage 35. Single-render small sample won't show statistical difference cleanly, so I'll verify the code path (Roster called with correct stage_number) rather than the render distribution. C10 anchor 3 ("Stages 1-10 reachable in single session") — headless verification via stage_cleared firing is the cite. Real session-playability needs playtest (queued).

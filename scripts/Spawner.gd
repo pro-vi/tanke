@@ -1,5 +1,7 @@
 extends Node2D
 
+const RosterT = preload("res://scripts/Roster.gd")
+
 @export var enemy_scene: PackedScene
 @export var spawn_interval: float = 2.0
 @export var max_enemies: int = 20
@@ -7,6 +9,25 @@ extends Node2D
 @export var map_x_margin: float = 4.0
 @export var map_width: float = 320.0
 @export var spawn_top_edge_offset: float = 8.0  # spawn this many px INSIDE the visible viewport top, so user sees enemies "driving in" from the edge (BC-style)
+
+# iter 011 (arc 3): per-stage roster integration. When stage_number > 0 the
+# spawner runs in ORIGINALS mode: 20 total enemies, max 4 simultaneous,
+# Roster.armored_probability(stage)-driven Light/Heavy mix, canonical
+# 3-point spawn positions (Tanks: stage cells (1,1)/(12,1)/(24,1)),
+# stage_cleared signal on full kill. Default stage_number=0 preserves
+# arc-2 procedural behavior bit-identical (no code paths changed for
+# stage_number==0; only new branches added).
+@export var stage_number: int = 0
+signal stage_cleared
+var _total_spawns_this_stage: int = 0
+# Tanks canonical spawn points: stage cells (1, 1) / (12, 1) / (24, 1) at
+# top row. arc-3 scene coords add (col_offset=7, row_offset=2). At 8 px/tile
+# with cell-center anchoring (+4 each axis): (4 + 8*8, 4 + 8*3) and so on.
+const OG_SPAWN_POINTS: Array = [
+	Vector2(68, 28),    # Tanks stage col 1 → arc-3 scene col 8 → screen x 4 + 8*8 = 68
+	Vector2(156, 28),   # Tanks stage col 12 → arc-3 scene col 19 → screen x 4 + 19*8 = 156
+	Vector2(252, 28),   # Tanks stage col 24 → arc-3 scene col 31 → screen x 4 + 31*8 = 252
+]
 # Ascender pressure (iter 12)
 @export var ascent_lookahead_seconds: float = 1.5  # spawn this many seconds-of-ascent further ahead
 @export var stall_threshold: float = 0.3  # rows/sec; below this counts as stalling
@@ -235,10 +256,39 @@ func _update_stall_time(delta: float) -> void:
 
 
 func _current_spawn_interval() -> float:
+	# iter 011: ORIGINALS mode flat cadence — no ascent / stall logic applies.
+	if stage_number > 0:
+		return spawn_interval
 	# iter 22: band interval_mult; iter 27: graduated stall multiplier.
 	var band: Dictionary = _current_band()
 	var base: float = spawn_interval * float(band.get("interval_mult", 1.0))
 	return base * _current_stall_multiplier()
+
+
+# iter 011: ORIGINALS-mode spawn entry. Caps at TOTAL_ENEMIES_PER_STAGE = 20
+# spawns + MAX_SIMULTANEOUS = 4 alive (Tanks canonical from Roster.gd).
+# Spawn position is one of the 3 canonical OG_SPAWN_POINTS (random).
+func _try_spawn_originals() -> void:
+	ticks_total += 1
+	if enemy_scene == null:
+		return
+	if _total_spawns_this_stage >= RosterT.TOTAL_ENEMIES_PER_STAGE:
+		return
+	if _enemies_alive >= RosterT.MAX_SIMULTANEOUS:
+		return
+	var spawn_pos: Vector2 = OG_SPAWN_POINTS[randi() % OG_SPAWN_POINTS.size()]
+	if _is_blocked(spawn_pos):
+		rejections_total += 1
+		return
+	var plan := {"pos": spawn_pos, "is_below": false, "telegraph_pos": spawn_pos}
+	_telegraph_then_spawn(plan)
+	spawns_total += 1
+	_total_spawns_this_stage += 1
+	if ticks_total % 5 == 0:
+		print("[spawner-og] stage %d  tick %d  spawned %d/%d  alive %d/%d" % [
+			stage_number, ticks_total, _total_spawns_this_stage,
+			RosterT.TOTAL_ENEMIES_PER_STAGE, _enemies_alive, RosterT.MAX_SIMULTANEOUS
+		])
 
 
 # iter 27: graduated stall multiplier replacing iter-12 binary stall_interval_multiplier.
@@ -255,6 +305,11 @@ func _current_stall_multiplier() -> float:
 
 
 func _try_spawn() -> void:
+	# iter 011: ORIGINALS mode early-branch. Default stage_number=0 falls
+	# through to the unchanged arc-2 procedural path below.
+	if stage_number > 0:
+		_try_spawn_originals()
+		return
 	ticks_total += 1
 	if enemy_scene == null:
 		return
@@ -372,8 +427,13 @@ func _telegraph_then_spawn(plan: Dictionary) -> void:
 	# iter 30: re-check BAND cap (not just global) after await
 	if enemy_scene == null:
 		return
-	var post_band: Dictionary = _current_band()
-	var post_cap: int = int(post_band.get("max_alive", max_enemies))
+	var post_cap: int
+	if stage_number > 0:
+		# iter 011: OG mode uses canonical Tanks cap, not depth-band cap.
+		post_cap = RosterT.MAX_SIMULTANEOUS
+	else:
+		var post_band: Dictionary = _current_band()
+		post_cap = int(post_band.get("max_alive", max_enemies))
 	if _enemies_alive >= post_cap:
 		return
 	var parent_node: Node = get_parent()
@@ -415,6 +475,14 @@ func _telegraph_then_spawn(plan: Dictionary) -> void:
 # band's guarantee_first_type when entering a new band — first spawn
 # uses that type to set the band's tone before random weights take over.
 func _pick_enemy_type() -> Dictionary:
+	# iter 011: ORIGINALS mode uses Roster.armored_probability(stage) to
+	# pick Light (A/B/C) vs Heavy (D). No band logic, no first-spawn guarantee.
+	if stage_number > 0:
+		var armored: bool = RosterT.is_armored_spawn(stage_number)
+		var picked: Dictionary = _get_type_by_name("Heavy" if armored else "Light")
+		if picked.is_empty():
+			picked = ENEMY_TYPES[0]
+		return picked
 	var band: Dictionary = _current_band()
 	# iter 27: band-entry guarantee
 	if _band_first_spawn_pending:
@@ -456,6 +524,13 @@ func _on_enemy_freed() -> void:
 
 func _on_enemy_killed() -> void:
 	enemies_killed += 1
+	# iter 011: ORIGINALS clear-condition. Fires stage_cleared once when all
+	# 20 enemies have been spawned AND none remain alive. Gated on both
+	# conditions to avoid early-game false-positive (alive count is 0 at boot).
+	if stage_number > 0 \
+			and _total_spawns_this_stage >= RosterT.TOTAL_ENEMIES_PER_STAGE \
+			and _enemies_alive == 0:
+		stage_cleared.emit()
 
 
 func _on_enemy_aim_canceled() -> void:

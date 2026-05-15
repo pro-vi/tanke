@@ -35,6 +35,13 @@ var eagle: Node2D = null
 # condition awaits Spawner integration (iter 9+).
 var stage_director: StageDirectorT = null
 
+# iter 011: arc-2 Spawner integration. OriginalLevel.tscn includes a
+# Spawner node; we push the current stage_number to it on _ready so the
+# spawner uses Roster.armored_probability(stage). When the spawner emits
+# stage_cleared (all 20 enemies killed), advance to the next stage.
+# _advancing latch prevents double-fire from rapid signal + scene-reload race.
+var _advancing: bool = false
+
 
 func _ready() -> void:
 	# Wire player shoot signal (mirrors Level._ready and ProceduralLevel._ready;
@@ -56,6 +63,24 @@ func _ready() -> void:
 	_spawn_eagle()
 	stage_director = StageDirectorT.new(stage_number)
 	stage_director.arc_complete.connect(_on_arc_complete)
+	_wire_spawner()
+
+
+func _wire_spawner() -> void:
+	var spawner: Node = get_node_or_null("Spawner")
+	if spawner == null:
+		return
+	spawner.set("stage_number", stage_number)
+	if spawner.has_signal("stage_cleared"):
+		spawner.stage_cleared.connect(_on_stage_cleared)
+
+
+func _on_stage_cleared() -> void:
+	if _advancing or _game_over:
+		return
+	_advancing = true
+	print("originals: stage %d cleared — advancing" % stage_number)
+	_advance_to_next_stage()
 
 
 func _spawn_eagle() -> void:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=23 format=3]
 
 [ext_resource type="Script" path="res://scripts/OriginalLevel.gd" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/PlayerTank.tscn" id="3"]
@@ -8,6 +8,8 @@
 [ext_resource type="Texture2D" uid="uid://dg7td6i6nfwni" path="res://img/water_007.png" id="7"]
 [ext_resource type="Texture2D" path="res://img/ice_007.png" id="8"]
 [ext_resource type="PackedScene" path="res://scenes/Eagle.tscn" id="9"]
+[ext_resource type="Script" path="res://scripts/Spawner.gd" id="10"]
+[ext_resource type="PackedScene" path="res://scenes/Enemy.tscn" id="11"]
 
 [sub_resource type="TileSetAtlasSource" id="SteelSrc"]
 texture = ExtResource("5")
@@ -119,3 +121,9 @@ collision_mask = 0
 
 [node name="RightWallShape" type="CollisionShape2D" parent="Walls/RightWall"]
 shape = SubResource("WallShape")
+
+[node name="Spawner" type="Node2D" parent="."]
+script = ExtResource("10")
+enemy_scene = ExtResource("11")
+spawn_interval = 2.0
+stage_number = 1

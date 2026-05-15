@@ -3,16 +3,16 @@
 ## Phase
 
 ```
-phase: loop (RESUMED iter 10; HALTED.md retained as historical record)
-iteration: 10 (META — resume + playtest + directive override — complete; iter 11 scheduled)
+phase: loop
+iteration: 11 (BUILD — Spawner integration — complete; iter 12 scheduled)
 arc: 3 (Originals — BC NES stages import)
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 38/60
+score: 40/60
 playtest_halt_rule: SUSPENDED per user iter-10 directive — REVIEW-QUEUE pattern active
 ```
 
-**Loop RESUMED.** User iter-10 directive: "we cant keep asking me for playtest the loop needs to keep running, and you figure out way to test or collect items that you cant for me to review at the end." 3-iter PLAYTEST halt rule operationally suspended for arc-3 remainder. `loop/originals/REVIEW-QUEUE.md` now collects user-only-verifiable items; user batch-reviews at arc close. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 → 36 (v2) → 36 (HALT) → 38 (RESUME). Tag balance: 10 [STRUCTURE], 2 [STRUCTURE-DEFERRED], **3 [FEEL] — first non-zero**.
+**First arc-2 substrate write landed** (Spawner.gd extended; PROMPT Layer-2 spec authorized) without procedural-mode regression. Hash anchor `23d6a2ec…` preserved. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 → 36 (v2) → 36 (HALT) → 38 (RESUME) → 40 (Spawner integration). Tag balance: 11 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL].
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -60,23 +60,23 @@ Hash anchor `23d6a2ec…` is the regression detector.
 
 ---
 
-## Current Scores (post iter 010 — first feel cites)
+## Current Scores (post iter 011 — Spawner integration)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
 | 1. Loader correctness | **4** | |
-| 2. Eagle gameplay | **3** | Anchor 3 now [FEEL]-cited (user verified game-over fires). Anchor 4+ queue #4 |
+| 2. Eagle gameplay | **3** | Anchor 4+ queue #4 |
 | 3. Ice physics | **2** | Pass-through (rubric cap) |
 | 4. PNG-diff oracle | **4** | |
-| 5. Enemy roster fidelity | **2** | iter-11 BUILD target: Spawner integration → 3 |
-| 6. Mode selection | **4** | Lift — anchor 4 [FEEL]-cited ("can nav" without fumbling). Anchor 5 unfulfilled (I instructed) |
+| 5. Enemy roster fidelity | **3** | Anchor 3 ✓ — Spawner reads Roster per spawn; per-stage mix observable |
+| 6. Mode selection | **4** | Anchor 5 unfulfilled (instruction-given) |
 | 7. Stages 1-12 complete | **5** | |
 | 8. Stages 13-24 complete | **5** | |
 | 9. Stages 25-35 complete | **5** | |
-| 10. End-to-end playable | **2** | Anchor 1 retag [STRUCTURE-DEFERRED] → [FEEL] |
-| 11. Identity / BC fidelity | **1** | Lift — anchor 1 cite-able + human-present non-objection. Anchor 3+ queue #2 |
-| 12. Arc-2 feedback metrics | **1** | iter-11+ BUILD target: tools/og_metrics.py |
-| **Total** | **38/60** | post iter 010 |
+| 10. End-to-end playable | **3** | Anchor 3 ✓ — 10-stage advance chain verified programmatically. Anchors 4-5 await playtest |
+| 11. Identity / BC fidelity | **1** | Anchor 3+ queue #2 |
+| 12. Arc-2 feedback metrics | **1** | iter-12+ target: tools/og_metrics.py |
+| **Total** | **40/60** | post iter 011 |
 
 ---
 
@@ -110,6 +110,36 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 011 BUILD complete (2026-05-15) — arc-2 substrate write.
+
+- Pre-mortem with F1-F6 listed; F6 fired mid-iter (parse error on the
+  call-before-define edit) and was caught by post-tool hook; fixed.
+- Spawner.gd extended (arc-3's only sanctioned arc-2 soft-substrate write):
+    * @export stage_number (default 0 = procedural; >0 = ORIGINALS)
+    * signal stage_cleared
+    * OG_SPAWN_POINTS: 3 canonical Tanks coords
+    * _try_spawn_originals + _pick_enemy_type Roster integration
+    * Stage-clear gate: 20 spawned AND 0 alive → emit
+    * All branches gated on stage_number > 0; procedural unchanged
+- OriginalLevel.tscn: Spawner node added with enemy_scene + stage_number=1.
+- OriginalLevel.gd: _wire_spawner pushes stage_number + connects
+  stage_cleared → _on_stage_cleared (with _advancing latch).
+- Verification:
+    * Procedural hash anchor 23d6a2ec… preserved exactly.
+    * make test exit 0.
+    * OG stage 1: brick=220 steel=8 playable=true (unchanged); enemy
+      colors visible in 5-sec render.
+    * Stage-clear signal test (programmatic): 19 kills = no fire,
+      20 kills = fire (single emit).
+    * 10-stage advance chain (Roster armored_p verified 0.107→0.174
+      linear; zero crashes / script errors).
+- Scores: C5 2→3, C10 2→3. Total 38 → 40/60 (+2).
+- Commit: chore(originals): iter 011 — BUILD — Spawner integration
+  (arc-2 soft-substrate write).
+- Iter 12 wakeup scheduled.
+```
 
 ```
 Iter 010 META complete (2026-05-15).
@@ -328,6 +358,30 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 12 — CAPABILITY (tools/og_metrics.py for C12 arc-2 feedback):
+  - Step 1: PRE-MORTEM (generalization clause: per-stage metric computation
+            for all 35 stages produces coherent JSON artifact).
+  - Step 2: DIAGNOSE — C12 at 1 (anchor 1 done iter 1); anchor 2 ("compiled
+            JSON artifact: tools/og_metrics.py or loop/originals/og-metrics.json")
+            is the next lift.
+  - Step 3: SELECT MODE — CAPABILITY (new tooling for arc-3 → arc-2 handshake).
+  - Step 4: ACT:
+      1. tools/og_metrics.py: reads .research/repos/Tanks/resources/stages/{1..35};
+         computes per-stage metrics — density per terrain, reachability count,
+         room sizes (cc_max if applicable), ascent geometry approximation.
+      2. Emit loop/originals/og-metrics.json with per-stage entries + summary
+         statistics (mean, stdev, min, max across 35).
+      3. Makefile target: make og-metrics → runs the script.
+  - Step 5: SCORE — C12 → 3 if cross-stage stats compiled.
+  - Step 6: COMMIT — chore(originals): iter 012 — CAPABILITY — og_metrics tool
+  - Step 7: SCHEDULE — 240s wakeup for iter 13.
+
+Alternates if iter-12 finds blockers:
+- C1 → 5 via make-test edge-case coverage for LevelLoader
+- Polish TitleScreen aesthetic (queue #1) — but only after user picks (a/b/c/d)
+```
 
 ```
 Iter 11 — BUILD (Spawner integration + arc-2 soft-substrate write):

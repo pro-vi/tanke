@@ -1024,3 +1024,99 @@ Or iter 11 could be CAPABILITY: `tools/og_metrics.py` for C12 lift. Will pick in
 ### Commit
 
 `chore(originals): iter 010 — META — resume + playtest scoring + REVIEW-QUEUE`
+
+---
+
+## Iter 011 — BUILD (Spawner integration — arc-2 soft-substrate write)
+
+**Mode:** BUILD
+**Date:** 2026-05-15
+**Branch:** `arc-3-originals`
+**Focus:** Spawner.gd extension (arc-3's only sanctioned arc-2 substrate write) + OG integration
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 011)
+
+F1-F6 pre-listed.
+
+**Result: F1 mitigation held — procedural hash anchor preserved.** F2 (band-cap interference) mitigated pre-emptively by adding `RosterT.MAX_SIMULTANEOUS` post-await check. F3 (canonical spawn coords) implemented as `OG_SPAWN_POINTS` constant array. F4 (false-positive clear) gated correctly on both conditions. F5 (advance race) latched in OriginalLevel.gd. F6 (script-error regression) caught by post-tool hook on first edit attempt — fixed mid-iter by adding `_try_spawn_originals()` body before the call site (parse-order issue).
+
+One unanticipated event: the iter-11-Step-4b first edit failed parse because I added the early-branch CALL to `_try_spawn_originals()` before DEFINING the function. Post-tool hook caught this in real time:
+> "SCRIPT ERROR: Parse Error: Function '_try_spawn_originals()' not found in base self."
+Lesson: when extending shared substrate, define-before-call discipline is even more critical because mid-edit broken state breaks BOTH paths (procedural + new). Fixed by adding the full OG branch suite in one Edit before re-running.
+
+### Actions
+
+1. **`scripts/Spawner.gd`** (EXTENDED — arc-2 soft-substrate write per PROMPT Layer-2 spec):
+   - Added `const RosterT = preload(...)` at top.
+   - Added `@export var stage_number: int = 0` — default 0 = procedural mode (preserves arc-2 bit-identical); >0 = ORIGINALS mode.
+   - Added `signal stage_cleared`.
+   - Added `var _total_spawns_this_stage: int = 0`.
+   - Added `const OG_SPAWN_POINTS: Array` — 3 canonical Tanks spawn points mapped through arc-3 coords: scene cells (8,3) / (19,3) / (31,3) at screen pixels (68,28) / (156,28) / (252,28).
+   - Added `_try_spawn_originals()` — caps at TOTAL_ENEMIES_PER_STAGE (20) + MAX_SIMULTANEOUS (4); picks random canonical spawn point; reuses `_telegraph_then_spawn`.
+   - Early-branched: `_try_spawn` (returns to OG path if stage_number > 0), `_current_spawn_interval` (returns flat `spawn_interval` for OG), `_pick_enemy_type` (uses `RosterT.is_armored_spawn(stage_number)`), `_telegraph_then_spawn` post-await cap check (uses `RosterT.MAX_SIMULTANEOUS` for OG).
+   - Extended `_on_enemy_killed` with stage-clear emission gated on `_total_spawns_this_stage >= TOTAL_ENEMIES_PER_STAGE AND _enemies_alive == 0`.
+2. **`scenes/OriginalLevel.tscn`** — added Spawner node with `enemy_scene = res://scenes/Enemy.tscn`, `spawn_interval = 2.0`, `stage_number = 1` (overridden by OriginalLevel.gd from its own stage_number).
+3. **`scripts/OriginalLevel.gd`** (extended) — `_wire_spawner()` runs in `_ready`: pushes `stage_number` to Spawner node; connects `stage_cleared` → `_on_stage_cleared` (with `_advancing` latch preventing race).
+
+### Verification (Step 4)
+
+- **Procedural hash anchor `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` preserved exactly** post-edit (the gating discipline held — no procedural code path changed). `make test` exit 0.
+- **OG stage 1 oracle**: brick=220 steel=8 playable=true (unchanged from pre-Spawner). Render after 5-sec capture shows enemy color signatures `(156, 74, 0)`, `(99, 99, 99)`, `(0, 66, 74)` in the spawn band — Spawner actively spawning.
+- **Stage-clear signal test** (programmatic kill-all simulation):
+  - 19 spawn+kill events → `cleared=false` (no false-positive)
+  - 20th spawn+kill → `cleared=true` + OriginalLevel logs "stage 1 cleared — advancing"
+  - Confirms the `(_total_spawns ≥ 20) AND (_enemies_alive == 0)` gate fires exactly once
+- **10-stage advance chain** (anchor-3 candidate for C10):
+  - Simulated 1 → 2 → ... → 10 → 11 via StageDirector + scene instantiation per stage
+  - Each stage: LevelLoader cell counts match prior surveys exactly (e.g. stage 4: 262 brick / 16 steel / 56 forest / 12 water)
+  - Each stage: Spawner instantiates with correct `stage_number`; `Roster.armored_probability` scales linearly 0.1074 (stage 2) → 0.1735 (stage 11)
+  - **Zero crashes, zero script errors across 10 stage instantiations.**
+
+### Scores
+
+| C# | Name | Before | After | Tag | Cite |
+|----|------|--------|-------|-----|------|
+| 1 | Loader correctness | 4 | 4 | [STRUCTURE] | Unchanged. |
+| 2 | Eagle gameplay | 3 | 3 | [STRUCTURE] / [FEEL-PARTIAL] | Unchanged. |
+| 3 | Ice physics | 2 | 2 | [STRUCTURE] | Rubric cap. |
+| 4 | PNG-diff oracle | 4 | 4 | [STRUCTURE] | Unchanged. |
+| 5 | Enemy roster fidelity | 2 | **3** | [STRUCTURE] | Anchor 3 ✓ — Spawner reads `RosterT.is_armored_spawn(stage_number)` at every spawn; per-stage enemy mix observable in render (5-sec OG stage 1 render shows distinct enemy color signatures). Code-cited at `scripts/Spawner.gd:_pick_enemy_type`. |
+| 6 | Mode selection | 4 | 4 | [STRUCTURE] / [FEEL] | Unchanged. |
+| 7 | Stages 1-12 complete | 5 | 5 | [STRUCTURE] | |
+| 8 | Stages 13-24 complete | 5 | 5 | [STRUCTURE] | |
+| 9 | Stages 25-35 complete | 5 | 5 | [STRUCTURE] | |
+| 10 | End-to-end playable run | 2 | **3** | [STRUCTURE] | Anchor 3 ✓ — programmatic 10-stage advance chain (`StageDirector.advance_stage` + scene instantiation) ran without crashes. Cited above + in inline integration test. "Single session via natural clear-condition" still awaits playtest cite (queue #3) for anchor 4-5 of C10. |
+| 11 | Identity / BC fidelity | 1 | 1 | [STRUCTURE] / [FEEL-IMPLICIT] | Unchanged. |
+| 12 | Arc-2 feedback metrics | 1 | 1 | [STRUCTURE] | iter-12+ target: `tools/og_metrics.py`. |
+| **Total** | | **38** | **40/60** | | +2 (C5 +1, C10 +1). |
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 11 cites
+- [STRUCTURE-DEFERRED]: 1 cite
+- [FEEL]: 3 cites (held from iter 10)
+- [MIXED]: 0
+
+### Substrate guardrails verified
+
+- **Spawner.gd edits gated on `stage_number > 0`**; all procedural code paths byte-unchanged. Verified by hash anchor preservation.
+- `scripts/Level.gd`, `Bullet.gd`, `Enemy*.gd`, `PlayerTank.gd`, `BrickBlock.gd`, `ProceduralLevel.gd`, `ProceduralStep.gd`, `LevelConfig.gd`, `BiomeConfig.gd`, `LevelDNA.gd` — UNTOUCHED.
+- `.research/repos/Tanks/` read-only.
+- `make test` exit 0; procedural hash anchor preserved exactly.
+
+### STAGES.md gate 6 — partial unblock note
+
+Gate 6 ("Enemy roster matches mined Tanks per-stage data") is now mechanically satisfied for all 35 stages — the Roster formula IS the canonical data, and Spawner reads it. But the STAGES.md per-stage checkbox flips need anchor-4-of-C5 (cross-validate ≥5 stages against an independent fan walkthrough) before fully confident. Defer the STAGES.md mass-flip to a later iter that does the independent cross-validation OR queue for review.
+
+### Next iter
+
+Iter 12 candidates (in unblock-value order):
+1. **`tools/og_metrics.py`** (C12 → 3): compute per-stage structural distributions (density, cc_max, reachable cells) across all 35 OG stages; emit JSON artifact. Honors PROMPT § "feedback to arc 2." No playtest needed.
+2. **C1 → 5**: add `make test`-level edge case coverage for LevelLoader (malformed input, missing file).
+3. **REVIEW-QUEUE additions** from this iter: none structurally novel (spawn behavior is mechanism-only at this point).
+
+Iter 12 likely BUILD/CAPABILITY focused on (1).
+
+### Commit
+
+`chore(originals): iter 011 — BUILD — Spawner integration (arc-2 soft-substrate write)`
