@@ -1508,3 +1508,92 @@ Likely (1) — META-RETRO. The arc is close to natural close per its frontier-lo
 ### Commit
 
 `chore(originals): iter 015 — BUILD — roster cross-validation (C5 anchor 4) + F001`
+
+---
+
+## Iter 016 — META-RETRO (arc-3 close at structural ceiling)
+
+**Mode:** META-RETRO
+**Date:** 2026-05-15
+**Branch:** `arc-3-originals`
+**Meta-trigger:** PROMPT close condition structurally satisfied at iter 15 ("All 35 stages complete + eagle + ice + end-to-end playable + PNG diff all-passing"). Arc-3's frontier-loop natural close.
+
+### Action
+
+Wrote `loop/originals/META-RETRO-iter016.md` — the arc-3 closing retrospective. Follows the structural pattern of `loop/META-RETRO.md` (arc 1) and `loop/gameplay/META-RETRO-iter100.md` (arc 2). 4 sections of substance:
+
+1. **Arc shape** — 4 phases × score path. Pace 2.8 score-points/iter (vs engine arc 1.78 vs gameplay arc 0.34) — frontier-loop shape rewards mechanical progress.
+2. **What landed** — 18 engineering deliverables, 6 loop-infrastructure mechanisms, hash anchor `23d6a2ec…` preserved across all 16 iters.
+3. **What survives** — 6 pattern carries (LevelLoader, PNG-diff oracle, og_metrics handshake, StageDirector + Roster, REVIEW-QUEUE, default-off gating).
+4. **What arc 3 taught the chain** — three things across arc 1+2+3 (144 iters cumulative) that aren't in any current loop skill.
+
+### Final scoreboard
+
+| Bucket | Criteria |
+|--------|----------|
+| **5/5** | C1 (Loader), C7 (Stages 1-12), C8 (Stages 13-24), C9 (Stages 25-35) — 4 criteria, all structural |
+| **4/5** | C4 (PNG-diff), C5 (Roster), C6 (Mode select), C12 (Arc-2 feedback) — 4 criteria |
+| **3/5** | C2 (Eagle), C10 (End-to-end) — 2 criteria, anchor-4+ playtest-gated |
+| **2/5** | C3 (Ice) — pass-through rubric-capped |
+| **1/5** | C11 (Identity) — playtest-gated |
+
+**Total: 45/60 (75%).** Frozen at arc close.
+
+Tag balance:
+- [STRUCTURE]: 15 cites
+- [STRUCTURE-DEFERRED]: 1 cite
+- [FEEL]: 3 cites
+- [MIXED]: 0
+
+### Substrate guardrails final-verified
+
+- Hard substrate (Layer 1 — `LevelConfig`, `BiomeConfig`, `LevelDNA`, `ProceduralStep`, `ProceduralLevel`, `gen_tile.py`, `analyze_frame.py`, `test_runner.gd` non-refactoring) — UNTOUCHED.
+- Gameplay substrate (Layer 2):
+  - `Bullet.gd`, `Enemy.gd`, `EnemyLight.gd`, `EnemyHeavy.gd`, `PlayerTank.gd`, `BrickBlock.gd`, `configs/playable.tres` — UNTOUCHED.
+  - `Spawner.gd` — EXTENDED with default-off gating per PROMPT Layer-2 sanction (iter 11); procedural hash anchor preserved.
+- Research substrate (Layer 3 — `.research/repos/Tanks/`) — READ-ONLY.
+- **Procedural hash anchor `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` preserved across all 16 arc-3 iters.** Cross-arc invariant intact.
+
+### Cumulative arc-3 commits
+
+16 commits from `d86105b` (iter 0 BOOTSTRAP) through `35abef2` (iter 15) on branch `arc-3-originals`. This iter adds the 17th. All sub-`5e3-line` commits with concrete rationale + verification cites + co-author trailer.
+
+### Open queue items (4)
+
+1. TitleScreen aesthetic — user direction-pick (a/b/c/d)
+2. Q2 explicit BC-recognition cite
+3. Full 1-35 playthrough (C10 anchor 5)
+4. Eagle-felt-like-BC cite (C2 anchor 4)
+5. arc-3 BC edge walls — user direction-pick (walls / accept / cosmetic)
+
+Each is reachable via single 5-minute playtest + queue direction-pick. Arc-3 ships without them; future user engagement can close.
+
+### Next iter — none scheduled
+
+Loop pauses. No wakeup scheduled. Per META-RETRO § "Re-engagement entry points", any of 5 user signals resumes the loop. The arc-3 artifact set is committed; recovery is just `git log + state read`.
+
+### Commit
+
+`chore(originals): iter 016 — META-RETRO — arc-3 close at 45/60`
+
+### Cumulative arc-3 path (final)
+
+```
+iter 0:  bootstrap (no scoring)
+iter 1:   5/50
+iter 2:  10/50  (iter-2 LEDGER correction recorded in iter 3)
+iter 3:  15/50
+iter 4:  20/50
+iter 5:  29/50  (+9 from 22-stage sweep + classifier hardening)
+iter 6:  33/50  (+4 from mode-select + game-over)
+iter 7:  34/50
+iter 8:  36/60  (rubric v2 — C5 rename + C11/C12 add)
+iter 9:  36/60  (HALT — playtest 3-iter unfulfilled)
+iter 10: 38/60  (RESUME — user override; first feel cites)
+iter 11: 40/60  (Spawner integration — arc-2 soft-substrate write)
+iter 12: 42/60  (og_metrics handshake)
+iter 13: 43/60  (LevelLoader edge cases)
+iter 14: 44/60  (og_calibrated config — 4 metrics toward OG)
+iter 15: 45/60  (roster cross-validation + F001)
+iter 16: 45/60  (META-RETRO — frozen)
+```

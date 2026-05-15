@@ -3,16 +3,16 @@
 ## Phase
 
 ```
-phase: loop
-iteration: 15 (BUILD — roster cross-validation + F001 — complete; iter 16 scheduled)
-arc: 3 (Originals — BC NES stages import)
+phase: ARC CLOSE (META-RETRO iter 16; loop paused)
+iteration: 16 (META-RETRO — arc-3 close at structural ceiling)
+arc: 3 (Originals — BC NES stages import) — CLOSED
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 45/60
-playtest_halt_rule: SUSPENDED per user iter-10 directive — REVIEW-QUEUE pattern active
+score: 45/60 (75%) — final
+playtest_halt_rule: SUSPENDED (iter 10); arc closes at structural ceiling
 ```
 
-**Arc-3 close condition structurally satisfied.** All 35 stages PNG-verified, eagle + ice + StageDirector + Spawner integration shipped, PNG-diff floor green. C5 anchor 4 cross-validated via StrategyWiki (35/35 stages). F001 logged: formula approximates BC mean+trend but loses per-stage variance. Cumulative path: ... → 44 → 45 (+1 C5). Tag balance: 15 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL]. **Iter 16 candidate: META-RETRO at structural ceiling.**
+**ARC 3 CLOSED at 45/60 (75%).** See `loop/originals/META-RETRO-iter016.md` for the closing retrospective. PROMPT close condition met at iter 15 (35/35 stages PNG-verified + eagle + ice + StageDirector + Spawner + PNG-diff floor green). Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 → 36 (v2) → 36 (HALT) → 38 → 40 → 42 → 43 → 44 → 45 → 45 (META-RETRO; no score lift). Loop pauses naturally. Re-engagement entry points documented in META-RETRO § "Re-engagement entry points".
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -110,6 +110,32 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 016 META-RETRO complete (2026-05-15) — arc 3 CLOSED.
+
+- Wrote loop/originals/META-RETRO-iter016.md (closing retrospective).
+- Documented arc shape, 18 engineering deliverables, 6 pattern carries
+  to future arcs, 4 unsurfaced REVIEW-QUEUE items, F001 the only F.
+- Procedural hash anchor 23d6a2ec… preserved across all 16 iters.
+- No code edits this iter (META mode).
+- Final score 45/60 (75%) — frozen.
+
+Three-arc chain numbers:
+  Arc 1 (engine):     28 iters → 50/55 (90.9%)
+  Arc 2 (gameplay):  100 iters → 34/50 (68.0%)
+  Arc 3 (originals):  16 iters → 45/60 (75.0%)
+
+Tag balance: 15 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL].
+
+Commit: chore(originals): iter 016 — META-RETRO — arc-3 close.
+
+NO wakeup scheduled. Loop pauses. User re-engages via:
+- Full playtest → C2/C6/C10/C11 anchor 4+ lifts (~+8-12 points)
+- REVIEW-QUEUE direction-picks → queue closes; scores may shift
+- "Arc 3 done" → no further iters
+- Arc-4 framing → arc-3 artifacts become substrate
+```
 
 ```
 Iter 015 BUILD complete (2026-05-15) — roster cross-validation.
@@ -472,6 +498,21 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+PAUSED — arc 3 CLOSED via META-RETRO. No further wakeup scheduled.
+
+Resume signals (per META-RETRO § "Re-engagement entry points"):
+  - "I played it, Q1/Q2/...: ..." → iter 17 = PLAYTEST processing
+  - "Queue direction-pick: TitleScreen (a/b/c/d)" → iter 17 = item closure
+  - "Walls / accept / cosmetic" (queue #5) → iter 17 = item closure
+  - "Arc 3 done" → no further iters
+  - "Arc 4: ..." → fresh arc with arc-3 artifacts as substrate
+
+Loop persistence: all artifacts (META-RETRO, REVIEW-QUEUE, LEDGER,
+PRE-MORTEMS, FALSIFICATIONS, RUBRIC v2, STAGES.md, og-metrics.json,
+roster-validation.md, HALTED.md) are committed and recoverable.
+```
 
 ```
 Iter 16 — META-RETRO (arc-3 close at structural ceiling):
