@@ -3,12 +3,12 @@
 ## Phase
 
 ```
-phase: preloop
-iteration: 0
+phase: loop
+iteration: 0 (BOOTSTRAP complete; iter 1 scheduled)
 arc: 3 (Originals — BC NES stages import)
 loop_type: frontier-loop with /story-loop per-stage verification
-preloop_complete: no
-score: 0/50
+preloop_complete: yes
+score: 0/50 (baseline; first scored iter is 1)
 ```
 
 ---
@@ -16,14 +16,16 @@ score: 0/50
 ## Preloop Checklist
 
 ```
-[ ] Read loop/META-RETRO.md (arc 1, engine retro)
-[ ] Read loop/gameplay/META-RETRO-iter100.md (arc 2, gameplay retro)
-[ ] Read .research/synthesis-bc-level-sources-2026-05-13.md (arc-3 research)
-[ ] Verify .research/repos/Tanks/resources/stages/1 exists and matches synthesis sample
-[ ] Verify `make test` exit 0 (arc-2 procedural baseline still works)
-[ ] Confirm arc-2 hash anchor (current iter-100 baseline) holds — record for cross-arc invariant
-[ ] Flip preloop_complete: yes
+[x] Read loop/META-RETRO.md (arc 1, engine retro)
+[x] Read loop/gameplay/META-RETRO-iter100.md (arc 2, gameplay retro)
+[x] Read .research/synthesis-bc-level-sources-2026-05-13.md (arc-3 research)
+[x] Verify .research/repos/Tanks/resources/stages/1 exists and matches synthesis sample
+[x] Verify `make test` exit 0 (arc-2 procedural baseline still works)
+[x] Confirm arc-2 hash anchor (current iter-100 baseline) holds — record for cross-arc invariant
+[x] Flip preloop_complete: yes
 ```
+
+Iter-0 verification: hash anchor `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` reproduced on procedural scene (seed 42); `playable: true`, `reachable_cells: 676`, `rows_climbed: 29`. Cited in `loop/originals/LEDGER.md` iter 000.
 
 ---
 
@@ -103,11 +105,17 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ## Last Action
 
 ```
-Loop scaffolding written. PROMPT.md / RUBRIC.md / STATE.md / STAGES.md
-/ README.md / ACCEPTANCE-TEMPLATE.md created. Substrate frozen across
-3 layers. Research source cloned + synthesized.
+Iter 0 BOOTSTRAP complete (2026-05-15).
 
-Next: iter 0 BOOTSTRAP — verify preloop checklist, commit, schedule iter 1.
+- Preloop checklist: all 7 items green.
+- Both retros + arc-3 synthesis read.
+- Stage 1 source byte-verified against synthesis sample.
+- Arc-2 baseline: make test exit 0; hash anchor 23d6a2ec… reproduced;
+  procedural reachability oracle returns playable=true / 676 cells / 29 rows.
+- 36 files (0..35) confirmed in .research/repos/Tanks/resources/stages/.
+- LEDGER.md iter 000 entry written.
+- Commit: chore(originals): iter 000 — BOOTSTRAP — substrate verified, sources inventoried.
+- Iter 1 wakeup scheduled.
 ```
 
 ---
@@ -121,14 +129,19 @@ None (new arc).
 ## Next Action
 
 ```
-Iter 0 BOOTSTRAP:
-  - Read both prior retros + arc-3 synthesis (per preloop checklist)
-  - Verify .research/repos/Tanks/resources/stages/1 matches synthesis sample
-  - Verify make test exit 0 (arc-2 baseline intact)
-  - Record arc-2 hash anchor in LEDGER for cross-arc regression detection
-  - Flip preloop_complete: yes
-  - Commit "chore(originals): iter 000 — BOOTSTRAP — substrate verified, sources confirmed"
-  - Schedule iter 1: BUILD — LevelLoader.gd skeleton + OriginalLevel.tscn skeleton + test_runner flags
+Iter 1 — BUILD / CAPABILITY (scaffolding iter):
+  - Step 1: PRE-MORTEM (append to loop/originals/PRE-MORTEMS.md; H2 RULE v2 tags mandatory)
+  - Step 2: DIAGNOSE — weakest axis = criteria 1 + 4 + 10 (all at 0, all unblock stage import)
+  - Step 3: SELECT MODE — BUILD with CAPABILITY sub-focus on test_runner extension
+  - Step 4: ACT — build in this order:
+      1. scripts/LevelLoader.gd skeleton: read ASCII grid → emit set_cell calls; legend per synthesis
+      2. scenes/OriginalLevel.tscn skeleton: TileMapLayers (brick / steel / forest / water) + player + LevelLoader node
+      3. loop/test_runner.gd extension: add --scene PATH and --og-stage K flags
+            (extend without refactoring — substrate rule)
+      4. Sanity: run reachability oracle on procedural scene unchanged; hash anchor must still match
+  - Step 5: SCORE — only criteria 1 (loader correctness) and 10 (end-to-end prereq) can lift; cite STRUCTURE
+  - Step 6: COMMIT — chore(originals): iter 001 — BUILD — LevelLoader + OriginalLevel + test_runner flags
+  - Step 7: SCHEDULE — 240s wakeup for iter 2
 ```
 
 ---
