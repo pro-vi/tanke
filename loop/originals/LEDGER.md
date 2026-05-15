@@ -474,3 +474,107 @@ PLAYTEST gate still closed — no mode-select. After mode-select lands, the firs
 ### Commit
 
 `chore(originals): iter 004 — IMPORT — first-third sweep (12/12 pass) + enemy-roster source located`
+
+---
+
+## Iter 005 — IMPORT (middle + final third sweep) + classifier robustness fix
+
+**Mode:** IMPORT (with mid-iter CAPABILITY: classifier palette-detector hardening)
+**Date:** 2026-05-15
+**Branch:** `arc-3-originals`
+**Focus:** Sweep PNG-diff across all unverified stages (13-16, 18-24, 25-35 = 22 stages)
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 005)
+
+Falsifiable claim: all 22 unverified stages pass <5%. Scope overshoot acknowledged (PROMPT suggests "2-5 stages" per IMPORT iter; sweeping 22 is mechanically justified given iter-4's verified zero-tweak generalization). F1 (per-stage terrain combo) was the predicted failure mode — and one variant fired (stage 32 dominated by ice cells; palette-detector heuristic broke). Cured mid-iter with a structural fix to the classifier.
+
+**Result: 35/35 stages pass <5% after mid-iter classifier fix.** F1 fired on stage 32 in a specific way the pre-mortem hadn't fully anticipated, surfaced a real classifier robustness gap, and the fix landed in the same iter.
+
+### Actions
+
+1. **Fetched 22 StrategyWiki references** to `tools/refs/Battle_City_Stage{13-16,18-24,25-35}.png`. All 208×208 indexed-color, all `http 200` from `cdn.wikimg.net`.
+2. **Rendered 22 stages** via `make screenshot-og STAGE=K`. All produced clean 320×240 outputs.
+3. **Full 35-stage diff sweep** — first run revealed stage 32 at 79.254% mismatch.
+4. **Classifier fix (mid-iter CAPABILITY work)** — `tools/png_diff.py:_detect_palette` was using a single-pixel sample at (x+1, y+1) of the play-area region. Stage 32's top-left cell is ice gray (127,127,127), not empty black. The anti-aliased edge between adjacent ice cells produced (188, 188, 188) at pixel (1, 1) — which the heuristic `max(px) < 30` classified as TANKE palette → render and ref both classified with TANKE_ANCHORS → 311 cells of "ice on render maps to steel on ref" because TANKE steel anchor (173,173,173) is closer to gray (127,127,127) than TANKE ice anchor (200,200,200). Fix: detect palette by image mode (NES references are 8-bit indexed `P`; tanke `--write-movie` output is `RGB`/`RGBA`), with multi-cell fallback for RGB images that need content inspection.
+5. **Re-ran 35-stage sweep post-fix** — full 35/35 pass.
+
+### Verification — full 35-stage table
+
+| Stage | Mismatch% | Stage | Mismatch% | Stage | Mismatch% |
+|-------|-----------|-------|-----------|-------|-----------|
+| 1 | **0.448** | 13 | **1.045** | 25 | **0.448** |
+| 2 | **2.090** | 14 | **0.597** | 26 | **0.448** |
+| 3 | **1.045** | 15 | **2.090** | 27 | **0.597** |
+| 4 | **0.597** | 16 | **0.299** | 28 | **0.299** |
+| 5 | **0.448** | 17 | **1.642** | 29 | **0.448** |
+| 6 | **0.448** | 18 | **0.597** | 30 | **0.448** |
+| 7 | **0.448** | 19 | **0.448** | 31 | **0.448** |
+| 8 | **0.448** | 20 | **0.448** | 32 | **1.493** |
+| 9 | **0.299** | 21 | **0.448** | 33 | **0.448** |
+| 10 | **0.448** | 22 | **0.448** | 34 | **0.448** |
+| 11 | **0.448** | 23 | **0.448** | 35 | **0.448** |
+| 12 | **0.448** | 24 | **0.448** |  |  |
+
+**35/35 PASS. Median 0.448%. Max 2.090% (stages 2 and 15, dominated by ref-PNG residual noise — `ascii_vs_render` is 0.299–0.448% on those). Stage 32 (the ex-failure) at 1.493% post-fix.**
+
+**Procedural hash anchor `23d6a2ec…` preserved.** `make test` exit 0.
+
+### Classifier-fix structural detail
+
+Before: `_detect_palette` was 5 lines, one sample point. Brittle against any stage whose top-left isn't a clear background cell.
+
+After: 20 lines, primary signal is image mode (deterministic), fallback is 16-cell distributed sampling that requires only ONE pure-black sample to commit to NES palette. The fix is structurally honest — it leverages a real distinguishing feature of the input (encoding format) rather than guessing from content.
+
+### Scores (Step 5)
+
+| C# | Name | Before | After | Tag | Cite |
+|----|------|--------|-------|-----|------|
+| 1 | Loader correctness | 4 | **4** | [STRUCTURE] | Unchanged. |
+| 2 | Eagle gameplay | 2 | **2** | [STRUCTURE] | Unchanged (anchor 3 still iter 6+). |
+| 3 | Ice physics | 2 | **2** | [STRUCTURE] | Rubric-capped at pass-through. |
+| 4 | PNG-diff oracle | 4 | **4** | [STRUCTURE] | Unchanged. Iter-5 palette-detector hardening brings anchor 5 closer (palette variants ✓) but "stage rotation" anchor-5 list item is N/A for canonical BC; stay at 4 honestly. |
+| 5 | Enemy roster fidelity | 1 | **1** | [STRUCTURE] | Unchanged (anchor 2 awaits per-stage data encoding). |
+| 6 | Mode selection | 0 | 0 | — | No title/picker scene. |
+| 7 | Stages 1-12 complete | 5 | **5** | [STRUCTURE] | Unchanged (already at 5 in iter 4). |
+| 8 | Stages 13-24 complete | 1 | **5** | [STRUCTURE] | All 12 middle-third stages pass <5%. Stages 13, 14, 15, 16, 17 (carry from iter 3), 18, 19, 20, 21, 22, 23, 24 — table above. |
+| 9 | Stages 25-35 complete | 0 | **5** | [STRUCTURE] | All 11 final-third stages pass <5%. Stages 25, 26, 27, 28, 29, 30, 31, 32 (post-classifier-fix), 33, 34, 35 — table above. |
+| 10 | End-to-end playable run | 1 | 1 | [STRUCTURE-DEFERRED] | Unchanged. |
+| **Total** | | **20** | **29/50** | | +9 in iter 5 (+4 C8, +5 C9). |
+
+### Ceiling rule check
+
+Per PROMPT: "If total hits 35/50 before iter 15, the rubric was too easy." Current 29/50 at iter 5. Iter 6 (mode selection + likely C2 anchor-3 lift) plausibly hits 32-35. **Pre-emptive note**: if iter 6 brings score to ≥35, the CEILING RULE fires — iter 7 should be a MODE=AUDIT iter that either (a) adds 2 new criteria, (b) raises score-4/5 anchor definitions, or (c) renames criteria via reframe protocol. Likely candidates for new criteria: "identity test" (does it feel like BC to a fan in 60-second playtest), "feedback to procedural" (arc-3 → arc-2 metric handshake from PROMPT).
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 8 cites.
+- [STRUCTURE-DEFERRED]: 1 cite.
+- [FEEL]: 0.
+- [MIXED]: 0.
+
+### Substrate guardrails verified
+
+- Hard substrate UNTOUCHED.
+- Gameplay substrate (Layer 2) UNTOUCHED.
+- `.research/repos/Tanks/` read-only.
+- Procedural hash anchor `23d6a2ec…` preserved exactly.
+- `tools/png_diff.py` edited (capability tooling layer, not substrate): palette detector hardened; existing API unchanged; all 4 prior-passing stages still pass at identical mismatch %.
+
+### Stage progress
+
+35/35 stages now have gates 1+2+3+4+5 ✓. Gate 6 (per-stage enemy roster) is the last hold-out — the formula source is located (iter 4 cite) but per-stage data isn't encoded to `configs/stages/`. Once gate 6 lands, all 35 STAGES.md checkboxes can flip.
+
+### Next iter
+
+Iter 6 priorities (high-leverage):
+1. **Mode selection scene** (criterion 6 → 1+): opens the PLAYTEST gate per USER-LOOK protocol.
+2. **Eagle game-over state** (criterion 2 → 3): `_on_eagle_destroyed` should transition to a `game_over` state with restart input.
+3. **StageDirector skeleton** (criterion 10 → 2): linear stage progression on game-clear (basic — load stage K+1 when all enemies dead OR eagle destroyed = game over).
+
+Iter 6 likely brings score to 32-35; AUDIT iter 7 if ceiling fires.
+
+PLAYTEST gate opens after mode-select lands. First playtest expected iter 6 or 7. 3-iter halt-rule countdown begins from then.
+
+### Commit
+
+`chore(originals): iter 005 — IMPORT — 22-stage sweep + classifier palette-detector hardening`

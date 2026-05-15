@@ -4,14 +4,14 @@
 
 ```
 phase: loop
-iteration: 4 (IMPORT first-third sweep — complete; iter 5 scheduled)
+iteration: 5 (IMPORT middle+final third sweep — complete; iter 6 scheduled)
 arc: 3 (Originals — BC NES stages import)
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 20/50  (C1=4, C2=2, C3=2, C4=4, C5=1, C7=5, C8=1, C10=1 — all [STRUCTURE] or [STRUCTURE-DEFERRED])
+score: 29/50  (C1=4, C2=2, C3=2, C4=4, C5=1, C6=0, C7=5, C8=5, C9=5, C10=1)
 ```
 
-**Cumulative path** (iter-2 correction logged in iter-3 LEDGER): iter 1 = 5, iter 2 = 10, iter 3 = 15, iter 4 = 20. Steady +5 per iter via PNG-diff floor opening as scaffolding matures.
+**35/35 stages pass PNG-diff <5%.** Median 0.448%, max 2.090%. Cumulative path: iter 1 = 5, iter 2 = 10, iter 3 = 15, iter 4 = 20, iter 5 = 29 (+9). **Ceiling rule watch**: at 29/50; iter-6 mode-selection + likely C2 anchor-3 lift could push to ≥35, triggering rubric audit (add 2 criteria, raise anchors, or reframe).
 
 ---
 
@@ -57,21 +57,21 @@ Hash anchor `23d6a2ec…` is the regression detector.
 
 ---
 
-## Current Scores (post iter 004)
+## Current Scores (post iter 005)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
 | 1. Loader correctness | **4** | All 35 stages parse exact; ice placed; anchor 5 awaits `make test` edge-case coverage |
-| 2. Eagle gameplay | **2** | Anchors 1+2 ✓ — eagle at canonical fortress; HP=1, signal, take_damage. Anchor 3 (game-over state) iter 5+ |
+| 2. Eagle gameplay | **2** | Anchors 1+2 ✓; anchor 3 (game-over state) iter 6+ |
 | 3. Ice physics | **2** | Pass-through decision shipped (rubric cap) |
-| 4. PNG-diff oracle | **4** | Anchor 4 ✓ — iter 4 is the first IMPORT iter; 12-stage diff table cited inline |
-| 5. Enemy roster fidelity | **1** | Anchor 1 ✓ — roster source located + file:line cited (`game.cpp:518` formula + `appconfig.h:79-81` constants) |
-| 6. Mode selection | 0 | No title/picker scene |
-| 7. Stages 1-12 complete | **5** | All 12 first-third stages pass <5% PNG-diff (iter 4 sweep) |
-| 8. Stages 13-24 complete | **1** | Stage 17 only verified so far — iter 5 sweep should lift |
-| 9. Stages 25-35 complete | 0 | No diffs in final third yet |
+| 4. PNG-diff oracle | **4** | Anchor 4 ✓; iter 5 palette-detector hardening; anchor 5 "stage rotation" N/A so stay at 4 |
+| 5. Enemy roster fidelity | **1** | Anchor 1 ✓; per-stage data not yet encoded |
+| 6. Mode selection | 0 | No title/picker scene (iter 6 priority) |
+| 7. Stages 1-12 complete | **5** | All 12 pass <5% PNG-diff |
+| 8. Stages 13-24 complete | **5** | All 12 pass <5% PNG-diff |
+| 9. Stages 25-35 complete | **5** | All 11 pass <5% PNG-diff |
 | 10. End-to-end playable | **1** | Stage 1 loads headless [STRUCTURE-DEFERRED]; PLAYTEST gate awaits mode-select |
-| **Total** | **20/50** | post iter 004 |
+| **Total** | **29/50** | post iter 005 |
 
 ---
 
@@ -105,6 +105,29 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 005 IMPORT complete (2026-05-15).
+
+- Pre-mortem filed with explicit scope-overshoot disclosure (PROMPT says 2-5
+  stages per IMPORT; iter 5 sweeps 22). F1 (per-stage terrain combo) fired
+  on stage 32 — surfaced classifier palette-detector fragility (single-pixel
+  sample false-classified ice-top-left stage as tanke palette).
+- Fetched 22 new StrategyWiki references (stages 13-16, 18-24, 25-35).
+- Rendered all 22 stages.
+- First sweep: 34/35 pass; stage 32 at 79.254%.
+- Mid-iter CAPABILITY fix to tools/png_diff.py: detect palette by image
+  mode (P=NES, RGB=tanke) with multi-cell fallback for ambiguous RGB.
+- Re-ran full 35-stage sweep: 35/35 PASS. Median 0.448%, max 2.090%.
+  Stage 32 now at 1.493%.
+- Verification: procedural hash anchor 23d6a2ec… preserved; make test exit 0.
+- Scores: C8 1→5, C9 0→5. Total 20 → 29/50 (+9).
+- Commit: chore(originals): iter 005 — IMPORT — 22-stage sweep + classifier
+  palette-detector hardening.
+- Iter 6 wakeup scheduled.
+- CEILING WATCH: 29/50. Iter-6 mode-select + likely C2 lift may hit ≥35,
+  triggering rubric audit per CEILING RULE.
+```
 
 ```
 Iter 004 IMPORT complete (2026-05-15).
@@ -180,6 +203,32 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 6 — BUILD (mode selection scene + eagle game-over state):
+  - Step 1: PRE-MORTEM (iter-006; generalization clause = mode-select must
+            launch Procedural AND Original modes from the same input session).
+  - Step 2: DIAGNOSE — weakest axes: C6 (mode selection) at 0 — blocks
+            PLAYTEST gate; C2 (eagle) at 2 — anchor 3 (game-over state) lands
+            with a minimal state machine.
+  - Step 3: SELECT MODE — BUILD.
+  - Step 4: ACT:
+      1. scenes/TitleScreen.tscn + scripts/TitleScreen.gd — minimal:
+         two labels "ORIGINAL" and "PROCEDURAL"; Up/Down to highlight,
+         Enter to launch. Set project.godot run/main_scene to TitleScreen.
+      2. Eagle game-over: OriginalLevel.gd _on_eagle_destroyed shows a
+         "GAME OVER" overlay + accepts R to restart-to-title.
+      3. (Stretch) StageDirector skeleton: track current_stage; on
+         clear-condition, load next stage.
+  - Step 5: SCORE — C6 → 2 or 3; C2 → 3; possibly C10 → 2 if linear advance
+            code-cited.
+  - Step 6: COMMIT — chore(originals): iter 006 — BUILD — mode select + eagle game-over
+  - Step 7: SCHEDULE — 240s wakeup for iter 7 (likely first PLAYTEST OR
+            ceiling-rule AUDIT if score ≥ 35).
+
+NOTE (PROMPT carry): "Iter 1 (or first iter where mode-select + stage-1 load
+works): PLAYTEST". Iter 7 will open the first PLAYTEST gate.
+```
 
 ```
 Iter 5 — IMPORT (middle + final third sweep) OR BUILD (mode selection):

@@ -21,6 +21,8 @@ iter that completed it.
 
 **Iter 004 status (IMPORT — first-third sweep):** PNG-diff sweep across all 12 first-third stages. **12/12 pass <5% mismatch** (median 0.448%, max 2.090% on stage 2 — dominated by reference-PNG residual noise, our render's `ascii_vs_render` is 0.299%). Criterion 7 → 5/5. **Enemy roster source located** (gate 6 partial unblock): formula-driven, not table-driven; cited at `.research/repos/Tanks/src/app_state/game/game.cpp:518` + `appconfig.h:79-81`. Per-stage encoding still pending — gate 6 stays unchecked until rosters land in `configs/stages/`.
 
+**Iter 005 status (IMPORT — middle + final third sweep):** PNG-diff sweep across all 22 unverified stages (13-16, 18-24, 25-35). **35/35 stages now pass <5% (median 0.448%, max 2.090%).** Stage 32 initially failed at 79.254% — surfaced a classifier palette-detector fragility (single-pixel sample broke on ice-dominant top-left); cured mid-iter by detecting palette via image mode (P=NES, RGB=tanke) with multi-cell fallback. **Criterion 8 → 5/5, Criterion 9 → 5/5.** Gate 6 still pending across all 35.
+
 ---
 
 ## First third (criterion 7 — 12 stages)
@@ -40,32 +42,32 @@ iter that completed it.
 
 ## Middle third (criterion 8 — 12 stages)
 
-- [ ] Stage 13 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 14 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 15 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 16 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 13 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (1.045%)**
+- [ ] Stage 14 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.597%)**
+- [ ] Stage 15 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (2.090%)**
+- [ ] Stage 16 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.299%)**
 - [ ] Stage 17 — symbols `#@-`    — gates 1+2+3 ✓ (iter 001); 206 ice cells now rendered as decorative tiles; gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 003 (1.642% — pass-through ice decision cured the 32% regression)**
-- [ ] Stage 18 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 19 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 20 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 21 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 22 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 23 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 24 — symbols `#@%-`   — gates 1+2+3 ✓ (iter 001); **216 ice cells skipped**
+- [ ] Stage 18 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.597%)**
+- [ ] Stage 19 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.448%)**
+- [ ] Stage 20 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.448%)**
+- [ ] Stage 21 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.448%)**
+- [ ] Stage 22 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.448%)**
+- [ ] Stage 23 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.448%)**
+- [ ] Stage 24 — symbols `#@%-`   — gates 1+2+3 ✓ (iter 001); **216 ice cells rendered (iter 003)**; gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.448%)**
 
 ## Final third (criterion 9 — 11 stages)
 
-- [ ] Stage 25 — symbols `#@`     — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 26 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 27 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 28 — symbols `#@%-`   — gates 1+2+3 ✓ (iter 001); **212 ice cells skipped**
-- [ ] Stage 29 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 30 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 31 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 32 — symbols `#@-`    — gates 1+2+3 ✓ (iter 001); **320 ice cells skipped** (most-ice stage)
-- [ ] Stage 33 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
-- [ ] Stage 34 — symbols `#`      — gates 1+2+3 ✓ (iter 001); **brick-only stage** (unusual)
-- [ ] Stage 35 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); FINAL — verify "win" state on clear
+- [ ] Stage 25 — symbols `#@`     — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.448%)**
+- [ ] Stage 26 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.448%)**
+- [ ] Stage 27 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.597%)**
+- [ ] Stage 28 — symbols `#@%-`   — gates 1+2+3 ✓ (iter 001); **212 ice cells rendered (iter 003)**; gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.299%)**
+- [ ] Stage 29 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.448%)**
+- [ ] Stage 30 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.448%)**
+- [ ] Stage 31 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.448%)**
+- [ ] Stage 32 — symbols `#@-`    — gates 1+2+3 ✓ (iter 001); **320 ice cells rendered (iter 003)** (most-ice stage); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (1.493%)**
+- [ ] Stage 33 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.448%)**
+- [ ] Stage 34 — symbols `#`      — gates 1+2+3 ✓ (iter 001); **brick-only stage** (unusual); gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.448%)**
+- [ ] Stage 35 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); FINAL — verify "win" state on clear; gate 4 ✓ (iter 003 universal eagle); **gate 5 ✓ iter 005 (0.448%)**
 
 ---
 

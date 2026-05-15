@@ -113,11 +113,29 @@ def _classify(rgb: tuple[int, int, int], anchors: dict[str, tuple[int, int, int]
 
 
 def _detect_palette(img: Image.Image, region: tuple[int, int, int, int]) -> str:
-    """Detect NES vs tanke palette by sampling the top-left cell of region."""
+    """Detect NES vs tanke palette. Primary signal: image mode (NES references
+    from StrategyWiki are 8-bit indexed-color P-mode; tanke --write-movie
+    output is RGB). Fallback: count cells matching pure black, since NES
+    backgrounds are (0,0,0) — if even one play-area cell sample is pure
+    black the palette is NES.
+
+    iter 005 fix: prior version sampled a single pixel at (x+1, y+1), which
+    falsely classified stage 32 (top-left cell is ice gray, not empty black)
+    as tanke palette → 311-cell steel-vs-ice confusion."""
+    if img.mode == "P":
+        return "nes"
+    if img.mode in ("RGBA", "L"):
+        return "tanke"
+    # mode == "RGB" or other: fall back to content sampling.
+    rgb = img.convert("RGB")
     x, y, _w, _h = region
-    px = img.convert("RGB").getpixel((x + 1, y + 1))
-    # NES backgrounds are pure black; tanke backgrounds are dark gray.
-    return "nes" if max(px) < 30 else "tanke"
+    # Sample 16 cell-centers spread across the play area.
+    for r in range(0, ROWS, max(1, ROWS // 4)):
+        for c in range(0, COLS, max(1, COLS // 4)):
+            px = rgb.getpixel((x + c * TILE + TILE // 2, y + r * TILE + TILE // 2))
+            if max(px) < 30:
+                return "nes"
+    return "tanke"
 
 
 def _classify_grid(img: Image.Image, region: tuple[int, int, int, int], anchors) -> list[list[str]]:
