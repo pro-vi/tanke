@@ -22,16 +22,17 @@ func _ready() -> void:
 	# Connect player shoot signal — Level._ready() isn't called when this
 	# subclass overrides _ready, so we wire the signal here directly.
 	player.shoot.connect(_on_PlayerTank_shoot)
-	if config == null:
-		var override_path: String = OS.get_environment("TANKE_CONFIG")
-		if override_path != "":
-			config = load(override_path)
-		else:
-			config = DefaultConfig.duplicate()
-	if biome == null:
-		var biome_override: String = OS.get_environment("TANKE_BIOME")
-		if biome_override != "":
-			biome = load(biome_override)
+	# iter 101 (Codex P2): env-var override applies regardless of scene
+	# default — scene now bakes config/biome, but `make diff` workflow swaps
+	# captures via TANKE_CONFIG/TANKE_BIOME and needs the env var to win.
+	var override_path: String = OS.get_environment("TANKE_CONFIG")
+	if override_path != "":
+		config = load(override_path)
+	elif config == null:
+		config = DefaultConfig.duplicate()
+	var biome_override: String = OS.get_environment("TANKE_BIOME")
+	if biome_override != "":
+		biome = load(biome_override)
 	var override_seed: String = OS.get_environment("TANKE_SEED")
 	if override_seed != "" and level_seed == 0:
 		level_seed = int(override_seed)

@@ -46,6 +46,11 @@ func _initialize() -> void:
 		level.level_seed = test_seed
 		if config_path != "":
 			level.config = load(config_path)
+			# iter 101 (Codex P1): scene bakes a default biome which would
+			# override `config` via _active_config(). Clear biome when caller
+			# requested a flat-config oracle run.
+			if biome_path == "":
+				level.biome = null
 	if biome_path != "":
 		level.biome = load(biome_path)
 	root.add_child(level)
