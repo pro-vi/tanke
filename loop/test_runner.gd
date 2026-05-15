@@ -12,6 +12,8 @@ func _initialize() -> void:
 	var dna_path := ""
 	var roundtrip_path := ""
 	var biome_path := ""
+	var scene_path := ""           # iter 001 (arc 3): --scene PATH for OG-mode oracle
+	var og_stage := -1             # iter 001 (arc 3): --og-stage K (originals stage number)
 	var json_output := false
 	var args := OS.get_cmdline_user_args()
 	for i in args.size():
@@ -25,6 +27,10 @@ func _initialize() -> void:
 			roundtrip_path = args[i + 1]
 		elif args[i] == "--biome" and i + 1 < args.size():
 			biome_path = args[i + 1]
+		elif args[i] == "--scene" and i + 1 < args.size():
+			scene_path = args[i + 1]
+		elif args[i] == "--og-stage" and i + 1 < args.size():
+			og_stage = int(args[i + 1])
 		elif args[i] == "--json":
 			json_output = true
 
@@ -33,26 +39,36 @@ func _initialize() -> void:
 		quit()
 		return
 
-	var level: Node = ProceduralLevelScene.instantiate()
-	if dna_path != "":
-		var dna = load(dna_path)
-		level.level_seed = dna.level_seed
-		level.config = dna.config
-		# iter 101 (review-fix): biome rides on DNA when present so biomed
-		# levels are actually reproducible from saved DNA.
-		if "biome" in dna and dna.biome != null:
-			level.biome = dna.biome
+	# Default: procedural scene (preserves arc-2 hash anchor 23d6a2ec…).
+	# --scene swaps to OriginalLevel or any other Level.gd-subclass scene.
+	var level: Node
+	if scene_path != "":
+		var packed: PackedScene = load(scene_path)
+		level = packed.instantiate()
+		# OriginalLevel exposes stage_number as @export; set before _ready.
+		if og_stage > 0 and "stage_number" in level:
+			level.stage_number = og_stage
 	else:
-		level.level_seed = test_seed
-		if config_path != "":
-			level.config = load(config_path)
-			# iter 101 (Codex P1): scene bakes a default biome which would
-			# override `config` via _active_config(). Clear biome when caller
-			# requested a flat-config oracle run.
-			if biome_path == "":
-				level.biome = null
-	if biome_path != "":
-		level.biome = load(biome_path)
+		level = ProceduralLevelScene.instantiate()
+		if dna_path != "":
+			var dna = load(dna_path)
+			level.level_seed = dna.level_seed
+			level.config = dna.config
+			# iter 101 (review-fix): biome rides on DNA when present so biomed
+			# levels are actually reproducible from saved DNA.
+			if "biome" in dna and dna.biome != null:
+				level.biome = dna.biome
+		else:
+			level.level_seed = test_seed
+			if config_path != "":
+				level.config = load(config_path)
+				# iter 101 (Codex P1): scene bakes a default biome which would
+				# override `config` via _active_config(). Clear biome when caller
+				# requested a flat-config oracle run.
+				if biome_path == "":
+					level.biome = null
+		if biome_path != "":
+			level.biome = load(biome_path)
 	root.add_child(level)
 
 	# Let _ready and a few _process iterations run
@@ -80,8 +96,10 @@ func _collect(level: Node) -> Dictionary:
 	var steel_cells: int = level.steelTileMap.get_used_cells().size()
 	var grass_cells: int = level.grassTileMap.get_used_cells().size()
 
-	# Eller snapshot from the latest ProceduralStep
-	var ps = level.ps
+	# Eller snapshot from the latest ProceduralStep.
+	# iter 001 (arc 3): defensive — OriginalLevel (arc-3 OG-mode) has no ps,
+	# Eller metrics report as zero rather than crashing the collector.
+	var ps = level.ps if "ps" in level else null
 	var sets: Dictionary = ps.sets if ps else {}
 	var sizes: Array[int] = []
 	for sid in sets:
@@ -234,8 +252,12 @@ func _collect(level: Node) -> Dictionary:
 	var rows_climbed: int = SPAWN_TILE.y - min_reachable_row
 	var playable: bool = rows_climbed >= MIN_ROWS_CLIMBED
 
+	# iter 001 (arc 3): level_seed only exists on ProceduralLevel; report -1
+	# for OriginalLevel since seed is meaningless when terrain is loaded from
+	# a deterministic ASCII source.
+	var seed_used: int = level.level_seed if "level_seed" in level else -1
 	return {
-		"seed_used": level.level_seed,
+		"seed_used": seed_used,
 		"brick": brick_count,
 		"water": water_count,
 		"steel": steel_cells,

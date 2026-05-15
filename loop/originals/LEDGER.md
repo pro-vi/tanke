@@ -82,3 +82,81 @@ Pre-mortem due at iter-1 start. H2 RULE v2 tags mandatory.
 ### Commit
 
 `chore(originals): iter 000 — BOOTSTRAP — substrate verified, sources inventoried`
+
+---
+
+## Iter 001 — BUILD / CAPABILITY
+
+**Mode:** BUILD (with CAPABILITY sub-focus on `loop/test_runner.gd` extension)
+**Date:** 2026-05-15
+**Branch:** `arc-3-originals`
+**Focus:** Scaffolding — LevelLoader.gd + OriginalLevel.gd/.tscn + test_runner --scene/--og-stage flags
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 001)
+
+Falsifiable claim: procedural hash anchor `23d6a2ec…` preserved AND OriginalLevel loads stage 1 with `brick > 0`, `steel > 0`, `playable: true`. Four [STRUCTURE] failure modes pre-listed (F1 dotfile-path, F2 row-count, F3 coord-swap, F4 spawn-overlap).
+
+**Result: claim verified.** None of the four pre-listed failure modes fired. F1 mitigated by `ProjectSettings.globalize_path("res://")` going through OS layer. F2 row stripping worked. F3 coords correct. F4 player spawn at (160, 220) lands in passable cell.
+
+### Actions
+
+1. **`scripts/LevelLoader.gd`** (NEW) — RefCounted static parser. `parse_stage(level, stage_number, col_offset=7, row_offset=2) -> Dictionary`. Reads `.research/repos/Tanks/resources/stages/N` via OS-layer FileAccess (bypasses Godot's res-filter for dotfile dirs). Legend `. # @ % ~` mapped to set_cell on brick/steel/grass/water TileMapLayers; `-` (ice) counted in `ice_skipped` pending phase-1 decision. Returns report dict with per-terrain counts + error string.
+2. **`scripts/OriginalLevel.gd`** (NEW) — extends `scripts/Level.gd` (H1 tripwire respected — inherits `_replace_blocks()` from Level.gd without touching it). `_ready` wires player.shoot signal, reads `TANKE_OG_STAGE` env override, calls `LevelLoaderT.parse_stage(self, ...)`, then runs inherited `_replace_blocks()` which converts brick + water TileMapLayer cells to BrickBlock/WaterBlock StaticBody2D instances (same machinery as procedural mode).
+3. **`scenes/OriginalLevel.tscn`** (NEW) — parallel to `ProceduralLevel.tscn`. Same 4 TileMapLayers (Steel/Brick/Grass/Water with identical TileSet defs), PlayerTank at (160, 220), Camera2D, side Walls. NO Spawner (iter 2+ work alongside eagle/roster). Default `stage_number=1`, `col_offset=7`, `row_offset=2` — centers 26×26 stage in 40×30 viewport.
+4. **`loop/test_runner.gd`** (EXTENDED, not refactored) — added `--scene PATH` and `--og-stage K` flags. When `--scene` given, loads that PackedScene instead of preloaded ProceduralLevelScene; when `--og-stage K` given, sets `level.stage_number = K` before `add_child` (so `_ready` sees the right stage). Made `_collect()` defensive: `level.ps` and `level.level_seed` are guarded with `in level` checks (OriginalLevel lacks both — by design, terrain is deterministic from ASCII not from a seed).
+
+### Verification (Step 4d + 4e)
+
+**Procedural hash anchor preserved** — `godot ... --seed 42 --json` on default scene returns `tile_hash: 23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` exactly. Arc-2 cross-arc regression detector intact. **`make test` exit 0.**
+
+**OriginalLevel stage-1 parse + reachable** — `godot ... --scene res://scenes/OriginalLevel.tscn --og-stage 1 --json` returns `brick:220 steel:8 grass:0 water:0 ice_skipped:0` exactly matching `grep -o '#'` (220), `grep -o '@'` (8), `grep -o '%'` (0), `grep -o '~'` (0), `grep -o '\-'` (0) on the source. `playable: true`, `reachable_cells: 972`, `rows_climbed: 27`.
+
+**Full 35-stage sweep** — 35/35 stages parse with exact per-cell terrain match (automated cell-count diff via `grep -o` on source vs LevelLoader emit counts) AND all 35 report `playable: true`. Four stages (17, 24, 28, 32) contain ice — total 954 ice cells skipped pending phase-1 decision iter; no crashes.
+
+### Scores (Step 5)
+
+| C# | Name | Score | Tag | Cite |
+|----|------|-------|-----|------|
+| 1 | Loader correctness | **4** | [STRUCTURE] | All 35 Tanks stages parse without error; automated cell-count diff (grep vs emit) yields 35/35 exact match per terrain bucket; legend `.#@%~-` all handled in code. Anchor 5 (`make test` covers edge cases) deferred — error handling exists but isn't yet exercised by test target. |
+| 2 | Eagle gameplay | 0 | — | No eagle entity (iter 2-3 work). |
+| 3 | Ice physics | 0 | — | Loader skips `-` silently with counter; phase-1 decision iter pending. Cannot claim anchor 1 yet — that requires the explicit decision ("pass-through OR slide chosen + cited"), and "deferred" isn't a decision. |
+| 4 | PNG-diff oracle | 0 | — | `tools/png_diff.py` not built (iter 2-3 work). |
+| 5 | Enemy roster fidelity | 0 | — | Tanks `src/` not yet mined (iter 1-2 sub-research per PROMPT KNOWN GAPS). |
+| 6 | Mode selection | 0 | — | No title/picker scene. |
+| 7 | Stages 1-12 complete | 0 | — | Gates 1+2+3 ✓ for all 12 in this third (iter 001 sweep); gates 4 (eagle), 5 (PNG diff), 6 (roster) pending. PNG-diff floor blocks any score > 0 here. |
+| 8 | Stages 13-24 complete | 0 | — | Same — gates 1+2+3 ✓ for all 12; gates 4-6 pending. |
+| 9 | Stages 25-35 complete | 0 | — | Same — gates 1+2+3 ✓ for all 11; gates 4-6 pending. |
+| 10 | End-to-end playable run | **1** | [STRUCTURE-DEFERRED] | Stage 1 loads in headless oracle; "plays" half of anchor 1 awaits PLAYTEST. PLAYTEST gate (mode-select + stage-1 load) not fully open — mode-select still 0. |
+| **Total** | | **5/50** | | |
+
+### Tag balance
+
+- [STRUCTURE]: 1 cite (C1). Arc-3 expected pattern — terrain match is code-verifiable.
+- [STRUCTURE-DEFERRED]: 1 cite (C10). Awaits PLAYTEST.
+- [FEEL]: 0. None of iter 1's lifts touched feel territory.
+- [MIXED]: 0.
+
+### Substrate guardrails verified
+
+- `scripts/Level.gd` — UNTOUCHED. OriginalLevel.gd inherits cleanly.
+- `scripts/ProceduralLevel.gd` — UNTOUCHED. Hash anchor `23d6a2ec…` unchanged.
+- All other hard substrate (LevelConfig, BiomeConfig, ProceduralStep, LevelDNA, Bullet, Enemy*, Spawner, PlayerTank, BrickBlock, playable.tres) — UNTOUCHED.
+- `.research/repos/Tanks/` — read-only access only (H2 tripwire respected).
+- `loop/test_runner.gd` — EXTENDED with new flags + defensive lookups; existing code paths unchanged.
+
+### Stage progress this iter
+
+`STAGES.md`: all 35 stages annotated with gates 1+2+3 ✓ + symbol coverage + per-stage cell breakdown for stages 1-10. No checkboxes flipped yet (full 6-gate completion still pending eagle/PNG/roster).
+
+### Next iter
+
+Iter 2 priorities (in order of unblock value):
+1. **PNG-diff oracle scaffold** (criterion 4) — build `tools/png_diff.py` that compares rendered-stage screencap to a reference PNG and reports per-tile mismatch %. Iter-2 anchor: tool exists, runs on stage 1.
+2. **Eagle entity** (criterion 2) — `scripts/Eagle.gd` + `scenes/Eagle.tscn` (HP=1, eagle_destroyed signal). Iter 2-3.
+3. **Per-stage enemy roster mining** (criterion 5) — read `.research/repos/Tanks/src/` for canonical spawn data.
+
+Pre-mortem due at iter 2 start. Halt-rule countdown: PLAYTEST gate not yet open (no mode-select). Sprint authorization: none active.
+
+### Commit
+
+`chore(originals): iter 001 — BUILD/CAPABILITY — LevelLoader + OriginalLevel + test_runner --scene/--og-stage`

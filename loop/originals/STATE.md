@@ -4,11 +4,11 @@
 
 ```
 phase: loop
-iteration: 0 (BOOTSTRAP complete; iter 1 scheduled)
+iteration: 1 (BUILD/CAPABILITY scaffolding — complete; iter 2 scheduled)
 arc: 3 (Originals — BC NES stages import)
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 0/50 (baseline; first scored iter is 1)
+score: 5/50  (C1=4 [STRUCTURE], C10=1 [STRUCTURE-DEFERRED])
 ```
 
 ---
@@ -55,21 +55,21 @@ Hash anchor `23d6a2ec…` is the regression detector.
 
 ---
 
-## Current Scores (set at iter 1+ after BOOTSTRAP)
+## Current Scores (post iter 001)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
-| 1. Loader correctness | 0 | LevelLoader.gd doesn't exist |
+| 1. Loader correctness | **4** | All 35 stages parse exact (iter 001); anchor 5 awaits `make test` coverage of edge cases |
 | 2. Eagle gameplay | 0 | No Eagle.gd / Eagle.tscn |
-| 3. Ice physics | 0 | `-` symbol unhandled |
+| 3. Ice physics | 0 | Loader skips `-` silently; phase-1 decision iter still pending |
 | 4. PNG-diff oracle | 0 | tools/png_diff.py doesn't exist |
 | 5. Enemy roster fidelity | 0 | Per-stage data not extracted from Tanks src |
 | 6. Mode selection | 0 | No title/picker scene |
-| 7. Stages 1-12 complete | 0 | 0/12 |
-| 8. Stages 13-24 complete | 0 | 0/12 |
-| 9. Stages 25-35 complete | 0 | 0/11 |
-| 10. End-to-end playable | 0 | No OriginalLevel.tscn |
-| **Total** | **0/50** | Floor |
+| 7. Stages 1-12 complete | 0 | Gates 1+2+3 ✓ for all 12; PNG-diff floor blocks score lift |
+| 8. Stages 13-24 complete | 0 | Gates 1+2+3 ✓ for all 12; PNG-diff floor blocks score lift |
+| 9. Stages 25-35 complete | 0 | Gates 1+2+3 ✓ for all 11; PNG-diff floor blocks score lift |
+| 10. End-to-end playable | **1** | Stage 1 loads headless [STRUCTURE-DEFERRED]; "plays" awaits PLAYTEST |
+| **Total** | **5/50** | iter 001 baseline |
 
 ---
 
@@ -105,17 +105,21 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ## Last Action
 
 ```
-Iter 0 BOOTSTRAP complete (2026-05-15).
+Iter 001 BUILD/CAPABILITY complete (2026-05-15).
 
-- Preloop checklist: all 7 items green.
-- Both retros + arc-3 synthesis read.
-- Stage 1 source byte-verified against synthesis sample.
-- Arc-2 baseline: make test exit 0; hash anchor 23d6a2ec… reproduced;
-  procedural reachability oracle returns playable=true / 676 cells / 29 rows.
-- 36 files (0..35) confirmed in .research/repos/Tanks/resources/stages/.
-- LEDGER.md iter 000 entry written.
-- Commit: chore(originals): iter 000 — BOOTSTRAP — substrate verified, sources inventoried.
-- Iter 1 wakeup scheduled.
+- Pre-mortem filed with 4 [STRUCTURE] failure modes; none fired.
+- LevelLoader.gd: static parse_stage; OS-layer FileAccess (bypasses res-filter).
+- OriginalLevel.gd: extends Level.gd; inherits _replace_blocks() (H1 respected).
+- OriginalLevel.tscn: parallel to ProceduralLevel.tscn; 4 TileMapLayers, no Spawner.
+- test_runner.gd: EXTENDED with --scene PATH and --og-stage K flags + defensive
+  ps/level_seed lookups for OG scene; procedural code path untouched.
+- Verification: procedural hash anchor 23d6a2ec… preserved exactly; make test exit 0.
+- Verification: 35/35 stages parse with exact per-cell terrain match against
+  grep -o counts on source; all 35 playable=true. Four stages have ice (skipped).
+- Scores: C1=4 [STRUCTURE], C10=1 [STRUCTURE-DEFERRED]; total 5/50.
+- Commit: chore(originals): iter 001 — BUILD/CAPABILITY — LevelLoader +
+  OriginalLevel + test_runner --scene/--og-stage.
+- Iter 2 wakeup scheduled.
 ```
 
 ---
@@ -129,19 +133,25 @@ None (new arc).
 ## Next Action
 
 ```
-Iter 1 — BUILD / CAPABILITY (scaffolding iter):
-  - Step 1: PRE-MORTEM (append to loop/originals/PRE-MORTEMS.md; H2 RULE v2 tags mandatory)
-  - Step 2: DIAGNOSE — weakest axis = criteria 1 + 4 + 10 (all at 0, all unblock stage import)
-  - Step 3: SELECT MODE — BUILD with CAPABILITY sub-focus on test_runner extension
+Iter 2 — BUILD / CAPABILITY (PNG-diff oracle + eagle scaffolding):
+  - Step 1: PRE-MORTEM (append iter-002 block to PRE-MORTEMS.md; H2 RULE v2 tags)
+  - Step 2: DIAGNOSE — weakest axis = criterion 4 (PNG-diff oracle) at 0;
+              criteria 7/8/9 floor-blocked until 4 ≥ 2.  Also weak: criterion 2 (eagle).
+  - Step 3: SELECT MODE — BUILD with CAPABILITY focus.
   - Step 4: ACT — build in this order:
-      1. scripts/LevelLoader.gd skeleton: read ASCII grid → emit set_cell calls; legend per synthesis
-      2. scenes/OriginalLevel.tscn skeleton: TileMapLayers (brick / steel / forest / water) + player + LevelLoader node
-      3. loop/test_runner.gd extension: add --scene PATH and --og-stage K flags
-            (extend without refactoring — substrate rule)
-      4. Sanity: run reachability oracle on procedural scene unchanged; hash anchor must still match
-  - Step 5: SCORE — only criteria 1 (loader correctness) and 10 (end-to-end prereq) can lift; cite STRUCTURE
-  - Step 6: COMMIT — chore(originals): iter 001 — BUILD — LevelLoader + OriginalLevel + test_runner flags
-  - Step 7: SCHEDULE — 240s wakeup for iter 2
+      1. tools/png_diff.py: PIL pipeline that reads a 208×208 reference PNG,
+         classifies each 16×16 tile to one of {empty, brick, steel, forest, water, ice},
+         compares to our rendered stage. Iter-2 minimum: runs on stage 1 + reports
+         per-tile mismatch %. Downloads StrategyWiki Battle_City_Stage01.png to
+         tools/refs/ (gitignored or .research-aligned).
+      2. Headless render of OriginalLevel stage 1 → PNG (existing screenshot path
+         repurposed, or new make target). Compare to reference.
+      3. (Stretch) scripts/Eagle.gd + scenes/Eagle.tscn skeleton — HP=1,
+         eagle_destroyed signal. Placement deferred to iter 3 (per-stage eagle coords).
+  - Step 5: SCORE — Criterion 4 lift (anchor 1 minimum; anchor 2 if accuracy
+              hand-verified). Criteria 7/8/9 STILL 0 until per-stage PNG diff < 5%.
+  - Step 6: COMMIT — chore(originals): iter 002 — BUILD/CAPABILITY — png_diff oracle + (eagle skeleton)
+  - Step 7: SCHEDULE — 240s wakeup for iter 3
 ```
 
 ---

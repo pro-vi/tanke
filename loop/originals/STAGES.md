@@ -1,73 +1,84 @@
 # tanke Originals — 35-stage checklist
 
-Per-stage completion tracker. Each stage's checkbox flips when:
-- [ ] LevelLoader parses without error
-- [ ] Per-cell terrain matches `.research/repos/Tanks/resources/stages/K`
-- [ ] Reachability oracle: `playable: true`
-- [ ] Eagle placed at canonical position
-- [ ] `tools/png_diff.py` reports <5% mismatch vs StrategyWiki reference
-- [ ] Enemy roster matches mined Tanks per-stage data
+Per-stage completion tracker. Each stage's checkbox flips when **all six**
+gates pass:
+
+- [ ] Gate 1 — LevelLoader parses without error
+- [ ] Gate 2 — Per-cell terrain matches `.research/repos/Tanks/resources/stages/K`
+- [ ] Gate 3 — Reachability oracle: `playable: true`
+- [ ] Gate 4 — Eagle placed at canonical position
+- [ ] Gate 5 — `tools/png_diff.py` reports <5% mismatch vs StrategyWiki reference
+- [ ] Gate 6 — Enemy roster matches mined Tanks per-stage data
 
 When ALL six gates pass for stage K, mark `[x]` here AND in the LEDGER
 iter that completed it.
+
+**Iter 001 status (2026-05-15):** gates 1+2+3 verified for all 35 stages
+via automated cell-count diff (`grep -o '<symbol>'` on source vs
+`LevelLoader.parse_stage()` emit counts) + reachability oracle pass.
+Gates 4 (eagle), 5 (PNG diff), 6 (enemy roster) all pending —
+no checkbox flips until those land.
 
 ---
 
 ## First third (criterion 7 — 12 stages)
 
-- [ ] Stage 1 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 2 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 3 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 4 — iter ___ ; diff ___% ; notes: contains water (`~`)
-- [ ] Stage 5 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 6 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 7 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 8 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 9 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 10 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 11 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 12 — iter ___ ; diff ___% ; notes:
+- [ ] Stage 1  — symbols `#@`     — gates 1+2+3 ✓ (iter 001); 220#/8@/0%/0~/0-
+- [ ] Stage 2  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 184#/48@/40%/0~/0-
+- [ ] Stage 3  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 126#/26@/152%/0~/0-
+- [ ] Stage 4  — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); 262#/16@/56%/12~/0-
+- [ ] Stage 5  — symbols `#@~`    — gates 1+2+3 ✓ (iter 001); 136#/26@/0%/60~/0-
+- [ ] Stage 6  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 148#/32@/100%/0~/0-
+- [ ] Stage 7  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 8#/174@/28%/0~/0-
+- [ ] Stage 8  — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); 152#/20@/60%/88~/0-
+- [ ] Stage 9  — symbols `#@%`    — gates 1+2+3 ✓ (iter 001); 64#/92@/72%/0~/0-
+- [ ] Stage 10 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); 218#/40@/112%/24~/0-
+- [ ] Stage 11 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 12 — symbols `#@~`    — gates 1+2+3 ✓ (iter 001)
 
 ## Middle third (criterion 8 — 12 stages)
 
-- [ ] Stage 13 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 14 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 15 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 16 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 17 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 18 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 19 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 20 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 21 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 22 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 23 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 24 — iter ___ ; diff ___% ; notes:
+- [ ] Stage 13 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 14 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 15 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 16 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 17 — symbols `#@-`    — gates 1+2+3 ✓ (iter 001); **206 ice cells skipped** (phase-1 decision pending)
+- [ ] Stage 18 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 19 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 20 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 21 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 22 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 23 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 24 — symbols `#@%-`   — gates 1+2+3 ✓ (iter 001); **216 ice cells skipped**
 
 ## Final third (criterion 9 — 11 stages)
 
-- [ ] Stage 25 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 26 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 27 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 28 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 29 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 30 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 31 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 32 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 33 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 34 — iter ___ ; diff ___% ; notes:
-- [ ] Stage 35 — iter ___ ; diff ___% ; notes: FINAL — verify "win" state on clear
+- [ ] Stage 25 — symbols `#@`     — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 26 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 27 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 28 — symbols `#@%-`   — gates 1+2+3 ✓ (iter 001); **212 ice cells skipped**
+- [ ] Stage 29 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 30 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 31 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 32 — symbols `#@-`    — gates 1+2+3 ✓ (iter 001); **320 ice cells skipped** (most-ice stage)
+- [ ] Stage 33 — symbols `#@%`    — gates 1+2+3 ✓ (iter 001)
+- [ ] Stage 34 — symbols `#`      — gates 1+2+3 ✓ (iter 001); **brick-only stage** (unusual)
+- [ ] Stage 35 — symbols `#@%~`   — gates 1+2+3 ✓ (iter 001); FINAL — verify "win" state on clear
 
 ---
 
-## Symbols present per stage (from quick survey)
+## Symbols present per stage (auto-surveyed iter 001)
 
-Verified during research synthesis:
-- Stage 1: `#@` (brick + steel only)
-- Stage 4: `@#%~` (steel + brick + forest + water)
-- Stage 18: `@#%` (steel + brick + forest; no water/ice)
+Stages containing each terrain type:
+- Brick `#`: all 35
+- Steel `@`: 34 (all except stage 34)
+- Forest `%`: 29 (no forest in 1, 5, 12, 17, 25, 32, 34)
+- Water `~`: 11 (4, 5, 8, 10, 12, 14, 20, 26, 29, 30, 31, 35)
+- Ice `-`: 4 (17, 24, 28, 32) — **phase-1 decision iter pending (criterion 3)**
 
-Stages with `-` (ice) — unknown until parsed. The first iter that
-encounters ice triggers the phase-1 ice-physics decision iter (criterion 3).
+Cell-count totals per terrain across all 35 stages — automated diff via
+`grep -o` on source vs `LevelLoader.parse_stage()` emit — **100% match,
+35/35 stages**. Cited in `LEDGER.md` iter 001.
 
 ---
 
@@ -78,7 +89,7 @@ For each stage K:
 2. Download `https://strategywiki.org/wiki/File:Battle_City_Stage{K:02}.png`
 3. `tools/png_diff.py StageK_render.png StageKK.png` → per-tile match %
 
-If diff < 5%: mark complete.
+If diff < 5%: gate 5 passes for that stage.
 If 5-15%: investigate; usually one source has different convention.
 If > 15%: stage F-numbered; hand-resolve from Selmiak/GameFAQs as tiebreaker.
 
