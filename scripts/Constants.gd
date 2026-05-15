@@ -5,12 +5,11 @@ enum Dir {
 	L, D, U, R
 }
 
-static func dir_to_rotation(dir):
+static func dir_to_rotation(dir: int) -> float:
 	if dir == Dir.U:
-		return 1.5*PI
+		return 1.5 * PI
 	if dir == Dir.D:
-		return 0.5*PI
+		return 0.5 * PI
 	if dir == Dir.L:
 		return PI
-	if dir == Dir.R:
-		return 0
+	return 0.0

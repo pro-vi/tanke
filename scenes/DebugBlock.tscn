@@ -1,8 +1,8 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://fonts/SourceSansPro-ExtraLight.otf" type="DynamicFontData" id=1]
+[ext_resource path="res://fonts/SourceSansPro-ExtraLight.otf" type="FontFile" id=1]
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="FontFile" id=2]
 outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 1 )
 
@@ -11,23 +11,23 @@ collision_layer = 0
 collision_mask = 0
 
 [node name="Rect" type="ColorRect" parent="."]
-margin_left = -8.0
-margin_top = -8.0
-margin_right = 8.0
-margin_bottom = 8.0
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 8.0
 color = Color( 0, 0, 0, 0.388235 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Text" type="Label" parent="Rect"]
-margin_top = -2.0
-margin_right = 16.0
-margin_bottom = 19.0
+offset_top = -2.0
+offset_right = 16.0
+offset_bottom = 19.0
 grow_horizontal = 2
 grow_vertical = 2
-rect_clip_content = true
-custom_fonts/font = SubResource( 2 )
+clip_contents = true
+theme_override_fonts/font = SubResource( 2 )
 text = "1"
 align = 1
 valign = 1
