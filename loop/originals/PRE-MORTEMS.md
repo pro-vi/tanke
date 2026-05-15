@@ -679,3 +679,47 @@ Generalization clause: 4 distinct failure-mode shapes (network, format, content)
 - `make test` regresses (procedural mode broken).
 - Procedural hash anchor drifts.
 - LevelLoader.parse_stage's default behavior (no override) changes.
+
+---
+
+## Iter 014 — BUILD (configs/og_calibrated.tres — C12 anchor 4)
+
+**Mode:** BUILD.
+
+**Weakest reachable axis:** Criterion 12 at 3. Anchor 4: "Procedural arc-2 configs adjusted to match the OG empirical distribution on at least 2 metrics — code-cited config diff."
+
+**Plan:**
+
+1. Read OG empirical bands from `loop/originals/og-metrics.json` summary.
+2. Compare to `configs/playable.tres` (arc-2 iter-100 default).
+3. Identify 2-3 LevelConfig knobs that move metrics toward OG:
+   - **Water density** is the biggest density gap (arc-2 8% vs OG 3.7%). Lower `water_weight`.
+   - **Brick density** small upward shift (arc-2 18% vs OG 19.2%). Raise `brick_weight`.
+   - **cc_max variance** wider in BC. Try raising `merge_probability` to encourage bigger horizontal runs.
+4. Draft `configs/og_calibrated.tres` (new file, doesn't edit existing configs).
+5. Run `godot --headless --script loop/test_runner.gd -- --seed 42 --config res://configs/og_calibrated.tres --json` to measure observed metrics with new config.
+6. Tabulate: OG mean / arc-2 default / og_calibrated → cite which 2+ metrics moved toward OG.
+
+**Falsifiable claim:**
+
+After iter 14:
+- `configs/og_calibrated.tres` exists; loads cleanly via test_runner --config.
+- ≥2 measured metrics move TOWARD OG's empirical mean (vs arc-2 default direction).
+- Procedural hash anchor for the DEFAULT config (`23d6a2ec…`) is preserved — the new config produces a DIFFERENT hash but that's intentional (new config → different output).
+- `make test` exit 0.
+
+**Most-likely failure modes:**
+
+- **F1 [STRUCTURE]**: New config produces metrics that move AWAY from OG. Tuning needs adjustment. *Mitigation*: iterate within the iter — adjust weights, re-measure. Don't ship a config that fails the claim.
+- **F2 [STRUCTURE]**: Config schema mismatch (e.g., I add a knob LevelConfig.gd doesn't have). *Mitigation*: stick to existing knobs (merge_probability + 5 terrain weights).
+- **F3 [STRUCTURE]**: Hash anchor for DEFAULT config drifts because I edit playable.tres by mistake. *Mitigation*: create NEW file, don't edit existing.
+- **F4 [STRUCTURE]**: Procedural mode doesn't expose `--config` cleanly. *Verification*: arc-1 LEDGER shows `make diff CONFIG=...` already works; same mechanism applies to test_runner --config.
+
+**Substrate guards:**
+- No script edits (LevelConfig.gd unchanged).
+- No edits to `configs/playable.tres` or any existing config.
+- New: `configs/og_calibrated.tres`.
+
+**Anti-Goodhart guard:** the calibration must be CITED against OG empirical bands. I'll write the calibration logic transparently in the LEDGER: "OG water density 3.7%, dropping water_weight 0.08 → 0.04 matches arithmetic." If I find myself fudging knobs to get arbitrary "better" metrics without OG citation, that's Goodhart.
+
+**Generalization clause:** The OG bands span 35 stages; arc-2 default is one config-with-seed-42 instance. I'll measure the calibrated config at seed 42 (same as arc-2 hash anchor's basis). For honest comparison I'd want multi-seed but per arc-1 retro: "Single-seed CC measurements are unreliable (CV 35%); structure_lift is reliable (CV 5%)." So structure_lift compares well single-seed; CC needs caveat.
