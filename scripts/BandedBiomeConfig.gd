@@ -25,7 +25,24 @@ extends BiomeConfig
 @export var rush_row_threshold: int = -26       # depth 40
 
 
+# iter 101 (review-fix): runtime check for monotonic ordering. Misordered
+# thresholds (e.g., heavy_gate=-30 with rush=-26) silently make a band
+# unreachable; catch the misconfig at first use instead.
+var _ordering_checked: bool = false
+func _check_ordering() -> void:
+	if _ordering_checked:
+		return
+	_ordering_checked = true
+	assert(rush_row_threshold <= heavy_gate_row_threshold,
+		"BandedBiomeConfig: rush_row_threshold (%d) must be <= heavy_gate_row_threshold (%d)"
+			% [rush_row_threshold, heavy_gate_row_threshold])
+	assert(heavy_gate_row_threshold <= first_push_row_threshold,
+		"BandedBiomeConfig: heavy_gate_row_threshold (%d) must be <= first_push_row_threshold (%d)"
+			% [heavy_gate_row_threshold, first_push_row_threshold])
+
+
 func config_at(row: int) -> LevelConfigT:
+	_check_ordering()
 	if rush != null and row <= rush_row_threshold:
 		return rush
 	if heavy_gate != null and row <= heavy_gate_row_threshold:

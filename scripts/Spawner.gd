@@ -157,9 +157,6 @@ var _last_band_name: String = ""  # log when band changes
 var _band_first_spawn_pending: bool = false  # iter 27: trigger guarantee_first_type on band entry
 var _last_below_spawn_time: float = -1000.0  # iter 28: timestamp of last below-spawn (running seconds)
 var _elapsed_time: float = 0.0  # iter 28: accumulator since spawner ready
-# iter 30: visibility-fix state for below-spawn telegraph (Pro Consult 005 H2)
-var _pending_below_spawn: bool = false
-var _pending_below_telegraph_pos: Vector2 = Vector2.INF
 
 # Counters for iter-4 pre-mortem prediction #2 (rejections per 10 ticks).
 var spawns_total: int = 0
@@ -168,13 +165,12 @@ var ticks_total: int = 0
 # iter 31: ascender-metric instrumentation (Pro Consult 005 H4)
 var spawn_origin_top: int = 0
 var spawn_origin_below: int = 0
-# iter 43: death-screen summary counter. Incremented when any enemy
-# tree_exits (i.e., gets queue_free'd by take_damage hp<=0 or other paths).
-# Used by PlayerTank._die() to render death-screen kill count.
+# iter 43: death-screen summary counter. iter 101 (review-fix): now driven
+# by Enemy.killed signal (hp<=0 path only), not tree_exited — so scene
+# reload / future non-kill frees don't inflate the metric.
 var enemies_killed: int = 0
-# iter 56 (Pro Consult 007 H1 caveat: instrumentation for iter-60 diagnostic).
-# Incremented by Enemy._heavy_aim_cancel() each time Heavy's wind-up is
-# interrupted. Read by PlayerTank._die() for [run] summary + death screen.
+# iter 56 (instrumentation for iter-60 diagnostic). iter 101 (review-fix):
+# driven by Enemy.aim_canceled signal, gated on a real pending burst.
 var aim_cancels_landed: int = 0
 
 
@@ -189,6 +185,10 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if _player == null or not is_instance_valid(_player):
+		return
+	# iter 101 (review-fix): suppress spawn cadence after player death so
+	# enemies + band markers don't keep appearing on the death screen.
+	if _player.get("_dead") == true:
 		return
 	_elapsed_time += delta  # iter 28
 	_update_ascent_velocity(delta)
@@ -269,23 +269,28 @@ func _try_spawn() -> void:
 	var band_cap: int = int(band.get("max_alive", max_enemies))
 	var cap_hit: bool = _enemies_alive >= band_cap
 	if not cap_hit:
-		var spawn_pos: Variant = _find_valid_spawn()
-		if spawn_pos == null:
+		var spawn_plan: Variant = _find_valid_spawn()
+		if spawn_plan == null:
 			rejections_total += 1
 		else:
-			_telegraph_then_spawn(spawn_pos)
+			_telegraph_then_spawn(spawn_plan)
 			spawns_total += 1
 	if ticks_total % 5 == 0:
 		var cap_marker: String = " CAP" if cap_hit else ""
 		print("[spawner] tick %d: spawns=%d (top=%d below=%d) rejections=%d alive=%d/%d%s depth=%d band=%s ascent=%.2f stall=%.1fs interval=%.2fs stallMult=%.2f" % [ticks_total, spawns_total, spawn_origin_top, spawn_origin_below, rejections_total, _enemies_alive, band_cap, cap_marker, _max_depth_reached, band.name, _ascent_velocity, _stall_time, _current_spawn_interval(), _current_stall_multiplier()])
 
 
-# Compute spawn position. Top-edge by default (iter 12+). iter 28: if
-# player has stalled past threshold, spawn from BELOW (threats-from-
-# behind). iter 30 (Pro Consult 005 H2 fix): below-spawn telegraph must
-# be VISIBLE inside the viewport edge — fairness-not-cheap. Below-spawn
-# returns a Vector2 for enemy position AND a separate telegraph_pos for
-# the marker (stored on `_pending_below_telegraph_pos`).
+# Compute spawn plan. Top-edge by default (iter 12+). iter 28: if player
+# has stalled past threshold, spawn from BELOW (threats-from-behind).
+# iter 30 (Pro Consult 005 H2): below-spawn telegraph is placed INSIDE
+# the viewport edge — fairness-not-cheap.
+# iter 101 (review-fix): returns a Dictionary {pos, is_below, telegraph_pos}
+# instead of stashing pending state on `self`. Prior pattern corrupted
+# under overlapping awaits when interval < telegraph_lead_time (rush band
+# stalled: 0.48s interval vs 0.5s telegraph).
+# `_last_below_spawn_time` is no longer armed here — it moves to the
+# post-await success branch so rejected/cancelled spawns don't drain the
+# below-spawn cooldown.
 func _find_valid_spawn() -> Variant:
 	var camera_center_y: float = _player.global_position.y
 	if _camera != null and is_instance_valid(_camera):
@@ -294,27 +299,21 @@ func _find_valid_spawn() -> Variant:
 	var spawn_y: float
 	if use_below:
 		var screen_bottom: float = camera_center_y + _viewport_half_height
-		# Enemy still spawns just OFF-screen below (so it visibly enters)
 		spawn_y = screen_bottom + spawn_bottom_edge_offset
-		# Telegraph marker stored INSIDE bottom edge so player sees the warning
-		_pending_below_telegraph_pos = Vector2.INF  # filled by caller after x picked
-		_pending_below_spawn = true
-		_last_below_spawn_time = _elapsed_time
 	else:
 		var screen_top: float = camera_center_y - _viewport_half_height
 		var lookahead_px: float = maxf(0.0, _ascent_velocity) * 16.0 * ascent_lookahead_seconds
 		spawn_y = screen_top + spawn_top_edge_offset - lookahead_px
-		_pending_below_spawn = false
 	for i in max_spawn_attempts:
 		var x: float = randf_range(map_x_margin, map_width - map_x_margin)
 		var candidate: Vector2 = Vector2(x, spawn_y)
 		if _is_blocked(candidate):
 			continue
-		# iter 30: store telegraph pos for below-spawn (visible inside bottom)
-		if _pending_below_spawn and _camera != null and is_instance_valid(_camera):
+		var telegraph_pos: Vector2 = candidate
+		if use_below and _camera != null and is_instance_valid(_camera):
 			var visible_bottom: float = _camera.get_screen_center_position().y + _viewport_half_height
-			_pending_below_telegraph_pos = Vector2(x, visible_bottom - 12.0)  # 12px inside bottom
-		return candidate
+			telegraph_pos = Vector2(x, visible_bottom - 12.0)  # 12px inside bottom
+		return {"pos": candidate, "is_below": use_below, "telegraph_pos": telegraph_pos}
 	return null
 
 
@@ -349,14 +348,19 @@ func _is_blocked(pos: Vector2) -> bool:
 # (visible warning), while enemy still spawns at the off-screen `pos`.
 # iter 30 (Pro Consult 005 H5): re-check BAND cap after await, not just
 # global max_enemies.
-func _telegraph_then_spawn(pos: Vector2) -> void:
+func _telegraph_then_spawn(plan: Dictionary) -> void:
+	# iter 101 (review-fix): all per-coroutine state is captured into locals
+	# here — overlapping coroutines no longer clobber each other's intent.
+	var pos: Vector2 = plan["pos"]
+	var is_below: bool = plan["is_below"]
+	var telegraph_pos: Vector2 = plan["telegraph_pos"]
 	var marker: ColorRect = ColorRect.new()
 	marker.size = Vector2(8, 4)
 	# Below-spawn: red marker at viewport-bottom edge (visible warning)
-	# Top-spawn: yellow marker at spawn position (existing behavior)
-	if _pending_below_spawn and _pending_below_telegraph_pos != Vector2.INF:
+	# Top-spawn: yellow marker at spawn position
+	if is_below:
 		marker.color = Color(1.0, 0.3, 0.3, 0.9)  # red for "behind" warning
-		marker.position = _pending_below_telegraph_pos - Vector2(4, 2)
+		marker.position = telegraph_pos - Vector2(4, 2)
 	else:
 		marker.color = Color(1.0, 0.85, 0.2, 0.9)  # yellow for top spawn
 		marker.position = pos - Vector2(4, 2)
@@ -388,12 +392,20 @@ func _telegraph_then_spawn(pos: Vector2) -> void:
 	enemy.set("sprite_tint", type_data.sprite_tint)  # iter 67
 	enemy.set("sprite_scale", type_data.sprite_scale)  # iter 86
 	enemy.global_position = pos
+	# iter 101 (review-fix): explicit domain signals replace tree_exited
+	# piggy-backing for kill counter. tree_exited still drives _enemies_alive
+	# decrement (correct for any exit cause).
 	enemy.tree_exited.connect(_on_enemy_freed)
+	if enemy.has_signal("killed"):
+		enemy.killed.connect(_on_enemy_killed)
+	if enemy.has_signal("aim_canceled"):
+		enemy.aim_canceled.connect(_on_enemy_aim_canceled)
 	parent_node.add_child(enemy)
 	_enemies_alive += 1
-	# iter 31: origin distribution counter
-	if _pending_below_spawn:
+	# iter 31: origin distribution counter; iter 101: armed only on real spawn
+	if is_below:
 		spawn_origin_below += 1
+		_last_below_spawn_time = _elapsed_time
 	else:
 		spawn_origin_top += 1
 
@@ -436,8 +448,18 @@ func _get_type_by_name(type_name: String) -> Dictionary:
 
 
 func _on_enemy_freed() -> void:
+	# iter 101: alive-decrement only — kill counting moved to _on_enemy_killed
+	# so non-kill exits (scene reload, future despawn-off-screen) don't inflate
+	# the death-screen "KILLS" metric.
 	_enemies_alive -= 1
-	enemies_killed += 1  # iter 43: death-screen summary counter
+
+
+func _on_enemy_killed() -> void:
+	enemies_killed += 1
+
+
+func _on_enemy_aim_canceled() -> void:
+	aim_cancels_landed += 1
 
 
 # iter 48 (Pro Consult 006 secondary): depth pressure landmarks. Each time

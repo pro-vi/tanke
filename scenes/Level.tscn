@@ -163,34 +163,18 @@ position = Vector2(160, 232)
 
 [node name="Tiles" type="Node2D" parent="." unique_id=138652413]
 
-[node name="SteelTileMap" type="TileMap" parent="Tiles" unique_id=1275755842]
+; iter 101 (review-fix): flattened from Tiles/*TileMap/Layer0 (GD3 legacy
+; wrapper structure) to direct TileMapLayer children, matching the iter-19
+; migration already applied to ProceduralLevel.tscn. Level.gd's @onready
+; paths target Tiles/Brick / Tiles/Steel / Tiles/Grass / Tiles/Water.
+[node name="Steel" type="TileMapLayer" parent="Tiles"]
 tile_set = SubResource("2")
-format = 2
 
-[node name="Layer0" type="TileMapLayer" parent="Tiles/SteelTileMap" unique_id=1417128406]
-use_parent_material = true
-tile_set = SubResource("2")
-
-[node name="BrickTileMap" type="TileMap" parent="Tiles" unique_id=1172711741]
-tile_set = SubResource("4")
-format = 2
-
-[node name="Layer0" type="TileMapLayer" parent="Tiles/BrickTileMap" unique_id=1181804729]
-use_parent_material = true
+[node name="Brick" type="TileMapLayer" parent="Tiles"]
 tile_set = SubResource("4")
 
-[node name="GrassTileMap" type="TileMap" parent="Tiles" unique_id=564989604]
-tile_set = SubResource("5")
-format = 2
-
-[node name="Layer0" type="TileMapLayer" parent="Tiles/GrassTileMap" unique_id=1495351153]
-use_parent_material = true
+[node name="Grass" type="TileMapLayer" parent="Tiles"]
 tile_set = SubResource("5")
 
-[node name="WaterTileMap" type="TileMap" parent="Tiles" unique_id=368991788]
-tile_set = SubResource("6")
-format = 2
-
-[node name="Layer0" type="TileMapLayer" parent="Tiles/WaterTileMap" unique_id=1298661997]
-use_parent_material = true
+[node name="Water" type="TileMapLayer" parent="Tiles"]
 tile_set = SubResource("6")

@@ -142,16 +142,21 @@ def diff(path_a: Path, path_b: Path) -> dict:
     for k in TILE_DEFS:
         ca, cb = a["counts"][k], b["counts"][k]
         delta = cb - ca
-        pct = (delta / ca * 100.0) if ca > 0 else (float("inf") if cb > 0 else 0.0)
+        # iter 101 (review-fix): emit None (→ JSON null) instead of float("inf"),
+        # which would serialize as the literal `Infinity` and break RFC 7159
+        # parsers (jq, browsers).
+        pct = (delta / ca * 100.0) if ca > 0 else None
         deltas[k] = {
             "before": ca,
             "after": cb,
             "delta": delta,
-            "pct_change": round(pct, 2),
+            "pct_change": round(pct, 2) if pct is not None else None,
         }
     # "Significant" shift: any terrain moved by >= 5% relative or 500 absolute pixels
     significant = any(
-        abs(d["delta"]) >= 500 or abs(d["pct_change"]) >= 5
+        abs(d["delta"]) >= 500
+        or (d["pct_change"] is not None and abs(d["pct_change"]) >= 5)
+        or (d["pct_change"] is None and d["delta"] > 0)  # 0 → positive: always significant
         for d in deltas.values()
     )
     return {

@@ -38,6 +38,10 @@ func _initialize() -> void:
 		var dna = load(dna_path)
 		level.level_seed = dna.level_seed
 		level.config = dna.config
+		# iter 101 (review-fix): biome rides on DNA when present so biomed
+		# levels are actually reproducible from saved DNA.
+		if "biome" in dna and dna.biome != null:
+			level.biome = dna.biome
 	else:
 		level.level_seed = test_seed
 		if config_path != "":
@@ -189,13 +193,17 @@ func _collect(level: Node) -> Dictionary:
 		cc_total += s
 	var cc_avg: float = (float(cc_total) / float(cc_count)) if cc_count > 0 else 0.0
 
-	# Reachability flood-fill (iter 28+). BFS from player spawn at tile (20, 29);
+	# Reachability flood-fill (iter 28+). BFS from player spawn;
 	# passable = empty cell OR grass (which has no collision); impassable = brick,
 	# steel, water. Reports reachable cell count + topmost row reached. A level
 	# is "playable" if the player can climb >= MIN_ROWS_CLIMBED rows above spawn.
-	const SPAWN_TILE: Vector2i = Vector2i(20, 29)
-	const MAP_W: int = 40
-	const MAP_H: int = 30
+	# iter 101 (review-fix): derive SPAWN_TILE / MAP_W / MAP_H from the actual
+	# level instead of hardcoding — keeps the oracle correct under viewport or
+	# spawn-position edits to the scene.
+	var spawn_px: Vector2 = level.player.global_position
+	var SPAWN_TILE: Vector2i = Vector2i(int(spawn_px.x) / 8, int(spawn_px.y) / 8)
+	var MAP_W: int = int(level.width) / 8
+	var MAP_H: int = int(level.height) / 8
 	const MIN_ROWS_CLIMBED: int = 10
 	var reach_visited: Dictionary = {}
 	var reach_queue: Array = [SPAWN_TILE]

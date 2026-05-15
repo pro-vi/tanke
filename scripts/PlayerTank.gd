@@ -67,7 +67,10 @@ func _ready() -> void:
 	_start_y = global_position.y
 	_min_y_reached = _start_y
 	_last_y_for_velocity = _start_y  # iter 31: instrumentation seed
-	_grass_tilemap = get_tree().get_root().find_child("Grass", true, false) as TileMapLayer
+	# iter 101 (review-fix): sibling lookup via Tiles parent, not root-walk.
+	var level: Node = get_parent()
+	if level != null:
+		_grass_tilemap = level.get_node_or_null("Tiles/Grass") as TileMapLayer
 	_camera = get_parent().get_node_or_null("Camera2D") as Camera2D
 	_setup_hurtbox()
 	_setup_hud()
@@ -353,8 +356,13 @@ func _load_best_depth() -> int:
 
 func _save_best_depth(d: int) -> void:
 	var cfg: ConfigFile = ConfigFile.new()
-	# Re-load to preserve any other future keys
-	cfg.load(_STATS_CFG_PATH)
+	# Re-load to preserve any other future keys. iter 101 (review-fix): bail
+	# on parse-corrupt files so we don't overwrite a partially-readable
+	# stats file with just this single key.
+	var load_err: int = cfg.load(_STATS_CFG_PATH)
+	if load_err != OK and load_err != ERR_FILE_NOT_FOUND:
+		push_warning("[stats] best_depth load err=%d — refusing to overwrite" % load_err)
+		return
 	cfg.set_value("run", "best_depth", d)
 	var err: int = cfg.save(_STATS_CFG_PATH)
 	if err != OK:
@@ -372,7 +380,10 @@ func _load_best_time() -> int:
 
 func _save_best_time(t: int) -> void:
 	var cfg: ConfigFile = ConfigFile.new()
-	cfg.load(_STATS_CFG_PATH)
+	var load_err: int = cfg.load(_STATS_CFG_PATH)
+	if load_err != OK and load_err != ERR_FILE_NOT_FOUND:
+		push_warning("[stats] best_time load err=%d — refusing to overwrite" % load_err)
+		return
 	cfg.set_value("run", "best_time", t)
 	var err: int = cfg.save(_STATS_CFG_PATH)
 	if err != OK:
@@ -505,10 +516,14 @@ func _update_run_hud() -> void:
 	if _depth_label != null:
 		var depth: int = int(maxf(0.0, (_start_y - _min_y_reached) / 16.0))
 		_depth_label.text = "DEPTH %d" % depth
-		# iter 30: milestone flash on every Nth depth row crossing
-		if depth_milestone_step > 0 and depth > 0 and depth % depth_milestone_step == 0 and depth != _last_milestone_depth:
-			_last_milestone_depth = depth
-			_flash_depth_milestone(depth)
+		# iter 30: milestone flash on every Nth depth row crossing.
+		# iter 101 (review-fix): cross-detection instead of equality — depth
+		# jumping 9→11 in one frame would silently skip the "10" landmark
+		# under the old `depth % step == 0` test.
+		if depth_milestone_step > 0 and depth > 0 and depth - _last_milestone_depth >= depth_milestone_step:
+			var crossed: int = (depth / depth_milestone_step) * depth_milestone_step
+			_last_milestone_depth = crossed
+			_flash_depth_milestone(crossed)
 	if _time_label != null:
 		var t: int = int(_run_time)
 		_time_label.text = "TIME %d:%02d" % [t / 60, t % 60]

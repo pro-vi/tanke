@@ -26,6 +26,9 @@ func depth_t(row: int) -> float:
 
 
 func config_at(row: int) -> LevelConfigT:
+	# iter 101 (review-fix): explicit assert when both endpoints null —
+	# downstream null-deref in _pave_set → sample_terrain() was silent.
+	assert(surface != null or deep != null, "BiomeConfig: both surface and deep are null")
 	if surface == null or deep == null:
 		return surface if surface != null else deep
 	var t: float = depth_t(row)

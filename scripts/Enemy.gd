@@ -5,6 +5,13 @@ extends CharacterBody2D
 # Set by Spawner.gd at instantiate time per ENEMY_TYPES table.
 enum State { CHASE, AIM_FIRE }
 
+# iter 101 (review-fix): explicit domain signals replace tree_exited piggy-
+# backing and find_child("Spawner") string lookup. `killed` fires
+# synchronously from take_damage when hp drops to 0; `aim_canceled` fires
+# only when a pending Heavy burst was actually interrupted.
+signal killed
+signal aim_canceled
+
 @export var speed: float = 24.0
 @export var max_hp: int = 1
 @export var fire_cooldown: float = 1.5
@@ -76,8 +83,13 @@ var _aim_cancel_timer: float = 0.0  # iter 51: stuns Heavy out of AIM_FIRE after
 func _ready() -> void:
 	hp = max_hp
 	add_to_group("enemy")
-	_player = get_tree().get_root().find_child("PlayerTank", true, false)
-	_grass_tilemap = get_tree().get_root().find_child("Grass", true, false) as TileMapLayer
+	# iter 101 (review-fix): sibling lookups instead of root-walk find_child;
+	# avoids ambiguity during scene reload windows and binds lifetime to the
+	# level instead of the global scene tree.
+	var level: Node = get_parent()
+	if level != null:
+		_player = level.get_node_or_null("PlayerTank") as Node2D
+		_grass_tilemap = level.get_node_or_null("Tiles/Grass") as TileMapLayer
 	_fire_timer = randf() * fire_cooldown  # stagger initial volleys
 	_choose_direction_toward_player()
 	_update_sprite_for_direction()
@@ -439,6 +451,7 @@ func _update_forest_hide() -> void:
 func take_damage(amount: int) -> void:
 	hp -= amount
 	if hp <= 0:
+		killed.emit()  # iter 101: synchronous kill notification (Spawner counts here)
 		_spawn_death_effect()
 		queue_free()
 		return
@@ -446,7 +459,13 @@ func take_damage(amount: int) -> void:
 	# Cancel feedback IS the visual (white stagger flash overrides red telegraph);
 	# regular _flash_hit gets skipped per iter-41 Heavy-AIM_FIRE rule anyway.
 	if enemy_type == "Heavy" and _state == State.AIM_FIRE:
+		# iter 101 (review-fix A8): only count a cancel if there was a pending shot
+		# — between-bursts cooldown still in AIM_FIRE state shouldn't inflate the
+		# counter when no wind-up was actually interrupted.
+		var had_pending_shot: bool = _burst_remaining > 0 and _burst_timer > 0.0
 		_heavy_aim_cancel()
+		if had_pending_shot:
+			aim_canceled.emit()
 		return
 	_flash_hit()
 
@@ -468,10 +487,8 @@ func _heavy_aim_cancel() -> void:
 		_sprite.modulate = Color(2.0, 2.0, 2.0, a)
 		var tween: Tween = _sprite.create_tween()
 		tween.tween_property(_sprite, "modulate", Color(1, 1, 1, a), 0.15)
-	# iter 56: increment Spawner counter for [run] summary
-	var spawner: Node = get_tree().get_root().find_child("Spawner", true, false)
-	if spawner != null and "aim_cancels_landed" in spawner:
-		spawner.aim_cancels_landed += 1
+	# iter 101: counter increment moved to take_damage caller (gated on
+	# `_burst_remaining > 0` so cooldown hits don't inflate the metric).
 
 
 # iter 41: visual juice — brief white modulate on non-kill damage. Skip when
@@ -603,6 +620,11 @@ func _spawn_shield_pickup(parent_node: Node) -> void:
 
 
 func _choose_direction_toward_player() -> void:
+	# iter 101 (review-fix): defensive null guard — _ready calls this before
+	# any physics tick, and Enemy.tscn loaded standalone (editor "play scene",
+	# fresh test_runner) has no PlayerTank in tree.
+	if _player == null or not is_instance_valid(_player):
+		return
 	var to_player: Vector2 = _player.global_position - global_position
 	var new_dir: int
 	if absf(to_player.x) > absf(to_player.y):

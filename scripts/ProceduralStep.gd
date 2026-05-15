@@ -30,6 +30,10 @@ func generate_step() -> Dictionary:
 	var verticals: Dictionary = {}
 	for sid in sets.keys():
 		var members: Array = sets[sid]
+		# iter 101 (review-fix): forward-safety assert — current invariant says
+		# every set has size >= 1, but a future _merge edit producing an empty
+		# set would crash on `randi() % 0` with no diagnostic.
+		assert(members.size() > 0, "ProceduralStep: empty set %d during carry-up" % sid)
 		members.shuffle()
 		var carry: int = (randi() % members.size()) + 1
 		verticals[sid] = members.slice(0, carry)
