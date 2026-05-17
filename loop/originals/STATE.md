@@ -4,15 +4,15 @@
 
 ```
 phase: loop (post-retro; quality iters under user kick-off authorization)
-iteration: 22 (BUILD — 25-stage chain test → C10 anchor 4 — complete)
+iteration: 23 (BUILD — BC lives system — complete)
 arc: 3 (Originals — BC NES stages import) — structurally closed iter 16; quality-trail iters
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 48/60 (80%) — +1 from iter 22
+score: 48/60 (80%) — flat (quality work)
 playtest_halt_rule: SUSPENDED (iter 10); REVIEW-QUEUE pattern active
 ```
 
-**Iter 22 lifted C10 3 → 4.** `loop/test_chain_25.gd` programmatically instantiates all 25 stages; each verifies eagle present + valid, Spawner with correct stage_number, Roster scales linearly. 25/25 PASS. Procedural hash anchor `23d6a2ec…` preserved. `make check-chain` + `make test-all` (now includes chain). Cumulative: ... → 47 → **48/60** (80%). Tag balance: 17 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
+**Iter 23 added BC lives system** (third sanctioned arc-3 substrate write per PROMPT Layer-2 "eagle-protect mechanic"). PlayerTank.gd: `@export max_lives: int = 1` (default = arc-2 bit-identical); `_lives_remaining` decrements on death; respawn at start position with 1.5s grace iframes; on 0 lives → original death flow. OriginalLevel.tscn sets max_lives=3; HUD adds yellow LIVES label. Procedural hash anchor `23d6a2ec…` preserved. Lives unit test verified 3→2→1→0 sequence. Tag balance: 17 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -110,6 +110,45 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 023 BUILD complete (2026-05-17) — BC lives system.
+
+Third sanctioned arc-3 substrate write per PROMPT Layer-2 spec
+("PlayerTank.gd ... will be EXTENDED for eagle-protect mechanic").
+
+scripts/PlayerTank.gd:
+- @export max_lives: int = 1 (default = arc-2 single-life bit-identical).
+- signal lives_changed.
+- _ready: _lives_remaining = max_lives; _start_position captured.
+- _die() decrements _lives_remaining; if >0 → _respawn() early-return;
+  else falls through to original death code path (run-summary,
+  death-label, best-depth save).
+- _respawn(): hp=max_hp, position=_start_position, iframe_timer=1.5s,
+  brief hit-flash visual cue.
+
+scenes/OriginalLevel.tscn: PlayerTank.max_lives = 3 (BC canonical).
+
+scripts/OriginalLevel.gd: _hud_lives_label (yellow "LIVES NN" at
+scene 270, 80). Wired to player.lives_changed signal.
+
+Verification:
+- Procedural hash anchor 23d6a2ec… preserved exactly (default
+  max_lives=1 means first death decrements 1→0, falls through to
+  original arc-2 death flow).
+- make test-all exit 0 (procedural + LevelLoader + 25-stage chain).
+- Lives unit test: init 3/3 hp 3/3 → death 1 lives=2 hp=3 _dead=false
+  → death 2 lives=1 hp=3 → death 3 lives=0 hp=0 _dead=true (game over).
+  LIVES_TEST_OK.
+
+Score: 48/60 flat. Quality work; lives system doesn't directly
+satisfy a rubric anchor but sets up future BC-recognition cites.
+
+Tag balance: 17 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
+
+Commit: chore(originals): iter 023 — BUILD — BC lives system
+(PlayerTank substrate write #3).
+```
 
 ```
 Iter 022 BUILD complete (2026-05-17) — 25-stage chain test (C10 anchor 4).
@@ -675,6 +714,22 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 24 — BUILD (per-type BC scoring) OR SFX OR pause
+
+Reachable structural work is narrowing. Remaining candidates:
+- Per-type BC scoring (A=100/B=200/C=300/D=400) — needs Enemy.killed
+  signal carrying type info. Enemy.gd is NOT on PROMPT Layer-2
+  sanctioned write list; would be a 4th substrate-write attempt with
+  weaker authorization. Could do signal-only addition with default-off.
+- SFX integration (shoot / explosion / clear) — touches Bullet.gd
+  (not sanctioned) or scene-level audio bus listening to signals.
+- arc-3 v2 META-RETRO if user signals close at 48/60.
+
+Most rubric-anchor lifts remaining are playtest-gated. Consider
+pausing for user direction before further substrate writes.
+```
 
 ```
 Iter 23 — BUILD (per-type BC scoring OR lives system OR SFX)

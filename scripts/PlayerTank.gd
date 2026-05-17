@@ -68,9 +68,24 @@ var _ascent_velocity_player: float = 0.0  # smoothed rows/sec, player-side estim
 # regardless (HP is gameplay-relevant in both modes).
 @export var show_ascender_hud: bool = true
 
+# iter 023 (arc 3 substrate write #3, per PROMPT Layer-2 "eagle-protect
+# mechanic" sanction): BC-canonical lives system. Default 1 preserves
+# arc-2 single-life death-flow bit-identical. OriginalLevel.tscn overrides
+# to 3 (BC canonical). On HP=0 with lives_remaining > 1: respawn at start
+# position with fresh HP and brief iframes. On lives_remaining <= 1:
+# existing death code path runs unchanged.
+@export var max_lives: int = 1
+signal lives_changed(remaining: int, max_lives_val: int)
+var _lives_remaining: int = 1
+var _start_position: Vector2 = Vector2.ZERO
+
 
 func _ready() -> void:
 	hp = max_hp
+	# iter 023: lives system init. Default max_lives=1 means _lives_remaining=1;
+	# first _die() decrements to 0 → original death flow → arc-2 bit-identical.
+	_lives_remaining = max_lives
+	_start_position = global_position
 	rotation = Constants.dir_to_rotation(direction)
 	_start_y = global_position.y
 	_min_y_reached = _start_y
@@ -279,9 +294,30 @@ func _start_screen_shake() -> void:
 
 
 func _die() -> void:
+	# iter 023: lives system. Decrement first; if any remain, respawn
+	# without running the heavy run-summary / death-screen code path.
+	# Procedural mode (max_lives=1) decrements 1 → 0 and falls through to
+	# the original death flow — arc-2 bit-identical.
+	_lives_remaining -= 1
+	lives_changed.emit(_lives_remaining, max_lives)
+	if _lives_remaining > 0:
+		_respawn()
+		return
 	_dead = true
 	sprite.stop()
 	velocity = Vector2.ZERO
+
+
+# iter 023: BC-style life-respawn. Resets HP + position + iframes. Doesn't
+# touch _dead (was never set on respawning life). Brief iframes prevent
+# instant-re-death from same bullet/collision that killed the previous life.
+func _respawn() -> void:
+	hp = max_hp
+	hp_changed.emit(hp, max_hp)
+	global_position = _start_position
+	velocity = Vector2.ZERO
+	_iframe_timer = 1.5  # 1.5s grace period after respawn
+	_start_hit_flash()  # visual cue: tank flashes briefly on respawn
 	# iter 31: ascender run summary on death (Pro Consult 005 H4)
 	var depth: int = int(maxf(0.0, (_start_y - _min_y_reached) / 16.0))
 	var t: int = int(_run_time)

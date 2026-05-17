@@ -101,6 +101,7 @@ limit_bottom = 240
 position = Vector2(124, 228)
 collision_mask = 513
 show_ascender_hud = false
+max_lives = 3
 
 [node name="Tiles" type="Node2D" parent="."]
 

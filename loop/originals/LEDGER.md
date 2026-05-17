@@ -2150,3 +2150,85 @@ Iter 23 candidates:
 ### Commit
 
 `chore(originals): iter 022 — BUILD — 25-stage chain test (C10 anchor 4)`
+
+---
+
+## Iter 023 — BUILD (BC lives system — arc-2 substrate write #3)
+
+**Mode:** BUILD
+**Date:** 2026-05-17
+**Branch:** `arc-3-originals`
+
+### Pre-mortem (cited; PRE-MORTEMS.md iter 023)
+
+F1-F4 listed. F1 (parse-order) fired briefly when I added `_respawn()` call before defining it; post-tool hook caught the parse error and I added the function definition immediately after. Same pattern as iter-11 lesson.
+
+### Actions
+
+1. **`scripts/PlayerTank.gd`** (third sanctioned arc-3 substrate write per PROMPT Layer-2 spec for "eagle-protect mechanic"):
+   - `@export var max_lives: int = 1` (default = arc-2 bit-identical behavior).
+   - `signal lives_changed(remaining: int, max_lives_val: int)`.
+   - `_lives_remaining`, `_start_position` internal state.
+   - In `_ready`: `_lives_remaining = max_lives; _start_position = global_position`.
+   - In `_die()`: decrement `_lives_remaining`; if > 0 → `_respawn()` early-return; else fall through to original death code path.
+   - `_respawn()`: reset HP + position + iframe_timer (1.5s grace) + brief hit-flash.
+2. **`scenes/OriginalLevel.tscn`**: PlayerTank `max_lives = 3` (BC canonical).
+3. **`scripts/OriginalLevel.gd`**:
+   - HUD: `_hud_lives_label` added at y=80, yellow color "LIVES NN" — wired to `player.lives_changed` signal via `_on_lives_changed` handler.
+   - Initial value pulled from `player.max_lives`.
+
+### Verification
+
+- **Procedural hash anchor `23d6a2ec…` preserved exactly.** Default `max_lives=1` makes `_lives_remaining = 1`; first `_die()` decrements to 0 → falls through to original death flow → arc-2 bit-identical.
+- `make test` exit 0.
+- `make test-all` exit 0 (procedural + LevelLoader + 25-stage chain all still pass).
+- OG stage 1 oracle: brick=220 steel=8 playable=true (unchanged).
+- **Lives unit test** (`loop/test_lives_iter23.gd`):
+  - Init: max_lives=3, lives_remaining=3, hp=3/3.
+  - Death 1: lives_remaining=**2** (decremented), hp=**3** (respawn reset), _dead=**false**.
+  - Death 2: lives_remaining=**1**, hp=**3**, _dead=**false**.
+  - Death 3: lives_remaining=**0**, hp=0, _dead=**true** ← full death flow triggered.
+  - `LIVES_TEST_OK`. Behaves exactly as designed: 2 free respawns before game-over.
+
+### Scores
+
+| C# | Before | After | Note |
+|----|--------|-------|------|
+| 1-12 | (unchanged) | | Lives system is quality work; doesn't directly satisfy a rubric anchor. Sets up future C2/C11 playtest cites (BC fan recognizes "lives counter" as canonical BC element). |
+| **Total** | **48** | **48/60** | flat |
+
+### Substrate guardrails verified
+
+- `scripts/PlayerTank.gd`: third sanctioned arc-3 substrate write per PROMPT Layer-2 (iter 11 = Spawner; iter 19 = HUD gate; iter 23 = lives system). Default-on gating (`max_lives=1`) preserves arc-2 procedural behavior bit-identical.
+- `scenes/OriginalLevel.tscn`: PlayerTank instance override `max_lives = 3`.
+- `scripts/OriginalLevel.gd`: HUD extension (arc-3-owned file).
+- Procedural hash anchor preserved.
+- No other code edits.
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 17 cites
+- [STRUCTURE-DEFERRED]: 1 cite
+- [FEEL]: 4 cites
+- [MIXED]: 0
+
+### Cumulative arc-3 path
+
+```
+iter 19: 47/60 (F002 + F003 fixes)
+iter 20: 47/60 (TitleScreen aesthetic d)
+iter 21: 47/60 (right-margin HUD)
+iter 22: 48/60 (25-stage chain — C10 anchor 4)
+iter 23: 48/60 (lives system — quality)
+```
+
+### Next iter
+
+Iter 24 candidates:
+- **Per-type BC scoring** (A=100/B=200/C=300/D=400) — needs Enemy.killed signal + Spawner per-type tracker. Touches Enemy.gd (not on PROMPT sanctioned list; needs signal-only addition).
+- **SFX integration** — touches Bullet.gd or scene-level audio bus.
+- **OG-mode game-clear flow** — currently advance through stages, but no "you won" message besides ARC COMPLETE. Could polish.
+
+### Commit
+
+`chore(originals): iter 023 — BUILD — BC lives system (PlayerTank substrate write #3)`

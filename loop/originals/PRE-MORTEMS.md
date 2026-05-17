@@ -992,3 +992,35 @@ After iter 18:
 **Substrate guards:** test script only; no production code edits.
 
 **Anti-Goodhart**: anchor 4 wording is "Stages 1-25 reachable ... eagle gameplay survives — code-cited." My test verifies the MECHANISM (each stage instantiates without crashes, eagle is alive). That's exactly what "code-cited" means. Anchor 5 ("Full 1-35 + win state ... playtest verified") still requires playtest.
+
+---
+
+## Iter 023 — BUILD (lives system — third sanctioned arc-2 substrate write)
+
+**Mode:** BUILD.
+
+**PROMPT authorization:** Layer-2 spec: "scripts/PlayerTank.gd — HP, iframes, hit-flash, forest hide, restart (will be EXTENDED for eagle-protect mechanic; arc-3's only soft-substrate write)." Lives are an extension of eagle-protect mechanics (BC standard: 3 lives + eagle = your defense). Within sanctioned scope.
+
+**Plan:**
+
+1. **`scripts/PlayerTank.gd`**:
+   - Add `@export var max_lives: int = 1` (default preserves arc-2 single-life behavior bit-identical).
+   - Add `signal lives_changed(remaining: int, max_lives: int)`.
+   - Add internal `_lives_remaining: int`, `_start_position: Vector2`.
+   - Restructure `_die()`: decrement `_lives_remaining`; if >0 → `_respawn()`; else → existing death code path.
+   - Add `_respawn()`: reset HP, position to `_start_position`, set _iframe_timer, emit signals.
+2. **`scenes/OriginalLevel.tscn`**: PlayerTank `max_lives = 3` (BC canonical).
+3. **`scripts/OriginalLevel.gd`**: HUD adds LIVES label (4th row at y=80); listens to `lives_changed`.
+
+**Falsifiable claim:**
+- Procedural mode: max_lives default=1; behavior unchanged; hash anchor `23d6a2ec…` preserved.
+- OG mode: max_lives=3; first 2 deaths respawn at start; 3rd death triggers full game-over.
+- `make test-all` exit 0 (procedural + LevelLoader + 25-stage chain).
+
+**F-list:**
+- **F1**: `_die()` is heavy (run-summary, death label, best-depth save, etc). Wrapping it with lives logic must not double-trigger any of that on respawn. *Mitigation*: respawn returns early BEFORE the existing _die() body runs.
+- **F2**: Procedural hash anchor depends on default behavior. If max_lives default not 1, procedural mode might respawn instead of dying → hash anchor preserved is by-coincidence not by-design. *Mitigation*: default 1 explicitly; any time _lives_remaining starts at 1, first _die() decrements to 0 → falls through to original death flow.
+- **F3**: HUD LIVES label needs to connect to PlayerTank.lives_changed AFTER player instantiates. *Mitigation*: connect in `_wire_spawner` or new `_wire_player` after `_spawn_eagle`.
+- **F4**: Tank's `_start_position` captured in `_ready` should be the spawn position. With iter-19's player at (124, 228) for OG mode, respawn brings them back. Good.
+
+**Substrate guards:** PlayerTank.gd is sanctioned arc-3 write per PROMPT Layer-2. Default-on gating: `max_lives=1` → original death flow on first kill → arc-2 unaffected. OriginalLevel.tscn + OriginalLevel.gd are arc-3 owned.

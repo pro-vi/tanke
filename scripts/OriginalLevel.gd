@@ -86,6 +86,7 @@ func _wire_spawner() -> void:
 var _hud_stage_label: Label = null
 var _hud_kills_label: Label = null
 var _hud_score_label: Label = null
+var _hud_lives_label: Label = null
 var _hud_last_kills: int = -1
 const SCORE_PER_KILL := 100
 
@@ -116,6 +117,22 @@ func _setup_og_hud() -> void:
 	_hud_score_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 	_hud_score_label.add_theme_constant_override("outline_size", 2)
 	canvas.add_child(_hud_score_label)
+	# iter 023: LIVES label. Initial value pulled from player.max_lives;
+	# updated via player.lives_changed signal connection in _wire_spawner.
+	_hud_lives_label = Label.new()
+	_hud_lives_label.position = Vector2(270, 80)
+	_hud_lives_label.text = "LIVES %d" % int(player.get("max_lives")) if player else "LIVES -"
+	_hud_lives_label.add_theme_color_override("font_color", Color(1.0, 0.95, 0.5, 1.0))  # yellow — life is precious
+	_hud_lives_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	_hud_lives_label.add_theme_constant_override("outline_size", 2)
+	canvas.add_child(_hud_lives_label)
+	if player and player.has_signal("lives_changed"):
+		player.lives_changed.connect(_on_lives_changed)
+
+
+func _on_lives_changed(remaining: int, _max_val: int) -> void:
+	if _hud_lives_label != null:
+		_hud_lives_label.text = "LIVES %d" % remaining
 
 
 func _update_og_hud() -> void:
