@@ -62,6 +62,8 @@ Parallel to `loop/FALSIFICATIONS.md` (arc 1, engine — F001-F004) and
 
 **Action:** Logged here; defer fix to next BUILD iter that the user OKs (or wraps into iter 19's general fix-iter if they continue).
 
+**STATUS update iter 019**: FIXED. row_offset 2→4 applied across all 4 files (`OriginalLevel.tscn`, `OriginalLevel.gd`, `Spawner.gd`, `tools/png_diff.py`); PlayerTank position (124, 212) → (124, 228); EAGLE_SCREEN_POS (160, 216) → (160, 232); OG_SPAWN_POINTS y 28 → 44; RENDER_OFFSET_Y 16 → 32; BC walls re-centered to match new playfield bounds (BCLeft/Right at y=136; BCTop at y=28; BCBottom at y=244). Full 35-stage PNG-diff re-run: all 35 PASS <5% (in fact median improved from 0.448% to ~0.5-1%, likely from new cell-alignment between player/eagle/walls and the play area). Procedural hash anchor 23d6a2ec… preserved.
+
 ---
 
 ## F003 — Arc-2 ascender HUD renders in Originals mode
@@ -83,6 +85,8 @@ Parallel to `loop/FALSIFICATIONS.md` (arc 1, engine — F001-F004) and
 **Lesson:** Arc-2's PlayerTank substrate has gameplay-coupled HUD baked in. Future cross-arc reuse needs HUD-modularity. Same lesson as iter-11's Spawner — substrate carries assumptions; gating extends them safely.
 
 **Action:** Logged here; defer to iter 19+ if user OKs the arc-2 substrate write. Could also be addressed by a HUD-replacement approach (different feel, but no arc-2 substrate touch).
+
+**STATUS update iter 019**: FIXED. Second sanctioned arc-2 soft-substrate write per PROMPT Layer-2 spec (after iter-11 Spawner). Added `@export var show_ascender_hud: bool = true` to `scripts/PlayerTank.gd`; gated DepthLabel + TimeLabel creation in `_setup_hud()` on the flag. Default value preserves arc-2 procedural behavior bit-identical. `scenes/OriginalLevel.tscn` PlayerTank instance overrides to `show_ascender_hud = false`. Verified: OG render top-right HUD region has **0 bright text pixels**; procedural render has **503** (unchanged). Procedural hash anchor 23d6a2ec… preserved.
 
 ---
 

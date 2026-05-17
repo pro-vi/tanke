@@ -38,9 +38,11 @@ except ImportError:
     sys.exit("png_diff.py requires Pillow (pip install Pillow)")
 
 # Play-area crop in tanke's 320x240 render (matches OriginalLevel.tscn
-# col_offset=7, row_offset=2 → 56 px left margin, 16 px top margin).
+# col_offset=7, row_offset=4 → 56 px left margin, 32 px top margin).
+# iter 019 (F002): RENDER_OFFSET_Y bumped 16 → 32 to follow row_offset
+# 2 → 4 shift that puts the eagle at the viewport bottom border.
 RENDER_OFFSET_X = 56
-RENDER_OFFSET_Y = 16
+RENDER_OFFSET_Y = 32
 PLAY_W = 208
 PLAY_H = 208
 TILE = 8           # 8-px sub-brick resolution

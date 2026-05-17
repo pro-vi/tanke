@@ -3,16 +3,16 @@
 ## Phase
 
 ```
-phase: loop (post-retro; ceiling-trail iters)
-iteration: 18 (BUILD — playtest processing + F004 walls fix — complete)
-arc: 3 (Originals — BC NES stages import) — structurally closed iter 16; trail iters in progress
+phase: loop (post-retro; quality/fix iters under user kick-off authorization)
+iteration: 19 (BUILD — F002 + F003 fixes — complete)
+arc: 3 (Originals — BC NES stages import) — structurally closed iter 16; ceiling-trail iters in progress
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 47/60 (78.3%) — post-retro
+score: 47/60 (78.3%) — flat post-iter-19 (quality fixes, no rubric anchor lift)
 playtest_halt_rule: SUSPENDED (iter 10); REVIEW-QUEUE pattern active
 ```
 
-**Iter 18 processed user playtest.** Closures: queue #5 closed via BC playfield walls; F004 fixed (player can no longer escape). New F-numbers logged: F002 (eagle hug border) + F003 (arc-2 HUD in OG mode) — both deferred to iter 19+ with user OK. Q1 vote (d) noted for queue #1. C11 → 3 via anchor 3 playtest cite. Cumulative path: ... → 45 (META-RETRO) → 46 → **47** (+1 C11). Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
+**Iter 19 closed F002 + F003.** Eagle now hugs bottom viewport border (row_offset 2→4 + coordinated 4-file shift); arc-2 ascender HUD gated off in OG mode (second sanctioned arc-2 substrate write per PROMPT Layer-2). 35/35 PNG-diff still passes <5%; procedural hash anchor `23d6a2ec…` preserved. 3 of 4 arc-3 F-numbers now fixed (F002 ✓, F003 ✓, F004 ✓; F001 has cure-path artifact). Cumulative: ... → 47 (flat — quality iter). Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -110,6 +110,43 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 019 BUILD complete (2026-05-16) — F002 + F003 fixes.
+
+User authorization: "kick off the loop to continue fix them and improve
+game quality".
+
+F002 fix (eagle hugs bottom; multi-file coordinated):
+- OriginalLevel.tscn: row_offset 2→4; PlayerTank (124,212)→(124,228);
+  show_ascender_hud=false; BC walls re-centered.
+- OriginalLevel.gd: EAGLE_SCREEN_POS y 216→232.
+- Spawner.gd: OG_SPAWN_POINTS y 28→44.
+- png_diff.py: RENDER_OFFSET_Y 16→32.
+
+F003 fix (HUD gate — second arc-2 substrate write):
+- PlayerTank.gd: @export show_ascender_hud bool default=true.
+  Gated DepthLabel + TimeLabel creation in _setup_hud.
+
+Verification:
+- Procedural hash anchor 23d6a2ec… preserved exactly.
+- make test exit 0.
+- 35/35 PNG-diff PASS <5% (median improved post cell-alignment).
+- HUD verification: OG render has 0 bright text pixels in top-right
+  HUD area; procedural has 503 (depth/time labels intact).
+- BC walls physics: all 4 walls collide at new positions;
+  playfield interior + spawn position clear.
+
+Score: 47/60 (flat — quality fixes don't map to rubric anchors).
+
+Falsification closures: F001 cure-path / F002 fixed / F003 fixed /
+F004 fixed (iter 18). 3 of 4 F-numbers now have active fixes.
+
+Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
+
+Commit: chore(originals): iter 019 — BUILD — F002 eagle hug + F003 HUD
+gate (both fixed).
+```
 
 ```
 Iter 018 BUILD complete (2026-05-16) — playtest processing.
@@ -556,6 +593,23 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 20 — BUILD (queue #1: TitleScreen aesthetic option d)
+  Per user "kick off the loop ... improve game quality":
+  - BC pixel-art TANKE logo (replace plain Label) — use img/sprites_1.png
+    BC tank silhouettes OR generate via PIL with geometric stylization
+  - Animated AnimatedSprite2D tank cursor — replaces yellow `>` Label
+    (2-3 frame pulse / blink loop)
+  - Keep TitleScreen background black; subtitle + hint text unchanged
+  - Closes REVIEW-QUEUE item #1 (voted d, iter 18)
+
+Iter 21+ candidates (continued quality):
+  - BC-style HUD on right side (replaces empty 56-px right border with
+    SCORE / STAGE / REMAINING-ENEMIES counter)
+  - Lives system (BC has 3 lives per game; arc-3 v1 just has HP)
+  - SFX (shoot / explosion / stage clear)
+```
 
 ```
 Iter 19 — branch by user signal:

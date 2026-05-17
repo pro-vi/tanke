@@ -870,3 +870,23 @@ After iter 18:
 - Procedural hash anchor drifts.
 - PNG-diff regresses on any of 35 stages.
 - C11 score raised above what playtest data supports.
+
+---
+
+## Iter 019 — BUILD (F002 + F003 fixes; user-authorized kick-off)
+
+**Mode:** BUILD.
+
+**User signal:** "kick off the loop to continue fix them and improve game quality" — authorization to address F002 + F003 + general quality.
+
+**Plan:** F002 (eagle hug bottom) + F003 (ascender HUD gated off in OG mode), both in single iter. F002 is multi-file data shifts; F003 is the second sanctioned arc-2 substrate write per PROMPT Layer-2 spec.
+
+**Falsifiable claim:** procedural hash anchor `23d6a2ec…` preserved; all 35 stages PNG-diff <5%; OG stage 1 oracle still playable; eagle visually at bottom of viewport; depth/time labels absent in OG render.
+
+**F-list:**
+- **F1**: PlayerTank.gd HUD gating breaks arc-2 procedural HUD (depth/time disappear in procedural mode too). *Mitigation*: default `show_ascender_hud = true`; only OriginalLevel.tscn sets it false.
+- **F2**: Coordinated F002 changes (4 files: scene + 2 scripts + png_diff) miss a coupling point. *Mitigation*: re-PNG-diff all 35 post-edits; any stage above prior baseline +1% reveals miscoordination.
+- **F3**: Walls re-position math wrong; player gets stuck OR can still escape. *Mitigation*: headless point-query test (like iter-18).
+- **F4**: Hash anchor drifts because procedural code path indirectly affected. *Mitigation*: run reachability oracle on procedural BEFORE and AFTER each edit.
+
+**Anti-Goodhart**: F002 must keep PNG-diff <5% on all 35 stages. If any stage regresses past 5%, F002 fix isn't honest and must be reverted or re-tuned.

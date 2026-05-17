@@ -24,9 +24,12 @@ const EagleScene: PackedScene = preload("res://scenes/Eagle.tscn")
 # Eagle entity (criterion 2). Per iter-003 survey, the canonical BC fortress
 # `#..#` pattern lives at stage cols 11-14 of rows 24-25 in ALL 35 stages
 # (zero variance). The eagle sits in the 2x2 empty cells at stage cols 12-13,
-# rows 24-25 — which after the (col_offset=7, row_offset=2) scene mapping
-# is scene cells (19-20, 26-27), center at screen (160, 216).
-const EAGLE_SCREEN_POS := Vector2(160, 216)
+# rows 24-25 — which after the (col_offset=7, row_offset=4) scene mapping
+# is scene cells (19-20, 28-29), center at screen (160, 232).
+# iter 019 (F002 fix): row_offset 2→4 shifts the playfield down so the
+# eagle hugs the viewport bottom border (user playtest 2026-05-16
+# "the base does not hug border").
+const EAGLE_SCREEN_POS := Vector2(160, 232)
 var eagle: Node2D = null
 
 # iter 007: StageDirector tracks 1..35 stage progression. Owns the

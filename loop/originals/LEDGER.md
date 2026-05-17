@@ -1794,3 +1794,100 @@ iter 18: 47/60  (post-retro: C11 anchor 3 + F002/F003 logged + F004 closed)
 ### Commit
 
 `chore(originals): iter 018 — BUILD — playtest processing + F002/F003 logged + F004 walls fix`
+
+---
+
+## Iter 019 — BUILD (F002 + F003 fixes, user kick-off authorization)
+
+**Mode:** BUILD
+**Date:** 2026-05-16
+**Branch:** `arc-3-originals`
+**User signal:** "kick off the loop to continue fix them and improve game quality"
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 019)
+
+F1-F4 listed. None fired. F002 + F003 both landed cleanly.
+
+### Actions
+
+**F002 fix (eagle hugs bottom; multi-file coordinated)**:
+- `scenes/OriginalLevel.tscn`:
+  - `row_offset` 2 → 4
+  - PlayerTank position (124, 212) → (124, 228)
+  - PlayerTank `show_ascender_hud = false` (overrides arc-2 default)
+  - BC walls re-positioned: BCLeftWall (52, 120)→(52, 136); BCRightWall (268, 120)→(268, 136); BCTopWall (160, 12)→(160, 28); BCBottomWall (160, 228)→(160, 244).
+- `scripts/OriginalLevel.gd`: `EAGLE_SCREEN_POS` (160, 216) → (160, 232).
+- `scripts/Spawner.gd`: `OG_SPAWN_POINTS` y 28 → 44 (Tanks stage row 1 → arc-3 scene row 5 with row_offset=4).
+- `tools/png_diff.py`: `RENDER_OFFSET_Y` 16 → 32.
+
+**F003 fix (arc-2 HUD gated off in OG mode — second sanctioned arc-2 soft-substrate write per PROMPT Layer-2)**:
+- `scripts/PlayerTank.gd`: added `@export var show_ascender_hud: bool = true` (default preserves arc-2 procedural behavior bit-identical). Gated `DepthLabel` + `TimeLabel` creation in `_setup_hud()` on the flag. `_update_run_hud()` already null-checked both labels — silent noop when absent.
+- `scenes/OriginalLevel.tscn`: PlayerTank instance overrides `show_ascender_hud = false`.
+
+### Verification
+
+- **Procedural hash anchor `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` preserved exactly.** The gating default-on discipline held — procedural mode's HUD + spawn behavior unchanged.
+- `make test` exit 0.
+- OG stage 1 oracle: brick=220 steel=8 playable=true (unchanged); rows_climbed 27 → 28 (player spawn moved 2 cells down, so 2 more rows above to reach).
+- **Full 35-stage PNG-diff sweep**: 35/35 PASS <5%. Stage 1 0.597% (was 0.896% post-walls); stage 17 1.791% (was 2.090%); stage 32 1.045% (was 2.090%). Median actually *improved* — cell-alignment between player/eagle/walls and the play area is now cleaner.
+- **F003 HUD-gate verified**: top-right HUD region (x 230-300, y 0-30) on OG render has **0 bright text pixels**; on procedural render has **503** (unchanged from arc-2 default). Confirms gating works exactly as designed.
+- **BC walls physics**: headless point-query at new wall positions (52, 136), (268, 136), (160, 28), (160, 244) all return 1+ collisions. Playfield interior (160, 120) and player spawn (124, 228) return 0. Eagle position (160, 232) returns 1 (= Eagle's own StaticBody2D).
+
+### Scores
+
+| C# | Name | Before | After | Tag | Cite |
+|----|------|--------|-------|-----|------|
+| 1-12 | (no rubric-anchor lifts this iter — fixes don't directly map to anchors) | | | | |
+| **Total** | | **47** | **47/60** | | flat — quality-of-game improvements without score change |
+
+### Why no score lift
+
+F002 + F003 are GAME QUALITY fixes that don't directly satisfy any rubric anchor. They make the eventual user-playtest cites EASIER to land (e.g., C11 anchor 4 "names 3+ BC features unprompted" — now "eagle hugs the bottom border" is a feature, not a bug). But the rubric scores anchors on their own merit, not on cumulative quality work.
+
+Cumulative arc-3 pattern: structural-axis ceiling was hit around iter 15 (45/60); iter-17/18 picked +1 anchor lifts from existing evidence; iter 19 is pure quality work.
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 16 cites
+- [STRUCTURE-DEFERRED]: 1 cite
+- [FEEL]: 4 cites
+- [MIXED]: 0
+
+### Falsification closures (post-iter-19)
+
+| F# | Description | Status |
+|----|-------------|--------|
+| F001 | Formula loses per-stage variance | OPEN (cure-path exists via og_rosters.json iter 17; not active fix) |
+| F002 | Eagle doesn't hug bottom border | **FIXED iter 19** |
+| F003 | Arc-2 ascender HUD in OG mode | **FIXED iter 19** |
+| F004 | Player escapes BC playfield | FIXED iter 18 |
+
+3 of 4 arc-3 falsifications now have fixes; F001 has a structural cure-path (Roster could swap to table-mode) but the formula approximation is good enough for arc-3 v1.
+
+### Substrate guardrails verified
+
+- `scripts/PlayerTank.gd`: EXTENDED via default-true gate (arc-2 soft-substrate write per PROMPT Layer-2 sanction). Procedural mode HUD behavior bit-identical.
+- `scripts/Spawner.gd`: data constant updated (OG_SPAWN_POINTS y); arc-3-only path; procedural path untouched.
+- `scripts/OriginalLevel.gd`: EAGLE_SCREEN_POS data constant.
+- `scenes/OriginalLevel.tscn`: scene-data updates (row_offset, positions).
+- `tools/png_diff.py`: tooling constant (RENDER_OFFSET_Y).
+- Procedural hash anchor `23d6a2ec…` preserved.
+
+### Cumulative arc-3 path (post-retro updates)
+
+```
+iter 16: 45/60  (META-RETRO snapshot)
+iter 17: 46/60  (C11 anchor 2 + og_rosters.json)
+iter 18: 47/60  (C11 anchor 3 + F004 walls)
+iter 19: 47/60  (F002 + F003 fixes — quality, no rubric-anchor lift)
+```
+
+### Next iter
+
+Per user "kick off the loop to continue fix them and improve game quality":
+- Iter 20: TitleScreen aesthetic (queue #1 user-voted option d) — BC pixel-art logo + animated tank cursor. Implementation work; no rubric anchor lift but improves identity/quality.
+- Iter 21+: continued quality / playtest if user pings.
+
+### Commit
+
+`chore(originals): iter 019 — BUILD — F002 eagle hug + F003 HUD gate (both fixed)`

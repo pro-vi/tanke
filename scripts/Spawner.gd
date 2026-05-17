@@ -24,9 +24,13 @@ var _total_spawns_this_stage: int = 0
 # top row. arc-3 scene coords add (col_offset=7, row_offset=2). At 8 px/tile
 # with cell-center anchoring (+4 each axis): (4 + 8*8, 4 + 8*3) and so on.
 const OG_SPAWN_POINTS: Array = [
-	Vector2(68, 28),    # Tanks stage col 1 → arc-3 scene col 8 → screen x 4 + 8*8 = 68
-	Vector2(156, 28),   # Tanks stage col 12 → arc-3 scene col 19 → screen x 4 + 19*8 = 156
-	Vector2(252, 28),   # Tanks stage col 24 → arc-3 scene col 31 → screen x 4 + 31*8 = 252
+	# iter 019 (F002): y=44 (was 28) follows row_offset 2→4 shift. Stage row 1
+	# = arc-3 scene row 5 = screen y 5*8+4 = 44. Without this update enemies
+	# would spawn 2 cells above the BC playfield top (visible only briefly
+	# before walls/level catch them).
+	Vector2(68, 44),    # Tanks stage col 1 → arc-3 scene col 8 → screen x 4 + 8*8 = 68
+	Vector2(156, 44),   # Tanks stage col 12 → arc-3 scene col 19 → screen x 4 + 19*8 = 156
+	Vector2(252, 44),   # Tanks stage col 24 → arc-3 scene col 31 → screen x 4 + 31*8 = 252
 ]
 # Ascender pressure (iter 12)
 @export var ascent_lookahead_seconds: float = 1.5  # spawn this many seconds-of-ascent further ahead
