@@ -955,3 +955,40 @@ After iter 18:
 - **F4**: Hash anchor drift via shared substrate. *Mitigation*: only OriginalLevel.gd touched; no Spawner edit; no PlayerTank edit; procedural mode never instantiates OriginalLevel.
 
 **Substrate guards:** OriginalLevel.gd (arc-3-owned iter 1). No script edits to Layer 1 or arc-2 substrate.
+
+---
+
+## Iter 022 — BUILD (25-stage advance chain test → C10 anchor 4)
+
+**Mode:** BUILD (testing/verification work).
+
+**Weakest reachable axis:** C10 (End-to-end playable run) at 3. Anchor 4: "Stages 1-25 reachable; eagle gameplay survives the full progression." Iter-11 already verified a 10-stage chain (1→11) programmatically. Extending to 25 stages is mechanical.
+
+**Plan:**
+
+1. Write `/tmp/test_chain_25.gd` SceneTree script that:
+   - Instantiates StageDirector starting at stage 1
+   - For each advance 1→25: instantiate OriginalLevel with that stage_number
+   - Wait several frames for `_ready` to run (LevelLoader + Spawner + Eagle setup)
+   - Verify: `level.eagle != null && is_instance_valid(level.eagle)` (anchor-4 "eagle gameplay survives")
+   - Verify: Spawner present + stage_number matches
+   - Verify: no script errors logged
+   - queue_free + advance to next
+2. If 25/25 pass → cite C10 anchor 4.
+3. Add a `make check-chain` Makefile target so the test is reproducible.
+
+**Falsifiable claim:**
+- All 25 stage instantiations complete without script errors.
+- Eagle entity present + valid on each.
+- Spawner present + stage_number correct on each.
+- Procedural hash anchor `23d6a2ec…` preserved.
+- `make test-all` exit 0.
+
+**F-list:**
+- **F1**: Some specific stage breaks loader (would have surfaced earlier via iter-1 35-stage parse, but always worth re-verifying with full Spawner/Eagle stack). *Mitigation*: test individually catches the failing stage; F-number it.
+- **F2**: Repeated scene instantiation + queue_free over 25 stages leaks memory or piles up child nodes. *Mitigation*: explicit `await process_frame` after queue_free to let cleanup complete.
+- **F3**: Eagle isn't created during the brief test window (only 3-5 frames per stage). *Mitigation*: Eagle is spawned in OriginalLevel._ready synchronously, so it's available after the first process_frame.
+
+**Substrate guards:** test script only; no production code edits.
+
+**Anti-Goodhart**: anchor 4 wording is "Stages 1-25 reachable ... eagle gameplay survives — code-cited." My test verifies the MECHANISM (each stage instantiates without crashes, eagle is alive). That's exactly what "code-cited" means. Anchor 5 ("Full 1-35 + win state ... playtest verified") still requires playtest.

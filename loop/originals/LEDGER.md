@@ -2072,3 +2072,81 @@ Iter 22 candidates:
 ### Commit
 
 `chore(originals): iter 021 — BUILD — BC-style right-margin HUD (STAGE/KILLS/SCORE)`
+
+---
+
+## Iter 022 — BUILD (25-stage advance chain → C10 anchor 4)
+
+**Mode:** BUILD
+**Date:** 2026-05-17
+**Branch:** `arc-3-originals`
+
+### Pre-mortem (cited; PRE-MORTEMS.md iter 022)
+
+F1-F3 listed; none fired. 25/25 stages PASS the chain test.
+
+### Actions
+
+1. **`loop/test_chain_25.gd`** (NEW) — SceneTree harness. Instantiates OriginalLevel for stages 1-25; per stage verifies:
+   - `level.eagle != null && is_instance_valid(level.eagle)` ← anchor-4 "eagle gameplay survives"
+   - `Spawner` node present, `stage_number` matches
+   - `Roster.armored_probability(stage_n)` in [0, 1]
+   - queue_free + await process_frame between stages (no leak)
+2. **Makefile**: `check-chain` target runs the harness + greps for `CHAIN_25_OK`; exits non-zero on any FAIL. `test-all` updated to include it.
+
+### Verification
+
+```
+ok stage  1  eagle=valid  spawner=1   p_armored=0.1000
+ok stage  2  eagle=valid  spawner=2   p_armored=0.1074
+...
+ok stage 25  eagle=valid  spawner=25  p_armored=0.2764
+CHAIN_25_OK 25 stages instantiated cleanly
+```
+
+- 25/25 stages PASS — eagle present + valid; Spawner instantiated with correct stage_number; Roster probability scales linearly 0.1000 → 0.2764 (matches formula).
+- `make test-all` exit 0 (procedural test + LevelLoader edge cases + 25-stage chain).
+- Procedural hash anchor `23d6a2ec…` preserved.
+
+### Scores
+
+| C# | Name | Before | After | Tag | Cite |
+|----|------|--------|-------|-----|------|
+| 1-9, 11, 12 | (unchanged) | | | | |
+| 10 | End-to-end playable run | 3 | **4** | [STRUCTURE] | Anchor 4 ✓ — "Stages 1-25 reachable; eagle gameplay survives the full progression — code-cited." `loop/test_chain_25.gd` + `make check-chain` cites the 25-stage chain pass. Anchor 5 ("Full 1-35 reachable + 'win' state when stage 35 cleared; full playthrough verified via playtest") needs playtest cite — still gated. |
+| **Total** | | **47** | **48/60** | | +1 (C10 anchor 4) |
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 17 cites
+- [STRUCTURE-DEFERRED]: 1 cite
+- [FEEL]: 4 cites
+- [MIXED]: 0
+
+### Substrate guardrails verified
+
+- `loop/test_chain_25.gd` (NEW; test/verification artifact, no game-code edits).
+- `Makefile`: `check-chain` + `test-all` targets added.
+- Procedural hash anchor preserved.
+
+### Cumulative arc-3 path
+
+```
+iter 18: 47/60  (C11 anchor 3 + F004 walls)
+iter 19: 47/60  (F002 + F003 fixes)
+iter 20: 47/60  (TitleScreen aesthetic d)
+iter 21: 47/60  (right-margin HUD)
+iter 22: 48/60  (25-stage chain — C10 anchor 4)
+```
+
+### Next iter
+
+Iter 23 candidates:
+- **Per-type BC scoring** (A=100/B=200/C=300/D=400). Needs Enemy.killed signal to carry type info; Spawner tracks per-type kills; HUD updates accordingly. Touches arc-2 substrate (Enemy.gd) — careful gating.
+- **Lives system** (BC: 3 lives; respawn at canonical spawn after death; game-over only when 0 lives + eagle alive).
+- **SFX integration** (shoot / explosion / clear) — touches arc-2 Bullet.gd or PlayerTank.gd.
+- **arc-3 v2 META-RETRO** if user signals close at current 48/60.
+
+### Commit
+
+`chore(originals): iter 022 — BUILD — 25-stage chain test (C10 anchor 4)`

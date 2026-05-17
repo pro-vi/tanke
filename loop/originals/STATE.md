@@ -4,15 +4,15 @@
 
 ```
 phase: loop (post-retro; quality iters under user kick-off authorization)
-iteration: 21 (BUILD — BC-style right-margin HUD — complete)
+iteration: 22 (BUILD — 25-stage chain test → C10 anchor 4 — complete)
 arc: 3 (Originals — BC NES stages import) — structurally closed iter 16; quality-trail iters
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 47/60 (78.3%) — flat (4 quality iters in a row)
+score: 48/60 (80%) — +1 from iter 22
 playtest_halt_rule: SUSPENDED (iter 10); REVIEW-QUEUE pattern active
 ```
 
-**Iter 21 added BC-style right-margin HUD** — STAGE/KILLS/SCORE labels in CanvasLayer at scene x=270, y=20/40/60. Score = kills × 100 (BC base-tank convention). Polls Spawner.enemies_killed per-frame with cached value to avoid string churn. 444 bright text pixels visible on render; old arc-2 HUD area still 0 (F003 holds); 4 PNG-diff samples still PASS. Procedural hash anchor `23d6a2ec…` preserved. Cumulative: ... → 47 (4th flat quality iter). Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
+**Iter 22 lifted C10 3 → 4.** `loop/test_chain_25.gd` programmatically instantiates all 25 stages; each verifies eagle present + valid, Spawner with correct stage_number, Roster scales linearly. 25/25 PASS. Procedural hash anchor `23d6a2ec…` preserved. `make check-chain` + `make test-all` (now includes chain). Cumulative: ... → 47 → **48/60** (80%). Tag balance: 17 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -60,12 +60,12 @@ Hash anchor `23d6a2ec…` is the regression detector.
 
 ---
 
-## Current Scores (post iter 018 — playtest processing)
+## Current Scores (post iter 022)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
 | 1. Loader correctness | **5** | |
-| 2. Eagle gameplay | **3** | Queue #4 (eagle-felt-like-BC cite still pending) |
+| 2. Eagle gameplay | **3** | Queue #4 (eagle-felt-like-BC cite) |
 | 3. Ice physics | **2** | Pass-through cap |
 | 4. PNG-diff oracle | **4** | |
 | 5. Enemy roster fidelity | **4** | |
@@ -73,10 +73,10 @@ Hash anchor `23d6a2ec…` is the regression detector.
 | 7. Stages 1-12 complete | **5** | |
 | 8. Stages 13-24 complete | **5** | |
 | 9. Stages 25-35 complete | **5** | |
-| 10. End-to-end playable | **3** | |
-| 11. Identity / BC fidelity | **3** | Anchor 3 ✓ — playtest "yes recognizes BC" cite (iter 18). Anchor 4 needs unprompted 3+ BC features named (user named bugs, not features) |
+| 10. End-to-end playable | **4** | Anchor 4 ✓ (iter 22) — 25-stage chain code-cited. Anchor 5 needs playtest |
+| 11. Identity / BC fidelity | **3** | Anchor 3 ✓ playtest cite (iter 18). Anchor 4 needs unprompted 3+ BC features |
 | 12. Arc-2 feedback metrics | **4** | |
-| **Total** | **47/60** | post iter 018 |
+| **Total** | **48/60** | post iter 022 |
 
 ---
 
@@ -110,6 +110,27 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 022 BUILD complete (2026-05-17) — 25-stage chain test (C10 anchor 4).
+
+loop/test_chain_25.gd (NEW): SceneTree harness instantiates 25 OG
+stages; per-stage verifies eagle present + valid (anchor-4 "eagle
+gameplay survives"), Spawner with correct stage_number, Roster
+armored_probability in [0, 1].
+
+Makefile: check-chain target added; test-all now includes it.
+
+Verification: 25/25 stages PASS. Roster scales 0.1000 → 0.2764
+linearly. make test-all exit 0. Procedural hash anchor 23d6a2ec…
+preserved.
+
+Score: C10 3 → 4. Total 47 → 48/60 (+1; 80%).
+Tag balance: 17 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
+
+Commit: chore(originals): iter 022 — BUILD — 25-stage chain test
+(C10 anchor 4).
+```
 
 ```
 Iter 021 BUILD complete (2026-05-17) — BC-style right-margin HUD.
@@ -654,6 +675,26 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 23 — BUILD (per-type BC scoring OR lives system OR SFX)
+
+Per user "continue ... improve game quality":
+- Per-type BC scoring (A=100/B=200/C=300/D=400) — needs Enemy.killed
+  signal to carry type info; Spawner tracks per-type kills; HUD updates.
+  Touches arc-2 Enemy.gd (3rd sanctioned soft-substrate write if it
+  fits PROMPT Layer-2 scope — actually Enemy.gd is NOT explicitly listed
+  as arc-3-writeable in PROMPT; only Spawner + PlayerTank were).
+- Lives system (BC: 3 lives; respawn at canonical position; game-over
+  only when 0 lives + eagle alive). Touches PlayerTank.gd (already a
+  sanctioned soft-substrate write per PROMPT).
+- SFX integration (shoot / explosion / clear) — touches Bullet.gd.
+  Bullet not listed as sanctioned arc-3 write; need to gate via signals
+  or do it scene-level via OriginalLevel listening to Bullet events.
+
+Iter 23 recommend: lives system (PlayerTank substrate authorized).
+Or wait for user direction on which to tackle.
+```
 
 ```
 Iter 22 — BUILD (programmatic 25-stage chain → C10 anchor 4 potential lift)

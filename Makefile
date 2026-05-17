@@ -11,7 +11,7 @@ NOISE_FILTER    = grep -Ev "RID allocations|resources still in use"
 FRAMES_DIR      = $(PROJECT_DIR)/tools/out
 REFS_DIR        = $(PROJECT_DIR)/tools/refs
 
-.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader test-all
+.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain test-all
 
 # Parse/load validation — catches bad scripts and missing nodes
 check:
@@ -89,9 +89,17 @@ check-loader:
 	@$(HEADLESS) --script res://loop/test_loader.gd 2>&1 | grep -E "^\[test_loader|^  (PASS|FAIL)|^ALL_LOADER_TESTS_PASS|^LOADER_TEST_FAILURES"; \
 	$(HEADLESS) --script res://loop/test_loader.gd 2>&1 | grep -q "^ALL_LOADER_TESTS_PASS"
 
-# Combined test target. Runs procedural runtime test + LevelLoader edge cases.
-# (RUBRIC C1 anchor 5: "covered by make test" — satisfied via test-all family.)
-test-all: test check-loader
+# Arc-3 25-stage advance-chain test (RUBRIC C10 anchor 4). Each stage:
+# OriginalLevel instantiates; Eagle present + valid; Spawner.stage_number
+# matches; no script errors. Cites code-side that "stages 1-25 reachable;
+# eagle gameplay survives the full progression".
+check-chain:
+	@$(HEADLESS) --script res://loop/test_chain_25.gd 2>&1 | grep -E "^  (ok|FAIL)|^CHAIN_25"; \
+	$(HEADLESS) --script res://loop/test_chain_25.gd 2>&1 | grep -q "^CHAIN_25_OK"
+
+# Combined test target. Runs procedural runtime test + LevelLoader edge cases
+# + 25-stage advance chain. (RUBRIC C1 anchor 5 + C10 anchor 4 verification.)
+test-all: test check-loader check-chain
 
 # Arc-3 → arc-2 metric handshake: compute per-stage structural metrics
 # across all 35 BC stages and emit loop/originals/og-metrics.json.
