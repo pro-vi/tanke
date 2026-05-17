@@ -922,3 +922,36 @@ After iter 18:
 - **F4 [STRUCTURE]**: Godot's headless --import on new PNGs may hang like iter 3. *Mitigation*: run `godot --headless --import` after PNG generation; verify before testing.
 
 **Substrate guards:** no script-substrate edits (PlayerTank/Spawner/Level etc.); only TitleScreen.tscn + TitleScreen.gd; new assets in img/. No code outside arc-3.
+
+---
+
+## Iter 021 — BUILD (BC-style HUD on right margin)
+
+**Mode:** BUILD.
+
+**Meta-trigger:** User signal "kick off the loop ... improve game quality" + iter-18 playtest "size is off." Empty 56-px right margin (cols 33-39) currently shows only gray — unauthentic to BC's right-side status bar.
+
+**Plan:**
+
+1. **OriginalLevel.gd** gains `_setup_og_hud()` called in `_ready` after `_spawn_eagle`. Creates a CanvasLayer with 3 right-side labels:
+   - STAGE NN — current stage_number
+   - KILLS XX/20 — Spawner counter `enemies_killed` (already tracked iter 11)
+   - SCORE — `enemies_killed × 100` (BC convention: A=100 base; per-type refinement deferred)
+2. Labels positioned at scene x=270 (= col 33.75), y=20/40/60.
+3. `_process()` polls Spawner.enemies_killed; updates labels on change.
+4. NO arc-2 substrate edit needed (Spawner.gd already exposes the counter from iter 11).
+5. HUD layer 5 (below game-over overlay's layer 10).
+
+**Falsifiable claim:**
+- HUD renders at right margin; STAGE NN visible from boot.
+- `enemies_killed` increments → KILLS counter updates.
+- Procedural hash anchor `23d6a2ec…` preserved.
+- `make test` exit 0.
+
+**F-list:**
+- **F1**: HUD overlaps the BC playfield area. *Mitigation*: scene cols 33-39 (x=264-320) are outside the BC playfield (cols 7-32 = x=56-264); HUD at x=270 sits in the 56-px right gray margin.
+- **F2**: Label updates per-frame in `_process` cause GC churn. *Mitigation*: only re-set text when value changed (cache last value).
+- **F3**: Spawner counter unreliable. *Mitigation*: `enemies_killed` is well-tested (iter 11); same counter the existing Spawner uses for arc-2 death-screen summary.
+- **F4**: Hash anchor drift via shared substrate. *Mitigation*: only OriginalLevel.gd touched; no Spawner edit; no PlayerTank edit; procedural mode never instantiates OriginalLevel.
+
+**Substrate guards:** OriginalLevel.gd (arc-3-owned iter 1). No script edits to Layer 1 or arc-2 substrate.

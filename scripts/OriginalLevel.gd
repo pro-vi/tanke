@@ -67,6 +67,7 @@ func _ready() -> void:
 	stage_director = StageDirectorT.new(stage_number)
 	stage_director.arc_complete.connect(_on_arc_complete)
 	_wire_spawner()
+	_setup_og_hud()
 
 
 func _wire_spawner() -> void:
@@ -76,6 +77,59 @@ func _wire_spawner() -> void:
 	spawner.set("stage_number", stage_number)
 	if spawner.has_signal("stage_cleared"):
 		spawner.stage_cleared.connect(_on_stage_cleared)
+
+
+# iter 021: BC-style status HUD on the right margin (scene cols 33-39 =
+# x 264-320 = the empty 56-px gray strip outside the 26×26 BC playfield).
+# Shows STAGE / KILLS / SCORE. Reads Spawner.enemies_killed each frame;
+# label text only re-set when value changed (no per-frame churn).
+var _hud_stage_label: Label = null
+var _hud_kills_label: Label = null
+var _hud_score_label: Label = null
+var _hud_last_kills: int = -1
+const SCORE_PER_KILL := 100
+
+
+func _setup_og_hud() -> void:
+	var canvas := CanvasLayer.new()
+	canvas.layer = 5  # below game-over overlay (layer 10)
+	canvas.name = "OGHud"
+	add_child(canvas)
+	_hud_stage_label = Label.new()
+	_hud_stage_label.position = Vector2(270, 20)
+	_hud_stage_label.text = "STAGE %d" % stage_number
+	_hud_stage_label.add_theme_color_override("font_color", Color.WHITE)
+	_hud_stage_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	_hud_stage_label.add_theme_constant_override("outline_size", 2)
+	canvas.add_child(_hud_stage_label)
+	_hud_kills_label = Label.new()
+	_hud_kills_label.position = Vector2(270, 40)
+	_hud_kills_label.text = "KILLS 0/20"
+	_hud_kills_label.add_theme_color_override("font_color", Color.WHITE)
+	_hud_kills_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	_hud_kills_label.add_theme_constant_override("outline_size", 2)
+	canvas.add_child(_hud_kills_label)
+	_hud_score_label = Label.new()
+	_hud_score_label.position = Vector2(270, 60)
+	_hud_score_label.text = "SCORE 0"
+	_hud_score_label.add_theme_color_override("font_color", Color.WHITE)
+	_hud_score_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	_hud_score_label.add_theme_constant_override("outline_size", 2)
+	canvas.add_child(_hud_score_label)
+
+
+func _update_og_hud() -> void:
+	if _hud_kills_label == null:
+		return
+	var spawner: Node = get_node_or_null("Spawner")
+	if spawner == null:
+		return
+	var kills: int = int(spawner.get("enemies_killed"))
+	if kills == _hud_last_kills:
+		return
+	_hud_last_kills = kills
+	_hud_kills_label.text = "KILLS %d/20" % kills
+	_hud_score_label.text = "SCORE %d" % (kills * SCORE_PER_KILL)
 
 
 func _on_stage_cleared() -> void:
@@ -133,6 +187,8 @@ func _show_game_over() -> void:
 
 
 func _process(_delta: float) -> void:
+	# iter 021: keep HUD live regardless of game state.
+	_update_og_hud()
 	# Dev N-key: advance to the next stage. Anchor-2 cite for criterion 10.
 	# Natural clear-condition (all enemies dead) is iter 9+ Spawner work.
 	# Guarded by _game_over so the GAME OVER screen stops accepting it.

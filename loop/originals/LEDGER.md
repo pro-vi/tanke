@@ -1988,3 +1988,87 @@ Per user "continue ... improve game quality":
 ### Commit
 
 `chore(originals): iter 020 — BUILD — TitleScreen aesthetic d (queue #1 closed)`
+
+---
+
+## Iter 021 — BUILD (BC-style right-margin HUD)
+
+**Mode:** BUILD
+**Date:** 2026-05-17
+**Branch:** `arc-3-originals`
+
+### Pre-mortem (cited; PRE-MORTEMS.md iter 021)
+
+F1-F4 listed; none fired.
+
+### Actions
+
+1. **`scripts/OriginalLevel.gd`** — added `_setup_og_hud()` + `_update_og_hud()`. CanvasLayer at layer 5 with 3 Labels:
+   - STAGE NN (scene x=270, y=20)
+   - KILLS XX/20 (y=40)
+   - SCORE NNN (y=60)
+   White text + 2-px black outline (BC-readable contrast).
+2. `_process()` now polls `Spawner.enemies_killed` each frame; label text only re-set when value changed (`_hud_last_kills` cache; no per-frame string churn).
+3. SCORE = `kills × 100` (BC convention: base ST_TANK_A = 100 pts; per-type refinement deferred to iter 22+ — would need Enemy.killed signal to carry type info).
+
+### Verification
+
+- Procedural hash anchor `23d6a2ec…` preserved. `make test` exit 0.
+- OG stage 1 oracle: brick=220 steel=8 playable=true (unchanged).
+- HUD render verification:
+  - **444 bright text pixels** in right-margin region (x 260-320, y 10-80) — 3 labels visible.
+  - **0 bright pixels** in old arc-2 HUD region (x 230-270, y 0-30) — F003 fix still in effect.
+- PNG-diff 4-stage sanity (HUD is outside the cropped play area, shouldn't affect classifier):
+  - stage 1: 0.299% (slight improvement)
+  - stage 4: 0.448% (improvement)
+  - stage 17: 1.791% (unchanged)
+  - stage 32: 1.194% (within noise of iter-19's 1.045%)
+  All PASS <5%.
+
+### Scores
+
+| C# | Before | After | Tag | Cite |
+|----|--------|-------|-----|------|
+| 1-12 | (unchanged) | | | Quality work; no rubric anchor directly satisfied. |
+| **Total** | **47** | **47/60** | | flat (4 quality iters in a row) |
+
+### Why no score lift
+
+- C12 anchor 5 ("procedural feels in the BC family — playtest cited") and C11 anchor 4 ("names 3+ BC features unprompted") could cite the new HUD on future playtests. The HUD sets up those cites; iter 21 doesn't claim them.
+- The score-points-per-kill (100) is a stylistic BC convention; doesn't satisfy any specific rubric anchor.
+
+### Substrate guardrails verified
+
+- `scripts/OriginalLevel.gd` (arc-3-owned iter 1): extended with HUD setup + update.
+- No arc-2 substrate edits.
+- No other code edits.
+- Procedural hash anchor preserved.
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 16 cites
+- [STRUCTURE-DEFERRED]: 1 cite
+- [FEEL]: 4 cites
+- [MIXED]: 0
+
+### Cumulative arc-3 path (4 flat iters — quality streak)
+
+```
+iter 17: 46/60  (C11 anchor 2 + og_rosters.json)
+iter 18: 47/60  (C11 anchor 3 + F004 walls)
+iter 19: 47/60  (F002 + F003 fixes)
+iter 20: 47/60  (TitleScreen aesthetic d)
+iter 21: 47/60  (right-margin HUD)
+```
+
+### Next iter
+
+Iter 22 candidates:
+- **Programmatic 25-stage chain test** (could lift C10 3 → 4 — anchor 4 "stages 1-25 reachable; eagle gameplay survives the full progression — code-cited" reachable structurally; iter-11's 10-stage chain extends naturally).
+- **Per-type BC scoring** (A=100/B=200/C=300/D=400). Requires Enemy.killed signal to carry type; Spawner tracks per-type kills; HUD updates accordingly.
+- **Lives system** (BC: 3 lives; respawn at canonical spawn after death; game-over only when 0 lives + eagle alive).
+- **SFX integration** (shoot / explosion / stage-clear) — would touch arc-2 substrate via Bullet.gd or PlayerTank.gd.
+
+### Commit
+
+`chore(originals): iter 021 — BUILD — BC-style right-margin HUD (STAGE/KILLS/SCORE)`

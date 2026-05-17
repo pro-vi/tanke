@@ -4,15 +4,15 @@
 
 ```
 phase: loop (post-retro; quality iters under user kick-off authorization)
-iteration: 20 (BUILD — TitleScreen aesthetic d — complete)
+iteration: 21 (BUILD — BC-style right-margin HUD — complete)
 arc: 3 (Originals — BC NES stages import) — structurally closed iter 16; quality-trail iters
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 47/60 (78.3%) — flat
+score: 47/60 (78.3%) — flat (4 quality iters in a row)
 playtest_halt_rule: SUSPENDED (iter 10); REVIEW-QUEUE pattern active
 ```
 
-**Iter 20 closed queue #1.** BC pixel-art TANKE logo (96×16, red-orange with dark shadow) + animated tank cursor (32×16 2-frame sprite sheet, 4 fps tread cycle) replace plain Label title + ">" cursor. 670 logo pixels + 130 cursor pixels visible on headless render. Procedural hash anchor `23d6a2ec…` preserved. 2 of 5 queue items closed (#1, #5); F-fixes 3 of 4 (F002/F003/F004). Cumulative: ... → 47 (flat 3 iters in a row — quality work). Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
+**Iter 21 added BC-style right-margin HUD** — STAGE/KILLS/SCORE labels in CanvasLayer at scene x=270, y=20/40/60. Score = kills × 100 (BC base-tank convention). Polls Spawner.enemies_killed per-frame with cached value to avoid string churn. 444 bright text pixels visible on render; old arc-2 HUD area still 0 (F003 holds); 4 PNG-diff samples still PASS. Procedural hash anchor `23d6a2ec…` preserved. Cumulative: ... → 47 (4th flat quality iter). Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -110,6 +110,34 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 021 BUILD complete (2026-05-17) — BC-style right-margin HUD.
+
+OriginalLevel.gd extended:
+- _setup_og_hud(): CanvasLayer at layer 5; 3 labels at scene x=270:
+    STAGE NN  (y=20)
+    KILLS XX/20  (y=40)
+    SCORE NNN  (y=60)
+  White text + 2-px black outline; matches BC's status-bar feel.
+- _update_og_hud(): polls Spawner.enemies_killed; caches _hud_last_kills
+  to avoid per-frame string churn. SCORE = kills × 100.
+
+Verification:
+- Procedural hash anchor 23d6a2ec… preserved exactly.
+- make test exit 0.
+- OG stage 1 oracle: brick=220 steel=8 playable=true (unchanged).
+- 444 bright text pixels in right-margin HUD region (target >80).
+- 0 bright pixels in old arc-2 HUD region (F003 holds).
+- 4 PNG-diff samples still PASS <5%: stages 1/4 improved; 17 unchanged;
+  32 within noise.
+
+Score: 47/60 flat. Quality work; future playtest could cite the HUD
+for C11 anchor 4 ("names 3+ BC features unprompted") or C12 anchor 5.
+Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
+
+Commit: chore(originals): iter 021 — BUILD — BC-style right-margin HUD.
+```
 
 ```
 Iter 020 BUILD complete (2026-05-17) — TitleScreen aesthetic d.
@@ -626,6 +654,24 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 22 — BUILD (programmatic 25-stage chain → C10 anchor 4 potential lift)
+
+Per user "continue ... improve game quality" — structurally reachable:
+- Extend iter-11's 10-stage advance-chain test to 25 stages.
+- Each stage: StageDirector + scene-reload + Spawner instantiate + Eagle
+  alive — verify no crashes, no script errors, eagle visible.
+- If passes: C10 3 → 4 (anchor 4: "Stages 1-25 reachable; eagle gameplay
+  survives the full progression — code-cited").
+- Anchor 5 ("Full 1-35 ... win state ... playtest verified") still needs
+  user playtest.
+
+Iter 23+ candidates:
+- Per-type BC scoring (A=100/B=200/C=300/D=400) — needs Enemy type cite.
+- Lives system (BC: 3 lives, respawn at canonical).
+- SFX integration (shoot / explosion / clear).
+```
 
 ```
 Iter 21 — BUILD (BC-style HUD on the right side)
