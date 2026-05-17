@@ -3,16 +3,16 @@
 ## Phase
 
 ```
-phase: loop (post-retro; quality/fix iters under user kick-off authorization)
-iteration: 19 (BUILD — F002 + F003 fixes — complete)
-arc: 3 (Originals — BC NES stages import) — structurally closed iter 16; ceiling-trail iters in progress
+phase: loop (post-retro; quality iters under user kick-off authorization)
+iteration: 20 (BUILD — TitleScreen aesthetic d — complete)
+arc: 3 (Originals — BC NES stages import) — structurally closed iter 16; quality-trail iters
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 47/60 (78.3%) — flat post-iter-19 (quality fixes, no rubric anchor lift)
+score: 47/60 (78.3%) — flat
 playtest_halt_rule: SUSPENDED (iter 10); REVIEW-QUEUE pattern active
 ```
 
-**Iter 19 closed F002 + F003.** Eagle now hugs bottom viewport border (row_offset 2→4 + coordinated 4-file shift); arc-2 ascender HUD gated off in OG mode (second sanctioned arc-2 substrate write per PROMPT Layer-2). 35/35 PNG-diff still passes <5%; procedural hash anchor `23d6a2ec…` preserved. 3 of 4 arc-3 F-numbers now fixed (F002 ✓, F003 ✓, F004 ✓; F001 has cure-path artifact). Cumulative: ... → 47 (flat — quality iter). Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
+**Iter 20 closed queue #1.** BC pixel-art TANKE logo (96×16, red-orange with dark shadow) + animated tank cursor (32×16 2-frame sprite sheet, 4 fps tread cycle) replace plain Label title + ">" cursor. 670 logo pixels + 130 cursor pixels visible on headless render. Procedural hash anchor `23d6a2ec…` preserved. 2 of 5 queue items closed (#1, #5); F-fixes 3 of 4 (F002/F003/F004). Cumulative: ... → 47 (flat 3 iters in a row — quality work). Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -110,6 +110,39 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 020 BUILD complete (2026-05-17) — TitleScreen aesthetic d.
+
+User-voted (iter 18) queue #1 option d implemented:
+- img/title_logo.png (96×16) hand-bitmapped TANKE logo in BC
+  red-orange (220, 80, 50) with 1-px dark shadow (110, 30, 20).
+  Each letter T/A/N/K/E drawn as 16×16 inline bitmap dict in PIL.
+- img/title_cursor.png (32×16) 2-frame sprite sheet, yellow-gold
+  tank with cycling treads (alternating dark/light pixels in
+  opposite phase between frames; 4 fps loop = tread illusion).
+- scenes/TitleScreen.tscn: Title Label → Sprite2D; Cursor Label
+  → AnimatedSprite2D with inline SpriteFrames + 2 AtlasTexture
+  frames. Background / Subtitle / Options / Hint unchanged.
+- scripts/TitleScreen.gd: _cursor type widened Label → Node2D;
+  _update_cursor offset (-12, 0) → (-18, 2).
+
+Verification:
+- godot --headless --import ran cleanly.
+- Procedural hash anchor 23d6a2ec… preserved exactly.
+- make test exit 0.
+- TitleScreen render: 670 logo pixels + 130 cursor pixels visible
+  in expected regions; no script errors on headless boot.
+
+Queue closures: #1 closed:d.
+Status: 2 of 5 queue items closed (#1, #5).
+
+Score: 47/60 flat (quality work; no rubric anchor lift).
+Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
+
+Commit: chore(originals): iter 020 — BUILD — TitleScreen aesthetic d
+(queue #1 closed).
+```
 
 ```
 Iter 019 BUILD complete (2026-05-16) — F002 + F003 fixes.
@@ -593,6 +626,28 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 21 — BUILD (BC-style HUD on the right side)
+
+Per user "continue ... improve game quality":
+- Replace empty 56-px right border (scene cols 33-39 unused in arc-3
+  OG mode) with BC-authentic status bar.
+- Display: SCORE / STAGE # / REMAINING-ENEMIES counter (20 → 0 as
+  Spawner kills accumulate).
+- Wire to Spawner.gd's existing counters: _total_spawns_this_stage +
+  enemies_killed give remaining = 20 - enemies_killed.
+- Stage # from OriginalLevel.stage_number.
+- Score not tracked in arc-3 yet; could add via PlayerTank tracker
+  OR start at 0 + increment on enemy kill (Spawner.killed signal).
+- Closes the visual "size is off" feedback from iter-18 playtest by
+  filling the empty right margin.
+
+Iter 22+ candidates:
+- Lives system (BC: 3 lives per game; respawn at canonical spawn).
+- SFX integration (shoot / explosion / stage-clear).
+- arc-3 v2 META-RETRO if user signals close.
+```
 
 ```
 Iter 20 — BUILD (queue #1: TitleScreen aesthetic option d)

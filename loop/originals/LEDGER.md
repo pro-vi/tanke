@@ -1891,3 +1891,100 @@ Per user "kick off the loop to continue fix them and improve game quality":
 ### Commit
 
 `chore(originals): iter 019 — BUILD — F002 eagle hug + F003 HUD gate (both fixed)`
+
+---
+
+## Iter 020 — BUILD (TitleScreen aesthetic d — queue #1 closure)
+
+**Mode:** BUILD
+**Date:** 2026-05-17
+**Branch:** `arc-3-originals`
+**User signal:** "kick off the loop to continue fix them and improve game quality" — iter 18 captured Q1 vote = (d).
+
+### Pre-mortem (cited; PRE-MORTEMS.md iter 020)
+
+F1-F4 listed. F4 (Godot --import hang) mitigated by explicit `godot --headless --import` after PNG generation. F2 (AnimatedSprite2D format) handled via inline SpriteFrames + AtlasTexture sub-resources.
+
+### Actions
+
+1. **`img/title_logo.png`** (NEW) — 96×16 hand-bitmapped "TANKE" pixel-art logo. Each letter drawn as 16×16 RGBA grid using inline `letters` dict in PIL. BC red-orange `(220, 80, 50)` foreground + 1-px down-right shadow `(110, 30, 20)` for chunky depth. 670 non-transparent pixels.
+
+2. **`img/title_cursor.png`** (NEW) — 32×16 2-frame sprite sheet, side-by-side 16×16 frames. Yellow-gold body `(240, 200, 30)` + dark `(140, 100, 10)` outlining. Tank silhouette: rectangular body (rows 2-13), turret (rows 0-4 centered), barrel extending right (rows 5-6), bottom tread strip (rows 14-15) with alternating dark/light pixels in opposite phase between frames → tread-cycle illusion at 4 fps loop.
+
+3. **`scenes/TitleScreen.tscn`** rewrite:
+   - Title: Label → Sprite2D using `img/title_logo.png` at (160, 60), centered.
+   - Cursor: Label → AnimatedSprite2D using inline `SpriteFrames` with 2 AtlasTexture frames (regions (0,0,16,16) + (16,0,16,16)). Speed 4.0 fps; autoplay = "default"; `centered = false` for top-left positioning.
+   - Background, Subtitle, Options, Hint nodes unchanged.
+
+4. **`scripts/TitleScreen.gd`**:
+   - `_cursor` type annotation `Label → Node2D` (AnimatedSprite2D is Node2D-derived).
+   - `_update_cursor()` simplified + repositioned: cursor sits 18 px left of target option + 2 px vertical nudge (sprite top-left vs label baseline alignment).
+
+### Verification
+
+- `godot --headless --import` ran cleanly post-PNG-generation; no script errors on subsequent TitleScreen boot.
+- **Procedural hash anchor `23d6a2ec…` preserved** exactly. `make test` exit 0.
+- TitleScreen headless render captured to `tools/out/title/title_*.png`:
+  - **670 bright pixels** in title-logo region (x 112-208, y 52-68) — logo visible.
+  - **130 bright pixels** in cursor region (x 100-116, y 148-164) — tank sprite visible.
+  - Cursor center pixel rgb `(140, 100, 10)` confirms yellow-gold tank color (matches design's dark outline at sampled position).
+  - No regressions to Subtitle / Options / Hint elements.
+
+### Queue closures
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | TitleScreen aesthetic | **closed:d (iter 20)** — BC logo + animated tank cursor combo |
+| 2 | Q2 BC-recognition cite | still open (anchor 3 partially cited iter 18; anchor 4-5 pending) |
+| 3 | Full 1-35 playthrough | open |
+| 4 | Eagle-felt-like-BC cite | open |
+| 5 | BC edge walls | closed:walls (iter 18) |
+
+2 of 5 queue items closed.
+
+### Scores
+
+| C# | Before | After | Note |
+|----|--------|-------|------|
+| 1-12 | (unchanged) | | quality work; no rubric anchor lift |
+| **Total** | **47** | **47/60** | flat |
+
+### Why no score lift
+
+Queue closures + aesthetic improvements are GAME QUALITY work. RUBRIC C6 (Mode selection) is at 4/5 — anchor 5 is "First-time user navigates without instruction — playtest cited." That requires a fresh playtest cite, not aesthetic improvement.
+
+C11 anchor 4 "names 3+ specific BC-recognition cues unprompted — playtest cited" could land on a future playtest if user names the new TANKE logo or animated tank cursor as BC-recognition features. Iter 20 sets up that future cite.
+
+### Substrate guardrails verified
+
+- No edits to scripts/Level.gd, Bullet.gd, Enemy*.gd, BrickBlock.gd, ProceduralLevel.gd, ProceduralStep.gd, LevelConfig.gd, BiomeConfig.gd, LevelDNA.gd.
+- No edits to arc-2 substrate this iter.
+- `scripts/TitleScreen.gd`: arc-3-owned (iter 6); extended type widening only.
+- `scenes/TitleScreen.tscn`: arc-3-owned (iter 6); content rewrite.
+- New: `img/title_logo.png`, `img/title_cursor.png`.
+- Procedural hash anchor preserved.
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 16 cites
+- [STRUCTURE-DEFERRED]: 1 cite
+- [FEEL]: 4 cites
+- [MIXED]: 0
+
+### Cumulative arc-3 path
+
+```
+iter 18: 47/60  (C11 anchor 3 + F004 walls)
+iter 19: 47/60  (F002 + F003 fixes — quality)
+iter 20: 47/60  (TitleScreen aesthetic d — quality, queue #1 closed)
+```
+
+### Next iter
+
+Per user "continue ... improve game quality":
+- **Iter 21**: BC-style HUD on the right side. Replace the empty 56-px right margin (col 33-39 unused) with SCORE / STAGE / REMAINING-ENEMIES counter. Authentic to BC's status bar layout. Touches HUD CanvasLayer in OriginalLevel or a new node.
+- Iter 22+: lives system (BC has 3 lives), SFX (shoot/explosion/clear), or whatever surfaces.
+
+### Commit
+
+`chore(originals): iter 020 — BUILD — TitleScreen aesthetic d (queue #1 closed)`

@@ -32,7 +32,7 @@ When closing, cite the LEDGER iter that captured the closure.
 
 **User vote (iter 18 playtest):** **(d)** — BC logo + animated tank cursor combo.
 
-**STATUS:** voted; implementation deferred to iter 19+ (pixel-art logo + AnimatedSprite2D cursor; not single-iter trivial).
+**STATUS:** **closed:d (iter 20)** — `img/title_logo.png` (96×16 hand-bitmapped "TANKE" in BC red-orange with 1-px dark shadow) + `img/title_cursor.png` (32×16 2-frame sprite sheet, yellow tank with cycling treads at 4 fps) replace the old text Label + ">" cursor. `scenes/TitleScreen.tscn` switched Title from Label to Sprite2D, Cursor from Label to AnimatedSprite2D (autoplay = default). TitleScreen.gd cursor type widened to Node2D. Visual verification: 670 logo pixels + 130 cursor pixels in their expected regions.
 
 ---
 

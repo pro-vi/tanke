@@ -890,3 +890,35 @@ After iter 18:
 - **F4**: Hash anchor drifts because procedural code path indirectly affected. *Mitigation*: run reachability oracle on procedural BEFORE and AFTER each edit.
 
 **Anti-Goodhart**: F002 must keep PNG-diff <5% on all 35 stages. If any stage regresses past 5%, F002 fix isn't honest and must be reverted or re-tuned.
+
+---
+
+## Iter 020 — BUILD (TitleScreen aesthetic d — queue #1 closure)
+
+**Mode:** BUILD.
+
+**User signal (iter 18):** TitleScreen aesthetic vote = **(d)** BC pixel-art TANKE logo + animated tank cursor combo, keep black background.
+
+**Plan:**
+
+1. **Pixel-art TANKE logo** — generate `img/title_logo.png` via PIL using a hand-bitmapped 5-letter sequence in BC-style chunky pixels. Target size ~120×24 px (5 letters × 16-20 px wide each, with 2-4 px gaps).
+2. **Animated tank cursor** — generate `img/title_cursor.png` as a sprite sheet (2-frame, 16×16 each = 32×16 total). Frame 0 = tank facing right with treads in position A; frame 1 = same tank with treads in position B (tread cycle illusion).
+3. **`scenes/TitleScreen.tscn`** — replace the "TANKE" Label with Sprite2D using the logo. Replace yellow `>` Cursor Label with AnimatedSprite2D using the 2-frame cursor (autoplay, 4 fps tread cycle).
+4. **`scripts/TitleScreen.gd`** — update `_update_cursor()` to move the AnimatedSprite2D instead of the Label.
+
+**Falsifiable claim:**
+
+- `img/title_logo.png` + `img/title_cursor.png` exist; both are valid PNG; size matches design.
+- TitleScreen renders cleanly headless (no script errors).
+- `make test-all` exit 0.
+- Procedural hash anchor `23d6a2ec…` preserved.
+- Visual sanity: title area has > 50 non-background pixels (logo visible); cursor area has tank-sprite pixels (not Label text).
+
+**Most-likely failure modes:**
+
+- **F1 [STRUCTURE]**: Pixel-art logo design choices (font shape, spacing) are subjective; user may dislike. *Mitigation*: stay close to BC's chunky-blocky aesthetic; if user wants different, queue follow-up.
+- **F2 [STRUCTURE]**: AnimatedSprite2D needs SpriteFrames sub-resource setup in .tscn — non-trivial format. *Mitigation*: use simpler `Sprite2D` with `hframes=2` + tween-based animation, OR proper AnimatedSprite2D with SpriteFrames inline.
+- **F3 [STRUCTURE]**: Replacing Label with Sprite2D for the cursor changes the input/positioning code in TitleScreen.gd. *Mitigation*: keep `_cursor` reference; node type can be Sprite2D / AnimatedSprite2D; position update is the same `global_position`.
+- **F4 [STRUCTURE]**: Godot's headless --import on new PNGs may hang like iter 3. *Mitigation*: run `godot --headless --import` after PNG generation; verify before testing.
+
+**Substrate guards:** no script-substrate edits (PlayerTank/Spawner/Level etc.); only TitleScreen.tscn + TitleScreen.gd; new assets in img/. No code outside arc-3.

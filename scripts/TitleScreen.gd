@@ -16,7 +16,10 @@ const PROCEDURAL_SCENE := "res://scenes/ProceduralLevel.tscn"
 var _selection: int = 0
 var _launching: bool = false
 
-@onready var _cursor: Label = $Cursor
+# iter 20: cursor is now AnimatedSprite2D (tank tread-cycle animation),
+# was a Label "> " in iter 6. Type widened to Node2D to satisfy duck-typed
+# global_position assignment in _update_cursor.
+@onready var _cursor: Node2D = $Cursor
 @onready var _option_originals: Label = $Options/Originals
 @onready var _option_procedural: Label = $Options/Procedural
 
@@ -41,10 +44,11 @@ func _process(_delta: float) -> void:
 
 
 func _update_cursor() -> void:
-	if _selection == 0:
-		_cursor.global_position = _option_originals.global_position + Vector2(-12, 0)
-	else:
-		_cursor.global_position = _option_procedural.global_position + Vector2(-12, 0)
+	# iter 20: cursor is AnimatedSprite2D (16×16, top-left anchored via
+	# centered=false). Position 18 px left of option label + 2 px vertical
+	# nudge for visual balance against label baseline.
+	var target_label: Label = _option_originals if _selection == 0 else _option_procedural
+	_cursor.global_position = target_label.global_position + Vector2(-18, 2)
 
 
 func _launch() -> void:
