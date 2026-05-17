@@ -765,3 +765,43 @@ So cross-validation means: does the canonical BC per-stage D-tank count match th
 - Procedural hash anchor preserved.
 
 **Anti-Goodhart guard:** if the fan-walkthrough numbers say (e.g.) stage 1 has 18 normal + 2 D-tanks (10%) and Tanks formula predicts 10% — that's an honest match. If I find myself fudging error bars to claim a match, that's bad.
+
+---
+
+## Iter 017 — AUDIT/BUILD post-retro ("continue" signal)
+
+**Mode:** AUDIT (re-score) + BUILD (data artifact promotion).
+
+**Meta-trigger:** User signal "continue" after iter-16 META-RETRO. Per the META-RETRO's "Re-engagement entry points," loose-form continuation is interpretable as "keep iterating structurally where reachable." Two structural reach targets I'd left on the floor:
+1. **C11 anchor 2** ("Bilateral brick columns + steel-armored mid-corridor + bottom-center eagle fortress all render — code-cited") is satisfied by existing iter-3 fortress survey + iter-5 PNG-diff evidence. Iter-10 conservatively held C11 at 1; iter-17 AUDIT corrects.
+2. **F001 cure-path** (logged in `FALSIFICATIONS.md`): "the per-stage StrategyWiki table is documented in `roster-validation.md` and ready to promote if needed." Iter 17 makes it CONCRETELY ready by emitting `loop/originals/og_rosters.json` — machine-readable per-stage rosters that arc-3-v2 (or any future consumer) can ingest without re-parsing the markdown.
+
+**Note on META-RETRO authority**: META-RETRO captured the iter-16 state. Post-retro iters are post-snapshot work; the META-RETRO doesn't become stale, it's just one frame. Any score change in iter-17+ is recorded as "post-META-RETRO update" in LEDGER, not a retraction of the iter-16 snapshot.
+
+**Plan:**
+
+1. **AUDIT re-score C11**: cite anchor 2's three required features against existing iter-3 + iter-5 evidence. C11 1 → 2. No new evidence gathering needed.
+2. **BUILD og_rosters.json**: Python script reads `loop/originals/roster-validation.md` table → emits `loop/originals/og_rosters.json` with per-stage entries (`{stage, basic, fast, power, armor, total}` × 35) + summary.
+3. **No code edits** to scripts/ or scenes/ this iter. JSON is a data artifact for future-consumer readiness.
+
+**Falsifiable claim:**
+
+- `loop/originals/og_rosters.json` exists; 35 per-stage entries; each entry's `basic + fast + power + armor == 20` (BC canonical total).
+- C11 re-score is honest — anchor 2 wording satisfied by code-citable evidence from prior iters.
+- Procedural hash anchor `23d6a2ec…` preserved (no code edits).
+- `make test-all` exit 0.
+
+**Most-likely failure modes:**
+
+- **F1 [STRUCTURE]**: Re-parsing `roster-validation.md` table introduces an off-by-one or stage-skip if the markdown format is fragile. *Mitigation*: parse via regex against the table-row pattern; cross-check totals = 20 per stage; cross-check ARMOR column matches what's in the FALSIFICATIONS.md F001 entry for stages 17, 25, 35.
+- **F2 [STRUCTURE]**: C11 → 2 re-score might be Goodhart-ish ("scoring against prior evidence I gathered"). *Mitigation*: anchor 2 wording is EXPLICITLY code-cited (not feel-cited); the cite material was sitting unclaimed because iter-10's playtest scoring focused only on what the user said. AUDIT reclaiming structural evidence is the AUDIT mode's purpose.
+- **F3 [STRUCTURE]**: META-RETRO already documented "Arc 3 closes at 45/60." Lifting to 46/60 in iter 17 looks like score-creep. *Mitigation*: document this explicitly as "post-META-RETRO update"; the retro's structural-ceiling thesis is unchanged (this is the same evidence retro already cited, just re-applied to a separate anchor).
+
+**Anti-Goodhart guard:** If I find myself reaching for OTHER anchors to "also lift" just because the door is open, that's score-creep. Stay disciplined: C11 → 2 is the ONE earned lift from existing evidence. C2/C6/C10 still need playtest cites for their next anchors. C12 anchor 5 still needs playtest. No other anchors are reachable from existing evidence.
+
+**Substrate guards:** no edits to scripts/ or scenes/. New: `loop/originals/og_rosters.json`. Procedural hash anchor preserved.
+
+**What would count as "iter 17 failed":**
+- Hash anchor drifts (would mean code edits crept in — AUDIT/data-only mode forbids).
+- og_rosters.json malformed (non-parseable or per-stage totals don't sum to 20).
+- C11 → 2 re-score not defensible.

@@ -3,16 +3,16 @@
 ## Phase
 
 ```
-phase: ARC CLOSE (META-RETRO iter 16; loop paused)
-iteration: 16 (META-RETRO — arc-3 close at structural ceiling)
-arc: 3 (Originals — BC NES stages import) — CLOSED
+phase: loop (post-META-RETRO update; arc-3 ceiling-trail iters)
+iteration: 17 (AUDIT/BUILD — C11 → 2 + og_rosters.json — complete)
+arc: 3 (Originals — BC NES stages import) — structurally closed iter 16; ceiling-trail iters allowed
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 45/60 (75%) — final
-playtest_halt_rule: SUSPENDED (iter 10); arc closes at structural ceiling
+score: 46/60 (76.7%) — post-retro
+playtest_halt_rule: SUSPENDED (iter 10); REVIEW-QUEUE pattern active
 ```
 
-**ARC 3 CLOSED at 45/60 (75%).** See `loop/originals/META-RETRO-iter016.md` for the closing retrospective. PROMPT close condition met at iter 15 (35/35 stages PNG-verified + eagle + ice + StageDirector + Spawner + PNG-diff floor green). Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 → 36 (v2) → 36 (HALT) → 38 → 40 → 42 → 43 → 44 → 45 → 45 (META-RETRO; no score lift). Loop pauses naturally. Re-engagement entry points documented in META-RETRO § "Re-engagement entry points".
+**Arc-3 post-retro update.** Iter-16 META-RETRO captured the iter-16 snapshot (45/60). Iter 17 lifts +1 via AUDIT re-score (C11 → 2; anchor 2 cite-able from existing iter-3 fortress survey + iter-5 PNG-diff evidence) plus emits `loop/originals/og_rosters.json` (35-stage canonical roster table — F001's "ready to promote" cure-path made concrete). Cumulative path: ... → 45 (iter 16 META-RETRO) → **46** (iter 17). Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL]. META-RETRO doc preserved unchanged.
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -60,7 +60,7 @@ Hash anchor `23d6a2ec…` is the regression detector.
 
 ---
 
-## Current Scores (post iter 015 — roster cross-validation)
+## Current Scores (post iter 017 — post-retro AUDIT)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
@@ -68,15 +68,15 @@ Hash anchor `23d6a2ec…` is the regression detector.
 | 2. Eagle gameplay | **3** | Queue #4 |
 | 3. Ice physics | **2** | Pass-through cap |
 | 4. PNG-diff oracle | **4** | |
-| 5. Enemy roster fidelity | **4** | Anchor 4 ✓ — 35 stages cross-validated via StrategyWiki; F001 logged. Anchor 5 awaits playtest |
+| 5. Enemy roster fidelity | **4** | F001 cure-path made concrete via `loop/originals/og_rosters.json` |
 | 6. Mode selection | **4** | |
 | 7. Stages 1-12 complete | **5** | |
 | 8. Stages 13-24 complete | **5** | |
 | 9. Stages 25-35 complete | **5** | |
 | 10. End-to-end playable | **3** | |
-| 11. Identity / BC fidelity | **1** | Queue #2 |
+| 11. Identity / BC fidelity | **2** | Anchor 2 ✓ (iter-17 AUDIT) — fortress survey + PNG-diff code-cite. Queue #2 still applies for anchor 3+ |
 | 12. Arc-2 feedback metrics | **4** | |
-| **Total** | **45/60** | post iter 015 |
+| **Total** | **46/60** | post iter 017 |
 
 ---
 
@@ -110,6 +110,33 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 017 AUDIT/BUILD complete (2026-05-16) — post-META-RETRO update.
+
+User signal "continue" after iter-16 META-RETRO.
+Two reachable structural targets executed:
+
+1. AUDIT: C11 1 → 2 — anchor 2 (bilateral brick columns +
+   steel mid-corridor + bottom-center eagle fortress, code-cited) is
+   satisfied by existing iter-3 fortress survey + iter-5 PNG-diff <5%
+   sweep evidence. Iter-10 conservatively held at 1 by reading anchor 1
+   only; iter-17 AUDIT reclaims the structural cite.
+
+2. BUILD: loop/originals/og_rosters.json — 35-stage canonical roster
+   table parsed from roster-validation.md (StrategyWiki source).
+   F001's "ready to promote" cure-path made concrete. 700 enemies
+   total; armor fraction global 24.14% (matches empirical mean).
+
+Procedural hash anchor 23d6a2ec… preserved. make test-all exit 0.
+META-RETRO-iter016.md unchanged (iter-16 snapshot canonical).
+
+Score: C11 1 → 2. Total 45 → 46/60 (+1).
+Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL].
+
+Commit: chore(originals): iter 017 — AUDIT/BUILD — C11→2 +
+og_rosters.json (F001 cure-path).
+```
 
 ```
 Iter 016 META-RETRO complete (2026-05-15) — arc 3 CLOSED.
@@ -498,6 +525,34 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 18 — branch by user signal:
+
+  IF "continue" / no specific direction:
+    Pause naturally. Reachable structural lifts are exhausted. The
+    remaining +14 points are all playtest-gated (C2/C6/C10/C11/C12
+    anchors 4-5) plus C3 rubric cap. Further BUILD iters without
+    user input risk score-creep (Goodhart).
+
+  IF "I played it, Q1/Q2/...":
+    Iter 18 = PLAYTEST mode; score feel-cited anchors.
+
+  IF "Queue: TitleScreen pick (a/b/c/d)":
+    Iter 18 = BUILD; implement chosen aesthetic.
+
+  IF "Walls / accept / cosmetic" (queue #5):
+    Iter 18 = BUILD; add invisible walls OR cosmetic frame OR document
+    accept-leakiness.
+
+  IF "Arc 3 done":
+    Final pause. No further iters. arc-3 artifacts remain for arc-4.
+
+  IF "Arc 4: ...":
+    Fresh arc with arc-3 artifacts as substrate.
+
+No wakeup scheduled. Loop pauses unless user pings.
+```
 
 ```
 PAUSED — arc 3 CLOSED via META-RETRO. No further wakeup scheduled.

@@ -1,0 +1,343 @@
+{
+  "rosters": [
+    {
+      "stage": 1,
+      "basic": 18,
+      "fast": 2,
+      "power": 0,
+      "armor": 0,
+      "total": 20,
+      "armor_fraction": 0.0
+    },
+    {
+      "stage": 2,
+      "basic": 14,
+      "fast": 4,
+      "power": 0,
+      "armor": 2,
+      "total": 20,
+      "armor_fraction": 0.1
+    },
+    {
+      "stage": 3,
+      "basic": 14,
+      "fast": 4,
+      "power": 0,
+      "armor": 2,
+      "total": 20,
+      "armor_fraction": 0.1
+    },
+    {
+      "stage": 4,
+      "basic": 2,
+      "fast": 5,
+      "power": 10,
+      "armor": 3,
+      "total": 20,
+      "armor_fraction": 0.15
+    },
+    {
+      "stage": 5,
+      "basic": 8,
+      "fast": 5,
+      "power": 5,
+      "armor": 2,
+      "total": 20,
+      "armor_fraction": 0.1
+    },
+    {
+      "stage": 6,
+      "basic": 9,
+      "fast": 2,
+      "power": 7,
+      "armor": 2,
+      "total": 20,
+      "armor_fraction": 0.1
+    },
+    {
+      "stage": 7,
+      "basic": 10,
+      "fast": 4,
+      "power": 6,
+      "armor": 0,
+      "total": 20,
+      "armor_fraction": 0.0
+    },
+    {
+      "stage": 8,
+      "basic": 7,
+      "fast": 4,
+      "power": 7,
+      "armor": 2,
+      "total": 20,
+      "armor_fraction": 0.1
+    },
+    {
+      "stage": 9,
+      "basic": 6,
+      "fast": 4,
+      "power": 7,
+      "armor": 3,
+      "total": 20,
+      "armor_fraction": 0.15
+    },
+    {
+      "stage": 10,
+      "basic": 12,
+      "fast": 2,
+      "power": 4,
+      "armor": 2,
+      "total": 20,
+      "armor_fraction": 0.1
+    },
+    {
+      "stage": 11,
+      "basic": 0,
+      "fast": 10,
+      "power": 4,
+      "armor": 6,
+      "total": 20,
+      "armor_fraction": 0.3
+    },
+    {
+      "stage": 12,
+      "basic": 0,
+      "fast": 6,
+      "power": 8,
+      "armor": 6,
+      "total": 20,
+      "armor_fraction": 0.3
+    },
+    {
+      "stage": 13,
+      "basic": 0,
+      "fast": 8,
+      "power": 8,
+      "armor": 4,
+      "total": 20,
+      "armor_fraction": 0.2
+    },
+    {
+      "stage": 14,
+      "basic": 0,
+      "fast": 4,
+      "power": 10,
+      "armor": 6,
+      "total": 20,
+      "armor_fraction": 0.3
+    },
+    {
+      "stage": 15,
+      "basic": 2,
+      "fast": 10,
+      "power": 0,
+      "armor": 8,
+      "total": 20,
+      "armor_fraction": 0.4
+    },
+    {
+      "stage": 16,
+      "basic": 16,
+      "fast": 2,
+      "power": 0,
+      "armor": 2,
+      "total": 20,
+      "armor_fraction": 0.1
+    },
+    {
+      "stage": 17,
+      "basic": 8,
+      "fast": 2,
+      "power": 0,
+      "armor": 10,
+      "total": 20,
+      "armor_fraction": 0.5
+    },
+    {
+      "stage": 18,
+      "basic": 2,
+      "fast": 8,
+      "power": 6,
+      "armor": 4,
+      "total": 20,
+      "armor_fraction": 0.2
+    },
+    {
+      "stage": 19,
+      "basic": 4,
+      "fast": 4,
+      "power": 4,
+      "armor": 8,
+      "total": 20,
+      "armor_fraction": 0.4
+    },
+    {
+      "stage": 20,
+      "basic": 2,
+      "fast": 8,
+      "power": 2,
+      "armor": 8,
+      "total": 20,
+      "armor_fraction": 0.4
+    },
+    {
+      "stage": 21,
+      "basic": 6,
+      "fast": 2,
+      "power": 8,
+      "armor": 4,
+      "total": 20,
+      "armor_fraction": 0.2
+    },
+    {
+      "stage": 22,
+      "basic": 6,
+      "fast": 8,
+      "power": 2,
+      "armor": 4,
+      "total": 20,
+      "armor_fraction": 0.2
+    },
+    {
+      "stage": 23,
+      "basic": 0,
+      "fast": 10,
+      "power": 4,
+      "armor": 6,
+      "total": 20,
+      "armor_fraction": 0.3
+    },
+    {
+      "stage": 24,
+      "basic": 10,
+      "fast": 4,
+      "power": 4,
+      "armor": 2,
+      "total": 20,
+      "armor_fraction": 0.1
+    },
+    {
+      "stage": 25,
+      "basic": 0,
+      "fast": 8,
+      "power": 2,
+      "armor": 10,
+      "total": 20,
+      "armor_fraction": 0.5
+    },
+    {
+      "stage": 26,
+      "basic": 4,
+      "fast": 6,
+      "power": 4,
+      "armor": 6,
+      "total": 20,
+      "armor_fraction": 0.3
+    },
+    {
+      "stage": 27,
+      "basic": 2,
+      "fast": 8,
+      "power": 2,
+      "armor": 8,
+      "total": 20,
+      "armor_fraction": 0.4
+    },
+    {
+      "stage": 28,
+      "basic": 15,
+      "fast": 2,
+      "power": 2,
+      "armor": 1,
+      "total": 20,
+      "armor_fraction": 0.05
+    },
+    {
+      "stage": 29,
+      "basic": 0,
+      "fast": 4,
+      "power": 10,
+      "armor": 6,
+      "total": 20,
+      "armor_fraction": 0.3
+    },
+    {
+      "stage": 30,
+      "basic": 4,
+      "fast": 8,
+      "power": 4,
+      "armor": 4,
+      "total": 20,
+      "armor_fraction": 0.2
+    },
+    {
+      "stage": 31,
+      "basic": 0,
+      "fast": 8,
+      "power": 6,
+      "armor": 6,
+      "total": 20,
+      "armor_fraction": 0.3
+    },
+    {
+      "stage": 32,
+      "basic": 6,
+      "fast": 4,
+      "power": 2,
+      "armor": 8,
+      "total": 20,
+      "armor_fraction": 0.4
+    },
+    {
+      "stage": 33,
+      "basic": 0,
+      "fast": 8,
+      "power": 4,
+      "armor": 8,
+      "total": 20,
+      "armor_fraction": 0.4
+    },
+    {
+      "stage": 34,
+      "basic": 0,
+      "fast": 10,
+      "power": 4,
+      "armor": 6,
+      "total": 20,
+      "armor_fraction": 0.3
+    },
+    {
+      "stage": 35,
+      "basic": 0,
+      "fast": 6,
+      "power": 4,
+      "armor": 10,
+      "total": 20,
+      "armor_fraction": 0.5
+    }
+  ],
+  "summary": {
+    "stage_count": 35,
+    "enemies_per_stage": 20,
+    "total_enemies_all_stages": 700,
+    "type_totals": {
+      "basic": 187,
+      "fast": 194,
+      "power": 150,
+      "armor": 169
+    },
+    "type_fractions_global": {
+      "basic": 0.2671,
+      "fast": 0.2771,
+      "power": 0.2143,
+      "armor": 0.2414
+    }
+  },
+  "meta": {
+    "source": "StrategyWiki Battle City Walkthrough (CC-BY-SA)",
+    "extracted_via": "tools/og_metrics.py companion / iter 015 roster-validation.md re-parse",
+    "rubric_anchor": "C5 cure-path for F001 (formula approximates mean+trend but loses per-stage variance)",
+    "intended_consumer": "future arc-3 v2 OR alternate Spawner.roster_mode='table'",
+    "generated_iter": 17
+  }
+}

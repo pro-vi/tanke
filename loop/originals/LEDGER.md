@@ -1597,3 +1597,85 @@ iter 14: 44/60  (og_calibrated config — 4 metrics toward OG)
 iter 15: 45/60  (roster cross-validation + F001)
 iter 16: 45/60  (META-RETRO — frozen)
 ```
+
+---
+
+## Iter 017 — AUDIT/BUILD (post-META-RETRO update)
+
+**Mode:** AUDIT (re-score) + BUILD (data artifact)
+**Date:** 2026-05-16
+**Branch:** `arc-3-originals`
+**Meta-trigger:** User signal "continue" after iter-16 META-RETRO. The META-RETRO captured a snapshot at iter 16; this iter is post-snapshot work, not a retraction.
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 017)
+
+Two reachable structural targets identified pre-iter:
+1. **C11 anchor 2** — code-citable from prior iter-3 + iter-5 evidence; iter-10 conservatively held C11 at 1 by focusing on playtest cite only.
+2. **F001 cure-path** — make the "ready to promote" StrategyWiki table concrete by emitting JSON.
+
+Both delivered. F1-F3 didn't fire.
+
+### Actions
+
+1. **`loop/originals/og_rosters.json`** (NEW) — 35 per-stage entries `{stage, basic, fast, power, armor, total, armor_fraction}` parsed from `roster-validation.md` table via Python regex. Plus summary block (`type_totals`, `type_fractions_global`) + meta (source attribution to StrategyWiki CC-BY-SA). Verified: 35 stages × 20 enemies = 700 total; armor fraction global 0.2414 (matches F001's 24.14% empirical mean cite).
+2. **AUDIT re-score for C11** — anchor 2 wording: "Bilateral brick columns + steel-armored mid-corridor + bottom-center eagle fortress all render on the appropriate stages — code-cited."
+   - **Bilateral brick columns** — iter-1 stage 1 source verified contains `..##..##..##..##..##..##..` pattern (alternating brick columns). iter-5 PNG-diff <5% across all 35 stages confirms render fidelity.
+   - **Steel-armored mid-corridor** — synthesis-cited and iter-1 grep-verified: stage 1 has `@@` steel rows 6-7 (8 cells); the iter-5 35-stage PNG-diff sweep validated steel rendering at <5% mismatch on every stage that has steel.
+   - **Bottom-center eagle fortress** — iter-3 explicit 35-stage survey verified `#..#` pattern at stage cols 11-14 / rows 24-25 is universal across all 35 stages.
+   All three sub-features have explicit code-cites from prior iters. Anchor 2 satisfied; **C11 1 → 2**.
+
+### Verification
+
+- `og_rosters.json` per-stage totals all = 20; sums to 700 enemies across 35 stages.
+- F001-cited spike stages confirmed: stage 17 armor=10, stage 25 armor=10, stage 28 armor=1, stage 35 armor=10 — all match the falsification log entries.
+- Procedural hash anchor `23d6a2ec…` preserved.
+- `make test-all` exit 0.
+
+### Scores
+
+| C# | Name | Before | After | Tag | Cite |
+|----|------|--------|-------|-----|------|
+| 1-10 | (unchanged) | | | | |
+| 11 | Identity / BC fidelity | 1 | **2** | [STRUCTURE] | Anchor 2 ✓ via prior iter-3 fortress survey (35/35 stages) + iter-5 PNG-diff <5% (35/35 stages); explicit code-cite of three required features (bilateral brick columns, steel mid-corridor, eagle fortress). Iter-10 had held at 1 by reading anchor 1 only; iter-17 AUDIT reclaims anchor 2's structural cite from existing evidence. |
+| 12 | (unchanged) | | | | |
+| **Total** | | **45** | **46/60** | | +1 (C11 AUDIT). |
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 16 cites
+- [STRUCTURE-DEFERRED]: 1 cite
+- [FEEL]: 3 cites
+- [MIXED]: 0
+
+### Substrate guardrails verified
+
+- No code edits.
+- `.research/repos/Tanks/` read-only.
+- Procedural hash anchor preserved.
+- New file: `loop/originals/og_rosters.json`.
+- META-RETRO-iter016.md NOT edited (its iter-16 snapshot is canonical for that moment).
+
+### Cumulative arc-3 path (post-retro update)
+
+```
+iter 16: 45/60  (META-RETRO snapshot)
+iter 17: 46/60  (post-retro: C11 AUDIT + F001 cure-path artifact)
+```
+
+### Note on META-RETRO authority
+
+The iter-16 META-RETRO documents the structural-ceiling state AS OF iter 16. Iter 17 is a post-snapshot update — small structural and AUDIT lifts that don't invalidate the retro's thesis (the playtest-gated +14 points remain playtest-gated). The retro is preserved as the canonical close-document; this LEDGER entry records the delta.
+
+### Next iter
+
+Remaining reachable structural targets are sparse:
+- C5 anchor 5 needs playtest ("this stage is hard like OG stage K").
+- C2 anchor 4+, C6 anchor 5, C10 anchors 4-5, C11 anchor 3+, C12 anchor 5 — all playtest-gated.
+- C3 rubric-capped.
+- C1, C7, C8, C9 maxed.
+
+If user pings with playtest data or queue direction-picks, loop resumes. Otherwise this iter may be the last pre-user-engagement work.
+
+### Commit
+
+`chore(originals): iter 017 — AUDIT/BUILD — C11→2 + og_rosters.json (F001 cure-path)`
