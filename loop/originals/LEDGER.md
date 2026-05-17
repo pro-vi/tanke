@@ -1679,3 +1679,118 @@ If user pings with playtest data or queue direction-picks, loop resumes. Otherwi
 ### Commit
 
 `chore(originals): iter 017 — AUDIT/BUILD — C11→2 + og_rosters.json (F001 cure-path)`
+
+---
+
+## Iter 018 — BUILD (playtest processing + F002/F003/F004 + walls fix)
+
+**Mode:** BUILD (playtest-derived)
+**Date:** 2026-05-16
+**Branch:** `arc-3-originals`
+**Meta-trigger:** User playtest reply 2026-05-16 with Q1=(d), Q2=yes-recognized + 3 new bug reports.
+
+### Pre-mortem (cited; full text in `PRE-MORTEMS.md` iter 018)
+
+Claim verified. F1-F4 didn't fire (walls placed correctly outside playfield; physics works; PNG-diff <5% preserved).
+
+### User playtest reply
+
+> "1d, 2 yes but the size is off, the base does not hug border and enemies and i can drive off border, depth somehow still applies but ofc useless in this mode, i dont know if enemies will die till exhausted - what was the win con in bc?"
+
+### Actions
+
+1. **F004 fix (walls)** — added 4 invisible `StaticBody2D` walls to `scenes/OriginalLevel.tscn`:
+   - `BCLeftWall (52, 120)` — vertical 8×216 shape
+   - `BCRightWall (268, 120)` — vertical 8×216 shape
+   - `BCTopWall (160, 12)` — horizontal 216×8 shape
+   - `BCBottomWall (160, 228)` — horizontal 216×8 shape
+   - All with `collision_layer=1`, no Sprite2D (invisible).
+   - Verified via headless physics point-query: walls present; collision detected at wall center; interior of playfield uncolloided.
+
+2. **F002, F003, F004 logged** in `loop/originals/FALSIFICATIONS.md`:
+   - F002 — eagle doesn't hug bottom border (deferred fix to iter 19; multi-file coordinated change)
+   - F003 — arc-2 ascender HUD renders in OG mode (deferred; arc-2 substrate edit required)
+   - F004 — closed iter 18 via walls fix above
+
+3. **Queue closures**:
+   - Item #5 (BC edge walls): CLOSED iter 18 — option (a) walls per implicit user vote.
+   - Item #1 (TitleScreen aesthetic): user voted (d) — BC logo + animated tank cursor combo; implementation deferred to iter 19 (pixel-art work).
+   - Items #2, #3, #4: still open (await further playtest data).
+
+4. **BC win-con clarification** — direct user question answered in main response: per-stage = kill all 20 enemies → next loads; game over = eagle destroyed; final = stage 35 clear → ARC COMPLETE overlay.
+
+### Verification
+
+- Procedural hash anchor `23d6a2ec…` preserved exactly.
+- `make test-all` exit 0.
+- OG stage 1 oracle: brick=220 steel=8 playable=true (unchanged).
+- Headless wall verification: all 4 BC walls present at expected positions; physics point-query at (52, 120) returns 1 collision; (160, 120) interior returns 0.
+- PNG-diff 4-stage spot check post-walls:
+  - Stage 1: 0.896% (was 0.448% pre-Spawner-iter-11; slight uptick from spawn-timing variance; still well under 5%)
+  - Stage 4: 0.896%
+  - Stage 17: 2.090%
+  - Stage 32: 2.090%
+  All under 5% threshold.
+
+### Scores
+
+| C# | Name | Before | After | Tag | Cite |
+|----|------|--------|-------|-----|------|
+| 1-10 | (unchanged) | | | | |
+| 11 | Identity / BC fidelity | 2 | **3** | [STRUCTURE] / [FEEL] | Anchor 3 ✓ — user playtest reply: "2 yes" = recognizes Stage 1 as Battle City within 10 seconds (Q2 yes-cite). Anchor 4 ("names 3+ BC features unprompted") NOT satisfied — user named bugs, not BC features. C11 stops at 3. |
+| 12 | (unchanged) | | | | |
+| **Total** | | **46** | **47/60** | | +1 (C11 anchor 3 playtest-cited). |
+
+### Tag balance (cumulative)
+
+- [STRUCTURE]: 16 cites
+- [STRUCTURE-DEFERRED]: 1 cite
+- [FEEL]: 4 cites (C2 anchor 3, C6 anchor 4, C10 anchor 1, **C11 anchor 3** ← new)
+- [MIXED]: 0
+
+### Substrate guardrails verified
+
+- No script edits.
+- `scenes/OriginalLevel.tscn` extended (additive — 4 walls + 2 sub-resources).
+- `.research/repos/Tanks/` read-only.
+- Procedural hash anchor preserved.
+- META-RETRO-iter016.md still unchanged.
+
+### Findings summary for user
+
+**Closed in iter 18:**
+- ✅ Queue #5 — BC playfield walls added (option a).
+- ✅ F004 — player escape playfield → fixed.
+- ✅ C11 → 3 — BC recognition playtest-cited.
+- ✅ BC win-con question answered.
+
+**Deferred (need user OK before fixing):**
+- 🔧 F002 — eagle doesn't hug bottom border. Fix requires row_offset 2→4 + coordinated 4-file change (scene, OriginalLevel.gd EAGLE_SCREEN_POS, Spawner OG_SPAWN_POINTS, png_diff RENDER_OFFSET_Y) + re-PNG-diff all 35 stages.
+- 🔧 F003 — arc-2 ascender HUD in OG mode. Fix requires arc-2 substrate write to PlayerTank.gd (gated edit pattern like iter-11 Spawner). Could also do BC-style HUD-on-the-right-side as alternative.
+- 🔧 Queue #1 — TitleScreen aesthetic (d) implementation. BC pixel-art logo + animated AnimatedSprite2D cursor.
+
+**Still awaiting playtest:**
+- Q3 — eagle felt-like-BC cite (queue #4)
+- Q4 — full 1-35 advance verification (queue #3)
+- Q5 — procedural-feels-like-BC-family cite (C12 anchor 5)
+- Anchor cites for C2/C10 4+, C12 anchor 5
+
+### Cumulative arc-3 path (post-retro updates)
+
+```
+iter 16: 45/60  (META-RETRO snapshot)
+iter 17: 46/60  (post-retro: C11 anchor 2 + og_rosters.json)
+iter 18: 47/60  (post-retro: C11 anchor 3 + F002/F003 logged + F004 closed)
+```
+
+### Next iter — branch by user signal
+
+- **"yes, fix F002 and F003"** → iter 19 = BUILD, multi-file F002 + arc-2 substrate F003 fixes
+- **"do TitleScreen (d)"** → iter 19 = BUILD, BC pixel-art logo + animated cursor
+- **More playtest Q3-Q5** → iter 19 = PLAYTEST processing
+- **"arc 3 done"** → final pause
+- silence → loop sits naturally
+
+### Commit
+
+`chore(originals): iter 018 — BUILD — playtest processing + F002/F003 logged + F004 walls fix`

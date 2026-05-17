@@ -805,3 +805,68 @@ So cross-validation means: does the canonical BC per-stage D-tank count match th
 - Hash anchor drifts (would mean code edits crept in — AUDIT/data-only mode forbids).
 - og_rosters.json malformed (non-parseable or per-stage totals don't sum to 20).
 - C11 → 2 re-score not defensible.
+
+---
+
+## Iter 018 — BUILD (process playtest + F002/F003/F004 + walls fix)
+
+**Mode:** BUILD (with PLAYTEST-derived scoring).
+
+**Meta-trigger:** User playtest reply (2026-05-16):
+
+> "1d, 2 yes but the size is off, the base does not hug border and enemies and i can drive off border, depth somehow still applies but ofc useless in this mode, i dont know if enemies will die till exhausted - what was the win con in bc?"
+
+Parsed:
+- Q1 = **(d)** TitleScreen aesthetic pick: BC logo + animated cursor combo
+- Q2 = **yes recognizes BC** (anchor 3 cite for C11)
+- 3 new bugs surfaced:
+  - "size is off" / "base does not hug border" → F002 stage doesn't fill viewport; eagle at scene row 26-27 leaves 2 gray rows below it instead of hugging viewport bottom
+  - "depth somehow still applies but ofc useless in this mode" → F003 arc-2 ascender HUD (PlayerTank.gd's depth/time/HP CanvasLayer) renders in Originals mode where it has no meaning
+  - "and i can drive off border" → F004 queue #5 confirmed; player can leave the 26×26 BC playfield
+- "what was the win con in bc?" → user clarification request; answered in main response. Not a rubric issue.
+
+**Plan:**
+
+1. **Score lift**: C11 anchor 3 ✓ — "A first-time tester opening stage 1 recognizes it as Battle City within 10 seconds, without prompting — playtest cited." User answered "2 yes" = yes recognizes. C11 2 → 3. Anchor 4 ("names 3+ specific BC features unprompted") not satisfied — user named bugs, not BC features. Stay below 4.
+2. **Queue closures**:
+   - #5 (BC edge walls): user implicitly voted (a) by flagging "can drive off border" as a problem. CLOSE iter 18 by adding invisible StaticBody2D walls at the 26×26 BC playfield boundary.
+   - #1 (TitleScreen aesthetic): user voted (d). NOTE the closure direction but defer implementation to iter 19 (real-pixel-art work; not single-iter-trivial).
+3. **F-numbered logs**:
+   - F002 — "eagle doesn't hug bottom border" — defer fix to iter 19 (row_offset 2→4 + coordinated png_diff RENDER_OFFSET_Y 16→32 + PlayerTank spawn position shift + re-verify all 35 PNG-diffs).
+   - F003 — "arc-2 depth/time HUD renders in OG mode" — defer fix to iter 19 (PlayerTank.gd is arc-2 substrate; needs gated edit + arc-2 regression check).
+   - F004 — "player escapes the 26×26 BC playfield" — fix this iter via invisible-walls scene-level addition.
+4. **F004 fix (walls)**:
+   - Add 4 invisible StaticBody2D wall nodes to `scenes/OriginalLevel.tscn` (top/bottom/left/right of the 26×26 BC playfield: scene cols 6/33 horizontally, scene rows 1/28 vertically — placed at boundaries with collision_layer=1 so PlayerTank's mask catches them but they remain invisible).
+   - No code edits; pure scene file additions.
+
+**Falsifiable claim:**
+
+After iter 18:
+- C11 score = 3 (anchor 3 playtest-cited).
+- `scenes/OriginalLevel.tscn` has 4 invisible-wall nodes; player cannot escape the 26×26 BC playfield.
+- F002, F003 logged in `loop/originals/FALSIFICATIONS.md` with defer-to-iter-19 notes.
+- Queue #5 marked closed:VERDICT="walls" (option a).
+- Queue #1 STATUS updated with user vote "(d) BC logo + animated cursor combo" — implementation deferred.
+- Procedural hash anchor `23d6a2ec…` preserved (no script/substrate edits this iter).
+- All 35 PNG-diffs still pass <5% (walls are decoupled from terrain rendering; should be no-op for the classifier).
+
+**Most-likely failure modes:**
+
+- **F1 [STRUCTURE]**: walls placed too aggressively block player at spawn position (124, 212) which is inside the play area but near the left boundary. *Detection*: headless oracle on stage 1 → playable=false. *Mitigation*: place walls at the play-area outside-edges, not inside. Player spawn at scene col 15-16 is well inside the 7-32 col range, so left wall at scene col 6 won't block.
+- **F2 [STRUCTURE]**: walls accidentally placed in BC playfield interior, blocking gameplay. *Detection*: stage 1 reachable cells drop in oracle. *Mitigation*: walls at scene boundaries (cols 6 + 33 = OUTSIDE the 7-32 play range; rows 1 + 28 = OUTSIDE the 2-27 play range).
+- **F3 [STRUCTURE]**: PNG-diff oracle complains about walls in the render. *Detection*: stage 1 PNG-diff > 5%. *Mitigation*: walls are INVISIBLE (no Sprite2D, only CollisionShape2D); png_diff.py's tile-classifier samples cell-center pixels which won't include the wall area (walls are outside the 26×26 stage region the classifier samples).
+- **F4 [STRUCTURE]**: regression: arc-2 procedural mode somehow affected. *Mitigation*: only OriginalLevel.tscn is touched; ProceduralLevel.tscn unchanged; hash anchor verification catches any cross-contamination.
+
+**Substrate guards:**
+- No script edits.
+- `scenes/OriginalLevel.tscn` extended with 4 invisible-wall nodes (additive).
+- `loop/originals/REVIEW-QUEUE.md`: items #1 + #5 status updated.
+- `loop/originals/FALSIFICATIONS.md`: F002 + F003 + F004 appended.
+
+**Anti-Goodhart guard:** C11 → 3 is honestly from playtest cite ("2 yes" = recognizes). Don't bump to anchor 4 — user didn't name BC features (named bugs instead). C2/C6/C10/C12 anchor 4+ also not lifted — no new playtest data on those axes.
+
+**What would count as "iter 18 failed":**
+- Walls block legitimate gameplay (player can't move freely within 26×26).
+- Procedural hash anchor drifts.
+- PNG-diff regresses on any of 35 stages.
+- C11 score raised above what playtest data supports.

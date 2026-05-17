@@ -30,9 +30,9 @@ When closing, cite the LEDGER iter that captured the closure.
 - (c) **Background scene**: a slow-scrolling Stage 1 layout in the background of the menu; ties title to gameplay visually.
 - (d) **Combination**: (a) + (b), keep background black.
 
-**What I need from the user:** a direction-pick (a/b/c/d) OR a free-form description of what "less ugly" looks like. Without it, any visual change is Goodhart-prone.
+**User vote (iter 18 playtest):** **(d)** — BC logo + animated tank cursor combo.
 
-**STATUS:** open
+**STATUS:** voted; implementation deferred to iter 19+ (pixel-art logo + AnimatedSprite2D cursor; not single-iter trivial).
 
 ---
 
@@ -88,7 +88,9 @@ When closing, cite the LEDGER iter that captured the closure.
 
 **What I need from the user:** pick (a/b/c) at queue review. (a) is BC-authentic; (b) is arc-3-pragmatic; (c) is cosmetic compromise.
 
-**STATUS:** open
+**User vote (iter 18 playtest):** **(a)** walls — implicit from "i can drive off border" flagged as a problem.
+
+**STATUS:** closed:walls (iter 18). 4 invisible `StaticBody2D` walls added to `scenes/OriginalLevel.tscn` at the 26×26 BC playfield boundary. Verified via headless physics point-query (collision at wall center; interior uncolloided). PNG-diff <5% preserved across 4 sample stages.
 
 ---
 

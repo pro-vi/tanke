@@ -70,6 +70,20 @@ sources/0 = SubResource("IceSrc")
 [sub_resource type="RectangleShape2D" id="WallShape"]
 size = Vector2(8, 8000)
 
+; iter 018 (F004 fix, queue #5 closure): invisible walls at the 26×26 BC
+; playfield boundary. Without these, the player can escape into the
+; gray viewport border (cols 0-6, 33-39; rows 0-1, 28-29 outside the
+; BC playfield). User playtest 2026-05-16: "i can drive off border".
+;
+; BC playfield: scene cols 7-32, scene rows 2-27 (= stage cols 0-25 +
+; offset 7, stage rows 0-25 + offset 2 per iter-1 OriginalLevel design).
+; Walls placed just outside the playfield boundary on each axis.
+[sub_resource type="RectangleShape2D" id="BCVertWallShape"]
+size = Vector2(8, 216)
+
+[sub_resource type="RectangleShape2D" id="BCHorizWallShape"]
+size = Vector2(216, 8)
+
 [node name="OriginalLevel" type="Node2D"]
 script = ExtResource("2")
 stage_number = 1
@@ -121,6 +135,40 @@ collision_mask = 0
 
 [node name="RightWallShape" type="CollisionShape2D" parent="Walls/RightWall"]
 shape = SubResource("WallShape")
+
+; iter 018 — BC playfield walls (invisible). 4 sides of the 26×26
+; playable area. Player StaticBody2D collides via Environment layer 1.
+[node name="BCLeftWall" type="StaticBody2D" parent="Walls"]
+position = Vector2(52, 120)
+collision_layer = 1
+collision_mask = 0
+
+[node name="BCLeftShape" type="CollisionShape2D" parent="Walls/BCLeftWall"]
+shape = SubResource("BCVertWallShape")
+
+[node name="BCRightWall" type="StaticBody2D" parent="Walls"]
+position = Vector2(268, 120)
+collision_layer = 1
+collision_mask = 0
+
+[node name="BCRightShape" type="CollisionShape2D" parent="Walls/BCRightWall"]
+shape = SubResource("BCVertWallShape")
+
+[node name="BCTopWall" type="StaticBody2D" parent="Walls"]
+position = Vector2(160, 12)
+collision_layer = 1
+collision_mask = 0
+
+[node name="BCTopShape" type="CollisionShape2D" parent="Walls/BCTopWall"]
+shape = SubResource("BCHorizWallShape")
+
+[node name="BCBottomWall" type="StaticBody2D" parent="Walls"]
+position = Vector2(160, 228)
+collision_layer = 1
+collision_mask = 0
+
+[node name="BCBottomShape" type="CollisionShape2D" parent="Walls/BCBottomWall"]
+shape = SubResource("BCHorizWallShape")
 
 [node name="Spawner" type="Node2D" parent="."]
 script = ExtResource("10")

@@ -36,3 +36,71 @@ Parallel to `loop/FALSIFICATIONS.md` (arc 1, engine — F001-F004) and
 - Documented in `loop/originals/roster-validation.md` with full per-stage table.
 - REVIEW-QUEUE item NOT added — this isn't blocked on user input; it's an explicit known-approximation that the v1 formula is good enough for.
 - If arc-3 v2 happens, the per-stage table is ready to promote to a config artifact.
+- **Iter 17 update**: cure-path made concrete via `loop/originals/og_rosters.json` (35 entries, machine-readable, ready for any future consumer).
+
+---
+
+## F002 — Eagle doesn't hug bottom border (arc-3 viewport position bug)
+
+**Iter:** 018
+**Tag:** [STRUCTURE]
+**Source:** user playtest 2026-05-16 reply: "the base does not hug border".
+
+**Predicted (implicit, iter-1 design):** Centering the 26×26 BC stage in the 40×30 (320×240) tanke viewport with `col_offset=7, row_offset=2` would produce a visually-natural BC playfield. The 7-col horizontal border was deliberate (centering). The 2-row vertical offset was an arbitrary choice that left 2 rows of gray below the stage.
+
+**Observed:** User saw the eagle fortress (stage rows 24-25 cols 11-14) at scene rows 26-27, NOT at the bottom of the viewport. Visually wrong — in actual BC the eagle is at the very bottom of the screen.
+
+**Fix path (deferred to iter 19+ — multi-file coordinated change):**
+1. `scenes/OriginalLevel.tscn`: `row_offset` export `2 → 4`; PlayerTank.position `(124, 212) → (124, 232)`; BC wall positions adjust (BCTopWall y=12→28, BCBottomWall y=228→244 OR delete since outside viewport).
+2. `scripts/OriginalLevel.gd`: `EAGLE_SCREEN_POS` constant `(160, 216) → (160, 232)`.
+3. `scripts/Spawner.gd`: `OG_SPAWN_POINTS` const — stage-row-1 spawn points y `28 → 44`.
+4. `tools/png_diff.py`: `RENDER_OFFSET_Y` constant `16 → 32`.
+5. Re-render + re-PNG-diff all 35 stages to verify <5% still holds.
+6. Re-verify player passability at new spawn position (stage rows 24-25 cols 8-9 across all 35).
+
+**Lesson:** The iter-1 row_offset=2 was an arbitrary visual choice that the user playtest caught immediately. "Eagle hugs border" is a BC-identity cue that arc-3 should preserve.
+
+**Action:** Logged here; defer fix to next BUILD iter that the user OKs (or wraps into iter 19's general fix-iter if they continue).
+
+---
+
+## F003 — Arc-2 ascender HUD renders in Originals mode
+
+**Iter:** 018
+**Tag:** [STRUCTURE]
+**Source:** user playtest 2026-05-16: "depth somehow still applies but of course useless in this mode".
+
+**Predicted (implicit, iter-1 design):** OriginalLevel.tscn inherits PlayerTank.tscn from the arc-2 player. The arc-2 PlayerTank.gd has a baked-in CanvasLayer HUD (DEPTH / TIME / HP / death overlay) per arc-2 iter-30+ design. iter-1 didn't think about whether that HUD should appear in OG mode.
+
+**Observed:** The arc-2 HUD renders in Originals mode even though there's no ascent — the depth counter increments meaninglessly. Visual noise that conflicts with BC's authentic HUD-on-the-right-side layout.
+
+**Fix path (deferred to iter 19+ — touches arc-2 substrate):**
+1. `scripts/PlayerTank.gd`: gate the HUD draw on a public `show_ascender_hud: bool = true` @export. Default true preserves arc-2 procedural behavior exactly.
+2. `scenes/OriginalLevel.tscn`: set the PlayerTank instance's `show_ascender_hud = false`.
+3. Optional: replace with a BC-authentic HUD (LIVES / SCORE / STAGE # / remaining-enemies counter on the right side).
+4. Verify procedural hash anchor `23d6a2ec…` preserved (default-off discipline like iter-11's Spawner integration).
+
+**Lesson:** Arc-2's PlayerTank substrate has gameplay-coupled HUD baked in. Future cross-arc reuse needs HUD-modularity. Same lesson as iter-11's Spawner — substrate carries assumptions; gating extends them safely.
+
+**Action:** Logged here; defer to iter 19+ if user OKs the arc-2 substrate write. Could also be addressed by a HUD-replacement approach (different feel, but no arc-2 substrate touch).
+
+---
+
+## F004 — Player escapes BC playfield (queue #5 confirmed)
+
+**Iter:** 018
+**Tag:** [STRUCTURE]
+**Source:** user playtest 2026-05-16: "i can drive off border".
+
+**Predicted (queue #5 from iter 12):** arc-3 OG mode centers the 26×26 BC stage in the 40×30 viewport with empty borders all around. Player tank can drive into those borders. The iter-12 Python BFS measurement (stage-bounded) vs Godot oracle (viewport-bounded) divergence flagged this gap. Queue #5 awaited user direction (a/b/c).
+
+**Observed:** Confirmed during playtest — player drove past the BC playfield edge into the gray border. User's flag implies (a) "walls" is the right cure.
+
+**Fix path (CLOSED iter 18):**
+1. `scenes/OriginalLevel.tscn`: added 4 invisible `StaticBody2D` walls at the BC playfield boundary — `BCLeftWall (52, 120)`, `BCRightWall (268, 120)`, `BCTopWall (160, 12)`, `BCBottomWall (160, 228)`. Two new `RectangleShape2D` sub-resources (vertical 8×216, horizontal 216×8). `collision_layer=1` so PlayerTank's mask catches them; no Sprite2D so they remain invisible.
+2. Verified via headless physics point-query: walls present at expected positions; collision detected at wall center; interior of playfield uncolloided.
+3. PNG-diff re-checked on 4 sample stages — all <5% (walls don't affect classifier; only player-tank/enemy artifact variance contributes to the slight uptick).
+
+**STATUS:** CLOSED iter 018 — option (a) walls.
+
+**Lesson:** When the implementation centers a smaller canonical area in a larger viewport, the boundary discipline must be explicit. Arc-3's iter-1 design didn't add edge walls because the original tanke walls were at viewport edges (-4 / 324); it didn't anticipate the BC-playfield-vs-viewport gap until queue #5 / F004 surfaced.

@@ -3,16 +3,16 @@
 ## Phase
 
 ```
-phase: loop (post-META-RETRO update; arc-3 ceiling-trail iters)
-iteration: 17 (AUDIT/BUILD — C11 → 2 + og_rosters.json — complete)
-arc: 3 (Originals — BC NES stages import) — structurally closed iter 16; ceiling-trail iters allowed
+phase: loop (post-retro; ceiling-trail iters)
+iteration: 18 (BUILD — playtest processing + F004 walls fix — complete)
+arc: 3 (Originals — BC NES stages import) — structurally closed iter 16; trail iters in progress
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 46/60 (76.7%) — post-retro
+score: 47/60 (78.3%) — post-retro
 playtest_halt_rule: SUSPENDED (iter 10); REVIEW-QUEUE pattern active
 ```
 
-**Arc-3 post-retro update.** Iter-16 META-RETRO captured the iter-16 snapshot (45/60). Iter 17 lifts +1 via AUDIT re-score (C11 → 2; anchor 2 cite-able from existing iter-3 fortress survey + iter-5 PNG-diff evidence) plus emits `loop/originals/og_rosters.json` (35-stage canonical roster table — F001's "ready to promote" cure-path made concrete). Cumulative path: ... → 45 (iter 16 META-RETRO) → **46** (iter 17). Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 3 [FEEL]. META-RETRO doc preserved unchanged.
+**Iter 18 processed user playtest.** Closures: queue #5 closed via BC playfield walls; F004 fixed (player can no longer escape). New F-numbers logged: F002 (eagle hug border) + F003 (arc-2 HUD in OG mode) — both deferred to iter 19+ with user OK. Q1 vote (d) noted for queue #1. C11 → 3 via anchor 3 playtest cite. Cumulative path: ... → 45 (META-RETRO) → 46 → **47** (+1 C11). Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -60,23 +60,23 @@ Hash anchor `23d6a2ec…` is the regression detector.
 
 ---
 
-## Current Scores (post iter 017 — post-retro AUDIT)
+## Current Scores (post iter 018 — playtest processing)
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
 | 1. Loader correctness | **5** | |
-| 2. Eagle gameplay | **3** | Queue #4 |
+| 2. Eagle gameplay | **3** | Queue #4 (eagle-felt-like-BC cite still pending) |
 | 3. Ice physics | **2** | Pass-through cap |
 | 4. PNG-diff oracle | **4** | |
-| 5. Enemy roster fidelity | **4** | F001 cure-path made concrete via `loop/originals/og_rosters.json` |
+| 5. Enemy roster fidelity | **4** | |
 | 6. Mode selection | **4** | |
 | 7. Stages 1-12 complete | **5** | |
 | 8. Stages 13-24 complete | **5** | |
 | 9. Stages 25-35 complete | **5** | |
 | 10. End-to-end playable | **3** | |
-| 11. Identity / BC fidelity | **2** | Anchor 2 ✓ (iter-17 AUDIT) — fortress survey + PNG-diff code-cite. Queue #2 still applies for anchor 3+ |
+| 11. Identity / BC fidelity | **3** | Anchor 3 ✓ — playtest "yes recognizes BC" cite (iter 18). Anchor 4 needs unprompted 3+ BC features named (user named bugs, not features) |
 | 12. Arc-2 feedback metrics | **4** | |
-| **Total** | **46/60** | post iter 017 |
+| **Total** | **47/60** | post iter 018 |
 
 ---
 
@@ -110,6 +110,37 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 018 BUILD complete (2026-05-16) — playtest processing.
+
+User playtest reply (2026-05-16):
+  "1d, 2 yes but the size is off, the base does not hug border and
+  enemies and i can drive off border, depth somehow still applies
+  but ofc useless in this mode, i dont know if enemies will die till
+  exhausted - what was the win con in bc?"
+
+Processed:
+- Q1=(d) TitleScreen aesthetic vote → queue #1 noted, defer to iter 19
+- Q2=yes recognizes BC → C11 anchor 3 cited → C11 2→3
+- F002 logged: eagle doesn't hug bottom border (defer to iter 19)
+- F003 logged: arc-2 ascender HUD in OG mode (defer; arc-2 substrate)
+- F004 fixed: 4 invisible BC playfield walls added to OriginalLevel.tscn
+- Queue #5 closed (walls option a)
+- BC win-con answered directly in main response
+
+scenes/OriginalLevel.tscn extended: 4 StaticBody2D + 2 RectangleShape2D
+sub-resources. Verified via headless physics point-query (collision at
+wall center; interior uncolloided). PNG-diff <5% on 4 sample stages.
+
+Procedural hash anchor 23d6a2ec… preserved. make test-all exit 0.
+
+Score: C11 2 → 3. Total 46 → 47/60 (+1).
+Tag balance: 16 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL] (+1 C11).
+
+Commit: chore(originals): iter 018 — BUILD — playtest processing +
+F002/F003 logged + F004 walls fix.
+```
 
 ```
 Iter 017 AUDIT/BUILD complete (2026-05-16) — post-META-RETRO update.
@@ -525,6 +556,27 @@ None (new arc).
 ---
 
 ## Next Action
+
+```
+Iter 19 — branch by user signal:
+
+  IF "yes, fix F002 and F003":
+    iter 19 = BUILD; F002 (row_offset 2→4 + coordinated 4-file change)
+      + F003 (arc-2 PlayerTank.gd HUD gating). Re-PNG-diff all 35 to
+      verify <5% holds. Hash anchor preservation gate critical.
+
+  IF "do TitleScreen (d)":
+    iter 19 = BUILD; BC pixel-art logo + AnimatedSprite2D tank cursor.
+
+  IF more playtest data (Q3 eagle-feel / Q4 progression / Q5 procedural-family):
+    iter 19 = PLAYTEST processing.
+
+  IF "arc 3 done":
+    final pause. arc-3 closes at iter-18's 47/60.
+
+  silence:
+    loop sits naturally. No wakeup scheduled.
+```
 
 ```
 Iter 18 — branch by user signal:
