@@ -104,6 +104,14 @@ check-chain-35:
 	@$(HEADLESS) --script res://loop/test_chain_35.gd 2>&1 | grep -E "^  (ok|FAIL|overlay)|^CHAIN_35|^ARC_COMPLETE"; \
 	$(HEADLESS) --script res://loop/test_chain_35.gd 2>&1 | grep -q "^ARC_COMPLETE_OVERLAY_OK"
 
+# Arc-3 → arc-2 band-overlap auto-check (C12 anchor 5 structural sub-clause).
+# Runs procedural oracle at og_calibrated.tres across 5 seeds; asserts
+# each metric falls inside OG empirical [min, max] band per og-metrics.json.
+# Excludes reachable_cells + rows_climbed as documented scale artifacts.
+# Threshold: >=80% in-band pairs.
+og-band-check:
+	python3 $(PROJECT_DIR)/tools/band_check.py --quiet
+
 # Arc-3 TitleScreen navigation auto-verification (C6 anchor 5). Drives
 # headless input synthesis to verify both ORIGINALS and PROCEDURAL
 # launch paths work mechanically; also verifies UI affordances present.
