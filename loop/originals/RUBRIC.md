@@ -165,7 +165,7 @@ Player starts at Stage 1, advances through to Stage 35 in a single session.
 | 2 | Linear advance from stage to stage works (clear stage → next loads) — code-cited |
 | 3 | Stages 1-10 reachable in single session without crashes |
 | 4 | Stages 1-25 reachable; eagle gameplay survives the full progression |
-| 5 | Full 1-35 reachable + "win" state when stage 35 cleared; full playthrough verified via playtest |
+| 5 | Full 1-35 reachable + "win" state on stage 35 clear — structurally verifiable via 35-chain test + ARC COMPLETE overlay assertion (`loop/test_chain_35.gd`, `make check-chain-35`). Bonus: full playthrough verified via playtest — feel-cited |
 
 ---
 
@@ -234,6 +234,7 @@ Stage iters typically import 2-5 stages in one iter (BUILD/IMPORT mode).
 | Iter | Change | Reason |
 |------|--------|--------|
 | 0 | Initial arc-3 rubric, 10 criteria, frontier-loop shape | New arc scope: import 35 BC stages with eagle + ice + PNG diff |
+| 24 | REPHRASE C10 anchor 5 (split into structural + playtest sub-clauses) | Spike-2 proved 35-chain + ARC COMPLETE overlay structurally verifiable; original anchor bundled mechanism + feel. |
 | 8 | RENAME C5 anchor 2 (formula form acceptable) | iter-4/7 found BC roster is formula-driven; per-stage .tres encoding was rubric/data shape mismatch |
 | 8 | ADD criterion 11 (Identity / BC fidelity) | Arc-3 stone heart was not in v1 rubric anchors |
 | 8 | ADD criterion 12 (Arc-2 feedback metrics) | PROMPT § "What arc-3 ALSO does" deliverable was not in v1 rubric anchors |

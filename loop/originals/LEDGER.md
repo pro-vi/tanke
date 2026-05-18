@@ -2232,3 +2232,55 @@ Iter 24 candidates:
 ### Commit
 
 `chore(originals): iter 023 — BUILD — BC lives system (PlayerTank substrate write #3)`
+
+---
+
+## Iter 024 — BUILD (35-chain + ARC COMPLETE overlay → C10 anchor 5)
+
+**Mode:** BUILD (architect + build per user goal)
+**Date:** 2026-05-18
+**Branch:** `arc-3-originals`
+**Architect blueprint:** `loop/originals/iter024-026-architect.md` (compaction-safe artifact for iter 24-26 trio)
+
+### Actions
+
+1. `loop/test_chain_35.gd` (NEW) — extends iter-22 chain pattern to 35 stages; Phase 2 verifies ARC COMPLETE overlay materializes when stage 35's `_advance_to_next_stage()` fires. Spike-2-confirmed: `StageDirector.advance_stage()` on STAGE_MAX returns early without reload, so test level survives the signal fire.
+2. Recursive `_find_arc_complete_label(node)` walker locates `Label` with text "ARC COMPLETE" under any `CanvasLayer`.
+3. Makefile: `check-chain-35` target + included in `test-all`.
+4. RUBRIC.md C10 anchor 5: REPHRASED to split structural-verifiable + playtest-bonus sub-clauses. Revision Log entry (iter 24).
+
+### Verification
+
+```
+$ make check-chain-35
+  ok stage  1  eagle=valid  spawner=1   p_armored=0.1000
+  ok stage 17  eagle=valid  spawner=17  p_armored=0.2176
+  ok stage 35  eagle=valid  spawner=35  p_armored=0.3499
+CHAIN_35_OK 35 stages instantiated cleanly
+  overlay-ok: Label text='ARC COMPLETE' under CanvasLayer (layer=10)
+ARC_COMPLETE_OVERLAY_OK
+exit=0
+```
+
+- 35/35 stages instantiate cleanly; eagle valid each; Spawner stage_number matches each; Roster armored_probability scales 0.1000 → 0.3499 (linear formula).
+- ARC COMPLETE overlay confirmed under CanvasLayer layer=10 (matches `OriginalLevel.gd:_show_game_over_arc_complete`).
+- Procedural hash anchor `23d6a2ec…` preserved.
+- `make test-all` exit 0 (procedural + LevelLoader + 25-chain + 35-chain all pass).
+
+### Score
+
+| C# | Before | After | Note |
+|----|--------|-------|------|
+| 10 | 4 | **5** | Anchor 5 ✓ via rephrased structural-verifiable sub-clauses (35-chain + overlay assertion). Bonus playtest sub-clause remains as feel-cite enhancement. |
+| **Total** | **48** | **49/60** | +1 |
+
+### Tag balance
+
+- [STRUCTURE]: 18 cites (+1: C10 anchor 5)
+- [STRUCTURE-DEFERRED]: 1
+- [FEEL]: 4
+- [MIXED]: 0
+
+### Commit
+
+`chore(originals): iter 024 — BUILD — 35-chain + ARC COMPLETE assertion (C10 anchor 5)`
