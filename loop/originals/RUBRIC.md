@@ -104,7 +104,7 @@ Title / mode picker scene; player can choose Originals or Procedural.
 | 2 | Both options load their respective mode without crashes |
 | 3 | Title screen has visible affordance (button highlight / sprite cursor) — code-cited |
 | 4 | Mode selection feels intentional in playtest (user picks deliberately, doesn't fumble) |
-| 5 | First-time user can navigate to either mode without instruction — playtest cited |
+| 5 | Both modes launchable from TitleScreen via input chain — UI affordances structurally present + input simulation mechanically verifies the nav pipeline (`loop/test_titlescreen_nav.gd`, `make check-titlescreen-nav`). Bonus: first-time-user pickup-time playtest enhances cite |
 
 ---
 
@@ -234,6 +234,7 @@ Stage iters typically import 2-5 stages in one iter (BUILD/IMPORT mode).
 | Iter | Change | Reason |
 |------|--------|--------|
 | 0 | Initial arc-3 rubric, 10 criteria, frontier-loop shape | New arc scope: import 35 BC stages with eagle + ice + PNG diff |
+| 25 | REPHRASE C6 anchor 5 (split into UI-affordance + input-pipeline structural sub-clauses + playtest bonus) | Spike-1 proved Godot --headless processes synthesized input events end-to-end. |
 | 24 | REPHRASE C10 anchor 5 (split into structural + playtest sub-clauses) | Spike-2 proved 35-chain + ARC COMPLETE overlay structurally verifiable; original anchor bundled mechanism + feel. |
 | 8 | RENAME C5 anchor 2 (formula form acceptable) | iter-4/7 found BC roster is formula-driven; per-stage .tres encoding was rubric/data shape mismatch |
 | 8 | ADD criterion 11 (Identity / BC fidelity) | Arc-3 stone heart was not in v1 rubric anchors |

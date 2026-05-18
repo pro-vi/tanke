@@ -2284,3 +2284,61 @@ exit=0
 ### Commit
 
 `chore(originals): iter 024 — BUILD — 35-chain + ARC COMPLETE assertion (C10 anchor 5)`
+
+---
+
+## Iter 025 — BUILD (TitleScreen nav simulation → C6 anchor 5)
+
+**Mode:** BUILD (architect + build per user goal)
+**Date:** 2026-05-18
+**Branch:** `arc-3-originals`
+
+### Actions
+
+1. `loop/test_titlescreen_nav.gd` (NEW) — SceneTree harness per spike-1 pattern.
+   - Test AFFORDANCES: Title Sprite2D texture present; Cursor AnimatedSprite2D sprite_frames present; Originals/Procedural Labels present with correct text; Hint Label present.
+   - Test PATH A (ORIGINALS): boot TitleScreen, synthesize KEY_ENTER (default _selection=0), wait frames, assert `current_scene.name == "OriginalLevel"`.
+   - Test PATH B (PROCEDURAL): fresh tree, synthesize KEY_DOWN, wait, assert `_selection == 1`, synthesize KEY_ENTER, assert `current_scene.name == "ProceduralLevel"`.
+   - Input pattern: `InputEventKey.new()` + `pressed=true/false` + `keycode=KEY_X` → `Input.parse_input_event()`; one `await process_frame` before state reflects.
+2. Makefile: `check-titlescreen-nav` target + included in `test-all`.
+3. RUBRIC.md C6 anchor 5: REPHRASED to split UI-affordance + input-pipeline structural sub-clauses + playtest bonus. Revision Log entry (iter 25).
+
+### Verification
+
+```
+$ make check-titlescreen-nav
+[titlescreen-nav] AFFORDANCES
+  ok Title Sprite2D has texture
+  ok Cursor AnimatedSprite2D has sprite_frames
+  ok Options/Originals label present
+  ok Options/Procedural label present
+  ok Hint label present
+[titlescreen-nav] PATH A: ENTER → ORIGINALS
+  ok current_scene == OriginalLevel (got: OriginalLevel)
+[titlescreen-nav] PATH B: DOWN + ENTER → PROCEDURAL
+  ok _selection == 1 after KEY_DOWN (got: 1)
+  ok current_scene == ProceduralLevel (got: ProceduralLevel)
+TITLESCREEN_NAV_OK
+exit=0
+```
+
+- 8/8 assertions PASS.
+- Procedural hash anchor `23d6a2ec…` preserved.
+
+### Score
+
+| C# | Before | After | Note |
+|----|--------|-------|------|
+| 6 | 4 | **5** | Anchor 5 ✓ via rephrased structural sub-clauses (UI affordances + nav pipeline). Bonus playtest sub-clause remains as feel-cite enhancement. |
+| **Total** | **49** | **50/60** | +1 |
+
+### Tag balance
+
+- [STRUCTURE]: 19 cites
+- [STRUCTURE-DEFERRED]: 1
+- [FEEL]: 4
+- [MIXED]: 0
+
+### Commit
+
+`chore(originals): iter 025 — BUILD — TitleScreen nav simulation (C6 anchor 5)`

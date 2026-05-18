@@ -104,9 +104,17 @@ check-chain-35:
 	@$(HEADLESS) --script res://loop/test_chain_35.gd 2>&1 | grep -E "^  (ok|FAIL|overlay)|^CHAIN_35|^ARC_COMPLETE"; \
 	$(HEADLESS) --script res://loop/test_chain_35.gd 2>&1 | grep -q "^ARC_COMPLETE_OVERLAY_OK"
 
+# Arc-3 TitleScreen navigation auto-verification (C6 anchor 5). Drives
+# headless input synthesis to verify both ORIGINALS and PROCEDURAL
+# launch paths work mechanically; also verifies UI affordances present.
+check-titlescreen-nav:
+	@$(HEADLESS) --script res://loop/test_titlescreen_nav.gd 2>&1 | grep -E "^\[titlescreen-nav|^  (ok|FAIL)|^TITLESCREEN"; \
+	$(HEADLESS) --script res://loop/test_titlescreen_nav.gd 2>&1 | grep -q "^TITLESCREEN_NAV_OK"
+
 # Combined test target. Runs procedural + LevelLoader edge cases +
-# 25-stage chain + 35-stage chain. (RUBRIC C1/5 + C10/4 + C10/5 verification.)
-test-all: test check-loader check-chain check-chain-35
+# 25-stage chain + 35-stage chain + TitleScreen nav.
+# (RUBRIC C1/5 + C6/5 + C10/4 + C10/5 verification.)
+test-all: test check-loader check-chain check-chain-35 check-titlescreen-nav
 
 # Arc-3 → arc-2 metric handshake: compute per-stage structural metrics
 # across all 35 BC stages and emit loop/originals/og-metrics.json.
