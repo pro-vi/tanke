@@ -24,6 +24,42 @@ Format:
 
 ---
 
+## iter 002 — BUILD-QUALITY — DECISION (adopt path A) + first substrate hook
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE] [QUALITY] (no discrete rubric anchor lift this iter;
+  plumbing/foundation work per L3+R4 release-valve. First of 3
+  substrate-touching iters required to hit C10 anchor 1.)
+- CONSULT constraints respected: all 7 (no design surface; substrate
+  plumbing only). Constraint 1 (no combat modals) is structurally
+  protected by the gating template — flag-off codepath is bit-identical
+  to arc-2 procedural.
+- CONSULT constraints risked: none this iter; downstream iters carry
+  risks (iter 3+ depth-band logic against constraint 5; iter 4+ shell
+  classes against constraints 2/3; iter 5+ depot against constraint 1).
+- Predicted failure: the `@export var breach_mode_enabled` + 2 conditional
+  branches edit on `ProceduralLevel.gd` will subtly mutate the procedural
+  baseline. Specifically, possible failure modes:
+  - Branch added inside the RNG-touching window (before line 77) → hash
+    breaks
+  - Stub method's `_init_breach_mode()` body accidentally creates a
+    child node or calls `randf()` even with flag off
+  - GDScript parse-order error on the new vars (caught by pre-tool hook
+    if present; pre-commit; or `make test`)
+- Falsifiable claim: post-edit, `loop/test_runner.gd` on seed 42 / default
+  config reports `tile_hash` prefix `23d6a2ec3bf2821f` AND `playable: true`
+  AND `make test` exits 0. If any of these fail, the iter HALTS for
+  investigation per PROMPT §HALT CONDITIONS (hash anchor broken =
+  correctness violation; auto-halt + investigate).
+- Sentence test: n/a (no upgrade)
+- Substrate touched: `scripts/ProceduralLevel.gd` (sanctioned per PROMPT
+  §SUBSTRATE FREEZE iter-1 DECISION + §DEFAULT-ON SUBSTRATE GATING
+  TEMPLATE; PATTERN 2 from arc 3)
+- Hash-anchor verification plan: post-edit, before commit, run
+  `loop/test_runner.gd` and verify `tile_hash: 23d6a2ec3bf2821f`. Run
+  `make test` for parse + 120-frame runtime check. If both green, commit;
+  if either fails, revert + investigate.
+
 ## iter 001 — SPIKE — mode-integration path A vs B
 
 - Date: 2026-05-19

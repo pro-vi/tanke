@@ -9,6 +9,13 @@ const DefaultConfig: Resource = preload("res://configs/default.tres")
 @export var level_seed: int = 0  # 0 = random; any other value = deterministic Level DNA
 @export var config: LevelConfigT
 @export var biome: BiomeConfigT  # optional; when set, depth-modulates per-row config
+# arc-4 breach mode (PATTERN 2 — default-on substrate gating). When
+# false, code path is bit-identical to arc-2 procedural baseline. Hash
+# anchor 23d6a2ec3bf2821f… (seed 42 / default config) must remain
+# preserved on the flag-off codepath. New behavior fires only when the
+# flag is overridden by a sibling launcher scene (e.g. BreachLevel.tscn).
+@export var breach_mode_enabled: bool = false
+@export var breach_config: Resource = null  # BreachConfig.gd resource (iter 3+)
 
 # algo variables
 var osn: FastNoiseLite
@@ -77,6 +84,8 @@ func _ready() -> void:
 	camera.global_position = player.global_position
 	camera.reset_smoothing()
 	camera.force_update_scroll()
+	if breach_mode_enabled:
+		_init_breach_mode()
 
 func _process(_delta: float) -> void:
 	var player_pos: Vector2 = player.position
@@ -92,6 +101,9 @@ func _process(_delta: float) -> void:
 		_replace_blocks()
 
 		next_row -= 1
+
+	if breach_mode_enabled:
+		_process_breach_depth(player_pos.y)
 
 
 # Returns the LevelConfig active at the given row — biome-interpolated if biome
@@ -155,5 +167,17 @@ func _generate_level_perlin() -> void:
 				steelTileMap.set_cell(Vector2i(x, y), 0, Vector2i(0, 0))
 			elif (sample > 0.25) or (sample > -0.033 and sample < 0.033):
 				brickTileMap.set_cell(Vector2i(x, y), 0, Vector2i(0, 0))
+
+
+# arc-4 breach mode entry points. Stubs in iter 2; expanded iter 3+ as
+# BreachConfig, depth bands, depots, shell logistics land. Never called
+# when breach_mode_enabled is false (gating preserves arc-2 baseline +
+# hash anchor 23d6a2ec3bf2821f… on the flag-off codepath).
+func _init_breach_mode() -> void:
+	pass
+
+
+func _process_breach_depth(_player_y: float) -> void:
+	pass
 
 

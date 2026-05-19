@@ -2,13 +2,16 @@
 
 ```yaml
 phase: loop
-iter: 1
+iter: 2
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
+hash_anchor_at_iter_2: 23d6a2ec3bf2821f  # bit-identical post-substrate-write #1
+substrate_writes_this_arc: 1  # ProceduralLevel.gd — breach_mode_enabled flag
 current_round: 1
-current_round_phase: DECISION-pending  # iter 2 will pick winner + start BUILD
-next_action: iter 2 — DECISION (adopt path A per converging scouts) + first BUILD (add @export var breach_mode_enabled = false to ProceduralLevel.gd; hash-anchor verify post-edit; commit only if anchor preserved)
+current_round_phase: BUILD  # path A adopted; building toward first end-to-end breach iter
+next_action: iter 3 — BUILD — author scripts/BreachConfig.gd (depth-band config resource type) + tighten breach_config @export to BreachConfig type + first depth-band stub in _process_breach_depth. Target: C4 anchor 1 (≥2 distinct bands with different terrain weights — code-cited).
+score: 1/50 absolute · 1/50 effective  # C10 = 1
 spike_report: loop/breach/iter-001-spike-report.md
 ```
 
