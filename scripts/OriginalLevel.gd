@@ -51,10 +51,16 @@ func _ready() -> void:
 	# we override the parent _ready entirely because we need to insert
 	# LevelLoader.parse_stage BEFORE _replace_blocks).
 	player.shoot.connect(_on_PlayerTank_shoot)
-	# Env-var override for headless oracle (--og-stage K passes via TANKE_OG_STAGE).
+	# Env-var override for headless oracle (--og-stage K passes via TANKE_OG_STAGE)
+	# AND the in-game advance flow (_advance_to_next_stage sets it before scene
+	# reload). iter 011 (review-fix): consume-on-read clears the override so R-
+	# press restarts on game-over and title re-entry start at the exported
+	# default instead of the last-advanced stage. _advance_to_next_stage re-sets
+	# the env var immediately before each reload, so the advance flow is intact.
 	var stage_override: String = OS.get_environment("TANKE_OG_STAGE")
 	if stage_override != "":
 		stage_number = int(stage_override)
+		OS.set_environment("TANKE_OG_STAGE", "")
 	var report: Dictionary = LevelLoaderT.parse_stage(self, stage_number, col_offset, row_offset)
 	var ice_placed: int = report.get("ice", 0)
 	print("originals: stage %d  brick:%d steel:%d grass:%d water:%d ice:%d ice_skipped:%d" % [
