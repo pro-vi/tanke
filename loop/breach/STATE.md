@@ -2,19 +2,19 @@
 
 ```yaml
 phase: loop
-iter: 6
+iter: 7
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_6: 23d6a2ec3bf2821f  # bit-identical; iter 6 META — no code touched
-substrate_writes_this_arc: 3  # ProceduralLevel.gd ×2 (iters 2-3) + Bullet.gd (iter 4); iter 5+6 new-file/process-only
-current_round: 1-closed  # round 2 opens in iter 7 after CONSULT response
-current_round_phase: between-rounds
-pending_consult: 3ae82231-9889-4859-bfea-9ef0b78ae9b4  # fire-and-forget; iter 7 reads
-next_action: iter 7 — read CONSULT 001 response via agentify_read_page. Decide round-2 SPIKE target based on findings. Tentative: HE-as-terrain-cracking (BrickBlock + Bullet HE behavior) — answers Q1 "is breach economy distinct" by wiring first behavior-level breach. If CONSULT redirects, follow the redirect.
-score: 7/50 absolute · 7/50 effective  # C2=1, C3=1, C4=1, C9=1, C10=3
+hash_anchor_at_iter_7: 23d6a2ec3bf2821f  # bit-identical through 4 substrate writes
+substrate_writes_this_arc: 4  # ProceduralLevel.gd ×2 (iters 2-3) + Bullet.gd ×2 (iters 4, 7)
+current_round: 2
+current_round_phase: BUILD  # round 2 opened with first behavior-level breach (HE radius + HEAT 2x)
+pending_consult: 3ae82231-9889-4859-bfea-9ef0b78ae9b4  # still running at iter 7 check; iter 8 retries
+next_action: iter 8 — check CONSULT 001 (now ~10 min elapsed). If returned, integrate findings + record. If still pending, AWAIT-saturation rule allows continuing round 2: extend PlayerTank.gd with shell-swap input (substrate write #5 — sanctioned; arc-2 PlayerTank had no per-shell selection). Player presses a key (e.g. Q/E or TAB) to cycle current shell among AP/HE/HEAT; on Level._on_PlayerTank_shoot, Bullet inherits player's current shell. Target: lifts C9 anchor 2 (build identity + depots + bands all functional) by completing the player-side capability.
+score: 8/50 absolute · 8/50 effective  # C2=1, C3=2, C4=1, C9=1, C10=3
 spike_report: loop/breach/iter-001-spike-report.md
-new_harness_targets: check-breach-config, check-breach-shells, check-breach-depot  # iters 3, 4, 5
+new_harness_targets: check-breach-config, check-breach-shells, check-breach-depot, check-breach-he-blast  # iters 3, 4, 5, 7
 review_queue_open: [#1 round-1 scaffolding]
 ```
 

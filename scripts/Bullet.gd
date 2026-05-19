@@ -62,10 +62,51 @@ func _on_area_entered(_area: Area2D) -> void:
 
 
 func _on_body_entered(body: Node) -> void:
+	# Arc-4 shell-class routing.
+	# AP (default) = single-hit, baseline damage — arc-2 path, bit-identical
+	#   when shell_class = SHELL_CLASS_AP (the procedural baseline never
+	#   touches the HE/HEAT branches; hash anchor 23d6a2ec3bf2821f stays).
+	# HE         = single-hit + radius brick-blast (CONSULT §4 "good upgrade"
+	#   "HE shots leave rubble ramps you can cross"). Sentence-test compliant:
+	#   "helps me climb through brick mazes by changing how I use HE shells".
+	# HEAT       = 2x damage on the direct hit (anti-heavy commitment).
+	#   Sentence-test compliant: "helps me climb through bunker bands by
+	#   changing how I use HEAT". Iter 8+ extends with facing/armor check.
+	var deal: int = damage
+	if shell_class == SHELL_CLASS_HEAT:
+		deal = damage * 2
 	if body.has_method("take_damage"):
-		body.take_damage(damage)
+		body.take_damage(deal)
+	if shell_class == SHELL_CLASS_HE:
+		_apply_he_blast(body)
 	_spawn_impact_spark()
 	queue_free()
+
+
+# HE radius blast: iterate siblings of the hit body that respond to
+# take_damage + are within HE_BLAST_RADIUS pixels. Bricks live as
+# StaticBody2D siblings under a "Bricks" or similar parent (per
+# Level.gd._replace_blocks). Cheap O(siblings) scan; arc-2 brick count
+# caps around 350. We do NOT chain blasts (HE→HE→HE) — single radius
+# only — to keep the affordance readable and bounded.
+const HE_BLAST_RADIUS_PX: float = 18.0  # ~1.1 tile radius at grid_size=16
+
+
+func _apply_he_blast(primary_body: Node) -> void:
+	var parent: Node = primary_body.get_parent()
+	if parent == null or not (primary_body is Node2D):
+		return
+	var origin: Vector2 = (primary_body as Node2D).global_position
+	for sibling in parent.get_children():
+		if sibling == primary_body:
+			continue
+		if not sibling.has_method("take_damage"):
+			continue
+		if not (sibling is Node2D):
+			continue
+		var d: float = (sibling as Node2D).global_position.distance_to(origin)
+		if d <= HE_BLAST_RADIUS_PX:
+			sibling.take_damage(damage)
 
 
 # iter 41: visual juice — small white ColorRect at impact position, scaled +

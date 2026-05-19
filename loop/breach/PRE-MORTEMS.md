@@ -24,6 +24,51 @@ Format:
 
 ---
 
+## iter 007 — BUILD — Bullet.gd shell-class combat behaviors (HE blast + HEAT 2x)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 2 (still 3 shell classes, no fourth),
+  3 (HE has a readable shell relationship → bricks crack into rubble;
+  HEAT has a readable relationship → 2x damage; AP cheap+precise stays
+  the default), 7 (verbs not stats — HE is an *affordance* "creates lane
+  through brick clusters", not "+18% splash damage"; HEAT is a *verb*
+  "doubles damage on hit", not a passive multiplier)
+- CONSULT constraints risked: constraint 5 — without depth-band
+  enemy/terrain mapping wired, HEAT 2x doesn't yet pair with heavy
+  bunkers. Honest scaffolding: HE behavior is the load-bearing one
+  (breach economy = "spending shells to open vertical lanes"); HEAT 2x
+  is the simplest distinct-behavior cite for anchor 2 closure
+- Predicted failure modes:
+  - HE blast radius via sibling iteration may scan too many nodes if
+    bricks are deeply nested → perf hit. Mitigation: cap by distance
+    check; arc-2 procedural's brick count is ≤350.
+  - Hash anchor risk: `make test` runs procedural baseline for 120
+    frames. If procedural baseline ever fires AP bullets that touch
+    bricks, the HE-radius behavior changes outcomes only via shell_class
+    routing — AP default preserves arc-2 path bit-identically. Should
+    be safe but verify.
+  - Harness must construct stub `BrickBlock`-like nodes with
+    `take_damage` and spatial positions; SceneTree subclass + await
+    process_frame pattern (arc-3 precedent).
+- Falsifiable claim: post-edit, `make test` exit 0 AND `tile_hash` =
+  `23d6a2ec3bf2821f` AND `make test-all` PASS AND
+  `make check-breach-{config,shells,depot}` PASS AND new
+  `make check-breach-he-blast` reports `BREACH_HE_BLAST_OK` with HE
+  bullet destroying ≥2 stub bricks in cluster + HEAT bullet dealing
+  2x damage to single stub body + AP bullet dealing 1x baseline.
+- Sentence test: applies — does HE behavior pass?
+  *"This upgrade helps me climb through brick mazes by changing how I
+  use HE shells."* — YES (HE-leaves-rubble-via-radius is the literal
+  text of CONSULT §4 example "good upgrade")
+- Substrate touched: `scripts/Bullet.gd` (substrate write #4 — sanctioned
+  per PROMPT §SUBSTRATE FREEZE "scripts/Bullet.gd — multi-shell support
+  if iter chooses extend-vs-new-Shell.gd"; same file as iter 4 — chosen
+  path, refined)
+- Hash-anchor verification plan: post-edit, before commit. Defensive
+  check is mandatory because Bullet.gd is a Layer 2 substrate file
+  fired by both player (proc baseline) and enemies (Spawner).
+
 ## iter 006 — META + CONSULT — round 1 close + round 2 bootstrap
 
 - Date: 2026-05-19

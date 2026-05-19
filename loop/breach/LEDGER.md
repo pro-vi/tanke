@@ -17,6 +17,51 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 007 — BUILD — Bullet.gd HE radius + HEAT 2x (C3 anchor 2)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **8/50 absolute · 8/50 effective** (Δ +1 vs prior — C3 anchor 2)
+  - C3 (Ammo as logistics): 1 → 2 (anchor 2: all 3 shells with distinct
+    combat behavior — code-cited via `make check-breach-he-blast`
+    reporting AP primary=1/radius=0, HE primary=1/radius=3,
+    HEAT primary=2/radius=0)
+  - C2=1, C4=1, C9=1, C10=3 unchanged
+- Constraints respected: 2 (still 3 classes), 3 (each shell has a
+  readable answer — HE→brick clusters, HEAT→2x damage, AP→precise), 7
+  (HE is an affordance "creates lane through bricks" not "+18% splash";
+  HEAT is a verb "doubles damage on hit")
+- Constraints risked: 5 (band-aware enemy/terrain mapping not yet wired
+  — HEAT 2x doesn't yet pair with heavy bunkers since no Heavy enemy
+  spawns in breach mode yet; honest gap)
+- Sentence test: HE passes — *"This upgrade helps me climb through brick
+  mazes by changing how I use HE shells."* C8 anchor 1 candidate
+  (eligible) but withheld this iter: shells are base capabilities, not
+  upgrades; the iter that adds a depot-offered "HE Reserves +N"
+  upgrade card lifts C8 cleanly.
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** post substrate
+  write #4 on Bullet.gd. `make test` exit 0. `make test-all` PASS (all
+  5 arc-3 targets). All 4 arc-4 harnesses PASS (config, shells, depot,
+  he-blast).
+- Falsifications: none. Pre-mortem prediction "HE blast radius via
+  sibling iteration may hit perf" — n/a in test (4 sibling stubs); arc-2
+  brick cap ≤350 keeps it bounded.
+- Files: `scripts/Bullet.gd` (substrate write #4 — second extension of
+  same file, sanctioned), `loop/breach/test_breach_he_blast.gd` (NEW
+  verifier), `Makefile` (new `check-breach-he-blast` target),
+  `loop/breach/PRE-MORTEMS.md`, `loop/breach/LEDGER.md`,
+  `loop/breach/STATE.md`
+- Finding: **First behavior-level breach landed.** `_on_body_entered`
+  routes by shell_class: AP = arc-2 baseline (bit-identical),
+  HEAT = damage × 2 on direct hit, HE = direct hit + radius blast to
+  sibling bodies within 18px (≈1.1 tile radius). Breaks the
+  "schema-before-mechanic" trap named in iter-6 CONSULT 001
+  self-pre-mortem. CONSULT 001 still running (queryId 3ae82231…) — next
+  iter checks back. Next iter 8 candidates: (a) wire shell-swap player
+  input (PlayerTank substrate write — sanctioned), (b) extend HEAT for
+  armor-bypass via EnemyHeavy facing, (c) read CONSULT 001 if returned
+  and adjust.
+
 ## iter 006 — META + CONSULT — round 1 close + round 2 bootstrap-pending
 
 - Date: 2026-05-19
