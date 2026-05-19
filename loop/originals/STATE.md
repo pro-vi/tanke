@@ -3,21 +3,16 @@
 ## Phase
 
 ```
-phase: loop (post-retro; iter 24-26 trio complete)
-iteration: 26 (BUILD — band-overlap auto-check — complete)
-arc: 3 (Originals — BC NES stages import) — structurally closed iter 16; trail iters done
+phase: PAUSED (arc-3 ceiling-trail close at 51/60; arc-4 awaiting user signal)
+iteration: 27 (META — ceiling ack + PROMPT v3 patterns + arc-4 surface)
+arc: 3 (Originals — BC NES stages import) — CLOSED at 51/60 (85%)
 loop_type: frontier-loop with /story-loop per-stage verification
 preloop_complete: yes
-score: 51/60 (85%) — all structurally-reachable anchors satisfied
+score: 51/60 (85%) — FINAL for arc 3
 playtest_halt_rule: SUSPENDED (iter 10); REVIEW-QUEUE pattern active
 ```
 
-**Iter 24-26 trio complete per user goal** ("/architect and /build Iter 24 25 26 then resume loop"). All structurally-reachable rubric anchors now satisfied via harness extensions + AUDIT rephrases:
-- Iter 24: C10/5 via 35-chain + ARC COMPLETE assertion (`loop/test_chain_35.gd`, `make check-chain-35`)
-- Iter 25: C6/5 via TitleScreen nav input simulation (`loop/test_titlescreen_nav.gd`, `make check-titlescreen-nav`)
-- Iter 26: C12/5 via band-overlap auto-check (`tools/band_check.py`, `make og-band-check`); 50/50 in-band
-
-Cumulative: 48 → 49 → 50 → **51/60 (85%)**. Procedural hash anchor `23d6a2ec…` preserved across all 3 iters. Tag balance: 20 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL]. Remaining 9/60 ungained (C2/4-5, C3/4-5 rubric-capped, C11/4-5) are playtest-only by rubric design — AUDIT-rephrasing would dilute identity-cue anchors.
+**Arc 3 closed at 51/60 (85%) via iter-27 META.** All structurally-reachable rubric anchors satisfied. See `loop/originals/iter027-meta-arc3-ceiling.md` for: structural-ceiling acknowledgment, 7 PROMPT v3 pattern candidates synthesizing arcs 1+2+3, 5 arc-4 framings with stones + scope + risk, re-engagement entry points for next session, compaction notes for cross-session pickup. **Loop paused indefinitely; user picks arc-4 framing in next session.**
 
 **RUBRIC v2 — 12 criteria, 60-point ceiling.** Iter-8 AUDIT: RENAMED C5 anchor 2 (rubric/data-shape fit), ADDED C11 (Identity / BC fidelity) + C12 (Arc-2 feedback metrics) per PROMPT deliverables. Honest re-score 36/60 (60%) — lower proportional than old 34/50 (68%); reflects rubric-completeness gain, not regression. Cumulative path: 5 → 10 → 15 → 20 → 29 → 33 → 34 (old rubric) → 36 (v2 rubric, +2 via C5 rename + C12 already-done). **PLAYTEST halt counter at 2/3 — iter 9 unfulfilled fires `HALTED.md`.**
 
@@ -115,6 +110,47 @@ Suggested iter path (rough estimate, ~25-30 iters to close):
 ---
 
 ## Last Action
+
+```
+Iter 027 META complete (2026-05-18) — arc-3 closed at ceiling-trail 51/60.
+
+User asked whether to click-hop the loop or redesign given the
+iter-24-26 harness extensions. Answer: brief META iter to
+acknowledge ceiling + codify patterns + surface arc-4.
+
+Wrote loop/originals/iter027-meta-arc3-ceiling.md (6 sections):
+1. Structural ceiling ack — 51/60; 7 ungained anchors broken down
+   (5 playtest-cognitive, 2 ice-rubric-capped).
+2. 7 PROMPT v3 pattern candidates synthesizing arcs 1+2+3:
+   - Hash-anchor cross-arc invariant
+   - Default-on substrate gating
+   - REVIEW-QUEUE supersedes timed halt rules
+   - AUDIT split-anchor rephrasing
+   - Input-driven scene-flow testing (iter 25)
+   - End-state overlay assertion (iter 24)
+   - Multi-seed band-overlap (iter 26)
+3. 5 arc-4 framings: identity-playtest curation, audio-as-arc,
+   multiplayer P2, procedural-fed identity loop, Tank 1990.
+4. Re-engagement entry points — 7 user signals for next session.
+5. Compaction notes — persistent file list.
+6. Arc-3 final scoreboard + 3-arc chain summary.
+
+Three-arc chain final cumulative:
+  Arc 1: 28 iters → 50/55 (90.9%) [engine, 1.78 pts/iter]
+  Arc 2: 100 iters → 34/50 (68.0%) [gameplay, 0.34 pts/iter]
+  Arc 3: 27 iters → 51/60 (85.0%) [frontier+harness, 1.89 pts/iter]
+  Project total: 155 iters; 135/165 points (81.8%).
+
+Procedural hash anchor 23d6a2ec… preserved across all 27 arc-3 iters
+(cross-arc invariant intact: arc-1 → arc-2 → arc-3 unchanged).
+
+Tag balance final: 20 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL].
+
+NO wakeup scheduled. Loop paused indefinitely.
+
+Commit: chore(originals): iter 027 — META — arc-3 ceiling ack +
+PROMPT v3 patterns + arc-4 surface.
+```
 
 ```
 Iter 24-26 BUILD trio complete (2026-05-18). User goal: "/architect
@@ -761,26 +797,29 @@ None (new arc).
 ## Next Action
 
 ```
-Loop resume after iter 24-26 trio:
+NEXT SESSION — pick one arc-4 framing per iter-027-meta-arc3-ceiling.md:
 
-ALL STRUCTURALLY-REACHABLE ANCHORS ARE SATISFIED.
+  "arc 4: identity playtest"  → option A (3 iters; close playtest gates)
+  "arc 4: audio"              → option B (5-10 iters; SFX + maybe music)
+  "arc 4: multiplayer"        → option C (5-15 iters; P2 tank + co-op)
+  "arc 4: procedural-fed"     → option D (5-50 iters; closed-loop BC tuning)
+  "arc 4: Tank 1990"          → option E (8-15 iters; 50-stage variant)
+  "arc 4: <free-form>"        → I propose a structured PROMPT
+  "close arc 3 forever"       → final retro update; permanent pause
 
-Score: 51/60 (85%). Remaining 9/60:
-  C2/4-5 (eagle felt-like-BC, tension)      — playtest-only by design
-  C3/4-5 (ice slide-physics)                 — rubric-capped 2/5
-  C11/4-5 (BC fan unprompted recognition)    — playtest-only (identity)
+Cross-session pickup files (compaction-safe):
+  loop/originals/iter027-meta-arc3-ceiling.md  — this iter's full meta
+  loop/originals/STATE.md                       — current snapshot
+  loop/originals/LEDGER.md                      — 27-iter history
+  loop/originals/REVIEW-QUEUE.md                — 3 open items
+  loop/originals/FALSIFICATIONS.md              — F001 (formula approximation)
+  loop/originals/META-RETRO-iter016.md          — iter-16 close (at 45/60)
+  loop/originals/iter024-026-architect.md       — harness extension architecture
+  loop/originals/og-metrics.json                — OG empirical bands
+  loop/originals/og_rosters.json                — canonical 35-stage rosters
 
-Iter 27 candidates:
-  - PLAYTEST request to user (5 anchors reachable from one playthrough)
-  - Quality polish without anchor lift (per-type BC scoring; SFX)
-  - META-RETRO at 51/60 (final structural close)
-
-Score-creep risk: further structural BUILD iters without playtest
-would either re-rephrase already-good anchors (over-AUDIT) or chase
-non-rubric quality (drift). Most honest: pause for user direction.
-
-No wakeup scheduled. Loop sits naturally until user re-engages with
-playtest data, "do X quality work", or "arc 3 close at 51/60".
+Procedural hash anchor 23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291
+must remain green in arc-4. Cross-arc invariant intact through arc-3.
 ```
 
 ```

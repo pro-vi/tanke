@@ -2422,3 +2422,63 @@ These anchors are *correctly* playtest-only by rubric design (identity / feel cu
 ### Commit
 
 `chore(originals): iter 026 — BUILD — band-overlap auto-check (C12 anchor 5)`
+
+---
+
+## Iter 027 — META (arc-3 ceiling + PROMPT v3 patterns + arc-4 surface)
+
+**Mode:** META
+**Date:** 2026-05-18
+**Branch:** `arc-3-originals`
+**Meta-trigger:** User asked whether to click-hop the loop or redesign given the iter-24-26 harness extensions. Answer was "do a brief meta iter and surface arc-4."
+
+### Action
+
+Wrote `loop/originals/iter027-meta-arc3-ceiling.md` — third META-RETRO-style document in arc 3 (after iter-10 META RESUME and iter-16 META-RETRO). Six sections:
+
+1. **Structural ceiling acknowledgment** — 51/60 (85%); 9/60 remaining broken down per anchor with recovery path (5 playtest, 2 rubric-capped, 2 cognitive).
+2. **Pattern library — 7 PROMPT v3 candidates**:
+   - Hash-anchor cross-arc invariant (arc 1)
+   - Default-on substrate gating (arc 3 iters 11/19/23)
+   - REVIEW-QUEUE supersedes timed halt (arc 3 iter 10 user override)
+   - AUDIT split-anchor rephrasing (arcs 3 iters 8/24/25/26)
+   - Input-driven scene-flow testing (iter 25)
+   - End-state overlay assertion (iter 24)
+   - Multi-seed band-overlap (iter 26)
+3. **5 arc-4 framings** with stones + mechanisms + scope estimates + risks: identity playtest curation, audio-as-arc, multiplayer P2, procedural-fed identity loop, Tank 1990 variant.
+4. **Re-engagement entry points** — 7 user signals that start arc 4 (or close forever).
+5. **Compaction notes** — persistent file list for cross-session pickup.
+6. **Arc-3 final scoreboard** — canonical at iter 27.
+
+### Score
+
+| C# | Score | Tag |
+|----|-------|-----|
+| 1-12 | Unchanged from iter 26 | |
+| **Total** | **51/60 (85%)** | META iter; no scoring |
+
+Tag balance final: 20 [STRUCTURE], 1 [STRUCTURE-DEFERRED], 4 [FEEL], 0 [MIXED].
+
+### Substrate guardrails verified
+
+- No code edits (META mode).
+- Procedural hash anchor `23d6a2ec…` preserved through arc-3 close at 27 iters.
+- Cross-arc invariant intact: arc-1 → arc-2 → arc-3 all preserved the same anchor.
+
+### Three-arc chain final cumulative
+
+| Arc | Shape | Iters | Score | Pace |
+|-----|-------|-------|-------|------|
+| 1 — engine | greenfield-ish | 28 | 50/55 (90.9%) | 1.78 pts/iter |
+| 2 — gameplay | greenfield, shifting | 100 | 34/50 (68.0%) | 0.34 pts/iter |
+| 3 — originals | frontier-loop + harness | 27 | 51/60 (85.0%) | 1.89 pts/iter |
+
+**Project total: 155 iters; 135/165 points (81.8%).** Arc-3's effective pace beat arc-1's, despite the longer trail iters — the harness extensions delivered structural lifts the original frontier-loop shape didn't anticipate.
+
+### Next iter — none scheduled
+
+Loop pauses indefinitely. User re-engages in next session by picking one of 7 entry signals per the iter-027 meta document. arc-3 artifacts (6 scripts + 3 scenes + 4 tools + 35 reference PNGs + 2 data artifacts + 1 calibrated config + 9 Makefile targets) are ready to inherit.
+
+### Commit
+
+`chore(originals): iter 027 — META — arc-3 ceiling ack + PROMPT v3 patterns + arc-4 surface`
