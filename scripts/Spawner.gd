@@ -524,17 +524,20 @@ func _on_enemy_freed() -> void:
 	# so non-kill exits (scene reload, future despawn-off-screen) don't inflate
 	# the death-screen "KILLS" metric.
 	_enemies_alive -= 1
-
-
-func _on_enemy_killed() -> void:
-	enemies_killed += 1
-	# iter 011: ORIGINALS clear-condition. Fires stage_cleared once when all
-	# 20 enemies have been spawned AND none remain alive. Gated on both
-	# conditions to avoid early-game false-positive (alive count is 0 at boot).
+	# iter 011 (review-fix): ORIGINALS clear-condition checked here, post-
+	# decrement. Enemy.gd emits `killed` synchronously BEFORE queue_free
+	# defers the tree-exit, so checking _enemies_alive in _on_enemy_killed
+	# sees the stale ==1 on the last kill and stage_cleared never fires.
+	# Gated on stage_number + total-spawns to avoid the boot-time false-
+	# positive (alive==0 at start before any spawn).
 	if stage_number > 0 \
 			and _total_spawns_this_stage >= RosterT.TOTAL_ENEMIES_PER_STAGE \
 			and _enemies_alive == 0:
 		stage_cleared.emit()
+
+
+func _on_enemy_killed() -> void:
+	enemies_killed += 1
 
 
 func _on_enemy_aim_canceled() -> void:

@@ -306,18 +306,6 @@ func _die() -> void:
 	_dead = true
 	sprite.stop()
 	velocity = Vector2.ZERO
-
-
-# iter 023: BC-style life-respawn. Resets HP + position + iframes. Doesn't
-# touch _dead (was never set on respawning life). Brief iframes prevent
-# instant-re-death from same bullet/collision that killed the previous life.
-func _respawn() -> void:
-	hp = max_hp
-	hp_changed.emit(hp, max_hp)
-	global_position = _start_position
-	velocity = Vector2.ZERO
-	_iframe_timer = 1.5  # 1.5s grace period after respawn
-	_start_hit_flash()  # visual cue: tank flashes briefly on respawn
 	# iter 31: ascender run summary on death (Pro Consult 005 H4)
 	var depth: int = int(maxf(0.0, (_start_y - _min_y_reached) / 16.0))
 	var t: int = int(_run_time)
@@ -380,6 +368,18 @@ func _respawn() -> void:
 		_restart_hint_tween.tween_property(_restart_hint_label, "modulate:a", 0.35, 0.6)
 		_restart_hint_tween.tween_property(_restart_hint_label, "modulate:a", 1.0, 0.6)
 	died.emit()
+
+
+# iter 023: BC-style life-respawn. Resets HP + position + iframes. Doesn't
+# touch _dead (was never set on respawning life). Brief iframes prevent
+# instant-re-death from same bullet/collision that killed the previous life.
+func _respawn() -> void:
+	hp = max_hp
+	hp_changed.emit(hp, max_hp)
+	global_position = _start_position
+	velocity = Vector2.ZERO
+	_iframe_timer = 1.5  # 1.5s grace period after respawn
+	_start_hit_flash()  # visual cue: tank flashes briefly on respawn
 
 
 # iter 44: persistent best-depth via ConfigFile at user://stats.cfg.
