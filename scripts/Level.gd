@@ -33,10 +33,14 @@ func _replace_blocks() -> void:
 	waterTileMap.clear()
 
 
-func _on_PlayerTank_shoot(bullet: PackedScene, _position: Vector2, _direction: int) -> void:
+func _on_PlayerTank_shoot(bullet: PackedScene, _position: Vector2, _direction: int, shell_class: int = 0) -> void:
 	var b: Node2D = bullet.instantiate()
 	add_child(b)
 	# iter 101 (review-fix): pass mask explicitly — Environment (1) + Enemy (8).
 	# Previously relied on Bullet.tscn's baked collision_mask=9, hiding shooter
 	# intent at the call site.
-	b.start(_position, _direction, 9)
+	# arc-4 iter 8: route shell_class to Bullet.start()'s 4th param. Default
+	# `shell_class = 0` (SHELL_CLASS_AP) preserves arc-2/3 baseline when the
+	# caller (PlayerTank without loadout, or any non-arc-4 emitter) doesn't
+	# supply the param.
+	b.start(_position, _direction, 9, shell_class)

@@ -1,6 +1,18 @@
 extends CharacterBody2D
 
-signal shoot
+# arc-4 breach mode: PlayerTank carries a Loadout (finite HE/HEAT
+# reserves) + a current_shell cursor cycled via KEY_TAB. Default
+# loadout = null preserves arc-2/3 baseline behavior (unlimited AP).
+# Sanctioned substrate write per PROMPT §SUBSTRATE FREEZE +
+# CONSULT 001 "no player has yet sacrificed one resource to alter one
+# route — that is the atomic verb".
+const BulletT = preload("res://scripts/Bullet.gd")
+const LoadoutT = preload("res://scripts/Loadout.gd")
+
+# arc-4: shoot signal carries the chosen shell_class. Default in any
+# emit-site that doesn't override = SHELL_CLASS_AP (= 0), preserving
+# arc-2/3 callers bit-identically.
+signal shoot(bullet_scene: PackedScene, pos: Vector2, dir: int, shell_class: int)
 signal hp_changed(new_hp: int, max_hp: int)
 signal died
 
@@ -21,6 +33,12 @@ var _shield_timer: float = 0.0
 @export var screen_shake_magnitude: float = 3.0  # px at 320×240
 @export var screen_shake_duration: float = 0.25
 @export var screen_shake_steps: int = 5
+# arc-4: optional Loadout. null = arc-2/3 baseline (unlimited AP).
+# When set, current_shell cycles via KEY_TAB and HE/HEAT consume reserves.
+@export var loadout: LoadoutT = null
+
+var current_shell: int = 0  # = BulletT.SHELL_CLASS_AP; cycled via KEY_TAB
+var _tab_was_pressed: bool = false
 
 @onready var sprite: Sprite2D = $Sprite2D
 
@@ -168,6 +186,15 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_pressed("ui_accept"):
 		_fire()
 
+	# arc-4: shell cycle via KEY_TAB (just-pressed edge). No InputMap
+	# action registered — raw key check keeps project.godot untouched.
+	# Only engages when a loadout is set; otherwise we stay on AP.
+	if loadout != null:
+		var tab_now: bool = Input.is_physical_key_pressed(KEY_TAB)
+		if tab_now and not _tab_was_pressed:
+			_cycle_shell()
+		_tab_was_pressed = tab_now
+
 
 func set_dir(new_dir: int) -> void:
 	# snap to grid
@@ -178,10 +205,43 @@ func set_dir(new_dir: int) -> void:
 
 
 func _fire() -> void:
-	if can_shoot:
-		$GunTimer.start()
-		shoot.emit(Bullet, $Muzzle.global_position, direction)
-		can_shoot = false
+	if not can_shoot:
+		return
+	# arc-4: determine the actual shell to fire. With no loadout, we
+	# always fire AP (arc-2/3 baseline). With a loadout, we attempt the
+	# current_shell — consume() falls back to AP if the chosen reserve
+	# is empty (the player wasted a frame's fire on an empty mag — that
+	# IS the breach-economy commitment cost surface).
+	var actual_shell: int = BulletT.SHELL_CLASS_AP
+	if loadout != null:
+		actual_shell = loadout.consume(current_shell)
+	$GunTimer.start()
+	shoot.emit(Bullet, $Muzzle.global_position, direction, actual_shell)
+	can_shoot = false
+
+
+# arc-4: cycle current_shell among AP/HE/HEAT, skipping classes the
+# loadout can't fire (zero reserve). If loadout is null this is a no-op
+# (input check up-stream gates it).
+func _cycle_shell() -> void:
+	if loadout == null:
+		return
+	# AP → HE → HEAT → AP (skip out-of-reserve when cycling onto it).
+	var order: Array[int] = [
+		BulletT.SHELL_CLASS_AP,
+		BulletT.SHELL_CLASS_HE,
+		BulletT.SHELL_CLASS_HEAT,
+	]
+	var idx: int = order.find(current_shell)
+	if idx < 0:
+		idx = 0
+	# Try at most 3 hops (full ring).
+	for hop in 3:
+		idx = (idx + 1) % order.size()
+		if loadout.can_fire(order[idx]):
+			current_shell = order[idx]
+			return
+	# All other classes empty; stay on current.
 
 
 func _on_GunTimer_timeout() -> void:

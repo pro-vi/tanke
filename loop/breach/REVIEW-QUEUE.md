@@ -34,3 +34,20 @@ Format per item:
     avoid this trap by wiring *behavior*, not more schema. iter-6 fired
     consult 001 to ground-truth this risk read.
 
+#2 — Round 2 atomic verb (iter 7+8) — iters 7-8 — open
+  Finding: CONSULT 001 returned (tab-timeout but response landed —
+    arc-4 documented behavior reproduced). It named the missing piece:
+    "no player has yet sacrificed one resource to alter one route. That
+    is the atomic verb." Iter 7 shipped HE radius brick-blast (3 stub
+    bricks destroyed by one HE shot vs 0 for AP). Iter 8 shipped
+    Loadout.gd + PlayerTank.gd shell cycle (KEY_TAB) + finite HE/HEAT
+    reserves consumed on fire. Now the player CAN sacrifice a resource
+    (HE reserve) to alter a route (open brick lane). C1=1, C9=2; total
+    10/50.
+  Affordance: player has a shell cycle + a finite breach budget;
+    firing HE is now a commitment, not a free option.
+  Risk: not yet placed in a BreachLevel scene; harness-tested only.
+    The lived breach decision doesn't happen yet — no band yet places
+    bricks in a choke that *requires* HE to breach. Round 2's next
+    iter (iter 9+) wires the choke band + the 2-choice depot.
+

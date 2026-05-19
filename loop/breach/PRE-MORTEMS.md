@@ -24,6 +24,56 @@ Format:
 
 ---
 
+## iter 008 — BUILD — Loadout.gd + finite HE/HEAT reserves + shell-cycle input
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- CONSULT 001 (now returned despite tab timeout — documented arc-4
+  behavior): **"no player has yet sacrificed one resource to alter one
+  route. That is the atomic verb."** This iter wires that verb.
+- CONSULT constraints respected: 1 (no combat-modal — shell cycle is a
+  key tap, not a menu), 2 (≤3 classes), 3 (each shell already has a
+  readable answer from iter 7; iter 8 adds the *commitment cost*),
+  7 (verbs not stats — Loadout's `he_reserve` is a finite resource the
+  player *spends*, not a passive +damage stat)
+- CONSULT constraints risked: 1 — shell-cycle key chosen as raw KEY_TAB
+  (no InputMap action added; project.godot stays untouched). If TAB
+  conflicts with anything, will refactor to an InputMap action in
+  iter 9+. Mitigation acceptable for iter 8 minimum scope.
+- Predicted failure modes:
+  - Signal arity mismatch: extending `shoot` to emit shell_class breaks
+    any existing handler that expected 3 args. Level.gd handler must
+    update in the same commit (substrate write #6).
+  - Hash anchor: Level.gd and PlayerTank.gd both touched. Procedural
+    `make test` doesn't fire bullets in the 120-frame window (no input
+    simulated) so the new signal path doesn't engage; anchor preserved.
+  - OG mode regression: arc-3 OriginalLevel.gd extends Level.gd; the
+    new 4-arg signal handler must work for OG too. PlayerTank default
+    current_shell = AP + loadout = null means OG fires AP bullets via
+    the same path. Will be verified via `make check-chain-25` (full
+    arc-3 chain).
+  - Loadout cross-script type: same preload-alias pattern needed
+    (arc-1 LevelConfigT precedent).
+- Falsifiable claim: post-edit, `make test` exit 0 AND `tile_hash` =
+  `23d6a2ec3bf2821f` AND `make test-all` PASS AND ALL 4 prior breach
+  harnesses PASS AND new `make check-breach-loadout` reports
+  `BREACH_LOADOUT_OK` with: (a) PlayerTank.loadout default null →
+  arc-2 baseline preserved, (b) loadout set + HE fire → he_reserve
+  decremented, (c) loadout set + HE fire at he_reserve=0 → fallback
+  to AP, no decrement.
+- Sentence test: applies. Loadout is the substrate for upgrades
+  (depots refill it). The first upgrade card eligible to cite C8:
+  "This upgrade helps me climb through brick mazes by changing how I
+  use HE shells" — depot offers "+3 HE reserves" or similar. Iter 9.
+- Substrate touched: `scripts/PlayerTank.gd` (substrate write #5 —
+  sanctioned per PROMPT §SUBSTRATE FREEZE "PlayerTank.gd — add Loadout
+  + RunRecap hooks"), `scripts/Level.gd` (substrate write #6 —
+  necessary for shell signal extension; same gating discipline applies
+  even though Level.gd isn't named in §SUBSTRATE FREEZE — it's an arc-1
+  Layer-1 file. Will use default-on gating: 4th signal arg has a
+  sensible default routing).
+- Hash-anchor verification plan: post-edit, before commit. Mandatory.
+
 ## iter 007 — BUILD — Bullet.gd shell-class combat behaviors (HE blast + HEAT 2x)
 
 - Date: 2026-05-19

@@ -17,6 +17,67 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 008 — BUILD — Loadout.gd + PlayerTank finite reserves + shell cycle (C1 anchor 1, C9 anchor 2)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **10/50 absolute · 10/50 effective** (Δ +2 vs prior — C1 anchor 1, C9 anchor 2)
+  - C1 (Breach build identity): 0 → 1 (anchor 1: Loadout struct exists;
+    player has ≥1 build-axis differentiator — code-cited; we have 2
+    differentiators: he_reserve + heat_reserve as separate finite
+    resources)
+  - C9 (Identity singularity): 1 → 2 (anchor 2: build identity (C1=1) +
+    depots (C2=1) + bands (C4=1) all functional — code-cited via the 4
+    arc-4 harness targets)
+  - C2=1, C3=2, C4=1, C10=3 unchanged; total = 1+1+2+1+0+0+0+0+2+3 = 10
+- Constraints respected: 1 (shell-cycle is a key tap, not a menu; no
+  combat-modal added), 2 (≤3 classes), 3 (each shell has its readable
+  answer + now a cost), 6 (Loadout reserve is the canonical death-recap
+  data shape for iter 11+ recap work), 7 (verbs not stats — `he_reserve`
+  is a finite resource the player spends, not a passive multiplier)
+- Constraints risked: 5 — band-aware spawning still not wired. Iter
+  9-10 work.
+- Sentence test: applies to HE; PASSES per iter 7 cite. C8 anchor 1
+  held back: shells are base capabilities + the *upgrade* surface
+  arrives with depot inventory iter 9+.
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** post substrate
+  writes #5 (PlayerTank.gd) + #6 (Level.gd). `make test` exit 0.
+  `make test-all` PASS — all 5 arc-3 targets including the 25/35-stage
+  chains (which fire AP bullets via the new 4-arg signal path with
+  default shell_class=AP). All 5 arc-4 harnesses PASS.
+- Falsifications: none. Pre-mortem predictions all held — signal arity
+  mismatch handled by atomic update; hash anchor preserved; OG chain
+  intact via default shell_class arg.
+- CONSULT 001 status: ADOPTED. Tab reported error/timeout at 10:02
+  elapsed; response landed on conversation page (arc-4 documented
+  behavior — "tab-status=error ≠ consult-failed"). Findings:
+  - Q1: "BC-plus-typed-shells-in-waiting" until shell choice changes
+    route topology → iter 7 (HE radius) + iter 8 (finite reserve)
+    answer this jointly
+  - Q2: depots earned only after "visible breach cost" — iter 9+ wires
+    2-choice depot AFTER a HE-choke band
+  - Q3: "no player has yet sacrificed one resource to alter one route
+    — that is the atomic verb" → iter 8 (this) ships the atomic verb
+- Files: `scripts/Loadout.gd` (NEW Resource), `scripts/PlayerTank.gd`
+  (substrate write #5 — sanctioned), `scripts/Level.gd` (substrate
+  write #6 — extends shoot signal handler with shell_class default arg),
+  `loop/breach/test_breach_loadout.gd` (NEW verifier), `Makefile` (new
+  `check-breach-loadout` target), `loop/breach/creative-consults.md`
+  (CONSULT 001 marked ADOPTED + full findings), `loop/breach/REVIEW-
+  QUEUE.md` (item #2 — round 2 atomic verb), `loop/breach/PRE-MORTEMS.md`,
+  `loop/breach/LEDGER.md`, `loop/breach/STATE.md`
+- Finding: **The atomic verb landed.** Player has a finite HE reserve.
+  KEY_TAB cycles AP→HE→HEAT, skipping empty mags. _fire() consumes the
+  current shell from Loadout (AP unlimited; HE/HEAT decrement). Extended
+  shoot signal: 4-arg `(bullet_scene, pos, dir, shell_class)`. Level
+  handler accepts the 4th arg with default `shell_class = 0` (AP),
+  preserving arc-3 OG chain-25/35 bit-identically (default arg means
+  arc-3 callers don't need to update). The arc-2 procedural test fires
+  no bullets in its 120-frame window so hash anchor untouched. **Round
+  2 has shipped the CONSULT-named atomic verb in 2 iters (7+8)**. Next
+  iter 9: 2-choice depot upgrade catalog (CONSULT 001 Q2 + Q3
+  implication).
+
 ## iter 007 — BUILD — Bullet.gd HE radius + HEAT 2x (C3 anchor 2)
 
 - Date: 2026-05-19
