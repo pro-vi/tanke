@@ -84,10 +84,18 @@ func _initialize() -> void:
 
 
 func _collect(level: Node) -> Dictionary:
+	# iter 011 (review-fix): exclude non-terrain StaticBody2D direct children
+	# (currently only Eagle in OG mode). The Sprite2D / AnimatedSprite2D
+	# heuristic was designed when bricks and water blocks were the only
+	# direct-child bodies; Eagle is also a StaticBody2D with a Sprite2D
+	# child and would otherwise inflate brick_count + tile_hash + structure
+	# metrics on every OG oracle run.
 	var brick_count := 0
 	var water_count := 0
 	for child in level.get_children():
 		if child is StaticBody2D:
+			if child.name == "Eagle":
+				continue
 			if child.has_node("Sprite2D"):
 				brick_count += 1
 			elif child.has_node("AnimatedSprite2D"):
@@ -122,6 +130,8 @@ func _collect(level: Node) -> Dictionary:
 		fingerprint += "g%d,%d;" % [cell.x, cell.y]
 	for child in level.get_children():
 		if child is StaticBody2D:
+			if child.name == "Eagle":
+				continue
 			var prefix := ""
 			if child.has_node("Sprite2D"):
 				prefix = "b"
@@ -142,6 +152,8 @@ func _collect(level: Node) -> Dictionary:
 		grid[Vector2i(cell.x, cell.y)] = "grass"
 	for child in level.get_children():
 		if child is StaticBody2D:
+			if child.name == "Eagle":
+				continue
 			var col: int = int(child.position.x / 8)
 			var row: int = int(child.position.y / 8)
 			if child.has_node("Sprite2D"):
