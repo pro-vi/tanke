@@ -1,20 +1,35 @@
 extends Area2D
 
+# Arc-4 breach mode: 3 primary shell classes (CONSULT §9 constraint 2).
+# AP = cheap precise; HE = terrain-mutating; HEAT = anti-heavy-armor.
+# Default = AP for arc-2 baseline bit-identicality (hash anchor
+# 23d6a2ec3bf2821f… on seed 42 procedural fires AP bullets only via
+# the arc-2 codepath; Spawner-fired enemy bullets stay AP too).
+const SHELL_CLASS_AP: int = 0
+const SHELL_CLASS_HE: int = 1
+const SHELL_CLASS_HEAT: int = 2
+
 @export var speed: int = 120
 @export var damage: int = 1
 @export var lifetime: float = 2.0
+# Arc-4 default-on gating (PATTERN 2 / L5). Default = AP preserves arc-2
+# baseline; HE / HEAT behaviors land in iter 5+ (terrain-cracking,
+# anti-armor). When at default, `start()` runs an arc-2-identical path.
+@export var shell_class: int = SHELL_CLASS_AP
 
 var velocity: Vector2 = Vector2.ZERO
 
 @onready var _lifetime_timer: Timer = $LifeTimeTimer
 
 
-func start(pos: Vector2, dir: int, target_mask: int = -1) -> void:
+func start(pos: Vector2, dir: int, target_mask: int = -1, shell: int = -1) -> void:
 	position = pos
 	rotation = Constants.dir_to_rotation(dir)
 	velocity = Vector2(1, 0).rotated(rotation) * float(speed)
 	if target_mask >= 0:
 		collision_mask = target_mask
+	if shell >= 0:
+		shell_class = shell
 	_lifetime_timer.wait_time = lifetime
 	_lifetime_timer.start()
 	# iter 53: high-damage bullets (Heavy =2) get a warm orange tint so player
@@ -23,6 +38,18 @@ func start(pos: Vector2, dir: int, target_mask: int = -1) -> void:
 		var sprite: Sprite2D = $Sprite2D
 		if sprite != null:
 			sprite.modulate = Color(1.0, 0.5, 0.3, 1.0)
+	# Arc-4 shell-class visual hint. AP = no mutation (preserves arc-2
+	# look + the damage>=2 warm-orange code path above). HE = soft yellow.
+	# HEAT = warm crimson. Visual is a temporary scaffold until iter ~6+
+	# replaces sprite per shell with gen_tile.py outputs (constraint 4
+	# silhouette-grammar gate applies then).
+	if shell_class != SHELL_CLASS_AP:
+		var s: Sprite2D = $Sprite2D
+		if s != null:
+			if shell_class == SHELL_CLASS_HE:
+				s.modulate = Color(1.0, 0.85, 0.25, 1.0)
+			elif shell_class == SHELL_CLASS_HEAT:
+				s.modulate = Color(1.0, 0.35, 0.25, 1.0)
 
 
 func _physics_process(delta: float) -> void:

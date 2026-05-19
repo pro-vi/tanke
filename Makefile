@@ -11,7 +11,7 @@ NOISE_FILTER    = grep -Ev "RID allocations|resources still in use"
 FRAMES_DIR      = $(PROJECT_DIR)/tools/out
 REFS_DIR        = $(PROJECT_DIR)/tools/refs
 
-.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain check-chain-35 og-band-check check-titlescreen-nav test-all check-breach-config
+.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain check-chain-35 og-band-check check-titlescreen-nav test-all check-breach-config check-breach-shells
 
 # Parse/load validation — catches bad scripts and missing nodes
 check:
@@ -130,6 +130,13 @@ test-all: test check-loader check-chain check-chain-35 check-titlescreen-nav
 check-breach-config:
 	@$(HEADLESS) --script res://loop/breach/test_breach_config.gd 2>&1 | grep -E "^(band_count|  band\[|BREACH_CONFIG_OK|FAIL|ERROR|SCRIPT ERROR)"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_config.gd 2>&1 | grep -q "^BREACH_CONFIG_OK"
+
+# Arc-4 breach mode: verify scripts/Bullet.gd exposes 3 distinct shell
+# classes (AP/HE/HEAT) and default = AP (preserves arc-2 baseline).
+# C3 anchor 1 structural cite.
+check-breach-shells:
+	@$(HEADLESS) --script res://loop/breach/test_breach_shells.gd 2>&1 | grep -E "^(shell_classes|BREACH_SHELLS_OK|FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/breach/test_breach_shells.gd 2>&1 | grep -q "^BREACH_SHELLS_OK"
 
 # Arc-3 → arc-2 metric handshake: compute per-stage structural metrics
 # across all 35 BC stages and emit loop/originals/og-metrics.json.

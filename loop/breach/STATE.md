@@ -2,18 +2,18 @@
 
 ```yaml
 phase: loop
-iter: 3
+iter: 4
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_3: 23d6a2ec3bf2821f  # bit-identical through substrate writes #1 + #2
-substrate_writes_this_arc: 2  # ProceduralLevel.gd: flag (iter 2) + type tighten (iter 3)
+hash_anchor_at_iter_4: 23d6a2ec3bf2821f  # bit-identical through substrate writes #1-3
+substrate_writes_this_arc: 3  # ProceduralLevel.gd ×2 (iter 2 flag, iter 3 type tighten) + Bullet.gd (iter 4 shell_class)
 current_round: 1
 current_round_phase: BUILD
-next_action: iter 4 — BUILD — extend scripts/Bullet.gd with shell_class flag (default=0=AP, bit-identical to arc-2 behavior). Add SHELL_CLASS_AP/HE/HEAT constants. Target: C3 anchor 1 (≥2 shell types in code; player can fire either — code-cited). Substrate write #3 on Bullet.gd — sanctioned per PROMPT §SUBSTRATE FREEZE + L5 gating template. Hash-anchor verify post-edit.
-score: 2/50 absolute · 2/50 effective  # C10=1, C4=1
+next_action: iter 5 — BUILD — author scripts/Depot.gd + scenes/Depot.tscn (Area2D trigger; body_entered → get_tree().paused = true; body_exited → resume). Add `make check-breach-depot` harness target that loads the scene + emits body_entered + verifies pause state. Target: C2 anchor 1 (Depot entity exists; combat pauses on entry — code-cited). New file work — no substrate touch.
+score: 4/50 absolute · 4/50 effective  # C3=1, C4=1, C10=2
 spike_report: loop/breach/iter-001-spike-report.md
-new_harness_targets: check-breach-config  # iter 3 — arc-4 first
+new_harness_targets: check-breach-config, check-breach-shells  # iter 3, iter 4
 ```
 
 ---

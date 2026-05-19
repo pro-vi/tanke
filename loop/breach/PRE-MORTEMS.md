@@ -24,6 +24,48 @@ Format:
 
 ---
 
+## iter 004 — BUILD — Bullet.gd shell_class flag + AP/HE/HEAT constants
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: constraint 2 (≤3 primary shell classes
+  at first — AP/HE/HEAT exactly), constraint 1 (no combat modal — flag
+  is data-only, no UI surface), constraint 7 (verbs not stats — shell
+  class will route to terrain/behavior affordances in later iters, not
+  to +damage% upgrades)
+- CONSULT constraints risked: constraint 3 (every enemy must have a
+  readable shell/positioning relationship) is *not* satisfied yet by
+  this iter — the shell_class field exists but no per-class behavior is
+  wired. Later iter must implement HE=terrain-cracking,
+  HEAT=anti-heavy-armor, AP=cheap-precise. The schema-only iter is
+  honest scaffolding; the behavior gap is documented + scheduled.
+- Predicted failure: extending Bullet.gd default-arg shape in `start()`
+  may bleed across the existing callers in Level.gd or PlayerTank
+  (which fire bullets without specifying shell_class) — they'd get the
+  @export-default-AP behavior, which is the desired bit-identical
+  baseline. If any caller passes positional args in a way that collides
+  with a new positional `shell_class`, parsing or runtime breaks.
+- Falsifiable claim: post-edit, `make test` exits 0 (procedural baseline
+  still fires AP bullets identically to arc-2) AND `tile_hash` first
+  16 chars = `23d6a2ec3bf2821f` AND `make test-all` PASS on all 5
+  arc-3 targets AND `make check-breach-config` PASS AND new harness
+  `make check-breach-shells` reports `BREACH_SHELLS_OK` with 3 shell
+  classes (AP/HE/HEAT) verified distinct.
+- Sentence test: n/a this iter (shell_class is a data field, not yet
+  an upgrade). When iter 5+ adds an upgrade that grants shell-swap
+  reserves, sentence will be: "This upgrade helps me climb through
+  bunker bands by changing how I use HEAT" — sentence test gate.
+- Substrate touched: `scripts/Bullet.gd` (substrate write #3 — sanctioned
+  per PROMPT §SUBSTRATE FREEZE "scripts/Bullet.gd — multi-shell support
+  if iter chooses extend-vs-new-Shell.gd"; chose extend over new file
+  per Scout A's spike + L5 gating template)
+- Hash-anchor verification plan: post-edit, before commit. The
+  Bullet.gd change is gameplay-layer (Layer 2), not engine. Hash anchor
+  is bound to procedural seed-42 baseline which doesn't fire bullets
+  during the 120-frame `make test` window — so the anchor should remain
+  trivially preserved. But I'll verify anyway since the anchor floor on
+  C10 caps everything else.
+
 ## iter 003 — BUILD — BreachConfig.gd + BreachBand.gd + sample .tres (2 bands)
 
 - Date: 2026-05-19

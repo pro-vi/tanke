@@ -17,6 +17,48 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 004 — BUILD — Bullet.gd shell_class flag + AP/HE/HEAT constants
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **4/50 absolute · 4/50 effective** (Δ +2 vs prior — C3 anchor 1, C10 anchor 2)
+  - C3 (Ammo as logistics): 0 → 1 (anchor 1: 3 shell types in code,
+    player can fire any via @export or start() override — code-cited via
+    `make check-breach-shells` reporting `BREACH_SHELLS_OK 3 distinct
+    shell classes, default = AP`)
+  - C10 (Substrate preservation): 1 → 2 (anchor 2: same + `make test-all`
+    passes through all substrate-touching iters — iters 2, 3, 4 all
+    green on 5 arc-3 targets after substrate edits)
+  - C4 still at 1; others still at 0
+- Constraints respected: 2 (exactly 3 primary shell classes — AP/HE/HEAT,
+  no more), 1 (no combat modal — flag is data-only), 7 (verbs not stats
+  — shell class routes to terrain/behavior affordances in later iters,
+  not to +damage% upgrades), 4 (silhouette grammar — Bullet sprite gets
+  modulate-only diff per shell; full silhouette work deferred to gen_tile
+  pipeline)
+- Constraints risked: 3 (every enemy must have readable shell/positioning
+  relationship) — shell_class field exists but per-class **behavior**
+  not yet wired (HE→terrain, HEAT→armor). Iter 5+ implements; honest
+  scaffolding gap documented + scheduled per the iter-5 plan.
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** post substrate
+  write #3 (Bullet.gd). `make test` exit 0. `make test-all` PASS (all 5
+  arc-3 targets). `make check-breach-config` PASS. `make
+  check-breach-shells` PASS (NEW).
+- Falsifications: none
+- Files: `scripts/Bullet.gd` (substrate write #3 — sanctioned per PROMPT
+  §SUBSTRATE FREEZE; chose extend-vs-new-Shell.gd per Scout A's spike),
+  `loop/breach/test_breach_shells.gd` (NEW verifier), `Makefile` (new
+  `check-breach-shells` target), `loop/breach/PRE-MORTEMS.md`,
+  `loop/breach/LEDGER.md`, `loop/breach/STATE.md`
+- Finding: **Bullet.gd shell-class schema landed.** 3 constants
+  (SHELL_CLASS_AP=0, _HE=1, _HEAT=2) + `@export var shell_class: int =
+  SHELL_CLASS_AP` + `start()` extended with optional `shell: int = -1`
+  override param + visual modulate hint per non-AP class. Arc-2 baseline
+  bullet fires AP identically (no override); hash anchor preserved.
+  Per-shell-class **behavior** (HE terrain-cracking, HEAT armor-bypass)
+  is iter 5+ work. Next iter: scripts/Depot.gd + scenes/Depot.tscn (C2
+  anchor 1).
+
 ## iter 003 — BUILD — BreachConfig + BreachBand + breach_default.tres (2 bands)
 
 - Date: 2026-05-19
