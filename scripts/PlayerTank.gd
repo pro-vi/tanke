@@ -60,9 +60,32 @@ var _ascent_velocity_player: float = 0.0  # smoothed rows/sec, player-side estim
 @export var stall_velocity_threshold: float = 0.3  # rows/sec; matches Spawner.stall_threshold
 @export var velocity_ema_alpha_player: float = 2.0
 
+# iter 019 (arc 3 soft-substrate write per PROMPT Layer-2 spec, F003 fix):
+# the DEPTH / TIME ascender labels are arc-2 specific (ascender mode shows
+# climb progress). In arc-3 OG mode they're meaningless. Default true
+# preserves arc-2 procedural behavior bit-identical; OriginalLevel.tscn
+# sets this false to hide the ascender HUD. HP bar + death overlay stay
+# regardless (HP is gameplay-relevant in both modes).
+@export var show_ascender_hud: bool = true
+
+# iter 023 (arc 3 substrate write #3, per PROMPT Layer-2 "eagle-protect
+# mechanic" sanction): BC-canonical lives system. Default 1 preserves
+# arc-2 single-life death-flow bit-identical. OriginalLevel.tscn overrides
+# to 3 (BC canonical). On HP=0 with lives_remaining > 1: respawn at start
+# position with fresh HP and brief iframes. On lives_remaining <= 1:
+# existing death code path runs unchanged.
+@export var max_lives: int = 1
+signal lives_changed(remaining: int, max_lives_val: int)
+var _lives_remaining: int = 1
+var _start_position: Vector2 = Vector2.ZERO
+
 
 func _ready() -> void:
 	hp = max_hp
+	# iter 023: lives system init. Default max_lives=1 means _lives_remaining=1;
+	# first _die() decrements to 0 → original death flow → arc-2 bit-identical.
+	_lives_remaining = max_lives
+	_start_position = global_position
 	rotation = Constants.dir_to_rotation(direction)
 	_start_y = global_position.y
 	_min_y_reached = _start_y
@@ -271,6 +294,15 @@ func _start_screen_shake() -> void:
 
 
 func _die() -> void:
+	# iter 023: lives system. Decrement first; if any remain, respawn
+	# without running the heavy run-summary / death-screen code path.
+	# Procedural mode (max_lives=1) decrements 1 → 0 and falls through to
+	# the original death flow — arc-2 bit-identical.
+	_lives_remaining -= 1
+	lives_changed.emit(_lives_remaining, max_lives)
+	if _lives_remaining > 0:
+		_respawn()
+		return
 	_dead = true
 	sprite.stop()
 	velocity = Vector2.ZERO
@@ -336,6 +368,18 @@ func _die() -> void:
 		_restart_hint_tween.tween_property(_restart_hint_label, "modulate:a", 0.35, 0.6)
 		_restart_hint_tween.tween_property(_restart_hint_label, "modulate:a", 1.0, 0.6)
 	died.emit()
+
+
+# iter 023: BC-style life-respawn. Resets HP + position + iframes. Doesn't
+# touch _dead (was never set on respawning life). Brief iframes prevent
+# instant-re-death from same bullet/collision that killed the previous life.
+func _respawn() -> void:
+	hp = max_hp
+	hp_changed.emit(hp, max_hp)
+	global_position = _start_position
+	velocity = Vector2.ZERO
+	_iframe_timer = 1.5  # 1.5s grace period after respawn
+	_start_hit_flash()  # visual cue: tank flashes briefly on respawn
 
 
 # iter 44: persistent best-depth via ConfigFile at user://stats.cfg.
@@ -478,23 +522,28 @@ func _setup_hud() -> void:
 	_restart_hint_label.add_theme_constant_override("outline_size", 2)
 	_restart_hint_label.visible = false
 	canvas.add_child(_restart_hint_label)
-	# Roguelike ascender HUD (iter 11) — top-right
-	_depth_label = Label.new()
-	_depth_label.name = "DepthLabel"
-	_depth_label.position = Vector2(232, 4)
-	_depth_label.text = "DEPTH 0"
-	_depth_label.add_theme_color_override("font_color", Color.WHITE)
-	_depth_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
-	_depth_label.add_theme_constant_override("outline_size", 2)
-	canvas.add_child(_depth_label)
-	_time_label = Label.new()
-	_time_label.name = "TimeLabel"
-	_time_label.position = Vector2(232, 16)
-	_time_label.text = "TIME 0:00"
-	_time_label.add_theme_color_override("font_color", Color.WHITE)
-	_time_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
-	_time_label.add_theme_constant_override("outline_size", 2)
-	canvas.add_child(_time_label)
+	# Roguelike ascender HUD (iter 11) — top-right.
+	# iter 019 (F003 fix): gated on show_ascender_hud. When false (OG mode),
+	# _depth_label / _time_label stay null; _update_run_hud already null-checks,
+	# so the update path is a silent noop. arc-2 procedural mode unaffected
+	# (export default is true).
+	if show_ascender_hud:
+		_depth_label = Label.new()
+		_depth_label.name = "DepthLabel"
+		_depth_label.position = Vector2(232, 4)
+		_depth_label.text = "DEPTH 0"
+		_depth_label.add_theme_color_override("font_color", Color.WHITE)
+		_depth_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		_depth_label.add_theme_constant_override("outline_size", 2)
+		canvas.add_child(_depth_label)
+		_time_label = Label.new()
+		_time_label.name = "TimeLabel"
+		_time_label.position = Vector2(232, 16)
+		_time_label.text = "TIME 0:00"
+		_time_label.add_theme_color_override("font_color", Color.WHITE)
+		_time_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		_time_label.add_theme_constant_override("outline_size", 2)
+		canvas.add_child(_time_label)
 	add_child(canvas)
 	hp_changed.connect(_on_hp_changed_hud)
 

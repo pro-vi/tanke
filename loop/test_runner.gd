@@ -12,6 +12,8 @@ func _initialize() -> void:
 	var dna_path := ""
 	var roundtrip_path := ""
 	var biome_path := ""
+	var scene_path := ""           # iter 001 (arc 3): --scene PATH for OG-mode oracle
+	var og_stage := -1             # iter 001 (arc 3): --og-stage K (originals stage number)
 	var json_output := false
 	var args := OS.get_cmdline_user_args()
 	for i in args.size():
@@ -25,6 +27,10 @@ func _initialize() -> void:
 			roundtrip_path = args[i + 1]
 		elif args[i] == "--biome" and i + 1 < args.size():
 			biome_path = args[i + 1]
+		elif args[i] == "--scene" and i + 1 < args.size():
+			scene_path = args[i + 1]
+		elif args[i] == "--og-stage" and i + 1 < args.size():
+			og_stage = int(args[i + 1])
 		elif args[i] == "--json":
 			json_output = true
 
@@ -33,26 +39,36 @@ func _initialize() -> void:
 		quit()
 		return
 
-	var level: Node = ProceduralLevelScene.instantiate()
-	if dna_path != "":
-		var dna = load(dna_path)
-		level.level_seed = dna.level_seed
-		level.config = dna.config
-		# iter 101 (review-fix): biome rides on DNA when present so biomed
-		# levels are actually reproducible from saved DNA.
-		if "biome" in dna and dna.biome != null:
-			level.biome = dna.biome
+	# Default: procedural scene (preserves arc-2 hash anchor 23d6a2ec…).
+	# --scene swaps to OriginalLevel or any other Level.gd-subclass scene.
+	var level: Node
+	if scene_path != "":
+		var packed: PackedScene = load(scene_path)
+		level = packed.instantiate()
+		# OriginalLevel exposes stage_number as @export; set before _ready.
+		if og_stage > 0 and "stage_number" in level:
+			level.stage_number = og_stage
 	else:
-		level.level_seed = test_seed
-		if config_path != "":
-			level.config = load(config_path)
-			# iter 101 (Codex P1): scene bakes a default biome which would
-			# override `config` via _active_config(). Clear biome when caller
-			# requested a flat-config oracle run.
-			if biome_path == "":
-				level.biome = null
-	if biome_path != "":
-		level.biome = load(biome_path)
+		level = ProceduralLevelScene.instantiate()
+		if dna_path != "":
+			var dna = load(dna_path)
+			level.level_seed = dna.level_seed
+			level.config = dna.config
+			# iter 101 (review-fix): biome rides on DNA when present so biomed
+			# levels are actually reproducible from saved DNA.
+			if "biome" in dna and dna.biome != null:
+				level.biome = dna.biome
+		else:
+			level.level_seed = test_seed
+			if config_path != "":
+				level.config = load(config_path)
+				# iter 101 (Codex P1): scene bakes a default biome which would
+				# override `config` via _active_config(). Clear biome when caller
+				# requested a flat-config oracle run.
+				if biome_path == "":
+					level.biome = null
+		if biome_path != "":
+			level.biome = load(biome_path)
 	root.add_child(level)
 
 	# Let _ready and a few _process iterations run
@@ -68,10 +84,18 @@ func _initialize() -> void:
 
 
 func _collect(level: Node) -> Dictionary:
+	# iter 011 (review-fix): exclude non-terrain StaticBody2D direct children
+	# (currently only Eagle in OG mode). The Sprite2D / AnimatedSprite2D
+	# heuristic was designed when bricks and water blocks were the only
+	# direct-child bodies; Eagle is also a StaticBody2D with a Sprite2D
+	# child and would otherwise inflate brick_count + tile_hash + structure
+	# metrics on every OG oracle run.
 	var brick_count := 0
 	var water_count := 0
 	for child in level.get_children():
 		if child is StaticBody2D:
+			if child.name == "Eagle":
+				continue
 			if child.has_node("Sprite2D"):
 				brick_count += 1
 			elif child.has_node("AnimatedSprite2D"):
@@ -79,9 +103,18 @@ func _collect(level: Node) -> Dictionary:
 
 	var steel_cells: int = level.steelTileMap.get_used_cells().size()
 	var grass_cells: int = level.grassTileMap.get_used_cells().size()
+	# iter 011 (review-fix): iceTileMap is an arc-3 OG-mode addition (stages
+	# 17/24/28/32). Procedural mode has no iceTileMap → 0; OG mode counts
+	# the actual placed ice cells so tile_hash / vert / cc / iid metrics
+	# reflect rendered terrain instead of treating ice as empty floor.
+	var ice_cells: int = 0
+	if "iceTileMap" in level and level.iceTileMap != null:
+		ice_cells = level.iceTileMap.get_used_cells().size()
 
-	# Eller snapshot from the latest ProceduralStep
-	var ps = level.ps
+	# Eller snapshot from the latest ProceduralStep.
+	# iter 001 (arc 3): defensive — OriginalLevel (arc-3 OG-mode) has no ps,
+	# Eller metrics report as zero rather than crashing the collector.
+	var ps = level.ps if "ps" in level else null
 	var sets: Dictionary = ps.sets if ps else {}
 	var sizes: Array[int] = []
 	for sid in sets:
@@ -102,8 +135,13 @@ func _collect(level: Node) -> Dictionary:
 		fingerprint += "s%d,%d;" % [cell.x, cell.y]
 	for cell in level.grassTileMap.get_used_cells():
 		fingerprint += "g%d,%d;" % [cell.x, cell.y]
+	if "iceTileMap" in level and level.iceTileMap != null:
+		for cell in level.iceTileMap.get_used_cells():
+			fingerprint += "i%d,%d;" % [cell.x, cell.y]
 	for child in level.get_children():
 		if child is StaticBody2D:
+			if child.name == "Eagle":
+				continue
 			var prefix := ""
 			if child.has_node("Sprite2D"):
 				prefix = "b"
@@ -122,8 +160,13 @@ func _collect(level: Node) -> Dictionary:
 		grid[Vector2i(cell.x, cell.y)] = "steel"
 	for cell in level.grassTileMap.get_used_cells():
 		grid[Vector2i(cell.x, cell.y)] = "grass"
+	if "iceTileMap" in level and level.iceTileMap != null:
+		for cell in level.iceTileMap.get_used_cells():
+			grid[Vector2i(cell.x, cell.y)] = "ice"
 	for child in level.get_children():
 		if child is StaticBody2D:
+			if child.name == "Eagle":
+				continue
 			var col: int = int(child.position.x / 8)
 			var row: int = int(child.position.y / 8)
 			if child.has_node("Sprite2D"):
@@ -150,14 +193,15 @@ func _collect(level: Node) -> Dictionary:
 	#    pairs are MORE correlated than random; < 1.0 means LESS. Decouples
 	#    spatial structure from concentration (a uniform 25/25/25/25 distribution
 	#    has IID 0.25; a steel-dominant 60/15/15/10 has IID 0.42).
-	var total_for_iid: int = brick_count + water_count + steel_cells + grass_cells
+	var total_for_iid: int = brick_count + water_count + steel_cells + grass_cells + ice_cells
 	var iid_expected: float = 0.0
 	if total_for_iid > 0:
 		var p_b := float(brick_count) / float(total_for_iid)
 		var p_w := float(water_count) / float(total_for_iid)
 		var p_s := float(steel_cells) / float(total_for_iid)
 		var p_g := float(grass_cells) / float(total_for_iid)
-		iid_expected = p_b * p_b + p_w * p_w + p_s * p_s + p_g * p_g
+		var p_i := float(ice_cells) / float(total_for_iid)
+		iid_expected = p_b * p_b + p_w * p_w + p_s * p_s + p_g * p_g + p_i * p_i
 	var above_floor: float = max(0.0, (vert_persistence - 0.5) / 0.5)
 	var structure_lift: float = (vert_persistence / iid_expected) if iid_expected > 0.0 else 0.0
 
@@ -209,6 +253,22 @@ func _collect(level: Node) -> Dictionary:
 	var SPAWN_TILE: Vector2i = Vector2i(int(spawn_px.x) / 8, int(spawn_px.y) / 8)
 	var MAP_W: int = int(level.width) / 8
 	var MAP_H: int = int(level.height) / 8
+	# iter 011 (review-fix): clamp reachability to the OG 26x26 BC playfield
+	# when the level exposes col_offset/row_offset (OriginalLevel.gd). Procedural
+	# mode lacks those exports → bounds remain the full viewport. Without this
+	# clamp the BFS could walk into the gray margin around the BC playfield and
+	# climb around obstacles the player cannot actually cross, inflating
+	# reachable_cells / playable on OG stages.
+	var BC_PLAYFIELD: int = 26
+	var min_col: int = 0
+	var min_row: int = 0
+	var max_col: int = MAP_W
+	var max_row: int = MAP_H
+	if "col_offset" in level and "row_offset" in level:
+		min_col = int(level.col_offset)
+		min_row = int(level.row_offset)
+		max_col = min_col + BC_PLAYFIELD
+		max_row = min_row + BC_PLAYFIELD
 	const MIN_ROWS_CLIMBED: int = 10
 	var reach_visited: Dictionary = {}
 	var reach_queue: Array = [SPAWN_TILE]
@@ -216,10 +276,11 @@ func _collect(level: Node) -> Dictionary:
 		var cur: Vector2i = reach_queue.pop_back()
 		if reach_visited.has(cur):
 			continue
-		if cur.x < 0 or cur.x >= MAP_W or cur.y < 0 or cur.y >= MAP_H:
+		if cur.x < min_col or cur.x >= max_col or cur.y < min_row or cur.y >= max_row:
 			continue
-		# Passable iff (no terrain placed) or (terrain is grass)
-		if grid.has(cur) and grid[cur] != "grass":
+		# Passable iff (no terrain placed) or (terrain is grass/ice — both have
+		# no collision per arc-3 phase-1 ice decision: pass-through).
+		if grid.has(cur) and grid[cur] != "grass" and grid[cur] != "ice":
 			continue
 		reach_visited[cur] = true
 		reach_queue.push_back(Vector2i(cur.x + 1, cur.y))
@@ -234,17 +295,22 @@ func _collect(level: Node) -> Dictionary:
 	var rows_climbed: int = SPAWN_TILE.y - min_reachable_row
 	var playable: bool = rows_climbed >= MIN_ROWS_CLIMBED
 
+	# iter 001 (arc 3): level_seed only exists on ProceduralLevel; report -1
+	# for OriginalLevel since seed is meaningless when terrain is loaded from
+	# a deterministic ASCII source.
+	var seed_used: int = level.level_seed if "level_seed" in level else -1
 	return {
-		"seed_used": level.level_seed,
+		"seed_used": seed_used,
 		"brick": brick_count,
 		"water": water_count,
 		"steel": steel_cells,
 		"grass": grass_cells,
+		"ice": ice_cells,
 		"eller_sets": sets.size(),
 		"eller_avg_size": avg_size,
 		"eller_max_size": max_size,
 		"tile_hash": tile_hash,
-		"total_terrain": brick_count + water_count + steel_cells + grass_cells,
+		"total_terrain": brick_count + water_count + steel_cells + grass_cells + ice_cells,
 		"vert_persistence": vert_persistence,
 		"vert_pairs_same": vert_same,
 		"vert_pairs_total": vert_total,

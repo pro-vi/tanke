@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="LevelConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/LevelConfig.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+; iter 014 — calibrated toward OG empirical bands from
+; loop/originals/og-metrics.json (35-stage cross-summary).
+;
+; Density targets (OG mean → weight calibration; weights normalize to 1.0):
+;   empty   53.6%  →  0.54   (was playable 0.55; near-match)
+;   brick   19.2%  →  0.19   (was playable 0.18; +0.01 toward OG)
+;   steel    6.9%  →  0.07   (was playable 0.07; same)
+;   grass   12.6%  →  0.13   (was playable 0.12; +0.01 toward OG)
+;   water    3.7%  →  0.04   (was playable 0.08; -0.04 — biggest density gap closed)
+;   ice      4.0%  →  N/A    (arc-2 has no ice terrain; redistributed to empty)
+;
+; merge_probability: 0.35 (was 0.40 in playable.tres). First-try value
+; 0.55 was rejected — caused water-set bloat at seed 42 (204 water cells
+; from one giant pool). Smaller value keeps per-set size in control;
+; cc_max widens via more numerous medium-size sets rather than fewer
+; giant ones.
+;
+; water_weight: 0.02 (down from playable's 0.08). The Eller set-sampling
+; bias makes single-seed water density variance large; halving the weight
+; gives more headroom when a heavy-merge row lands on water.
+merge_probability = 0.35
+empty_weight = 0.54
+brick_weight = 0.19
+steel_weight = 0.07
+grass_weight = 0.13
+water_weight = 0.02
