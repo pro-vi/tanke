@@ -288,8 +288,10 @@ def main(argv=None):
     if args.ascii_source:
         ascii_path = Path(args.ascii_source)
     elif args.stage is not None:
-        # Auto-pick the canonical Tanks ASCII source if --stage K given.
-        candidate = Path(f".research/repos/Tanks/resources/stages/{args.stage}")
+        # Auto-pick the vendored Tanks ASCII source if --stage K given.
+        # iter 011 (review-fix): path moved from .research/repos/Tanks/...
+        # to data/stages/ so fresh clones work. See data/stages/ATTRIBUTION.md.
+        candidate = Path(f"data/stages/{args.stage}")
         if candidate.exists():
             ascii_path = candidate
 

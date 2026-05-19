@@ -275,8 +275,8 @@ def _arc2_comparison(summary: dict[str, object]) -> dict[str, object]:
 
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description="OG stage structural metrics for arc-2 handshake.")
-    p.add_argument("--stages-dir", default=".research/repos/Tanks/resources/stages",
-                   help="Tanks ASCII stages directory (read-only per H2 tripwire).")
+    p.add_argument("--stages-dir", default="data/stages",
+                   help="Vendored Tanks ASCII stages directory (read-only per H2 tripwire; see data/stages/ATTRIBUTION.md).")
     p.add_argument("--out", default="loop/originals/og-metrics.json",
                    help="Output JSON path (default per RUBRIC C12 anchor 2).")
     p.add_argument("--quiet", action="store_true", help="Suppress per-stage progress prints.")

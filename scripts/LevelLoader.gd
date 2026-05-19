@@ -20,12 +20,16 @@ extends RefCounted
 # leaves 7 cells of border each side; vertical offset 2 leaves 2-cell HUD strip
 # at the top and 2-cell bottom border (26 + 2 + 2 = 30 — exact fit).
 #
-# H2 tripwire (arc 3): reads from .research/repos/Tanks/resources/stages/N
-# WITHOUT modifying the source; goes through OS-level FileAccess (via
+# H2 tripwire (arc 3): reads from data/stages/N (vendored from
+# krystiankaluzny/Tanks per MIT; see data/stages/ATTRIBUTION.md) WITHOUT
+# modifying the source. Goes through OS-level FileAccess (via
 # ProjectSettings.globalize_path) because Godot's res:// filter may skip
-# dotfile-prefixed directories.
+# directories not declared as importable. iter 011 (review-fix): path
+# moved from .research/repos/Tanks/resources/stages/ to data/stages/ so
+# fresh clones can run Originals mode without separately cloning the
+# research source (which is gitignored under .research/repos/).
 
-const TANKS_STAGES_REL := ".research/repos/Tanks/resources/stages/"
+const TANKS_STAGES_REL := "data/stages/"
 const ROWS := 26
 const COLS := 26
 
