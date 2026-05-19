@@ -2,18 +2,20 @@
 
 ```yaml
 phase: loop
-iter: 5
+iter: 6
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_5: 23d6a2ec3bf2821f  # bit-identical through 3 substrate writes + 2 new-file iters
-substrate_writes_this_arc: 3  # ProceduralLevel.gd ×2 (iters 2-3) + Bullet.gd (iter 4); iter 5 was new-file only
-current_round: 1
-current_round_phase: BUILD
-next_action: iter 6 — CONSULT cadence check + BUILD selection. Round 1 has shipped: flag (iter 2), BreachConfig (iter 3), shells (iter 4), depot (iter 5). Per PROMPT §EXPLORATION ROUND CADENCE, round 1 close criteria: passes sentence test (n/a — no upgrade yet), substrate intact (YES), advances rubric (YES — 0→7). Could close round 1 + bootstrap round 2 OR continue BUILD. **Recommended iter 6**: CONSULT (~every 10 iters per PROMPT; we're at iter 5 — slightly early, but the round-close moment is a natural ahead-of-schedule trigger) + queue review-queue item for round 1 + bootstrap round 2 SPIKE on next-mechanic surface (likely C3 anchor 3: HE-as-terrain-cracking via BrickBlock extension + Bullet HE behavior).
+hash_anchor_at_iter_6: 23d6a2ec3bf2821f  # bit-identical; iter 6 META — no code touched
+substrate_writes_this_arc: 3  # ProceduralLevel.gd ×2 (iters 2-3) + Bullet.gd (iter 4); iter 5+6 new-file/process-only
+current_round: 1-closed  # round 2 opens in iter 7 after CONSULT response
+current_round_phase: between-rounds
+pending_consult: 3ae82231-9889-4859-bfea-9ef0b78ae9b4  # fire-and-forget; iter 7 reads
+next_action: iter 7 — read CONSULT 001 response via agentify_read_page. Decide round-2 SPIKE target based on findings. Tentative: HE-as-terrain-cracking (BrickBlock + Bullet HE behavior) — answers Q1 "is breach economy distinct" by wiring first behavior-level breach. If CONSULT redirects, follow the redirect.
 score: 7/50 absolute · 7/50 effective  # C2=1, C3=1, C4=1, C9=1, C10=3
 spike_report: loop/breach/iter-001-spike-report.md
 new_harness_targets: check-breach-config, check-breach-shells, check-breach-depot  # iters 3, 4, 5
+review_queue_open: [#1 round-1 scaffolding]
 ```
 
 ---

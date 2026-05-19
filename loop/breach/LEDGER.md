@@ -17,6 +17,35 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 006 — META + CONSULT — round 1 close + round 2 bootstrap-pending
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **7/50 absolute · 7/50 effective** (Δ 0 — META iter; no anchor lift expected)
+  - Same buckets as iter 5: C2=1, C3=1, C4=1, C9=1, C10=3
+- Constraints respected: all 7 (META iter; no design surface touched)
+- Constraints risked: none
+- Hash anchor: `23d6a2ec3bf2821f` trivially preserved (no code touched)
+- Falsifications: none
+- Files: `loop/breach/creative-consults.md` (consult 001 record),
+  `loop/breach/REVIEW-QUEUE.md` (item #1 — round 1 finding),
+  `loop/breach/PRE-MORTEMS.md`, `loop/breach/LEDGER.md`,
+  `loop/breach/STATE.md`
+- Finding: **Round 1 closed (4 BUILD iters + this META). CONSULT 001
+  fired fire-and-forget** via /agentify with the 3 permanent questions
+  + my own embedded self-pre-mortem ("schema-before-mechanic risk;
+  structural completion theater"). queryId
+  `3ae82231-9889-4859-bfea-9ef0b78ae9b4`. Tab status: async dispatch
+  confirmed. Per PROMPT trigger list, "After first end-to-end
+  depot+band+breach-build run" — slightly liberal trigger interpretation
+  (round 1 shipped schema for all 4 pieces; full integration in
+  BreachLevel.tscn pending). REVIEW-QUEUE #1 logged with the
+  schema-before-mechanic risk named for user awareness. Next iter 7:
+  read CONSULT response + decide round-2 SPIKE target. Tentative plan
+  pending CONSULT: HE-as-terrain-cracking (BrickBlock destruction by HE
+  shells, creating breach lanes) — answers Q1 "is breach economy
+  distinct from BC" by wiring the first *behavior*-level breach.
+
 ## iter 005 — BUILD — Depot.gd + Depot.tscn + pause-on-entry (C2 anchor 1)
 
 - Date: 2026-05-19

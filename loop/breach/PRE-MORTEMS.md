@@ -24,6 +24,27 @@ Format:
 
 ---
 
+## iter 006 — META + CONSULT — round 1 close + round 2 bootstrap
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1 (no combat-modal UI added this iter),
+  3 (no enemy without canonical answer added), 4 (no asset gen added)
+- CONSULT constraints risked: none — META/process iter, no design surface
+- Predicted failure: /agentify CONSULT may timeout/error like the
+  arc-4 design consult did (per `creative-consults.md` consult 000).
+  Mitigation: capture the queryId regardless of tab status; arc-4 has
+  explicit documented protocol that tab-timeout ≠ consult-failed (the
+  conversation may have completed). Next iter checks back.
+- Falsifiable claim: by end of this iter, (a) a CONSULT attempt is
+  recorded in `loop/breach/creative-consults.md` with queryId + status;
+  (b) a round-1 finding lands in `loop/breach/REVIEW-QUEUE.md` per L3
+  pattern; (c) STATE.md next_action names a concrete iter-7 BUILD or
+  SPIKE target for round 2. Hash anchor preserved (no code touched).
+- Sentence test: n/a (META iter)
+- Substrate touched: none
+- Hash-anchor verification plan: n/a (no code edit). Trivially preserved.
+
 ## iter 005 — BUILD — Depot.gd + Depot.tscn + pause-on-entry
 
 - Date: 2026-05-19

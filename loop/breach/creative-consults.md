@@ -20,6 +20,26 @@ Format:
 
 ---
 
+## Consult 001 — iter 6 — extended-pro via /agentify — fire-and-forget (PENDING)
+
+- Date: 2026-05-19
+- Tab status: fire-and-forget — async dispatch confirmed, response pending
+- Trigger: round-1 close ("After first end-to-end depot+band+breach-build
+  run" per PROMPT trigger list — slightly liberal interpretation since
+  the depot isn't yet placed in a BreachLevel scene, but round 1 shipped
+  end-to-end schema for all four pieces: flag / BreachConfig / shells /
+  depot)
+- Three permanent questions asked? YES (Q1 distinctness, Q2 depot-as-
+  earned-beat vs menu-grind, Q3 seductive-but-hollow / 6-month-stupid
+  omission)
+- Self-pre-mortem embedded in prompt: schema-before-mechanic risk
+  named explicitly; "structural completion theater" framing offered to
+  the model as the brutal lens
+- Adopted into: TBD (iter 7 reads response and decides)
+- Conversation URL / queryId: `3ae82231-9889-4859-bfea-9ef0b78ae9b4`
+  (tabId: `c482361b-ecb9-483c-b74d-fe73445230be`, key:
+  `tanke-arc4-iter6-round1-close`)
+
 ## Consult 000 — pre-iter-1 — extended-pro via /agentify — adopted
 
 - Date: 2026-05-19
