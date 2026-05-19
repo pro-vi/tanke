@@ -17,6 +17,57 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 009 — BUILD — Depot 3-choice upgrade catalog (C2 anchor 2, C8 anchor 1)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **12/50 absolute · 12/50 effective** (Δ +2 vs prior — C2 anchor 2, C8 anchor 1)
+  - C2 (Field depot system): 1 → 2 (anchor 2: Depot offers ≥3 meaningful
+    upgrade choices on entry + previews next band's dominant pressure —
+    code-cited via `make check-breach-depot-choice` reporting 3 distinct
+    effects + next_band_hint preview field)
+  - C8 (Sentence test compliance): 0 → 1 (anchor 1: ≥1 upgrade exists
+    and passes sentence test — 3 upgrades all pass, cited verbatim in
+    iter-9 PRE-MORTEM. HE_REFILL_2 / HEAT_REFILL_1 / HE_MAX_EXPAND_2)
+  - C1=1, C3=2, C4=1, C9=2, C10=3 unchanged
+- Constraints respected: 1 (depot is the safe-gate; key-based pick is
+  ≤1-frame fast — sub-30s by construction), 7 (verbs not stats — each
+  upgrade is an action: "refill HE", "refill HEAT", "expand HE
+  capacity"; no passive %damage cards)
+- Constraints risked: 1's flip-side (30s dwell) — iter 9 ships no dwell
+  timer; harness verifies single-frame applicability. Iter 10+ adds
+  enforcement if playtest reveals drag.
+- Sentence tests per upgrade (all PASS):
+  - HE_REFILL_2: "This upgrade helps me climb through brick mazes by
+    changing how I use HE shells"
+  - HEAT_REFILL_1: "This upgrade helps me climb through bunker bands
+    by changing how I use HEAT shells"
+  - HE_MAX_EXPAND_2: "This upgrade helps me climb through long
+    HE-required runs by changing how I use my shell economy"
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** (no Layer 1/2/3
+  substrate touched; only Depot.gd + Depot.tscn extended). `make test`
+  exit 0. `make test-all` PASS. All 6 arc-4 harnesses PASS.
+- Falsifications: none. Pre-mortem prediction "input-during-pause works
+  with PROCESS_MODE_ALWAYS" — confirmed (harness invokes apply_choice
+  directly, real input path uses same code with input gating; visual
+  playtest defers to iter 10+).
+- Files: `scripts/Depot.gd` (extended — UpgradeKind enum + 3 choices +
+  apply_choice + next_band_hint + _player_loadout capture; iter-5
+  pause-on-entry preserved),  `loop/breach/test_breach_depot_choice.gd`
+  (NEW verifier), `Makefile` (new `check-breach-depot-choice` target),
+  `loop/breach/PRE-MORTEMS.md`, `loop/breach/LEDGER.md`,
+  `loop/breach/STATE.md`
+- Finding: **Depot upgrade flow shipped.** UpgradeKind enum with 3
+  values (HE_REFILL_2 / HEAT_REFILL_1 / HE_MAX_EXPAND_2); each surfaces
+  a verb (refill / expand), all 3 pass sentence test. Depot captures
+  player.loadout on entry, applies effect on apply_choice(N), clears on
+  exit. Single-pick semantics (`_picked` flag) prevents re-application.
+  next_band_hint String field present for preview text. Per CONSULT 001
+  Q2: "options legible in <5s, no scrolling/build tree/stat salad" —
+  3-choice keyboard select respects this. Next iter 10: ship a
+  BreachLevel.tscn that wires bands + depot placements + spawns the
+  player with a loadout (the first end-to-end breach mode scene).
+
 ## iter 008 — BUILD — Loadout.gd + PlayerTank finite reserves + shell cycle (C1 anchor 1, C9 anchor 2)
 
 - Date: 2026-05-19

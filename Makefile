@@ -11,7 +11,7 @@ NOISE_FILTER    = grep -Ev "RID allocations|resources still in use"
 FRAMES_DIR      = $(PROJECT_DIR)/tools/out
 REFS_DIR        = $(PROJECT_DIR)/tools/refs
 
-.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain check-chain-35 og-band-check check-titlescreen-nav test-all check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout
+.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain check-chain-35 og-band-check check-titlescreen-nav test-all check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice
 
 # Parse/load validation — catches bad scripts and missing nodes
 check:
@@ -159,6 +159,14 @@ check-breach-he-blast:
 check-breach-loadout:
 	@$(HEADLESS) --script res://loop/breach/test_breach_loadout.gd 2>&1 | grep -E "^(BREACH_LOADOUT_OK|FAIL|ERROR|SCRIPT ERROR)"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_loadout.gd 2>&1 | grep -q "^BREACH_LOADOUT_OK"
+
+# Arc-4 breach mode: verify Depot 3-choice upgrade catalog applies
+# distinct loadout effects (HE refill / HEAT refill / HE max expand) +
+# exposes next_band_hint preview field. C2 anchor 2 + C8 anchor 1
+# structural cites.
+check-breach-depot-choice:
+	@$(HEADLESS) --script res://loop/breach/test_breach_depot_choice.gd 2>&1 | grep -E "^(  (he|heat)|BREACH_DEPOT_CHOICE_OK|FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/breach/test_breach_depot_choice.gd 2>&1 | grep -q "^BREACH_DEPOT_CHOICE_OK"
 
 # Arc-3 → arc-2 metric handshake: compute per-stage structural metrics
 # across all 35 BC stages and emit loop/originals/og-metrics.json.

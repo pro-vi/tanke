@@ -2,19 +2,19 @@
 
 ```yaml
 phase: loop
-iter: 8
+iter: 9
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_8: 23d6a2ec3bf2821f  # bit-identical through 6 substrate writes
+hash_anchor_at_iter_9: 23d6a2ec3bf2821f  # bit-identical through 6 substrate writes
 substrate_writes_this_arc: 6  # ProceduralLevel.gd ×2 + Bullet.gd ×2 + PlayerTank.gd + Level.gd
 current_round: 2
-current_round_phase: BUILD  # atomic verb (CONSULT 001) landed
-consult_001_status: adopted  # response landed despite tab-timeout; findings recorded
-next_action: iter 9 — BUILD — wire 2-choice depot upgrade catalog (per CONSULT 001 Q2). Depot.gd: on body_entered, present 2 contextual choices (e.g. "Restock 2 HE" vs "+1 max HEAT reserve"). Implementation: extend Depot.gd with `@export var choice_a: String / choice_b: String`, a simple inline ColorRect panel (no scrolling, no build tree), keyboard select via 1/2. On select, apply effect to player.loadout, unpause. Target: C2 anchor 2 (Depot offers ≥3 meaningful upgrade choices on entry + previews next band's dominant pressure — code-cited). Note: anchor 2 wants ≥3 choices; iter 9 may ship 2 (CONSULT-recommended bounded count); anchor 2 lift may need iter 10 to round up to 3 OR re-AUDIT anchor wording.
-score: 10/50 absolute · 10/50 effective  # C1=1, C2=1, C3=2, C4=1, C9=2, C10=3
+current_round_phase: BUILD  # depot upgrade flow shipped
+consult_001_status: adopted
+next_action: iter 10 — BUILD — wire BreachLevel.tscn (sibling scene) that integrates everything: spawns ProceduralLevel with breach_mode_enabled=true + breach_config=breach_default.tres + a PlayerTank with a starting Loadout (e.g. 2 HE, 1 HEAT) + a Depot placed at depth-band transition (e.g. y = -30 rows × 16 grid_size = -480px). This is the **first end-to-end breach scene** — visual playable surface. Target: C9 anchor 3 (a first-time tester opening arc-4 mode describes it differently from "arc-2 ascender" within 60s — playtest cited) [FEEL] — DEFERRED for first playtest. iter-10 scope: structural cite that the scene exists + reachability passes via a new harness. Plus consider: C4 anchor 3 (5 bands per BANDS.md) by extending breach_default.tres with 3 more bands — easy lift.
+score: 12/50 absolute · 12/50 effective  # C1=1, C2=2, C3=2, C4=1, C8=1, C9=2, C10=3
 spike_report: loop/breach/iter-001-spike-report.md
-new_harness_targets: check-breach-config, check-breach-shells, check-breach-depot, check-breach-he-blast, check-breach-loadout
+new_harness_targets: check-breach-config, check-breach-shells, check-breach-depot, check-breach-he-blast, check-breach-loadout, check-breach-depot-choice
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb]
 ```
 

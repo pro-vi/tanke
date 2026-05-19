@@ -24,6 +24,52 @@ Format:
 
 ---
 
+## iter 009 — BUILD — Depot 3-choice upgrade catalog + next-band preview
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- CONSULT 001 Q2 implication: "Two-choice depot whose options are
+  legible in under five seconds and both answer the last/next breach
+  problem. No scrolling, no build tree, no stat salad." Going with **3
+  choices** (still legible in <5s, lifts C2 anchor 2's "≥3 meaningful
+  upgrade choices" cleanly without AUDIT-rephrase). Three is the
+  smallest count that hits anchor 2 while still respecting the
+  "no-scrolling, no-build-tree" CONSULT guidance.
+- CONSULT constraints respected: 1 (no combat-modal — depot is the
+  *safe gate* per design; key-based pick is fast), 7 (verbs not stats —
+  each upgrade is an *action verb*: "refill HE", "refill HEAT", "expand
+  HE capacity"; no passive +%damage cards). Sentence test: each upgrade
+  must pass — verified inline in the pre-mortem below.
+- CONSULT constraints risked: 1's flip-side — 30s depot dwell budget.
+  Iter 9 ships no dwell timer; the harness verifies pick is *possible*
+  in 1 frame. Iter 10+ adds enforcement if playtest reveals drag.
+- Sentence tests per choice:
+  - HE_REFILL_2: "This upgrade helps me climb through brick mazes by
+    changing how I use HE shells" ✓
+  - HEAT_REFILL_1: "This upgrade helps me climb through bunker bands by
+    changing how I use HEAT shells" ✓
+  - HE_MAX_EXPAND_2: "This upgrade helps me climb through long
+    HE-required runs by changing how I use my shell economy" ✓
+  - All three pass.
+- Predicted failure modes:
+  - Input-during-pause: Godot 4 still processes `Input.is_*` polls in
+    nodes with PROCESS_MODE_ALWAYS even when tree is paused. Depot
+    already sets PROCESS_MODE_ALWAYS (iter 5). Choice picks should fire.
+  - Resource reference race: storing player.loadout on entry then
+    accessing on pick — if player despawns mid-pause, loadout reference
+    could be stale. Mitigation: null-check before apply.
+  - Depot.tscn layout: 4 Label nodes need positioning. Simple Control
+    container with VBoxContainer keeps it bounded.
+- Falsifiable claim: post-edit, `make test` exit 0 AND `tile_hash` =
+  `23d6a2ec3bf2821f` AND `make test-all` PASS AND all 5 prior breach
+  harnesses PASS AND new `make check-breach-depot-choice` reports
+  `BREACH_DEPOT_CHOICE_OK` with all 3 choice picks verified
+  (HE refill, HEAT refill, HE max expand).
+- Substrate touched: none (extending existing arc-4 file Depot.gd +
+  scene Depot.tscn). C2 anchor 2 target.
+- Hash-anchor verification plan: post-edit, before commit. Trivially
+  preserved (no engine/gameplay-substrate touch).
+
 ## iter 008 — BUILD — Loadout.gd + finite HE/HEAT reserves + shell-cycle input
 
 - Date: 2026-05-19
