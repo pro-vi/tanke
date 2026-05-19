@@ -2,18 +2,18 @@
 
 ```yaml
 phase: loop
-iter: 4
+iter: 5
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_4: 23d6a2ec3bf2821f  # bit-identical through substrate writes #1-3
-substrate_writes_this_arc: 3  # ProceduralLevel.gd ×2 (iter 2 flag, iter 3 type tighten) + Bullet.gd (iter 4 shell_class)
+hash_anchor_at_iter_5: 23d6a2ec3bf2821f  # bit-identical through 3 substrate writes + 2 new-file iters
+substrate_writes_this_arc: 3  # ProceduralLevel.gd ×2 (iters 2-3) + Bullet.gd (iter 4); iter 5 was new-file only
 current_round: 1
 current_round_phase: BUILD
-next_action: iter 5 — BUILD — author scripts/Depot.gd + scenes/Depot.tscn (Area2D trigger; body_entered → get_tree().paused = true; body_exited → resume). Add `make check-breach-depot` harness target that loads the scene + emits body_entered + verifies pause state. Target: C2 anchor 1 (Depot entity exists; combat pauses on entry — code-cited). New file work — no substrate touch.
-score: 4/50 absolute · 4/50 effective  # C3=1, C4=1, C10=2
+next_action: iter 6 — CONSULT cadence check + BUILD selection. Round 1 has shipped: flag (iter 2), BreachConfig (iter 3), shells (iter 4), depot (iter 5). Per PROMPT §EXPLORATION ROUND CADENCE, round 1 close criteria: passes sentence test (n/a — no upgrade yet), substrate intact (YES), advances rubric (YES — 0→7). Could close round 1 + bootstrap round 2 OR continue BUILD. **Recommended iter 6**: CONSULT (~every 10 iters per PROMPT; we're at iter 5 — slightly early, but the round-close moment is a natural ahead-of-schedule trigger) + queue review-queue item for round 1 + bootstrap round 2 SPIKE on next-mechanic surface (likely C3 anchor 3: HE-as-terrain-cracking via BrickBlock extension + Bullet HE behavior).
+score: 7/50 absolute · 7/50 effective  # C2=1, C3=1, C4=1, C9=1, C10=3
 spike_report: loop/breach/iter-001-spike-report.md
-new_harness_targets: check-breach-config, check-breach-shells  # iter 3, iter 4
+new_harness_targets: check-breach-config, check-breach-shells, check-breach-depot  # iters 3, 4, 5
 ```
 
 ---

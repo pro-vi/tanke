@@ -17,6 +17,61 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 005 — BUILD — Depot.gd + Depot.tscn + pause-on-entry (C2 anchor 1)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **7/50 absolute · 7/50 effective** (Δ +3 vs prior — C2 anchor 1, C9 anchor 1, C10 anchor 3)
+  - C2 (Field depot system): 0 → 1 (anchor 1: Depot.gd + Depot.tscn
+    exist; combat pauses on entry — code-cited via `make
+    check-breach-depot` reporting `BREACH_DEPOT_OK pause-on-entry
+    contract verified`)
+  - C9 (Identity / breach-roguelite singularity): 0 → 1 (anchor 1: ≥1
+    mechanic with no analog in arc 2 — code-cited via three: shell-class
+    schema (iter 4), depot pause-on-entry (this iter), depth-band
+    structure (iter 3). Conservatively held this anchor until depots
+    landed to consolidate the cite; arc-2 had no depot, no shell-class,
+    no band structure)
+  - C10 (Substrate preservation): 2 → 3 (anchor 3: arc-2 procedural mode
+    plays identically when `breach_mode_enabled = false` — harness
+    check: tile_hash 23d6a2ec3bf2821f bit-identical through all 4
+    substrate writes; `make test` 120-frame runtime green at every
+    iter)
+  - C3=1, C4=1 unchanged; others still 0
+- Constraints respected: 1 (no upgrade choices during active combat —
+  depot's pause-on-entry IS the load-bearing protector of constraint 1;
+  the schema *forces* upgrade flow to live at safe gates), 6 (depot is
+  a natural segmentation point for death recap + pre/post-band metrics)
+- Constraints risked: 1's flip-side — depot dwell must stay <30s; rubric
+  anti-pattern names "depot dwell >30s OR depot UI requires reading
+  during pursuit by enemies = automatic 0 on C2". This iter doesn't
+  yet implement upgrade flow so dwell is unbounded by design (just
+  walk in/out). Iter 6+ adds the choice + the 30s budget; honest gap.
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** (no substrate
+  touched). `make test` exit 0. `make test-all` PASS. `make
+  check-breach-config` PASS. `make check-breach-shells` PASS. `make
+  check-breach-depot` PASS (NEW).
+- Falsifications: minor — predicted SceneTree subclass timing issue in
+  the depot harness; confirmed (needed `_initialize()` + `await
+  process_frame` per arc-3 `loop/test_chain_25.gd` precedent rather
+  than `_init()`). Not codified — single-session lesson; pattern lives
+  in arc-3's PROMPT v3 candidate pattern 5 already.
+- Files: `scripts/Depot.gd` (NEW), `scenes/Depot.tscn` (NEW),
+  `loop/breach/test_breach_depot.gd` (NEW verifier), `Makefile` (new
+  `check-breach-depot` target), `loop/breach/PRE-MORTEMS.md`,
+  `loop/breach/LEDGER.md`, `loop/breach/STATE.md`
+- Finding: **Depot pause-on-entry contract landed.** Depot.gd is an
+  Area2D with `process_mode = PROCESS_MODE_ALWAYS` (so `body_exited`
+  can fire while tree is paused). `_on_body_entered` filters to player
+  via group tag (`player` group) or duck-type fallback
+  (`_on_PlayerTank_shoot` method) — does NOT pause for enemies passing
+  through the depot zone. Combat-pause is the structural protection of
+  CONSULT constraint 1 (no upgrade choices during active combat). Iter
+  6+ adds the upgrade-choice UI + the 30s dwell budget. **Next iter
+  candidates**: (a) C4 anchor 2 trivial lift (add band 3 to .tres),
+  (b) C5/C6/C8 schema scaffolding (Loadout / RunRecap / first upgrade
+  with sentence-test cite), (c) iter-5 round-close + CONSULT.
+
 ## iter 004 — BUILD — Bullet.gd shell_class flag + AP/HE/HEAT constants
 
 - Date: 2026-05-19

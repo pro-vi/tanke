@@ -24,6 +24,39 @@ Format:
 
 ---
 
+## iter 005 — BUILD — Depot.gd + Depot.tscn + pause-on-entry
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: constraint 1 (no upgrade choices during
+  active combat — depot's pause-on-entry is the *load-bearing* mechanism
+  protecting this), constraint 6 (depot is a natural segmentation point
+  for death recap / pre/post-band metrics — schema sets this up)
+- CONSULT constraints risked: constraint 1's flip-side — depot dwell
+  must stay <30s; the rubric anti-pattern for C2 is depot dwell >30s.
+  This iter doesn't yet implement upgrade choice flow, so dwell is
+  unbounded by design (just walk in/out). Iter 6+ adds the choice + the
+  30s budget; an honest acknowledgment now.
+- Predicted failure: Godot 4.6 `get_tree().paused = true` + Area2D
+  body_entered may have a process_mode interaction — if Depot's own
+  `process_mode` is not set to PROCESS_MODE_ALWAYS, the depot itself
+  pauses and can't fire `body_exited`. The mitigation lives in the
+  script. Second risk: in headless test, no actual physics tick fires;
+  the test must directly invoke `_on_body_entered(stub)` rather than
+  rely on collision-based emission.
+- Falsifiable claim: post-edit, `make test` exits 0 AND `tile_hash`
+  first 16 chars = `23d6a2ec3bf2821f` AND `make test-all` PASS AND
+  `make check-breach-config` PASS AND `make check-breach-shells` PASS
+  AND new `make check-breach-depot` reports `BREACH_DEPOT_OK` with the
+  pause-on-entry contract verified (get_tree().paused = true after
+  entry signal, false after exit signal).
+- Sentence test: n/a (depot itself is not an upgrade; iter 6+ depot
+  upgrade catalog will run the sentence-test gate per RUBRIC C8).
+- Substrate touched: none (Depot.gd + Depot.tscn are net-new files;
+  no Layer 1/2/3 edits).
+- Hash-anchor verification plan: post-edit, before commit. Should be
+  trivially preserved — no engine/gameplay code touched.
+
 ## iter 004 — BUILD — Bullet.gd shell_class flag + AP/HE/HEAT constants
 
 - Date: 2026-05-19
