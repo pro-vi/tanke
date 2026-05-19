@@ -6,7 +6,9 @@ iter: 0
 preloop_complete: no
 substrate_baseline_verified: no
 hash_anchor_at_iter_0: pending
-next_action: complete preloop checklist below; flip preloop_complete to yes; bootstrap iter 0
+current_round: none
+current_round_phase: none  # SPIKE / DECISION / BUILD / CONSULT / between-rounds
+next_action: loop diagnoses each iter; no pre-allocated trajectory
 ```
 
 ---
@@ -61,21 +63,24 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-19 — Bootstrap files written (PROMPT, RUBRIC, STATE, BANDS, README).
+- 2026-05-19 — Scaffolding written (PROMPT, RUBRIC, STATE, BANDS, README).
   CONSULT captured to `.research/synthesis-arc4-creative-consult-2026-05-19.md`.
   Self-pre-mortem on breach economy completed inline (7 critiques surfaced;
   4 codified as PROMPT anti-patterns).
+- 2026-05-19 — PROMPT v1 reframed: removed iter-prescription, ceiling-stop,
+  HALTED conditions on score plateau. Loop is now non-stop until user
+  writes `playtest`. Macro cadence: SPIKE → DECISION → BUILD×N → CONSULT
+  → QUEUE → bootstrap-next.
 
 ## Next action
 
-After user fires `/loop Read ./loop/breach/PROMPT.md and follow its instructions exactly`:
-1. Loop reads PROMPT + preloop checklist
-2. Loop completes the preloop reads (5 files)
-3. Loop verifies substrate (test + procedural + OG + hash anchor)
-4. Loop flips `preloop_complete: yes`
-5. Iter 0 BOOTSTRAP — terrain palette inventory + substrate baseline + LEDGER entry
-6. Iter 1 DECISION — mode integration path A vs B (SPIKE in parallel); blueprint to `iter001-decision.md`
-7. Iters 2+ — BUILD/CAPABILITY/AUDIT per RUBRIC's weakest axis (initially likely C3 ammo logistics or C2 depot system)
+The loop diagnoses each iter. No pre-allocated trajectory. First iter
+likely: complete preloop reads + substrate verification + flip
+`preloop_complete: yes` + open the first SPIKE round.
+
+The only exits are user signal (`playtest` / `halt` / `stop`) and
+correctness violations (hash anchor break, test-all regression, hard
+substrate violation, band reachability failure not fixed same-iter).
 
 ---
 

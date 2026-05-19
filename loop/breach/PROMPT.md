@@ -182,32 +182,71 @@ Gate is binary. Loop halts if `preloop_complete: no` and iter > 0.
 
 ---
 
-## ITER 0 — BOOTSTRAP (runs once, no scoring)
+## EXPLORATION ROUND CADENCE (macro)
 
-1. If `preloop_complete: no`: output checklist, halt.
-2. If `preloop_complete: yes`:
-   - Verify reachability oracle still passes on procedural + OG modes
-   - Record hash anchor of current procedural baseline (must equal `23d6a2ec…`)
-   - Inventory: which arc-3 artifacts exist (Eagle, LevelLoader, StageDirector, OG configs)
-   - Inventory: terrain palette readiness (brick/steel only — note as a known gap)
-   - Write iter 0 LEDGER entry (no scores)
-   - Commit: `chore(breach): iter 000 — BOOTSTRAP — three-arc substrate verified, breach scope inventoried`
+**The loop is non-stop.** There is no "arc close." There is no score-based exit. The loop diagnoses each iter what to do and runs until you write `playtest`, `halt`, or `stop`.
+
+Work is organized into **exploration rounds**. Each round investigates one mechanic surface (ammo economy, depot UI, terrain affordances, enemy roles, chassis identity, etc.) and ships its findings into `REVIEW-QUEUE.md` for you to look at between sessions. When a round closes, the loop bootstraps the next one against the weakest-axis surface remaining.
+
+```
+                      EXPLORATION ROUND
+   ┌──────────────────────────────────────────────────────┐
+   │                                                       │
+   │  SPIKE      → 2-4 parallel POCs (1 iter)             │
+   │  DECISION   → pick winner, write blueprint (1 iter)  │
+   │  BUILD × N  → implement; N self-determined           │
+   │  CONSULT    → frontier-model creative check          │
+   │  QUEUE      → append finding to REVIEW-QUEUE.md      │
+   │                                                       │
+   └─────────────────┬────────────────────────────────────┘
+                     │
+                     ▼
+              BOOTSTRAP NEXT
+              (diagnose next surface → next round's SPIKE)
+```
+
+**Self-diagnosis each iter.** The loop reads `STATE.md` + last 30 `LEDGER.md` entries + `REVIEW-QUEUE.md` and decides:
+- Which round phase am I in? (SPIKE / DECISION / BUILD / CONSULT / between rounds)
+- What's the weakest axis right now?
+- Is the current mechanic shippable (passes sentence test + substrate intact + advances rubric)?
+- If yes → ship to QUEUE, bootstrap next round.
+- If no → continue BUILD or pivot via SPIKE.
+
+**Round close criteria** (loop's own judgment):
+- Current mechanic implements its winning SPIKE blueprint end-to-end
+- Passes sentence test
+- `make check` + `make test` + `make test-all` green
+- Hash anchor `23d6a2ec…` preserved on procedural baseline
+- LEDGER entry summarizes the finding for QUEUE
+
+When a round closes, **immediately start the next SPIKE**. Do not pause. Do not await user signal between rounds.
+
+**N (BUILD iters per round)** is loop-determined. Simple mechanics may need 1-3 BUILD iters; layered ones may need 8-15. Use F-numbered falsifications to detect "scope too broad" (≥3 F's in one playtest = scope-too-broad signal carried from arc 2).
+
+**CONSULT cadence**: fire once per round (after BUILD closes, before bootstrap-next). Frontier-model creative check via /agentify with the three permanent questions (see CONSULT SCHEDULE below).
+
+**QUEUE cadence**: every round closes with ONE `REVIEW-QUEUE.md` append. Format:
+```
+#K — <mechanic> — <round-NNN> — <SHA> — <status: ready-for-playtest | needs-tuning>
+  Finding: <one-sentence summary>
+  Affordance: <what it lets the player do>
+  Risk: <what's seductive-but-hollow about this — from CONSULT>
+```
 
 ---
 
-## ITER 1 — DECISION (no scoring; outputs blueprint artifact per L2)
+## FIRST-ITER NOTE
 
-Iter 1 is a forced DECISION + SPIKE iter. Per session-learning L1+L2:
-- Write blueprint to `loop/breach/iter001-decision.md` BEFORE executing
-- Run parallel /architect SPIKE on path A vs path B (mode integration)
-- Output: chosen path + blueprint for iters 2-N
-- Commit: `chore(breach): iter 001 — DECISION — mode integration path + breach blueprint`
+The first iter of the loop is whatever the loop diagnoses. **Don't pre-script it.** Likely it'll be:
+- Read the preloop checklist + flip `preloop_complete: yes`
+- Inventory substrate + record hash anchor baseline
+- Open the first exploration round with a SPIKE on the highest-leverage gap (likely mode-integration path A vs B, since that gates everything downstream)
 
-No rubric scoring on iter 1. Foundation work.
+If the loop wants to do something else first based on its diagnosis, let it.
 
 ---
 
-## LOOP PROTOCOL (iter 2+)
+## LOOP PROTOCOL (per iter)
 
 Each iteration after iter 1 follows the same 7-step ritual as arc-3 PROMPT v1,
 with three new modes added per session-learnings.
@@ -309,24 +348,23 @@ Sprint authorization (arc-2 carry): user may override cadence with explicit
 
 ---
 
-## CEILING RULE + CEILING-PAUSED STATE (NEW per L4)
+## RUBRIC IS MEASUREMENT, NOT EXIT
 
-If total hits 40/50 before iter 20, raise the ceiling:
-- Add 1-2 criteria (must be load-bearing, not score-padding)
-- Tighten anchor wording for 4/5 scores
-- Or rephrase rubric via CONSULT (arc-2 RENAME pattern)
+The rubric exists to measure where the loop has invested. **High scores do not stop the loop.** If all 10 criteria hit 5/5, that means we've ground deep on the 10 surfaces named in the rubric — and now the loop bootstraps a new round on a surface the rubric DOESN'T name yet (extend RUBRIC.md to cover it, or carry the un-rubric-able exploration to the QUEUE as an open question for you).
 
-**Ceiling-paused state (NEW):**
-Trigger conditions:
-- All auto-citable anchors maxed
-- All identity-protected anchors waiting on user playtest
-- REVIEW-QUEUE has no open direction-picks
-- BUILD iters would either drift or over-AUDIT
+If the loop ever feels like it's "out of work," it isn't — the BC roguelite design space is open-ended. Surfaces the loop can keep exploring (non-exhaustive):
+- Ammo economy variants (AP/HE/HEAT timing, swap cost, reserve curves)
+- Depot UI shapes (preview-next-band, reroll cost, slot caps)
+- Chassis identities (movement profile, hitbox, special tile interaction)
+- Enemy role expansions (mortar telegraph, sniper sightlines, supply-cache guard)
+- Terrain affordances (rubble-ramp, ice-slide, water-bridge-on-HE)
+- Death attribution / run recap (what tells you "why")
+- Run scaling (band pressure curves, depot spacing)
+- Build-identity surfacing (run-tag emission, recap framing)
+- Algorithmic asset gen extension (chassis variants, depot tiles, HUD icons)
+- Procedural-OG handshake (band-tuning informed by OG metric bands)
 
-When ceiling-paused: write a `CEILING-PAUSED.md` block noting state; loop
-suspends ScheduleWakeup until user invokes the next direction. This is
-DISTINCT from HALTED (which fires on stall / regression). Ceiling-paused
-is "correctly idle, no rubric-rewarding work remains."
+Each surface is a candidate for a new SPIKE → BUILD round.
 
 ---
 
@@ -411,21 +449,23 @@ iter K+1.
 
 ---
 
-## HALT CONDITIONS
+## HALT CONDITIONS (only these — the loop otherwise runs forever)
 
-- `preloop_complete: no` and iter > 0 attempted
-- 3 consecutive BUILD iters with no rubric lift AND no F-number AND no
-  meaningful breach progress (outside any sprint window or ceiling-paused state)
-- A PLAYTEST request in REVIEW-QUEUE unfulfilled for 5+ iters (longer than
-  arc 3 because REVIEW-QUEUE is more permissive)
-- Reachability fails on a band and isn't fixed within the same iter
-- Procedural mode (arc 2) regresses — hash anchor `23d6a2ec…` changes
-  unexpectedly → halt, investigate
-- OG mode (arc 3) regresses — `make test-all` fails on any arc-3 target
-- User writes "stop" or "halt"
-- Hard substrate (layers 1/2/3) violated → auto-revert and halt
-- All 10 criteria at ≥4 + identity-protected anchors playtested → **arc 4
-  closes successfully**
+The loop is **explicitly non-stop**. It only halts on:
+
+- **User signal**: user writes `playtest`, `halt`, or `stop`
+- **Correctness violations** (auto-halt + investigate):
+  - Hash anchor `23d6a2ec…` broken on procedural baseline (cross-arc invariant)
+  - `make test-all` fails on any arc-3 target (regression of merged work)
+  - Reachability fails on a band and isn't fixed within the same iter
+  - Hard substrate (layers 1/2/3) violated without sanctioned default-on gating
+
+The loop does **NOT** halt on:
+- Score milestones (no ceiling rule, no "arc close")
+- Empty rubric-lift (instead → bootstrap next exploration round)
+- F-numbered falsifications (instead → log, fix, continue)
+- Compaction or session boundary (instead → resume from STATE.md + LEDGER tail)
+- "Ran out of work" (instead → diagnose next surface from the open-ended list)
 
 ---
 
@@ -479,10 +519,6 @@ iter K+1.
 /loop Read ./loop/breach/PROMPT.md and follow its instructions exactly.
 ```
 
-Expected overnight (~8h) trajectory:
-- Iter 0 BOOTSTRAP (~3 min)
-- Iter 1 DECISION + SPIKE (~10 min)
-- Iters 2-15 BUILD / CAPABILITY / AUDIT mix (~6 min each)
-- Iter 10 CONSULT (adaptive)
-- Iter 15-20 likely first PLAYTEST request to REVIEW-QUEUE
-- Halt or ceiling-paused triggers OR user signal in morning
+The loop runs until you write `playtest`, `halt`, or `stop`. There is no other exit. Each round closes a mechanic and appends to `REVIEW-QUEUE.md`; the loop bootstraps the next round immediately without pausing.
+
+When you want to playtest: write `playtest` in the conversation. The loop pauses, surfaces the current `REVIEW-QUEUE.md`, and awaits your direction.

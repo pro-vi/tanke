@@ -11,20 +11,37 @@ Fourth arc of the tanke autonomous-loop research project. Builds on arcs 1
 
 ## What it does
 
-1. Reads 4 prior-arc retros + the design CONSULT (preloop, ~5 min)
-2. Verifies cross-arc substrate intact (procedural + OG modes + hash anchor)
-3. Iter 0 bootstrap (substrate baseline, no scoring)
-4. Iter 1 forced DECISION + SPIKE (mode integration path; blueprint)
-5. Iters 2+ BUILD / CAPABILITY / AUDIT cycle per RUBRIC's weakest axis
-6. Adaptive CONSULT (~every 10 iters) on identity questions
-7. REVIEW-QUEUE pattern for user-look (NOT 3-iter halt rule)
+Explores roguelite game mechanics on the BC base. Non-stop. Each
+exploration round investigates one mechanic surface (ammo / depot /
+chassis / enemy role / terrain affordance / death recap / asset gen /
+procedural-OG handshake / …) and ships its finding into
+`REVIEW-QUEUE.md` for you to look at between sessions.
 
-## How to halt
+Macro cadence:
+**SPIKE → DECISION → BUILD × N → CONSULT → QUEUE → bootstrap-next**
 
-- Write "halt" or "stop" in conversation
-- Update `STATE.md` with `next_action: HALT`
-- Loop self-halts on hard substrate violation or hash anchor break
-- Loop pauses (ceiling-paused, NOT halt) when all auto-citable anchors maxed
+The loop self-diagnoses each iter — no pre-allocated trajectory. When a
+round closes, it immediately starts the next round against the
+weakest-axis surface remaining (the rubric measures depth on the 10
+surfaces it names, but the design space is open-ended; the loop extends
+the rubric or carries open questions to QUEUE).
+
+## How to pause for playtest
+
+- Write `playtest` in the conversation — loop pauses, surfaces
+  `REVIEW-QUEUE.md`, awaits your direction
+- `halt` or `stop` also work (treated identically)
+
+## When the loop self-halts (correctness only)
+
+- Cross-arc hash anchor `23d6a2ec…` broken on procedural baseline
+- `make test-all` regression (arc-3 work broken)
+- Reachability fails on a band and isn't fixed same-iter
+- Hard substrate (layers 1/2/3) violated without sanctioned default-on gating
+
+The loop does **NOT** self-halt on: score milestones, empty rubric-lift,
+F-numbered falsifications, or "ran out of work" (the design space is
+open-ended).
 
 ## Where to look for results
 
@@ -60,17 +77,17 @@ Bad upgrade fails: "by making me stronger" / "by doing more damage."
 - More than 3 shell classes initially (CONSULT constraint 2)
 - AWAIT on design / pacing / content decisions
 
-## Overnight expectation
+## Morning checkin
 
-Kicked off at midnight, ~8h of self-paced loop:
-- Iter 0: bootstrap (~3 min)
-- Iter 1: DECISION + SPIKE (~10 min)
-- Iters 2-15: BUILD / CAPABILITY mix (~6 min each)
-- Iter 10: CONSULT (adaptive)
-- Iters 15-20: first PLAYTEST request appended to REVIEW-QUEUE
-- Halt OR ceiling-paused OR user signal in morning
+```
+cat loop/breach/STATE.md
+tail -200 loop/breach/LEDGER.md
+cat loop/breach/REVIEW-QUEUE.md
+```
 
-Morning checkin: read `STATE.md` + `LEDGER.md` tail + `REVIEW-QUEUE.md`.
+Look at the QUEUE — each entry is a round-closure note describing what
+the loop shipped and what's seductive-but-hollow about it. When you find
+one (or several) worth playing, write `playtest`.
 
 ## Loop type
 
