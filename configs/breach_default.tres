@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="BreachConfig" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/BreachConfig.gd" id="1_cfg"]
+[ext_resource type="Script" path="res://scripts/BreachBand.gd" id="2_band"]
+[ext_resource type="Script" path="res://scripts/LevelConfig.gd" id="3_lc"]
+
+[sub_resource type="Resource" id="lc_choke"]
+script = ExtResource("3_lc")
+merge_probability = 0.45
+empty_weight = 0.20
+brick_weight = 0.55
+steel_weight = 0.05
+grass_weight = 0.10
+water_weight = 0.10
+
+[sub_resource type="Resource" id="band_choke"]
+script = ExtResource("2_band")
+band_name = "tutorial_choke"
+depth_min = 0
+depth_max = 30
+dominant_pressure = "brick walls + light scouts"
+canonical_answer = "AP — cheap pierce; conserve HE+HEAT for later bands"
+level_config = SubResource("lc_choke")
+
+[sub_resource type="Resource" id="lc_maze"]
+script = ExtResource("3_lc")
+merge_probability = 0.55
+empty_weight = 0.10
+brick_weight = 0.70
+steel_weight = 0.05
+grass_weight = 0.10
+water_weight = 0.05
+
+[sub_resource type="Resource" id="band_maze"]
+script = ExtResource("2_band")
+band_name = "brick_maze"
+depth_min = 30
+depth_max = 70
+dominant_pressure = "dense brick layouts; long detours unless breached"
+canonical_answer = "HE — open vertical lanes; trade shells for time"
+level_config = SubResource("lc_maze")
+
+[resource]
+script = ExtResource("1_cfg")
+bands = Array[Resource]([SubResource("band_choke"), SubResource("band_maze")])

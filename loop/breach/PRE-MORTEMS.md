@@ -24,6 +24,37 @@ Format:
 
 ---
 
+## iter 003 — BUILD — BreachConfig.gd + BreachBand.gd + sample .tres (2 bands)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: constraint 5 (each band must have a
+  dominant terrain/enemy pressure — BreachBand's `dominant_pressure` +
+  `canonical_answer` fields encode this), constraint 4 (BreachBand
+  schema constrains future asset gen to existing silhouette roles by
+  design — bands don't invent mechanics, they re-weight terrain), all
+  others (no design surface changed; structural schema only)
+- CONSULT constraints risked: constraint 5 if we later ship a band
+  without a stated dominant pressure (defended by the schema —
+  `dominant_pressure: String` field; runtime check possible later)
+- Predicted failure: typed-Array Resource (`Array[BreachBand]`) syntax
+  in `.tres` may have a Godot 4.6 quirk that fails to parse — falls back
+  to untyped Array. Sub-resource cycles (BreachConfig → BreachBand →
+  LevelConfig) may not resolve in load order — falls back to inline
+  LevelConfig per band rather than ext resource.
+- Falsifiable claim: post-edit, `make test` exits 0 AND
+  `tile_hash` first 16 chars = `23d6a2ec3bf2821f` (procedural baseline
+  preserved — `breach_mode_enabled=false`, `breach_config=null` on
+  ProceduralLevel.tscn) AND `make test-all` reports all 5 arc-3 targets
+  PASS AND `configs/breach_default.tres` loads cleanly via
+  `ResourceLoader.load(...)` without errors.
+- Sentence test: n/a (no upgrade)
+- Substrate touched: `scripts/ProceduralLevel.gd` (tighten @export type
+  from `Resource` to `BreachConfig`; same flag area, sanctioned write
+  scope from iter 2). New non-substrate files: `scripts/BreachBand.gd`,
+  `scripts/BreachConfig.gd`, `configs/breach_default.tres`.
+- Hash-anchor verification plan: post-edit, before commit.
+
 ## iter 002 — BUILD-QUALITY — DECISION (adopt path A) + first substrate hook
 
 - Date: 2026-05-19

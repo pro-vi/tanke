@@ -2,17 +2,18 @@
 
 ```yaml
 phase: loop
-iter: 2
+iter: 3
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_2: 23d6a2ec3bf2821f  # bit-identical post-substrate-write #1
-substrate_writes_this_arc: 1  # ProceduralLevel.gd — breach_mode_enabled flag
+hash_anchor_at_iter_3: 23d6a2ec3bf2821f  # bit-identical through substrate writes #1 + #2
+substrate_writes_this_arc: 2  # ProceduralLevel.gd: flag (iter 2) + type tighten (iter 3)
 current_round: 1
-current_round_phase: BUILD  # path A adopted; building toward first end-to-end breach iter
-next_action: iter 3 — BUILD — author scripts/BreachConfig.gd (depth-band config resource type) + tighten breach_config @export to BreachConfig type + first depth-band stub in _process_breach_depth. Target: C4 anchor 1 (≥2 distinct bands with different terrain weights — code-cited).
-score: 1/50 absolute · 1/50 effective  # C10 = 1
+current_round_phase: BUILD
+next_action: iter 4 — BUILD — extend scripts/Bullet.gd with shell_class flag (default=0=AP, bit-identical to arc-2 behavior). Add SHELL_CLASS_AP/HE/HEAT constants. Target: C3 anchor 1 (≥2 shell types in code; player can fire either — code-cited). Substrate write #3 on Bullet.gd — sanctioned per PROMPT §SUBSTRATE FREEZE + L5 gating template. Hash-anchor verify post-edit.
+score: 2/50 absolute · 2/50 effective  # C10=1, C4=1
 spike_report: loop/breach/iter-001-spike-report.md
+new_harness_targets: check-breach-config  # iter 3 — arc-4 first
 ```
 
 ---

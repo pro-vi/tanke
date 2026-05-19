@@ -11,7 +11,7 @@ NOISE_FILTER    = grep -Ev "RID allocations|resources still in use"
 FRAMES_DIR      = $(PROJECT_DIR)/tools/out
 REFS_DIR        = $(PROJECT_DIR)/tools/refs
 
-.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain check-chain-35 og-band-check check-titlescreen-nav test-all
+.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain check-chain-35 og-band-check check-titlescreen-nav test-all check-breach-config
 
 # Parse/load validation — catches bad scripts and missing nodes
 check:
@@ -123,6 +123,13 @@ check-titlescreen-nav:
 # 25-stage chain + 35-stage chain + TitleScreen nav.
 # (RUBRIC C1/5 + C6/5 + C10/4 + C10/5 verification.)
 test-all: test check-loader check-chain check-chain-35 check-titlescreen-nav
+
+# Arc-4 breach mode: verify configs/breach_default.tres loads cleanly
+# with >=2 distinct bands and per-band terrain-weight overrides (C4
+# anchor 1 structural cite).
+check-breach-config:
+	@$(HEADLESS) --script res://loop/breach/test_breach_config.gd 2>&1 | grep -E "^(band_count|  band\[|BREACH_CONFIG_OK|FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/breach/test_breach_config.gd 2>&1 | grep -q "^BREACH_CONFIG_OK"
 
 # Arc-3 → arc-2 metric handshake: compute per-stage structural metrics
 # across all 35 BC stages and emit loop/originals/og-metrics.json.

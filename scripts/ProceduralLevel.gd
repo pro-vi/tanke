@@ -4,6 +4,7 @@ const ProceduralStep = preload("res://scripts/ProceduralStep.gd")
 const DebugBlock: PackedScene = preload("res://scenes/DebugBlock.tscn")
 const LevelConfigT = preload("res://scripts/LevelConfig.gd")
 const BiomeConfigT = preload("res://scripts/BiomeConfig.gd")
+const BreachConfigT = preload("res://scripts/BreachConfig.gd")
 const DefaultConfig: Resource = preload("res://configs/default.tres")
 @export var debug: bool = false
 @export var level_seed: int = 0  # 0 = random; any other value = deterministic Level DNA
@@ -15,7 +16,7 @@ const DefaultConfig: Resource = preload("res://configs/default.tres")
 # preserved on the flag-off codepath. New behavior fires only when the
 # flag is overridden by a sibling launcher scene (e.g. BreachLevel.tscn).
 @export var breach_mode_enabled: bool = false
-@export var breach_config: Resource = null  # BreachConfig.gd resource (iter 3+)
+@export var breach_config: BreachConfigT = null  # depth-band roadmap (iter 3)
 
 # algo variables
 var osn: FastNoiseLite

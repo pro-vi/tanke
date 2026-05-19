@@ -17,6 +17,51 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 003 — BUILD — BreachConfig + BreachBand + breach_default.tres (2 bands)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **2/50 absolute · 2/50 effective** (Δ +1 vs prior — C4 anchor 1)
+  - C4 (Depth bands): 0 → 1 (anchor 1: BreachConfig.gd encodes ≥2
+    distinct bands with different terrain weights — code-cited via
+    `make check-breach-config` reporting `BREACH_CONFIG_OK 2 bands,
+    distinct terrain weights`)
+  - C10 (Substrate preservation): still 1 (hash anchor preserved through
+    iter 3's substrate write #2 — type tightening on `breach_config`
+    @export)
+  - All other 8 criteria still at 0
+- Constraints respected: 4 (silhouette grammar — BreachBand schema
+  constrains bands to declared terrain rosters, can't invent mechanics),
+  5 (each band has a dominant terrain pressure — `dominant_pressure`
+  field), 7 (verbs not stats — BreachBand has no damage/stat fields, only
+  terrain + canonical-answer descriptors). Others n/a (no shell, no
+  depot, no enemy this iter).
+- Constraints risked: 5 if future bands ship without filled
+  `dominant_pressure` (schema-defended; runtime check possible)
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** post substrate
+  write #2. `make test` exit 0. `make test-all` PASS (all 5 arc-3
+  targets). `make check-breach-config` PASS (new arc-4 target).
+- Falsifications: none. Pre-mortem prediction "typed-Array .tres syntax
+  may have a quirk" — confirmed quirk-free (`Array[Resource]([...])`
+  works). Pre-mortem prediction "preload may be needed for cross-script
+  type refs" — confirmed: 3 files needed preload+alias pattern
+  (BreachBand.gd preloads LevelConfig; BreachConfig.gd preloads
+  BreachBand; ProceduralLevel.gd preloads BreachConfig). Same pattern
+  as arc-1 LevelConfigT precedent.
+- Files: `scripts/BreachBand.gd` (NEW), `scripts/BreachConfig.gd` (NEW),
+  `configs/breach_default.tres` (NEW), `scripts/ProceduralLevel.gd`
+  (substrate write #2 — tightened @export type), `Makefile` (new
+  `check-breach-config` target), `loop/breach/test_breach_config.gd`
+  (NEW verifier), `loop/breach/PRE-MORTEMS.md`, `loop/breach/LEDGER.md`,
+  `loop/breach/STATE.md`
+- Finding: **BreachConfig schema landed.** Two-band sample
+  (tutorial_choke @ depth 0-30 / brick_maze @ depth 30-70) with distinct
+  LevelConfig sub-resources per band (brick_weight 0.55 vs 0.70,
+  water_weight 0.10 vs 0.05). Schema directly mirrors BANDS.md roadmap.
+  C4 anchor 1 cited via the new harness target. Depth-band runtime
+  tracking (looking up the active BreachBand in `_process_breach_depth`)
+  is still a stub — iter 4 or 5 will wire that. Next iter: shells.
+
 ## iter 002 — BUILD — DECISION (adopt path A) + first substrate hook on ProceduralLevel.gd
 
 - Date: 2026-05-19
