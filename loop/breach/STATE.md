@@ -2,13 +2,14 @@
 
 ```yaml
 phase: loop
-iter: 0
+iter: 1
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-current_round: 1-pending
-current_round_phase: between-rounds  # SPIKE round 1 fires iter 1
-next_action: iter 1 — SPIKE mode-integration path A (default-on breach_mode_enabled flag) vs path B (sibling BreachLevel.tscn)
+current_round: 1
+current_round_phase: DECISION-pending  # iter 2 will pick winner + start BUILD
+next_action: iter 2 — DECISION (adopt path A per converging scouts) + first BUILD (add @export var breach_mode_enabled = false to ProceduralLevel.gd; hash-anchor verify post-edit; commit only if anchor preserved)
+spike_report: loop/breach/iter-001-spike-report.md
 ```
 
 ---

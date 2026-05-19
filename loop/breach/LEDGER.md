@@ -17,6 +17,27 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 001 — SPIKE — mode-integration path A vs B
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: 0/50 (Δ 0 vs prior — SPIKE iters are investigation, not anchor lift)
+- Constraints respected: all 7 (read-only investigation; no design surface touched)
+- Constraints risked: none
+- Hash anchor: n/a (no substrate touch; verification deferred to iter 2 BUILD)
+- Falsifications: none
+- Files: `loop/breach/iter-001-spike-report.md` (blueprint stash per L2),
+  `loop/breach/PRE-MORTEMS.md`, `loop/breach/LEDGER.md`
+- Finding: **Path A SHIP (default-on `breach_mode_enabled` flag on
+  `ProceduralLevel.gd`). Path B REFINE (do not adopt as default).** Two
+  parallel scouts converged independently. Load-bearing argument is
+  hash-anchor bit-identicality: `ProceduralLevel.gd:42-77` (RNG-touching
+  baseline) precedes any flag branch, so `tile_hash=23d6a2ec3bf2821f` is
+  preserved when `breach_mode_enabled=false`. Path B's only saving is
+  one default-off boolean; H1 surface burden + ProceduralStep row-regen
+  fork risk make it strictly worse. Effort estimate: ~5-7 BUILD iters
+  from flag-added to first end-to-end breach run.
+
 ## iter 000 — META — preloop complete + substrate verified
 
 - Date: 2026-05-19
