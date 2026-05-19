@@ -103,6 +103,13 @@ func _collect(level: Node) -> Dictionary:
 
 	var steel_cells: int = level.steelTileMap.get_used_cells().size()
 	var grass_cells: int = level.grassTileMap.get_used_cells().size()
+	# iter 011 (review-fix): iceTileMap is an arc-3 OG-mode addition (stages
+	# 17/24/28/32). Procedural mode has no iceTileMap → 0; OG mode counts
+	# the actual placed ice cells so tile_hash / vert / cc / iid metrics
+	# reflect rendered terrain instead of treating ice as empty floor.
+	var ice_cells: int = 0
+	if "iceTileMap" in level and level.iceTileMap != null:
+		ice_cells = level.iceTileMap.get_used_cells().size()
 
 	# Eller snapshot from the latest ProceduralStep.
 	# iter 001 (arc 3): defensive — OriginalLevel (arc-3 OG-mode) has no ps,
@@ -128,6 +135,9 @@ func _collect(level: Node) -> Dictionary:
 		fingerprint += "s%d,%d;" % [cell.x, cell.y]
 	for cell in level.grassTileMap.get_used_cells():
 		fingerprint += "g%d,%d;" % [cell.x, cell.y]
+	if "iceTileMap" in level and level.iceTileMap != null:
+		for cell in level.iceTileMap.get_used_cells():
+			fingerprint += "i%d,%d;" % [cell.x, cell.y]
 	for child in level.get_children():
 		if child is StaticBody2D:
 			if child.name == "Eagle":
@@ -150,6 +160,9 @@ func _collect(level: Node) -> Dictionary:
 		grid[Vector2i(cell.x, cell.y)] = "steel"
 	for cell in level.grassTileMap.get_used_cells():
 		grid[Vector2i(cell.x, cell.y)] = "grass"
+	if "iceTileMap" in level and level.iceTileMap != null:
+		for cell in level.iceTileMap.get_used_cells():
+			grid[Vector2i(cell.x, cell.y)] = "ice"
 	for child in level.get_children():
 		if child is StaticBody2D:
 			if child.name == "Eagle":
@@ -180,14 +193,15 @@ func _collect(level: Node) -> Dictionary:
 	#    pairs are MORE correlated than random; < 1.0 means LESS. Decouples
 	#    spatial structure from concentration (a uniform 25/25/25/25 distribution
 	#    has IID 0.25; a steel-dominant 60/15/15/10 has IID 0.42).
-	var total_for_iid: int = brick_count + water_count + steel_cells + grass_cells
+	var total_for_iid: int = brick_count + water_count + steel_cells + grass_cells + ice_cells
 	var iid_expected: float = 0.0
 	if total_for_iid > 0:
 		var p_b := float(brick_count) / float(total_for_iid)
 		var p_w := float(water_count) / float(total_for_iid)
 		var p_s := float(steel_cells) / float(total_for_iid)
 		var p_g := float(grass_cells) / float(total_for_iid)
-		iid_expected = p_b * p_b + p_w * p_w + p_s * p_s + p_g * p_g
+		var p_i := float(ice_cells) / float(total_for_iid)
+		iid_expected = p_b * p_b + p_w * p_w + p_s * p_s + p_g * p_g + p_i * p_i
 	var above_floor: float = max(0.0, (vert_persistence - 0.5) / 0.5)
 	var structure_lift: float = (vert_persistence / iid_expected) if iid_expected > 0.0 else 0.0
 
@@ -239,6 +253,22 @@ func _collect(level: Node) -> Dictionary:
 	var SPAWN_TILE: Vector2i = Vector2i(int(spawn_px.x) / 8, int(spawn_px.y) / 8)
 	var MAP_W: int = int(level.width) / 8
 	var MAP_H: int = int(level.height) / 8
+	# iter 011 (review-fix): clamp reachability to the OG 26x26 BC playfield
+	# when the level exposes col_offset/row_offset (OriginalLevel.gd). Procedural
+	# mode lacks those exports → bounds remain the full viewport. Without this
+	# clamp the BFS could walk into the gray margin around the BC playfield and
+	# climb around obstacles the player cannot actually cross, inflating
+	# reachable_cells / playable on OG stages.
+	var BC_PLAYFIELD: int = 26
+	var min_col: int = 0
+	var min_row: int = 0
+	var max_col: int = MAP_W
+	var max_row: int = MAP_H
+	if "col_offset" in level and "row_offset" in level:
+		min_col = int(level.col_offset)
+		min_row = int(level.row_offset)
+		max_col = min_col + BC_PLAYFIELD
+		max_row = min_row + BC_PLAYFIELD
 	const MIN_ROWS_CLIMBED: int = 10
 	var reach_visited: Dictionary = {}
 	var reach_queue: Array = [SPAWN_TILE]
@@ -246,10 +276,11 @@ func _collect(level: Node) -> Dictionary:
 		var cur: Vector2i = reach_queue.pop_back()
 		if reach_visited.has(cur):
 			continue
-		if cur.x < 0 or cur.x >= MAP_W or cur.y < 0 or cur.y >= MAP_H:
+		if cur.x < min_col or cur.x >= max_col or cur.y < min_row or cur.y >= max_row:
 			continue
-		# Passable iff (no terrain placed) or (terrain is grass)
-		if grid.has(cur) and grid[cur] != "grass":
+		# Passable iff (no terrain placed) or (terrain is grass/ice — both have
+		# no collision per arc-3 phase-1 ice decision: pass-through).
+		if grid.has(cur) and grid[cur] != "grass" and grid[cur] != "ice":
 			continue
 		reach_visited[cur] = true
 		reach_queue.push_back(Vector2i(cur.x + 1, cur.y))
@@ -274,11 +305,12 @@ func _collect(level: Node) -> Dictionary:
 		"water": water_count,
 		"steel": steel_cells,
 		"grass": grass_cells,
+		"ice": ice_cells,
 		"eller_sets": sets.size(),
 		"eller_avg_size": avg_size,
 		"eller_max_size": max_size,
 		"tile_hash": tile_hash,
-		"total_terrain": brick_count + water_count + steel_cells + grass_cells,
+		"total_terrain": brick_count + water_count + steel_cells + grass_cells + ice_cells,
 		"vert_persistence": vert_persistence,
 		"vert_pairs_same": vert_same,
 		"vert_pairs_total": vert_total,
