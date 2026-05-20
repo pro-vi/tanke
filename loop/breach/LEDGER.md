@@ -17,6 +17,52 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 017 — BUILD — gen_tile.py shell-icon generator (C7 anchor 1)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **21/50 absolute · 21/50 effective** (Δ +1 vs prior — C7 anchor 1)
+  - C7 (Silhouette grammar): 0 → 1 (anchor 1: gen_tile.py extended with
+    a new generator — 3 shell-icon generators shell_ap/he/heat —
+    code-cited via `make check-breach-assets`)
+  - C1=3, C2=2, C3=2, C4=3, C5=1, C6=2, C8=1, C9=2, C10=4 unchanged
+  - **ALL 10 criteria now non-zero.**
+- DIAGNOSE: C7 was the only 0/5 criterion — the weakest axis.
+- Constraints respected: 4 (silhouette grammar — the 3 icons are
+  readable by silhouette: AP = thin tall dart (8px footprint), HE =
+  fat round blob (28px), HEAT = wide chevron (11px); + palette: pale
+  steel / warm yellow / crimson, matching the Bullet.gd iter-4/7
+  modulate colors), 2 (3 shell classes — icons for exactly AP/HE/HEAT)
+- Constraints risked: 4 — the FORMAL automated grammar-check tool is
+  C7 anchor 2 (later iter). iter 17's `check_shell_icons.py` is the
+  structural proxy: it asserts pairwise silhouette distinctness
+  (≥8 differing cells). First draw had AP vs HEAT at only 2px — caught
+  + fixed within-iter (redrew AP as a 1px-wide spine, HEAT as a wide
+  chevron). Final diffs: AP/HE 24px, AP/HEAT 9px, HE/HEAT 21px.
+- **Silhouette grammar gate cited** (PROMPT ACT step): the 3 icons pass
+  — distinct silhouette footprint + distinct palette + one-frame intent
+  (thin=precise / round=splash / chevron=armor-focus). Verified by
+  `check-breach-assets` reporting `BREACH_ASSETS_OK`.
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** (gen_tile.py
+  is a build-time tool — doesn't run during `make test`). `make test`
+  exit 0. `make test-all` PASS. `make test-breach` PASS (11 harnesses).
+- Falsifications: none. Pre-mortem predicted "8×8 silhouettes could
+  end up too similar" — CONFIRMED on the first draw (AP/HEAT 2px),
+  fixed within-iter.
+- Files: `tools/gen_tile.py` (Layer-1 — sanctioned extension; +3 shell
+  generators + SHELL_PALETTES + --from-sheet guard),
+  `tools/check_shell_icons.py` (NEW verifier), `Makefile`
+  (check-breach-assets), `loop/breach/PRE-MORTEMS.md`, LEDGER, STATE.
+  (Generated PNGs in tools/out/ are build artifacts — not committed;
+  regenerable via `make check-breach-assets`.)
+- Finding: **C7 opened — all 10 criteria are now non-zero (21/50).**
+  gen_tile.py now generates 3 shell-class HUD icons with distinct
+  silhouettes + palettes. Next iter 18: candidates — (a) C7 anchor 2
+  (formal silhouette-grammar PASS/FAIL tool — promote check_shell_icons
+  into a reusable gate), (b) C6 anchor 3 (RunRecap stores band
+  dominant_pressure — 2-line lift), (c) C8 anchor 2 (5+ depot
+  upgrades). Diagnose at iter start.
+
 ## iter 016 — AUDIT — full re-score; C10 anchor 4; C1 anchor-2 wording fixed
 
 - Date: 2026-05-19

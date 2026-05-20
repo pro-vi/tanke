@@ -24,6 +24,44 @@ Format:
 
 ---
 
+## iter 017 — BUILD — gen_tile.py shell-icon generator (C7 anchor 1)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- DIAGNOSE: C7 (silhouette grammar) is the only 0/5 criterion — the
+  weakest axis. C7 anchor 1: "gen_tile.py extended with ≥1 new
+  generator (depot tile / shell icon / chassis variant) — code-cited".
+- CONSULT constraints respected: 4 (silhouette grammar — the 3 shell
+  icons are designed to be readable by silhouette + palette: AP = narrow
+  dart / pale, HE = fat ellipse / warm yellow, HEAT = angular diamond /
+  crimson; palettes match the Bullet.gd iter-4/7 modulate colors), 2
+  (still 3 shell classes — icons for exactly AP/HE/HEAT)
+- CONSULT constraints risked: 4 — the FORMAL silhouette-grammar check
+  tool is C7 anchor 2 (a later iter). iter 17 cites the grammar gate
+  *manually* + the verifier proves the 3 icons are pixel-distinct
+  (silhouette-distinct proxy). Honest: anchor 2's automated PASS/FAIL
+  tool is scheduled, not done.
+- Predicted failure modes:
+  - PIL drawing at 8×8 is cramped — the 3 silhouettes could end up
+    too similar (fail the distinctness check). Mitigation: verifier
+    asserts pairwise pixel-difference above a threshold.
+  - gen_tile.py is Layer-1 substrate ("extendable for new procedural
+    generators" — explicitly sanctioned). Extension must not break the
+    existing 4 terrain generators.
+- Falsifiable claim: post-edit, the existing `make` terrain-gen path
+  still works, the 3 shell icons generate as valid 8×8 PNGs, and the
+  new `make check-breach-assets` reports `BREACH_ASSETS_OK` with the 3
+  icons verified pairwise pixel-distinct. `make test` exit 0,
+  `tile_hash` = `23d6a2ec3bf2821f` (gen_tile.py is a build-time tool —
+  doesn't touch the runtime hash anyway), `make test-all` PASS.
+- Sentence test: n/a (asset generator)
+- Substrate touched: `tools/gen_tile.py` (Layer-1 — extension
+  explicitly sanctioned by PROMPT §SUBSTRATE FREEZE "gen_tile.py
+  (extendable for new procedural generators)").
+- Hash-anchor verification plan: gen_tile.py is a build-time Python
+  tool; it does not run during `make test`. Hash anchor trivially
+  preserved — verify anyway.
+
 ## iter 016 — AUDIT — re-score all 10 criteria + resolve C1-anchor-2 wording
 
 - Date: 2026-05-19
