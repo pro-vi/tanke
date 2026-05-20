@@ -24,6 +24,43 @@ Format:
 
 ---
 
+## iter 014 — BUILD — RunRecap.gd death attribution (C6 anchors 1+2)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- CONSULT 000: death attribution is the "paired omission" alongside
+  depots. Constraint 6: "every run produces a death reason tied to
+  resource/build/route — not 'got overwhelmed'."
+- CONSULT constraints respected: 6 (death recap is the literal subject),
+  7 (recap reports verbs/resources — shells fired, reserves — not a
+  generic score)
+- CONSULT constraints risked: none — the recap is a safe-state surface
+- Predicted failure modes:
+  - PlayerTank substrate write #8: `_fire` + `_die` hooks. The recap
+    must be created only in breach mode (`loadout != null`) so arc-2/3
+    PlayerTank behaves bit-identically (no recap, no hooks fire).
+  - RunRecap as RefCounted — PlayerTank owns it internally (no @export
+    needed; fresh instance per run avoids Resource-sharing staleness).
+  - Killer attribution: `take_damage(amount)` carries no source.
+    Mitigation — capture the killing *band* (route attribution, which
+    is what constraint 6 actually wants) by reading the parent level's
+    `_current_breach_band`; killer string is "shell impact" generic.
+    Honest: route+resource attribution is the real signal, not the
+    sprite that landed the hit.
+- Falsifiable claim: post-edit, `make test` exit 0, `tile_hash` =
+  `23d6a2ec3bf2821f` (arc-2/3 PlayerTank with loadout==null runs the
+  recap-free path), `make test-all` PASS, all 8 breach harnesses PASS,
+  new `make check-breach-recap` reports `BREACH_RECAP_OK` verifying
+  RunRecap captures depth + killing band + per-type shell counts +
+  reserves + formats a non-empty recap string.
+- Sentence test: n/a (recap, not an upgrade)
+- Substrate touched: `scripts/PlayerTank.gd` (substrate write #8 —
+  sanctioned per PROMPT §SUBSTRATE FREEZE "PlayerTank.gd — add Loadout
+  + RunRecap hooks"; gated on loadout != null). New file:
+  `scripts/RunRecap.gd`.
+- Hash-anchor verification plan: post-edit, before commit. Mandatory —
+  PlayerTank substrate touch.
+
 ## iter 013 — BUILD — extend breach_default.tres to 5 bands (C4 anchor 3)
 
 - Date: 2026-05-19

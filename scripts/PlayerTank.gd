@@ -8,6 +8,7 @@ extends CharacterBody2D
 # route — that is the atomic verb".
 const BulletT = preload("res://scripts/Bullet.gd")
 const LoadoutT = preload("res://scripts/Loadout.gd")
+const RunRecapT = preload("res://scripts/RunRecap.gd")
 
 # arc-4: shoot signal carries the chosen shell_class. Default in any
 # emit-site that doesn't override = SHELL_CLASS_AP (= 0), preserving
@@ -39,6 +40,10 @@ var _shield_timer: float = 0.0
 
 var current_shell: int = 0  # = BulletT.SHELL_CLASS_AP; cycled via KEY_TAB
 var _tab_was_pressed: bool = false
+# arc-4: death-attribution recap. Created per-run in _ready when breach
+# mode is active (loadout != null). Null in arc-2/3 — those code paths
+# never touch run_recap, so behavior stays bit-identical.
+var run_recap = null
 
 @onready var sprite: Sprite2D = $Sprite2D
 
@@ -108,6 +113,9 @@ func _ready() -> void:
 	_start_y = global_position.y
 	_min_y_reached = _start_y
 	_last_y_for_velocity = _start_y  # iter 31: instrumentation seed
+	# arc-4: breach-mode death recap (only when a loadout is assigned).
+	if loadout != null:
+		run_recap = RunRecapT.new()
 	# iter 101 (review-fix): sibling lookup via Tiles parent, not root-walk.
 	var level: Node = get_parent()
 	if level != null:
@@ -218,6 +226,8 @@ func _fire() -> void:
 	$GunTimer.start()
 	shoot.emit(Bullet, $Muzzle.global_position, direction, actual_shell)
 	can_shoot = false
+	if run_recap != null:
+		run_recap.record_shot(actual_shell)
 
 
 # arc-4: cycle current_shell among AP/HE/HEAT, skipping classes the
@@ -368,6 +378,16 @@ func _die() -> void:
 	velocity = Vector2.ZERO
 	# iter 31: ascender run summary on death (Pro Consult 005 H4)
 	var depth: int = int(maxf(0.0, (_start_y - _min_y_reached) / 16.0))
+	# arc-4: capture death attribution. Reads the killing band from the
+	# parent level's _current_breach_band (set by ProceduralLevel breach
+	# mode); falls back to "" if absent (arc-2/3 path never gets here
+	# with run_recap set).
+	if run_recap != null:
+		var band_name: String = ""
+		var lvl: Node = get_parent()
+		if lvl != null and "_current_breach_band" in lvl and lvl._current_breach_band != null:
+			band_name = lvl._current_breach_band.band_name
+		run_recap.capture_death(depth, band_name, loadout)
 	var t: int = int(_run_time)
 	var ascent_rate: float = 0.0
 	if _run_time > 0.0:

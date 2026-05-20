@@ -2,23 +2,23 @@
 
 ```yaml
 phase: loop
-iter: 13
+iter: 14
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_13: 23d6a2ec3bf2821f  # bit-identical through 7 substrate writes
-substrate_writes_this_arc: 7  # ProceduralLevel.gd ×3 + Bullet.gd ×2 + PlayerTank.gd + Level.gd
+hash_anchor_at_iter_14: 23d6a2ec3bf2821f  # bit-identical through 8 substrate writes
+substrate_writes_this_arc: 8  # ProceduralLevel.gd ×3 + Bullet.gd ×2 + PlayerTank.gd ×2 + Level.gd
 current_round: 2
 current_round_phase: BUILD
 consult_001_status: adopted
 build_quality_iters: [10]
 falsifications: [F001-resolved]
-reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%); canonical seed 42 solid
-reachability_floor: ">=80% of a 10-seed per-band sweep (arc-3 band_check precedent)"
-next_action: iter 14 — BUILD — author scripts/RunRecap.gd (death attribution; C6 currently 0/5 — untouched criterion). Capture on player death: depth reached, killing entity, shell consumption per type, reserve at death, build identity tag. Target C6 anchor 1 (RunRecap.gd captures depth + killing entity — code-cited) and trail to anchor 2 (shell consumption per type). New file — no substrate touch (RunRecap hooks into PlayerTank's `died` signal, which already exists). Per CONSULT 000 — death attribution is the "paired omission" alongside depots.
-score: 14/50 absolute · 14/50 effective  # C1=1, C2=2, C3=2, C4=3, C8=1, C9=2, C10=3
+reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%)
+audit_candidates: [C1-anchor-2-wording]  # "via Loadout.gd permutations" — mechanism is actually RunRecap.build_tag (R1 mismatch)
+next_action: iter 15 — BUILD — C5 enemy role vocabulary (biggest untouched axis, currently 0/5). Extend Spawner.gd (substrate write #9, sanctioned per PROMPT §SUBSTRATE FREEZE "Spawner.gd — band-aware spawning") with a band-driven enemy roster: each BreachBand declares which enemy roles spawn in it. Arc-2 has EnemyLight + EnemyHeavy (2 roles); add ≥1 more (EnemyMedium) to reach ≥3 roles. Target C5 anchor 1 (≥3 enemy roles in code; each spawns in correct bands per BreachConfig — code-cited). Note: AUDIT due soon (every 5 iters; last was iter 0 baseline — iter 15 or 16 should AUDIT-rescore all criteria with fresh evidence + resolve the C1-anchor-2 wording).
+score: 18/50 absolute · 18/50 effective  # C1=3, C2=2, C3=2, C4=3, C6=2, C8=1, C9=2, C10=3
 spike_report: loop/breach/iter-001-spike-report.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness} (8; test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap} (9; test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb]
 ```
 

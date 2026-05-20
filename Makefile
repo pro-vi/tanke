@@ -11,7 +11,7 @@ NOISE_FILTER    = grep -Ev "RID allocations|resources still in use"
 FRAMES_DIR      = $(PROJECT_DIR)/tools/out
 REFS_DIR        = $(PROJECT_DIR)/tools/refs
 
-.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain check-chain-35 og-band-check check-titlescreen-nav test-all check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness test-breach
+.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain check-chain-35 og-band-check check-titlescreen-nav test-all check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness check-breach-recap test-breach
 
 # Parse/load validation — catches bad scripts and missing nodes
 check:
@@ -187,8 +187,15 @@ check-breach-harness:
 	@$(HEADLESS) --script res://loop/breach/test_breach_harness.gd -- --seed 42 --deep 2>&1 | grep -E "^(  band|BREACH_HARNESS)"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_harness.gd -- --seed 42 --deep 2>&1 | grep -q "^BREACH_HARNESS_OK"
 
+# Arc-4 breach mode: verify RunRecap.gd death attribution — captures
+# depth + killing band + per-type shell consumption + reserves; formats
+# a recap. C6 anchors 1+2 structural cite.
+check-breach-recap:
+	@$(HEADLESS) --script res://loop/breach/test_breach_recap.gd 2>&1 | grep -E "^(RUN RECAP|  |BREACH_RECAP_OK|FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/breach/test_breach_recap.gd 2>&1 | grep -q "^BREACH_RECAP_OK"
+
 # Arc-4 breach mode: all breach harnesses in one target.
-test-breach: check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness
+test-breach: check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness check-breach-recap
 
 # Arc-3 → arc-2 metric handshake: compute per-stage structural metrics
 # across all 35 BC stages and emit loop/originals/og-metrics.json.

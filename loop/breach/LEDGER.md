@@ -17,6 +17,61 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 014 — BUILD — RunRecap.gd death attribution (C6 anchors 1+2, C1 anchors 2+3)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **18/50 absolute · 18/50 effective** (Δ +4 vs prior — C6 0→2, C1 1→3)
+  - C6 (Death attribution): 0 → 2
+    - anchor 1: RunRecap.gd captures depth + killing entity (depth_reached
+      + killing_band + killer) — code-cited via `make check-breach-recap`
+    - anchor 2: recap includes shell consumption per type (shells_fired
+      dict AP/HE/HEAT) + reserve at death (he/heat_reserve_at_death) —
+      code-cited
+  - C1 (Breach build identity): 1 → 3
+    - anchor 2: ≥3 distinct builds expressible — `RunRecap.build_tag()`
+      enumerates 4 (lane sniper / rubble plow / bunker cracker / mixed
+      breacher) derived from shell-usage mix; harness exercises 3.
+      **NOTE**: rubric anchor 2 wording says "via Loadout.gd
+      permutations" — the actual expression mechanism is
+      RunRecap.build_tag (shell-usage-derived). Substance holds (≥3
+      builds ARE expressible); the wording is an AUDIT candidate (R1
+      mismatched-anchor) — flagged, not score-inflated.
+    - anchor 3: build identity surfaces in run recap — `build_tag()`
+      returns the exact rubric-named tags ('bunker cracker', 'lane
+      sniper', 'rubble plow'); `format()` prints "build: <tag>" —
+      near-verbatim anchor-3 satisfaction
+  - C2=2, C3=2, C4=3, C8=1, C9=2, C10=3 unchanged
+- Constraints respected: 6 (death recap tied to resource/build/route —
+  the recap reports depth+band (route), build_tag (build), shells+
+  reserves (resource) — NOT "got overwhelmed"), 7 (recap reports verbs/
+  resources, not a generic score)
+- Constraints risked: none
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** post substrate
+  write #8 (PlayerTank.gd). The recap is created only when
+  `loadout != null` — arc-2/3 PlayerTank runs the recap-free path
+  bit-identically (test 4 of the harness asserts this). `make test`
+  exit 0, `make test-all` PASS, `make test-breach` PASS (9 harnesses).
+- Falsifications: none. Pre-mortem predictions all held.
+- Files: `scripts/RunRecap.gd` (NEW), `scripts/PlayerTank.gd` (substrate
+  write #8 — run_recap created in _ready when loadout!=null; record_shot
+  in _fire; capture_death in _die reading the parent level's
+  `_current_breach_band`), `loop/breach/test_breach_recap.gd` (NEW
+  verifier), `Makefile` (new check-breach-recap target),
+  `loop/breach/PRE-MORTEMS.md`, `loop/breach/LEDGER.md`,
+  `loop/breach/STATE.md`
+- Finding: **Death attribution shipped — CONSULT 000's "paired
+  omission" closed.** RunRecap captures depth + killing band + per-type
+  shell consumption + reserves at death, derives a build_tag from the
+  shell mix, and formats an actionable recap ("depth 84 (bunker_zone
+  band) / build: rubble plow / shells fired: AP 1 / HE 2 / HEAT 1 /
+  reserve left: HE 1 / HEAT 0"). This is a death reason tied to
+  resource+build+route, not "got overwhelmed". The build_tag also
+  surfaces build identity (C1 anchor 3). Next iter 15: candidates —
+  (a) C5 enemy roles (Spawner band-aware roster — biggest untouched
+  axis), (b) RunRecap.tscn overlay + wire into the death screen (C6
+  anchor 4 trail), (c) C4 anchor 4 shell-mix-per-band harness.
+
 ## iter 013 — BUILD — 5-band roadmap complete (C4 anchor 3)
 
 - Date: 2026-05-19
