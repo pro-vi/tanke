@@ -17,6 +17,39 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 043 — SPIKE — Round 6e: meta-progression verdict + loadout-lifecycle finding
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **36/60** (Δ 0 — SPIKE iters are investigation, not anchor lift.)
+- Round 6e (meta-progression, the last Round-6 sub-round) opened with a
+  SPIKE — meta-progression is the most design-uncertain sub-round, and
+  the pre-mortem analysis snowballed (the loadout-lifecycle entanglement
+  below), the scope-too-broad signal → SPIKE, not blind BUILD.
+- **Finding 1 (correctness)**: the breach loadout is a SHARED Resource —
+  breach_starter_loadout.tres, no resource_local_to_scene, no
+  duplicate(). `consume()` + depot upgrades MUTATE it; [R]-restart's
+  reload_current_scene reuses the cache. **Strongly suspected: run 2+
+  of a session starts with run 1's depleted reserves + purchased
+  upgrades.** Fix: PlayerTank `_ready` duplicates the loadout — but that
+  breaks ~3 harnesses that assume pt.loadout identity. Its own iter.
+- Meta-progression verdict: investigated 3 options (A depot-pool
+  widening / B alt starting loadouts / C meta-perk). **A wins** —
+  best_depth unlocks upgrade kinds into the depot pool; low-risk (no
+  loadout touch, no new UI), genuine options-not-power, standard
+  roguelite meta. B is entangled with Finding 1; C is mildly power-ish.
+- Blueprint: loop/breach/iter-043-round6e-architect.md — verdict +
+  Finding 1 + the iter-44+ sequence (44 loadout fix / 45 meta Option A
+  + RUBRIC C13 / 46 Round 6 close) + the C13 proposal.
+- Hash anchor: n/a (no code change — SPIKE).
+- Falsifications: none (Finding 1 is a strong suspicion to confirm in
+  iter 44 — not yet a falsified prediction).
+- Files: iter-043-round6e-architect.md (NEW), PRE-MORTEMS.md, LEDGER.md,
+  STATE.md
+- Finding: **Round 6e is scoped, and a real correctness bug surfaced.**
+  iter 44 confirms + fixes the loadout-lifecycle bug; iter 45 builds
+  meta-progression (depot-pool widening); iter 46 closes Round 6.
+
 ## iter 042 — BUILD — Round 6d: stakes & escalation (band banner + live best-depth)
 
 - Date: 2026-05-20

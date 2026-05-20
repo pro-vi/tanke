@@ -24,6 +24,32 @@ Format:
 
 ---
 
+## iter 043 — SPIKE — Round 6e: meta-progression design + loadout-lifecycle probe
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 6e (meta-progression), the last Round-6 sub-round. Mode: SPIKE
+  — meta-progression is the most design-uncertain sub-round (what to
+  unlock, how to surface, whether it touches loadouts). A blind BUILD
+  snowballed in pre-mortem analysis (the loadout-lifecycle question
+  below) — the scope-too-broad signal — so this iter SPIKEs: investigate,
+  verdict, blueprint; no code commit (iter-1 / iter-38 SPIKE precedent).
+- CONSULT constraints respected: all 7 (read-only investigation).
+- Predicted failure: the SPIKE picks a meta design without seeing a
+  blocking entanglement. Known candidate already surfaced: the breach
+  loadout is a SHARED resource (breach_starter_loadout.tres — no
+  resource_local_to_scene, no duplicate()) — `consume()` mutates it,
+  and reload_current_scene reuses the cache → run 2+ likely starts with
+  run 1's depleted reserves + purchased upgrades. Any loadout-touching
+  meta design is entangled with this.
+- Falsifiable claim: this iter writes loop/breach/iter-043-round6e-architect.md
+  — a verdict across >=2 meta-progression options + the loadout-
+  lifecycle finding + the iter-44+ sequence. No code change → no hash
+  risk.
+- Sentence test: n/a (SPIKE).
+- Substrate touched: none (investigation + blueprint doc).
+- Hash-anchor verification plan: n/a (no code change).
+
 ## iter 042 — BUILD — Round 6d: stakes & escalation (band banner + live best-depth)
 
 - Date: 2026-05-20
