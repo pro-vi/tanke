@@ -1,6 +1,6 @@
 # tanke — Breach Loop Rubric (arc 4, v1)
 
-**10 criteria**, 0–5 scale. **50-point absolute ceiling.** Score above 2 on any
+**11 criteria**, 0–5 scale. **55-point absolute ceiling.** Score above 2 on any
 upgrade-related anchor requires the upgrade to pass the sentence test:
 *"This upgrade helps me climb through ___ by changing how I use ___."*
 
@@ -194,17 +194,36 @@ all functional through arc-4 work.
 
 ---
 
+## 11. Run-to-run variety (0–5) — *structural+feel*
+
+No two runs are the same climb. Band order (and later — sub-rounds 6b+
+— band pool + depot offers) varies per run, so the player cannot
+pre-plan a fixed shell economy: variety forces adaptation (CONSULT 003
+— variety is the scarcity lever). Procedural tile layout already varies
+per seed; this criterion is about the *band structure*.
+
+| Score | Anchor | Tag |
+|-------|--------|-----|
+| 0 | Fixed band order every run (arc-4 iters 0-38 baseline) | — |
+| 1 | Band order or pool varies per run — code-cited | [STRUCTURE] |
+| 2 | The variation is deterministic from the run seed (a run is reproducible) AND reachability holds across it — multi-seed harness-cited | [STRUCTURE] |
+| 3 | ≥3 distinct run-shapes reachable; the depot next-band preview tracks the actual (varied) run — code-cited | [STRUCTURE] |
+| 4 | Playtest: the player notices consecutive runs differ, unprompted | [FEEL] |
+| 5 | Playtest: the player adapts strategy to the run-shape ("this run front-loaded the bunker, so I held HEAT") — cited unprompted | [FEEL] [IDENTITY-PROTECTED] |
+
+---
+
 ## Effective ceiling math (per R3)
 
 | Bucket | Criteria | Max | Notes |
 |--------|----------|-----|-------|
-| Auto-citable (structural) | C2-anchor-3, C3-anchor-4, C4-anchor-4, C6-anchor-3, C7-anchor-3, C8-anchor-3, C10 (all) | ~30 | Reachable without playtest |
-| Cognitive (feel-only) | C1-anchor-4-5, C2-anchor-4-5, C3-anchor-5, C4-anchor-5, C5-anchor-4-5, C6-anchor-4-5, C7-anchor-4-5, C8-anchor-4-5, C9-anchor-3-5 | ~20 | Requires 1-2 playtests |
-| Identity-protected (NEVER AUDIT-rephrased) | C1-anchor-5, C5-anchor-5, C7-anchor-5, C8-anchor-5, C9-anchor-5 | ~5 | Gaming-prevention; playtest-only by design |
+| Auto-citable (structural) | C2-anchor-3, C3-anchor-4, C4-anchor-4, C6-anchor-3, C7-anchor-3, C8-anchor-3, C10 (all), C11-anchor-3 | ~33 | Reachable without playtest |
+| Cognitive (feel-only) | C1-anchor-4-5, C2-anchor-4-5, C3-anchor-5, C4-anchor-5, C5-anchor-4-5, C6-anchor-4-5, C7-anchor-4-5, C8-anchor-4-5, C9-anchor-3-5, C11-anchor-4-5 | ~22 | Requires 1-2 playtests |
+| Identity-protected (NEVER AUDIT-rephrased) | C1-anchor-5, C5-anchor-5, C7-anchor-5, C8-anchor-5, C9-anchor-5, C11-anchor-5 | ~5 | Gaming-prevention; playtest-only by design |
 
-**Effective ceiling (auto + cognitive): ~50/50.** Same as absolute since
-identity-protected anchors are inside cognitive. Reports use "X/50" with
-breakdown.
+**Effective ceiling (auto + cognitive): ~55/55.** Same as absolute since
+identity-protected anchors are inside cognitive. Reports use "X/55" with
+breakdown. (Ceiling grows as Round-6 sub-rounds add C12/C13.)
 
 ---
 
@@ -240,3 +259,4 @@ Evidence: LEDGER iter NNN cites results; BANDS.md checkbox flipped.
 | 26 | C3 anchor 4 de-bundled — dropped the "+ harness measuring per-band shell consumption" clause; anchor 4 is now the single swap-cost mechanic | R1 bundled-anchor debt: the anchor fused a structural mechanic (swap reload cost) with a measurement that needs play-sim. De-bundled per R1/L6 — swap-cost stays [STRUCTURE], per-band consumption lives in the [FEEL] tier. |
 | 26 | C4 anchor 4 re-tagged [STRUCTURE]→[FEEL] | Mismatch-AUDIT (L6): "avg shell-mix differs per band" is not harness-citable without a play-AI — it is honestly playtest-gated. Re-tag corrects the over-optimistic [STRUCTURE] tag. |
 | 34 | C3 anchors 2-3 updated for the 4-shell grammar — anchor 2 names APCR; anchor 3 restated as a per-shell terrain-affordance bar (AP tile / HE zone / APCR steel / HEAT none) | User override (iter-33 playtest) sanctioned APCR as the 4th shell (STATE.md §Arc-4 amendments). Factual correction — the rubric said "3 shells"; no score change (C3's structural tier was already maxed at iter 27). |
+| 39 | +C11 "Run-to-run variety" — 11 criteria, 55-pt absolute ceiling | Round 6 (roguelite feel) adds surface the breach-economy rubric never covered (PROMPT §RUBRIC IS MEASUREMENT — "extend RUBRIC.md to cover it"). The iter-38 blueprint proposed +3 (C11/C12/C13); revised to incremental — each roguelite criterion is added when its sub-round opens, so the rubric tracks built work, not speculative surface. C12 (stakes & escalation) lands with sub-round 6d; C13 (meta-progression) with 6e. |

@@ -17,6 +17,54 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 039 — BUILD — Round 6a: per-run band-order shuffle + dynamic depot preview
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **33/55 absolute · 33/55 effective** (Δ +3 — C11 0→3; first
+  positive Δ since iter 32. RUBRIC extended +C11.)
+- Round 6a (run-to-run variety), piece 1 of the iter-038 blueprint.
+  Answers the user's #1 not-roguelite complaint — "every run is the
+  same 5 bands in the same order".
+- Shipped:
+  - ProceduralLevel `_shuffled_breach_config` — per-run band-order
+    shuffle: the 3 middle bands (brick_maze / bunker_zone /
+    open_killbox) permute into the 3 fixed depth slots (30-70 /
+    70-120 / 120-180); tutorial_choke + endgame_mixed pinned.
+    Deterministic from level_seed (a run is reproducible). Bands are
+    duplicated → breach_default.tres is never mutated. A separate RNG
+    leaves the procedural-generation seed untouched.
+  - Fixed-SLOT design (not span-restack): band boundaries are
+    invariant, so the fixed-y depots stay aligned to transitions and
+    the per-band reachability oracle (density-based, span-independent)
+    is unaffected.
+  - Depot `_resolve_next_band_hint` — the depot's next-band preview is
+    now dynamic: it reads the level's shuffled breach_config + the
+    depot's depth instead of a static @export (which the shuffle would
+    have made wrong). Falls back to the static hint with no level
+    context (harness).
+- C11 (NEW criterion — Run-to-run variety): anchor 1 (band order
+  varies, code-cited), anchor 2 (deterministic-from-seed + reachability
+  holds, multi-seed harness-cited), anchor 3 (≥3 run-shapes — 3 middle
+  bands = 6 permutations; depot preview tracks the run). C11 = 3.
+- RUBRIC: +C11 → 11 criteria / 55-pt ceiling. The iter-38 blueprint's
+  +3 proposal was revised to incremental — C12/C13 land with sub-rounds
+  6d/6e so the rubric tracks built work (revision-log row 39).
+- Constraints: respects 5 (each band keeps its own pressure — the
+  level_config travels with the archetype; order changes, identity
+  does not), 1 (depot still a safe gate).
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** — the shuffle
+  lives inside breach-only `_init_breach_mode`; flag-off codepath
+  bit-identical (`playable: true`, seed 42). `make test-all` 5/5.
+  `make test-breach` 20/20 (NEW check-breach-shuffle).
+- Falsifications: none — the iter-39 falsifiable claim held in full.
+- Files: ProceduralLevel.gd, Depot.gd, test_breach_shuffle.gd (NEW),
+  Makefile, RUBRIC.md, PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **Run-to-run variety is in.** No two runs are the same band
+  sequence now — bunker-before-maze vs maze-before-bunker changes what
+  you hold HEAT / APCR for. iter 40 = Round 6b (deeper variety:
+  band-pool draw + depot-offer randomization).
+
 ## iter 038 — SPIKE — Round 6 open: run-to-run variety verdict + blueprint
 
 - Date: 2026-05-20

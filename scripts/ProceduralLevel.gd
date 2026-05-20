@@ -220,7 +220,48 @@ var _current_breach_band: BreachBandT = null
 func _init_breach_mode() -> void:
 	if breach_config == null:
 		return
+	# arc-4 iter 39 (Round 6a): per-run band-order shuffle — the 3 middle
+	# bands permute into fixed depth slots; tutorial_choke + endgame_mixed
+	# stay pinned. Deterministic from level_seed (a run is reproducible);
+	# builds a private config so breach_default.tres is never mutated.
+	breach_config = _shuffled_breach_config(breach_config)
 	_current_breach_band = breach_config.band_for_depth(_rows_climbed_at_y(player.position.y))
+
+
+# arc-4 iter 39: return a NEW BreachConfig with the 3 middle bands
+# shuffled into the 3 fixed middle depth slots. tutorial_choke (first)
+# and endgame_mixed (last) are pinned; the slot ranges are fixed so
+# depot placements stay aligned to band boundaries and the per-band
+# reachability oracle (density-based, span-independent) is unaffected.
+# Bands are duplicated — the source resource is never mutated. Configs
+# without exactly 5 bands pass through unshuffled.
+func _shuffled_breach_config(src: BreachConfigT) -> BreachConfigT:
+	if src == null or src.bands.size() != 5:
+		return src
+	var slots: Array = [
+		[src.bands[1].depth_min, src.bands[1].depth_max],
+		[src.bands[2].depth_min, src.bands[2].depth_max],
+		[src.bands[3].depth_min, src.bands[3].depth_max],
+	]
+	var middle: Array = [src.bands[1], src.bands[2], src.bands[3]]
+	var rng := RandomNumberGenerator.new()
+	rng.seed = level_seed
+	for i in range(middle.size() - 1, 0, -1):
+		var j: int = rng.randi_range(0, i)
+		var tmp = middle[i]
+		middle[i] = middle[j]
+		middle[j] = tmp
+	var out_bands: Array[BreachBandT] = []
+	out_bands.append(src.bands[0].duplicate())
+	for i in middle.size():
+		var nb: BreachBandT = middle[i].duplicate()
+		nb.depth_min = slots[i][0]
+		nb.depth_max = slots[i][1]
+		out_bands.append(nb)
+	out_bands.append(src.bands[4].duplicate())
+	var cfg: BreachConfigT = BreachConfigT.new()
+	cfg.bands = out_bands
+	return cfg
 
 
 # Called every _process tick when breach mode is on. Tracks which

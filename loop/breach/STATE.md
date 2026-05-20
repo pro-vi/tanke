@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 38
+iter: 39
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_36: 23d6a2ec3bf2821f  # bit-identical through 20 substrate writes
-substrate_writes_this_arc: 20  # ProceduralLevel.gd ×4 + Bullet.gd ×5 + PlayerTank.gd ×9 + Level.gd + Spawner.gd ×2
+hash_anchor_at_iter_39: 23d6a2ec3bf2821f  # bit-identical through 21 substrate writes
+substrate_writes_this_arc: 21  # ProceduralLevel.gd ×5 + Bullet.gd ×5 + PlayerTank.gd ×9 + Level.gd + Spawner.gd ×2
 current_round: 6-open
-current_round_phase: BUILD — Round 6a (run-to-run variety); blueprint iter-038-round6-architect.md
+current_round_phase: BUILD — Round 6b (deeper variety); blueprint iter-038-round6-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,12 +21,12 @@ last_consult: iter 37  # CONSULT 003 — written self-pre-mortem, Round 5 close
 playtest_log: [iter 33 — 2026-05-20 — verdict: structurally complete but illegible; F003 logged]
 structural_ceiling: RE-OPENED at iter 33. The iter-32 "30/50 ceiling" assumed harness-green structure would read as breach economy; the iter-33 playtest falsified that (F003). Real work exists above 30/50 — Round 5 (legibility), then Round 6+ (roguelite feel).
 loop_state: RUNNING (resumed iter 33). User playtested 2026-05-20; the loop integrated the verdict, logged F003, opened Round 5. The non-stop loop continues per PROMPT until the user writes `playtest` / `halt` / `stop`.
-next_action: iter 39 — BUILD — Round 6a piece 1: band-order shuffle. Read iter-038-round6-architect.md. Permute the 3 middle BreachBands per run (deterministic from level_seed; tutorial_choke + endgame_mixed pinned) in ProceduralLevel; make depot next-band previews dynamic. Apply the RUBRIC extension (+3 criteria — C11/C12/C13 for the roguelite axes → 13 criteria / 65). Hash-anchor verify; multi-seed reachability sweep; test-all + test-breach green.
-score: 30/50 absolute · 30/50 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4
+next_action: iter 40 — BUILD — Round 6b: deeper variety. Read iter-038-round6-architect.md. Round 6b deepens run-variety beyond band-order shuffle — a band-pool draw (define >5 band archetypes, draw 5 per run — option B from the iter-38 SPIKE) and/or depot-offer randomization (each depot draws its 3 choices from the catalog). SPIKE-within-BUILD the cheaper-first piece. Hash-anchor verify; multi-seed reachability sweep; test-all + test-breach green.
+score: 33/55 absolute · 33/55 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
 round6_blueprint: loop/breach/iter-038-round6-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex} + check-silhouette-gate (19 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle} + check-silhouette-gate (20 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close]  # #3 CLOSED — playtest delivered 2026-05-20
 ```
 
@@ -101,20 +101,26 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-20 — **iter 38 (SPIKE).** Round 6 (roguelite feel) opened.
-  Investigated 3 run-variety options; verdict — band-order shuffle
-  first (cheap, reachability-safe — the oracle is per-band-local).
-  Blueprint: iter-038-round6-architect.md. 30/50.
+- 2026-05-20 — **iter 39 (BUILD).** Round 6a — per-run band-order
+  shuffle (3 middle bands permute into fixed slots; tutorial+endgame
+  pinned; deterministic from seed; source unmutated) + dynamic depot
+  next-band preview. RUBRIC +C11 (run-to-run variety). C11 0→3.
+  ProceduralLevel substrate write; hash anchor preserved; test-all 5/5,
+  test-breach 20/20. **33/55** (Δ +3 — first lift since iter 32).
 
 ## Next action
 
-**Iter 39 — BUILD — Round 6a piece 1: band-order shuffle.**
-Read `loop/breach/iter-038-round6-architect.md`. Permute the 3 middle
-BreachBands per run (deterministic from level_seed; tutorial_choke +
-endgame_mixed pinned) in ProceduralLevel; make depot next-band
-previews dynamic. Apply the RUBRIC extension (+3 criteria — C11/C12/C13
-for the roguelite axes; → 13 criteria / 65). Hash-anchor verify;
-multi-seed reachability sweep; test-all + test-breach green.
+**Iter 40 — BUILD — Round 6b: deeper variety.**
+Read `loop/breach/iter-038-round6-architect.md`. Round 6b deepens
+run-variety beyond band-order shuffle — a band-pool draw (define >5
+band archetypes, draw 5 per run — option B from the iter-38 SPIKE)
+and/or depot-offer randomization (each depot draws its 3 choices from
+the catalog). SPIKE-within-BUILD the cheaper-first piece. Hash-anchor
+verify; multi-seed reachability sweep; test-all + test-breach green.
+
+The loop runs non-stop until the user writes `playtest` / `halt` /
+`stop`, or a correctness violation fires (hash anchor break, test-all
+regression, unsanctioned substrate write, unfixed band reachability).
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all

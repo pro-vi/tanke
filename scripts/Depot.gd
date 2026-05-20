@@ -88,7 +88,7 @@ func _show_panel() -> void:
 	var layer: CanvasLayer = get_node_or_null("UILayer") as CanvasLayer
 	if layer == null:
 		return
-	_set_panel_label("Panel/NextBand", "next: " + next_band_hint)
+	_set_panel_label("Panel/NextBand", "next: " + _resolve_next_band_hint())
 	_set_panel_label("Panel/ChoiceA", "1: " + choice_a_label)
 	_set_panel_label("Panel/ChoiceB", "2: " + choice_b_label)
 	_set_panel_label("Panel/ChoiceC", "3: " + choice_c_label)
@@ -108,6 +108,24 @@ func _set_panel_label(path: String, text: String) -> void:
 	var lbl: Label = layer.get_node_or_null(path) as Label
 	if lbl != null:
 		lbl.text = text
+
+
+# arc-4 iter 39 (Round 6a): with per-run band-order shuffle the static
+# next_band_hint @export is no longer reliable. Resolve the actual next
+# band from the level's (shuffled) breach_config + this depot's depth.
+# Falls back to the static hint when the level context is absent (e.g.
+# a harness-instantiated depot with no ProceduralLevel parent).
+func _resolve_next_band_hint() -> String:
+	var lvl: Node = get_parent()
+	if lvl == null or not ("breach_config" in lvl) or lvl.breach_config == null:
+		return next_band_hint
+	if not lvl.has_method("_rows_climbed_at_y"):
+		return next_band_hint
+	var depot_depth: int = lvl._rows_climbed_at_y(global_position.y)
+	var nxt = lvl.breach_config.band_for_depth(depot_depth + 1)
+	if nxt == null or nxt.band_name == "":
+		return next_band_hint
+	return nxt.band_name.replace("_", " ")
 
 
 # Iter 9: poll keys 1/2/3 while paused. Depot runs with PROCESS_MODE_ALWAYS

@@ -24,6 +24,42 @@ Format:
 
 ---
 
+## iter 039 — BUILD — Round 6a: per-run band-order shuffle + dynamic depot preview
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 6a (run-to-run variety), piece 1. Blueprint: iter-038-round6-architect.md.
+- CONSULT constraints respected: 5 (each band stays its own specific
+  climb problem — shuffling ORDER does not blur a band's pressure; the
+  level_config travels with the archetype), 1 (depot still a safe gate).
+- Predicted failure modes:
+  - The shuffle mutates the shared breach_default.tres Resource → leaks
+    across runs / other instances. Mitigation: _shuffled_breach_config
+    duplicates every band + returns a NEW BreachConfig; the source is
+    never touched. The harness asserts the source is unmutated.
+  - Band-order shuffle moves band boundaries → fixed-y depots drift off
+    transitions. Mitigation: fixed-SLOT shuffle — the 3 middle archetypes
+    permute into the 3 fixed depth slots (30-70 / 70-120 / 120-180), so
+    boundaries (hence depot alignment) are invariant.
+  - The shuffle's RNG perturbs procedural generation. Mitigation: a
+    separate RandomNumberGenerator instance — the global seed() used by
+    tile generation is untouched; and _init_breach_mode runs AFTER all
+    generation anyway.
+  - Reachability: a band-archetype in a different-span slot. The oracle
+    is per-band-LOCAL + density-based (span-independent) — verified safe.
+- Falsifiable claim: post-edit — hash anchor flag-off = 23d6a2ec3bf2821f
+  (the shuffle is inside breach-only _init_breach_mode); a new
+  check-breach-shuffle harness shows >=2 distinct middle-band orders
+  across 7 seeds, tutorial+endgame pinned, fixed slots, source
+  unmutated; make test-all 5/5; make test-breach 20/20.
+- Sentence test: n/a (no upgrade).
+- Substrate touched: ProceduralLevel.gd (_init_breach_mode + new
+  _shuffled_breach_config — sanctioned; inside the breach-gated path).
+  Depot.gd is arc-4-owned.
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42
+  — the shuffle is unreachable when breach_mode_enabled=false; flag-off
+  baseline bit-identical. Verify before commit.
+
 ## iter 038 — SPIKE — Round 6 open: run-to-run variety investigation
 
 - Date: 2026-05-20
