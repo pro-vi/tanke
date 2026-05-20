@@ -9,6 +9,7 @@ extends CharacterBody2D
 const BulletT = preload("res://scripts/Bullet.gd")
 const LoadoutT = preload("res://scripts/Loadout.gd")
 const RunRecapT = preload("res://scripts/RunRecap.gd")
+const MetaProgressT = preload("res://scripts/MetaProgress.gd")
 
 # arc-4: shoot signal carries the chosen shell_class. Default in any
 # emit-site that doesn't override = SHELL_CLASS_AP (= 0), preserving
@@ -857,7 +858,7 @@ func _build_shell_codex(canvas: CanvasLayer) -> void:
 	_shell_codex = ColorRect.new()
 	_shell_codex.name = "ShellCodex"
 	_shell_codex.position = Vector2(28, 26)
-	_shell_codex.size = Vector2(264, 188)
+	_shell_codex.size = Vector2(264, 206)
 	_shell_codex.color = Color(0.05, 0.05, 0.08, 0.96)
 	canvas.add_child(_shell_codex)
 	_codex_line(_shell_codex, "BREACH ECONOMY", Vector2(12, 8), 13,
@@ -878,8 +879,29 @@ func _build_shell_codex(canvas: CanvasLayer) -> void:
 		chip.color = _shell_color(rows[i][0])
 		_shell_codex.add_child(chip)
 		_codex_line(_shell_codex, rows[i][1], Vector2(32, row_y), 9, Color.WHITE)
+	# arc-4 iter 45 (Round 6e): meta-progression status line.
+	_codex_line(_shell_codex, _meta_codex_line(), Vector2(12, 166), 8,
+		Color(0.62, 0.82, 1.0, 1.0))
 	_codex_line(_shell_codex, "TAB swaps shells.  Move or fire to begin.",
-		Vector2(12, 168), 8, Color(0.78, 0.8, 0.86, 1.0))
+		Vector2(12, 186), 8, Color(0.78, 0.8, 0.86, 1.0))
+
+
+# arc-4 iter 45 (Round 6e): the meta-progression line for the codex —
+# best depth + what climbing deeper unlocks.
+func _meta_codex_line() -> String:
+	var best: int = MetaProgressT.best_depth()
+	var qs: bool = MetaProgressT.quick_swap_unlocked(best)
+	var ss: bool = MetaProgressT.steel_salvage_unlocked(best)
+	if qs and ss:
+		return "META  best depth %d  -  all depot upgrades unlocked" % best
+	var locked: String = ""
+	if not qs:
+		locked = "Quick Swap @%d" % MetaProgressT.UNLOCK_QUICK_SWAP_DEPTH
+	if not ss:
+		if locked != "":
+			locked += ", "
+		locked += "Steel Salvage @%d" % MetaProgressT.UNLOCK_STEEL_SALVAGE_DEPTH
+	return "META  best depth %d  -  climb to unlock: %s" % [best, locked]
 
 
 # arc-4 iter 42 (Round 6d): the breach level reports a band crossing.

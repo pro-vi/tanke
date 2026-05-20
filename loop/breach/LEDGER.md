@@ -17,6 +17,49 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 045 — BUILD — Round 6e: meta-progression (depot-pool widening)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **39/65 absolute · 39/65 effective** (Δ +3 — C13 0→3. RUBRIC
+  extended +C13.)
+- Round 6e (meta-progression), the LAST Round-6 sub-round — Round 6
+  (roguelite feel) is now built end-to-end.
+- Shipped Option A (iter-43 SPIKE verdict): **depot-pool widening.**
+  - NEW `scripts/MetaProgress.gd` — reads best_depth from the existing
+    user://stats.cfg; pure unlock predicates (Quick Swap @ depth 40,
+    Steel Salvage @ 80). The 7 core upgrade kinds are always available.
+  - Depot `_upgrade_pool()` consults MetaProgress — a fresh save's
+    depot draws from 7 kinds; depth 40 widens it to 8, depth 80 to 9.
+    `_ensure_rolled` (iter-40 depot randomization) now draws from the
+    meta-gated pool.
+  - PlayerTank codex: a meta line surfaces best-depth + what climbing
+    deeper unlocks.
+- Options-not-power (CONSULT 003): an unlocked kind is a rule-changer
+  (a build path), never a raw stat. Standard roguelite meta — the
+  Slay-the-Spire card-unlock shape; the climb gains a between-run hook.
+- C13 (NEW criterion — Meta-progression): anchor 1 (MetaProgress
+  system), anchor 2 (depot-pool widening, options-not-power, depth-
+  gated), anchor 3 (codex surfacing). C13 = 3.
+- RUBRIC: +C13 → 13 criteria / 65-pt ceiling. Round 6's three
+  roguelite axes (C11 variety / C12 stakes / C13 meta) are now all
+  rubric-covered (revision-log row 45).
+- Constraints: respects 7 (unlocks are options, not %stats), 1.
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** — MetaProgress
+  + Depot are off the procedural hash path; the codex is loadout-gated.
+  `make test-all` 5/5. `make test-breach` 24/24 (NEW check-breach-meta).
+- Falsifications: none — the iter-45 falsifiable claim held in full.
+- Files: MetaProgress.gd (NEW), Depot.gd, PlayerTank.gd, RUBRIC.md,
+  test_breach_meta.gd (NEW), Makefile, PRE-MORTEMS.md, LEDGER.md,
+  STATE.md
+- Finding: **Round 6 (roguelite feel) is built** — run-to-run variety
+  (6a/6b), build divergence (6c), stakes & escalation (6d),
+  meta-progression (6e). The breach climb now varies every run, the
+  build diverges, the single life is surfaced, and climbing deep
+  unlocks options. iter 46 = Round 6 CONSULT + QUEUE close — and the
+  next user playtest gate (the [FEEL] tier across Rounds 5-6 is
+  playtest-locked).
+
 ## iter 044 — BUILD — loadout-lifecycle fix (F004: shared-Resource run leak)
 
 - Date: 2026-05-20

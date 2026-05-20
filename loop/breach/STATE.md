@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 44
+iter: 45
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_44: 23d6a2ec3bf2821f  # bit-identical through 25 substrate writes
-substrate_writes_this_arc: 25  # ProceduralLevel.gd ×5 + Bullet.gd ×6 + PlayerTank.gd ×12 + Level.gd + Spawner.gd ×2
+hash_anchor_at_iter_45: 23d6a2ec3bf2821f  # bit-identical through 26 substrate writes
+substrate_writes_this_arc: 26  # ProceduralLevel.gd ×5 + Bullet.gd ×6 + PlayerTank.gd ×13 + Level.gd + Spawner.gd ×2
 current_round: 6-open
-current_round_phase: BUILD — Round 6e meta-progression (iter 45); blueprint iter-043-round6e-architect.md
+current_round_phase: CONSULT + QUEUE — Round 6 close (iter 46)
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,13 +21,13 @@ last_consult: iter 37  # CONSULT 003 — written self-pre-mortem, Round 5 close
 playtest_log: [iter 33 — 2026-05-20 — verdict: structurally complete but illegible; F003 logged]
 structural_ceiling: RE-OPENED at iter 33. The iter-32 "30/50 ceiling" assumed harness-green structure would read as breach economy; the iter-33 playtest falsified that (F003). Real work exists above 30/50 — Round 5 (legibility), then Round 6+ (roguelite feel).
 loop_state: RUNNING (resumed iter 33). User playtested 2026-05-20; the loop integrated the verdict, logged F003, opened Round 5. The non-stop loop continues per PROMPT until the user writes `playtest` / `halt` / `stop`.
-next_action: iter 45 — BUILD — Round 6e meta-progression (Option A: depot-pool widening). Read iter-043-round6e-architect.md. New scripts/MetaProgress.gd — reads best_depth from user://stats.cfg, exposes the unlocked upgrade-kind set (fresh save: 7 core upgrades; depth 40 → +Quick Swap; depth 80 → +Steel Salvage). Depot `_ensure_rolled` consults it; surface the unlock state. Adds RUBRIC C13 (meta-progression). Then iter 46 = Round 6 CONSULT + QUEUE close. Hash-anchor verify; test-all + test-breach green.
-score: 36/60 absolute · 36/60 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3
+next_action: iter 46 — CONSULT + QUEUE — close Round 6 (roguelite feel — 6a-6e built: variety, divergence, stakes, meta). Fire/write the Round-6 creative check; append REVIEW-QUEUE #7 — the next USER PLAYTEST gate. Rounds 5-6 addressed all 5 iter-33 playtest findings; the remaining lift is the [FEEL] tier (C1/4-5, C3/5, C9/3-5, C11/4-5, C12/4-5, C13/4-5) — playtest-locked. iter 46 surfaces the playtest ask + bootstraps the next surface if the loop continues.
+score: 39/65 absolute · 39/65 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
 round6_blueprint: loop/breach/iter-038-round6-architect.md
 round6e_blueprint: loop/breach/iter-043-round6e-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes} + check-silhouette-gate (23 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta} + check-silhouette-gate (24 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close]  # #3 CLOSED — playtest delivered 2026-05-20
 ```
 
@@ -102,22 +102,26 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-20 — **iter 44 (BUILD).** Loadout-lifecycle fix — F004: the
-  breach loadout was a SHARED Resource, so [R]-restart runs started
-  with the prior run's depleted reserves + bought upgrades. Fix:
-  PlayerTank `_ready` duplicates the loadout per run. test_breach_loadout
-  + test_breach_hud updated; Test 6 verifies isolation. hash anchor
-  preserved; test-all 5/5, test-breach 23/23. Δ 0. 36/60.
+- 2026-05-20 — **iter 45 (BUILD).** Round 6e — meta-progression: NEW
+  MetaProgress.gd; climbing deep widens the depot offer pool (7 fresh →
+  8 @40 → 9 @80 — Quick Swap then Steel Salvage); a codex meta line
+  surfaces it. RUBRIC +C13, C13 0→3. Round 6 (roguelite feel) is built
+  end-to-end. hash anchor preserved; test-all 5/5, test-breach 24/24.
+  **39/65** (Δ +3).
 
 ## Next action
 
-**Iter 45 — BUILD — Round 6e meta-progression (depot-pool widening).**
-Read `loop/breach/iter-043-round6e-architect.md`. New
-`scripts/MetaProgress.gd` — reads best_depth from user://stats.cfg,
-exposes the unlocked upgrade-kind set (fresh save: 7 core upgrades;
-depth 40 → +Quick Swap; depth 80 → +Steel Salvage). Depot
-`_ensure_rolled` consults it; surface the unlock state. Adds RUBRIC C13
-(meta-progression). Then iter 46 = Round 6 CONSULT + QUEUE close.
+**Iter 46 — CONSULT + QUEUE — close Round 6.**
+Round 6 (roguelite feel — 6a variety / 6b deeper variety / 6c build
+divergence / 6d stakes / 6e meta) is built. Fire/write the Round-6
+creative check; append `REVIEW-QUEUE.md` #7 — the next USER PLAYTEST
+gate. Rounds 5-6 addressed all five iter-33 playtest findings; the
+remaining lift is the [FEEL] tier, playtest-locked. The next playtest
+is the gate: write `playtest`.
+
+The loop runs non-stop until the user writes `playtest` / `halt` /
+`stop`, or a correctness violation fires (hash anchor break, test-all
+regression, unsanctioned substrate write, unfixed band reachability).
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all

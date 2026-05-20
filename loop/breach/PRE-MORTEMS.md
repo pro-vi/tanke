@@ -24,6 +24,45 @@ Format:
 
 ---
 
+## iter 045 — BUILD — Round 6e: meta-progression (depot-pool widening)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 6e (meta-progression), the last Round-6 sub-round. Blueprint:
+  iter-043-round6e-architect.md (Option A).
+- The build: climbing deep across runs unlocks advanced depot upgrade
+  kinds into the depot offer pool. A fresh save: 7 core upgrades; best
+  depth 40 → +Quick Swap; 80 → +Steel Salvage. Options-not-power
+  (CONSULT 003) — an unlocked rule-changer adds a build path, not a
+  stat. Standard roguelite meta (the Slay-the-Spire card-unlock shape).
+- New `scripts/MetaProgress.gd` — reads best_depth from the existing
+  user://stats.cfg; pure unlock predicates. Depot `_upgrade_pool()`
+  consults it; the codex surfaces the unlock state.
+- CONSULT constraints respected: 7 (unlocks are options/affordances,
+  never raw power), 1 (no combat-time surface).
+- Predicted failure modes:
+  - The depot pool now depends on ambient stats.cfg → test_breach_depot_roll
+    could become flaky. Mitigation: `_upgrade_pool(best)` takes an
+    explicit-best param (default -1 = live); the new harness passes
+    explicit depths; depot-roll's assertions (3 distinct, ≥2 sets)
+    hold for any pool ≥4.
+  - The 2 iter-41 rule-changers become depth-gated — a fresh save sees
+    7 depot kinds, not 9. This is the meta-progression curve, not a
+    regression; apply_upgrade still applies any kind directly
+    (test_breach_rulechangers unaffected).
+  - Codex crowding — the meta line + a taller codex panel.
+- Falsifiable claim: post-edit — a new check-breach-meta harness shows
+  the unlock predicates gate at 40/80 and the depot pool widens 7→8→9
+  with best-depth. Hash anchor 23d6a2ec3bf2821f preserved; test-all
+  5/5; test-breach 24/24. RUBRIC +C13, C13 → 3.
+- Sentence test: meta-unlocks are not depot upgrades themselves — they
+  unlock the existing rule-changers (each already sentence-tested).
+- Substrate touched: PlayerTank.gd (codex meta line — sanctioned, HUD).
+  MetaProgress.gd is new; Depot.gd arc-4-owned.
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42
+  — MetaProgress + Depot are off the procedural hash path; the codex
+  is loadout-gated. Verify before commit.
+
 ## iter 044 — BUILD — loadout-lifecycle fix (F004: shared-Resource run leak)
 
 - Date: 2026-05-20

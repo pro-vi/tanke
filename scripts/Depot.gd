@@ -11,6 +11,7 @@ extends Area2D
 # verb (refill / expand). All pass the C8 sentence test.
 
 const LoadoutT = preload("res://scripts/Loadout.gd")
+const MetaProgressT = preload("res://scripts/MetaProgress.gd")
 
 # Upgrade catalog (C8 — 9 entries, all affordance/economy verbs, no
 # passive %stats). Each passes the sentence test "This upgrade helps me
@@ -151,19 +152,34 @@ func _ensure_rolled() -> void:
 		seed_val = int(lvl.level_seed)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_val + int(global_position.y)
-	var pool: Array[int] = [
-		UpgradeKind.HE_REFILL_2, UpgradeKind.HEAT_REFILL_1,
-		UpgradeKind.HE_MAX_EXPAND_2, UpgradeKind.HEAT_MAX_EXPAND_2,
-		UpgradeKind.FULL_RESUPPLY, UpgradeKind.BREACH_DIVIDEND,
-		UpgradeKind.OVERDRIVE, UpgradeKind.QUICK_SWAP,
-		UpgradeKind.STEEL_SALVAGE,
-	]
+	var pool: Array[int] = _upgrade_pool()
 	for i in range(pool.size() - 1, 0, -1):
 		var j: int = rng.randi_range(0, i)
 		var t: int = pool[i]
 		pool[i] = pool[j]
 		pool[j] = t
 	_rolled_kinds = [pool[0], pool[1], pool[2]]
+
+
+# arc-4 iter 45 (Round 6e meta-progression): the depot offer pool. The
+# 7 core upgrade kinds are always available; the 2 advanced
+# rule-changers unlock at best-depth thresholds (MetaProgress) — OPTIONS
+# earned by climbing, not power. `best` defaults to the live best-depth;
+# a caller may pass an explicit value (harnesses).
+func _upgrade_pool(best: int = -1) -> Array[int]:
+	if best < 0:
+		best = MetaProgressT.best_depth()
+	var pool: Array[int] = [
+		UpgradeKind.HE_REFILL_2, UpgradeKind.HEAT_REFILL_1,
+		UpgradeKind.HE_MAX_EXPAND_2, UpgradeKind.HEAT_MAX_EXPAND_2,
+		UpgradeKind.FULL_RESUPPLY, UpgradeKind.BREACH_DIVIDEND,
+		UpgradeKind.OVERDRIVE,
+	]
+	if MetaProgressT.quick_swap_unlocked(best):
+		pool.append(UpgradeKind.QUICK_SWAP)
+	if MetaProgressT.steel_salvage_unlocked(best):
+		pool.append(UpgradeKind.STEEL_SALVAGE)
+	return pool
 
 
 # The UpgradeKind for a 1-based choice index. Randomized depots draw
