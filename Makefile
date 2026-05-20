@@ -157,7 +157,7 @@ check-breach-he-blast:
 # arc-2/3 baseline. CONSULT 001 "atomic verb" cite. C1 anchor 1 + C3
 # trail toward anchor 4 structural cite.
 check-breach-loadout:
-	@$(HEADLESS) --script res://loop/breach/test_breach_loadout.gd 2>&1 | grep -E "^(BREACH_LOADOUT_OK|FAIL|ERROR|SCRIPT ERROR)"; \
+	@$(HEADLESS) --script res://loop/breach/test_breach_loadout.gd 2>&1 | grep -E "^(  loadout|BREACH_LOADOUT_OK|FAIL|ERROR|SCRIPT ERROR)"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_loadout.gd 2>&1 | grep -q "^BREACH_LOADOUT_OK"
 
 # Arc-4 breach mode: verify Depot 3-choice upgrade catalog applies

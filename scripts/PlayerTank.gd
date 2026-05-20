@@ -139,6 +139,14 @@ func _ready() -> void:
 	_last_y_for_velocity = _start_y  # iter 31: instrumentation seed
 	# arc-4: breach-mode death recap (only when a loadout is assigned).
 	if loadout != null:
+		# arc-4 iter 44 (F004): the loadout is a SHARED Resource
+		# (BreachLevel bakes breach_starter_loadout.tres). consume() +
+		# depot upgrades mutate it, and reload_current_scene reuses the
+		# resource cache — so without a private per-run copy, run 2+
+		# would start with run 1's depleted reserves + purchased
+		# upgrades. duplicate() gives each run a fresh loadout from the
+		# .tres template; the template is never mutated.
+		loadout = loadout.duplicate()
 		run_recap = RunRecapT.new()
 	# iter 101 (review-fix): sibling lookup via Tiles parent, not root-walk.
 	var level: Node = get_parent()

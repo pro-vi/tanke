@@ -17,6 +17,35 @@ Format:
 
 ---
 
+## F004 — breach loadout leaked across runs (shared Resource) — iter 43-44
+
+- Predicted: the arc-4 loadout work (iter 8+) treated PlayerTank.loadout
+  as per-run state — every run starts from breach_starter_loadout.tres.
+  No iter verified that assumption.
+- Observed: the iter-43 SPIKE found breach_starter_loadout.tres is a
+  SHARED Resource (baked into BreachLevel.tscn as an ExtResource; no
+  `resource_local_to_scene`; never `.duplicate()`d). consume() + depot
+  apply_upgrade mutate it in place. Godot's resource cache reuses the
+  instance — so after [R]-restart (reload_current_scene) run 2+ starts
+  with run 1's depleted reserves AND run 1's purchased upgrades. The
+  iter-44 harness confirmed load() returns the cached instance.
+- Root cause: STRUCTURE — a Resource set as a scene @export is shared
+  across instantiations + survives scene reload via the resource cache;
+  mutating it at runtime makes it de-facto global state. The same class
+  of bug as F002 (a shared data table mutated without scoping the
+  effect).
+- Why no harness caught it: every breach harness instantiates ONE
+  PlayerTank and never simulates a second run / scene reload. The bug
+  only manifests across runs — a dimension no harness exercised.
+- Fixed (iter 44): PlayerTank `_ready` does `loadout = loadout.duplicate()`
+  when loadout != null — each run gets a private copy; the .tres
+  template is never mutated. test_breach_loadout Test 6 verifies it.
+- Lesson: a Resource baked into a scene as an @export and mutated at
+  runtime is shared + reload-persistent — duplicate() it at the
+  consuming node's _ready to get per-run state. Codified: this file.
+  (breach_config has the same shape but is already duplicated by the
+  iter-39 band shuffle; other configs are read-only.)
+
 ## F003 — harness-green breach mode did not READ as breach economy — iter 33
 
 - Predicted: 32 iters of [STRUCTURE]-cited anchors (4-wait-3 shells with

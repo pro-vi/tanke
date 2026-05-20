@@ -24,6 +24,45 @@ Format:
 
 ---
 
+## iter 044 — BUILD — loadout-lifecycle fix (F004: shared-Resource run leak)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 6e, piece 1 (a correctness fix the iter-43 SPIKE surfaced —
+  Finding 1). Blueprint: iter-043-round6e-architect.md.
+- The bug (F004): the breach loadout is a shared Resource —
+  breach_starter_loadout.tres baked into BreachLevel.tscn, no
+  resource_local_to_scene, never duplicated. consume() + depot upgrades
+  mutate it in place; Godot's resource cache reuses the instance across
+  reload_current_scene → run 2+ of a session starts with run 1's
+  depleted reserves + purchased upgrades. The restart loop — core to a
+  roguelite — was quietly broken.
+- The fix: PlayerTank `_ready`, when loadout != null, `loadout =
+  loadout.duplicate()` — each run gets a private copy from the .tres
+  template; the template is never mutated.
+- CONSULT constraints respected: all 7 (a correctness fix; no design
+  surface).
+- Predicted failure modes:
+  - The duplicate breaks harnesses that assume pt.loadout IS the object
+    they passed + mutate it post-_ready. Analysis: test_breach_loadout
+    (Test 5) + test_breach_hud (the refresh spot) break — both updated
+    to read pt.loadout. test_breach_swap / overdrive / rulechangers /
+    stakes / codex set loadout flags BEFORE add_child (the dup copies
+    them) and never read the passed object after → unaffected.
+  - duplicate() must be a complete copy — Loadout has no sub-resources,
+    so a shallow duplicate() copies every @export field.
+- Falsifiable claim: post-edit — test_breach_loadout's new Test 6 shows
+  a PlayerTank duplicates its loadout (pt.loadout != the passed
+  resource; values copied; spending the run loadout does NOT mutate the
+  template). Hash anchor 23d6a2ec3bf2821f preserved (dup is breach-only,
+  loadout-gated). test-all 5/5; test-breach 23/23.
+- Sentence test: n/a (bug fix).
+- Substrate touched: PlayerTank.gd (`_ready` loadout duplicate —
+  sanctioned; loadout-gated so arc-2/3 untouched).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42
+  — the dup is inside `if loadout != null`; the procedural baseline
+  PlayerTank has no loadout → bit-identical.
+
 ## iter 043 — SPIKE — Round 6e: meta-progression design + loadout-lifecycle probe
 
 - Date: 2026-05-20

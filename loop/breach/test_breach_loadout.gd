@@ -75,9 +75,36 @@ func _initialize() -> void:
 		push_error("FAIL — shoot signal not emitted once (got %d)" % captured.size()); quit(1); return
 	if captured[0] != BulletT.SHELL_CLASS_HE:
 		push_error("FAIL — shoot.shell_class != HE (got %d)" % captured[0]); quit(1); return
-	if lo2.he_reserve != 1:
-		push_error("FAIL — he_reserve should be 1 after one HE _fire (got %d)" % lo2.he_reserve); quit(1); return
+	# iter 44 (F004): PlayerTank duplicates its loadout at _ready — the
+	# consumed reserve lives on pt_loaded.loadout (the per-run copy).
+	if pt_loaded.loadout.he_reserve != 1:
+		push_error("FAIL — he_reserve should be 1 after one HE _fire (got %d)" % pt_loaded.loadout.he_reserve); quit(1); return
 	pt_loaded.queue_free()
 
-	print("BREACH_LOADOUT_OK finite reserves + consume-on-fire verified")
+	# === Test 6 (iter 44, F004): the loadout is per-run isolated. The
+	# breach starter loadout is a shared Resource baked into
+	# BreachLevel.tscn; without a per-run copy, consume() in run 1 would
+	# leave run 2 starting depleted (reload_current_scene reuses the
+	# resource cache).
+	var t1 = load("res://configs/breach_starter_loadout.tres")
+	var t2 = load("res://configs/breach_starter_loadout.tres")
+	if t1 != t2:
+		push_error("FAIL — load() did not return the cached instance"); quit(1); return
+	var template: LoadoutT = LoadoutT.new()
+	template.he_reserve = 5
+	var pt_iso: Node = PlayerTankScene.instantiate()
+	pt_iso.loadout = template
+	root.add_child(pt_iso)
+	await process_frame
+	if pt_iso.loadout == template:
+		push_error("FAIL — PlayerTank did not duplicate its loadout (run-leak risk)"); quit(1); return
+	if pt_iso.loadout.he_reserve != 5:
+		push_error("FAIL — the duplicated loadout lost its values"); quit(1); return
+	pt_iso.loadout.he_reserve = 0  # simulate a run spending the reserve
+	if template.he_reserve != 5:
+		push_error("FAIL — spending the run loadout mutated the template"); quit(1); return
+	pt_iso.queue_free()
+	print("  loadout per-run isolation: PlayerTank copies; template untouched")
+
+	print("BREACH_LOADOUT_OK finite reserves + consume-on-fire + per-run isolation")
 	quit(0)

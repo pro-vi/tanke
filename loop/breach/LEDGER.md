@@ -17,6 +17,46 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 044 — BUILD — loadout-lifecycle fix (F004: shared-Resource run leak)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **36/60** (Δ 0 — a correctness fix; the rubric has no
+  "bugs fixed" integer. Honest.)
+- Round 6e, piece 1 — the loadout-lifecycle bug the iter-43 SPIKE
+  surfaced (Finding 1), now confirmed + fixed.
+- **F004** — the breach loadout was a shared Resource:
+  breach_starter_loadout.tres baked into BreachLevel.tscn (no
+  resource_local_to_scene, never duplicated). consume() + depot
+  apply_upgrade mutate it; Godot's resource cache reuses the instance
+  across reload_current_scene → run 2+ of a session started with run
+  1's depleted reserves + purchased upgrades. The restart loop — core
+  to a roguelite — was quietly broken. The iter-44 harness confirmed
+  load() returns the cached instance.
+- Fix: PlayerTank `_ready` does `loadout = loadout.duplicate()` when
+  loadout != null — each run gets a private copy from the .tres
+  template; the template is never mutated. Gated on loadout != null →
+  arc-2/3 untouched.
+- Harness updates: the duplicate makes pt.loadout a distinct object
+  from the passed resource. test_breach_loadout (Test 5) +
+  test_breach_hud (the refresh spot) read/mutated the passed object —
+  both updated to use pt.loadout. test_breach_loadout gains Test 6
+  (per-run isolation: PlayerTank copies; the template is untouched).
+  No other harness broke (swap / overdrive / rulechangers / stakes /
+  codex set loadout flags pre-_ready — the dup copies them).
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** — the dup is
+  inside `if loadout != null`; the procedural baseline PlayerTank has
+  no loadout → bit-identical (seed 42). `make test-all` 5/5. `make
+  test-breach` 23/23.
+- Falsifications: **F004 added** (confirmed + fixed same iter).
+- Files: PlayerTank.gd, test_breach_loadout.gd, test_breach_hud.gd,
+  Makefile, FALSIFICATIONS.md, PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **The restart loop is honest now** — every breach run starts
+  fresh from the loadout template. A roguelite lives or dies on its
+  restart loop; this had to be right before meta-progression (which
+  adds between-run persistence) lands. iter 45 = meta-progression
+  Option A (depot-pool widening) + RUBRIC C13.
+
 ## iter 043 — SPIKE — Round 6e: meta-progression verdict + loadout-lifecycle finding
 
 - Date: 2026-05-20

@@ -62,7 +62,9 @@ func _initialize() -> void:
 	print("  selection highlight tracks current_shell")
 
 	# Reserve + selection change is reflected on the next update.
-	lo.he_reserve = 0
+	# (iter 44: PlayerTank duplicates its loadout at _ready — mutate
+	# pt.loadout, the live per-run copy, not the passed template.)
+	pt.loadout.he_reserve = 0
 	pt.current_shell = BulletT.SHELL_CLASS_AP
 	pt._update_shell_panel()
 	if pt._shell_slot_labels[1].text.find("0") == -1:
