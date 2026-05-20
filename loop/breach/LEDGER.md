@@ -17,6 +17,42 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 027 — BUILD — shell-swap reload cost (C3 anchor 4)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **29/50 absolute · 29/50 effective** (Δ +1 vs prior — C3 anchor 4)
+  - C3 (Ammo as logistics): 3 → 4 (anchor 4, de-bundled iter 26:
+    shell-swap has a reload cost ≥0.5s — pre-commitment under reload
+    pressure — code-cited via `make check-breach-swap` reporting swap
+    arms a 0.50s cooldown that blocks `_fire`)
+  - C1=3, C2=3, C4=3, C5=2, C6=3, C7=3, C8=2, C9=2, C10=4 unchanged
+  - Round 3, anchor 1 of 3 done. Structural ceiling ≈ 32/50.
+- Constraints respected: 7 (a verb-cost — a pre-commitment beat — not a
+  passive stat; CONSULT 000 §2's "the interesting WoT idea ... swapping
+  takes a short reload beat"), 2, 1
+- Constraints risked: none
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** post
+  PlayerTank.gd write. The cooldown is breach-gated — `_cycle_shell`
+  early-returns when `loadout == null`, so arc-2/3 `_fire` never sees a
+  nonzero `_swap_cooldown`. `make test` exit 0. `make test-all` PASS
+  (5 arc-3). `make test-breach` PASS (15 checks).
+- Falsifications: none. Pre-mortem predictions held — the "only arm on
+  a REAL swap" guard (`order[idx] != current_shell`) prevents a
+  same-class cycle from imposing a cost.
+- Files: `scripts/PlayerTank.gd` (substrate write — `shell_swap_cost`
+  @export + `_swap_cooldown` + decrement in `_physics_process` + `_fire`
+  block + `_cycle_shell` arms it on a real swap),
+  `loop/breach/test_breach_swap.gd` (NEW), `Makefile`
+  (check-breach-swap), PRE-MORTEMS, LEDGER, STATE
+- Finding: **Shell choice is now a pre-commitment.** Cycling to a new
+  shell costs a 0.5s reload beat during which the tank cannot fire —
+  the player commits to HE/HEAT/AP and pays a vulnerability window,
+  exactly the CONSULT's "pre-commitment under reload pressure". C3 is
+  at 4/5 (anchor 5 = playtest). Next iter 28: round-3 anchor 2 —
+  C5 anchor 3 (a 4th enemy role + gen_tile silhouette) OR C8 anchor 3
+  (depot catalog covers all 5 band pressures). Diagnose at iter start.
+
 ## iter 026 — AUDIT — de-bundle remaining anchors; structural ceiling ~32/50
 
 - Date: 2026-05-20

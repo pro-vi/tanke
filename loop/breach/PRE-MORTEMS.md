@@ -24,6 +24,35 @@ Format:
 
 ---
 
+## iter 027 — BUILD — shell-swap reload cost (C3 anchor 4)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 3, anchor 1 of 3. C3 anchor 4 (de-bundled iter 26): "Shell-swap
+  has a reload cost (≥0.5s) — pre-commitment under reload pressure".
+- CONSULT constraints respected: 7 (the swap cost is a *verb-cost* — a
+  pre-commitment beat — not a passive stat; CONSULT 000 §2 named this
+  "the interesting WoT idea ... swapping takes a short reload beat"),
+  2, 1
+- CONSULT constraints risked: none
+- Predicted failure modes:
+  - The cooldown must be breach-gated: `_cycle_shell` already
+    early-returns when `loadout == null`, so `_swap_cooldown` is only
+    ever set in breach mode — arc-2/3 `_fire` never sees a nonzero
+    cooldown. Bit-identical baseline.
+  - `_cycle_shell` arms the cooldown only on a REAL swap (when
+    `current_shell` actually changes) — cycling onto the same class
+    (all others empty) must not impose a cost.
+- Falsifiable claim: post-edit, `make test` exit 0, `tile_hash` =
+  `23d6a2ec3bf2821f`, `make test-all` PASS, `make test-breach` PASS,
+  new `make check-breach-swap` verifies: a real `_cycle_shell` arms
+  `_swap_cooldown` to `shell_swap_cost` (≥0.5); `_fire` is blocked
+  while `_swap_cooldown > 0`; once it elapses `_fire` emits again; an
+  arc-2/3 PlayerTank (no loadout) never arms the cooldown.
+- Sentence test: n/a (a combat-timing mechanic, not a depot upgrade)
+- Substrate touched: `scripts/PlayerTank.gd` (substrate write — sanctioned).
+- Hash-anchor verification plan: post-edit, before commit.
+
 ## iter 026 — AUDIT — de-bundle remaining anchors; sharpen the ceiling
 
 - Date: 2026-05-20

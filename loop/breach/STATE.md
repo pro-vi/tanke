@@ -2,14 +2,14 @@
 
 ```yaml
 phase: loop
-iter: 26
+iter: 27
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_26: 23d6a2ec3bf2821f  # bit-identical through 12 substrate writes
-substrate_writes_this_arc: 12  # ProceduralLevel.gd ×3 + Bullet.gd ×4 + PlayerTank.gd ×3 + Level.gd + Spawner.gd ×2
+hash_anchor_at_iter_27: 23d6a2ec3bf2821f  # bit-identical through 13 substrate writes
+substrate_writes_this_arc: 13  # ProceduralLevel.gd ×3 + Bullet.gd ×4 + PlayerTank.gd ×4 + Level.gd + Spawner.gd ×2
 current_round: 3
-current_round_phase: BUILD  # round 3 = the last 3 structural anchors
+current_round_phase: BUILD  # round 3 = the last 3 structural anchors — 1 of 3 done (C3/4)
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24]
@@ -18,10 +18,10 @@ reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%
 audit_candidates: []
 last_audit: iter 26
 last_consult: iter 21
-structural_ceiling: ~32/50  # iter-26 AUDIT — only C3/4 (swap cost), C5/3 (4th role), C8/3 (band coverage), C10/5 (arc close) are harness-reachable; the other 18 pts are [FEEL]/playtest
+structural_ceiling: ~32/50  # C3/4 DONE (iter 27). Remaining: C5/3 (4th role), C8/3 (band coverage), C10/5 (arc close).
 meta_iter25: PARITY DRIFT — REVIEW-QUEUE #3 is the playtest request (critical path). Loop continues non-stop; eyes open the back half needs the playtest.
-next_action: iter 27 — BUILD — C3 anchor 4: shell-swap reload cost. Add a swap cooldown (≥0.5s) to PlayerTank._cycle_shell (substrate — PlayerTank sanctioned). The CONSULT-core "pre-commitment under reload pressure" (CONSULT 000 §2). Harness verifies a swap sets a cooldown that blocks the next swap for ≥0.5s. Target C3 anchor 4 (now de-bundled — clean single-clause).
-score: 28/50 absolute · 28/50 effective  # C1=3,C2=3,C3=3,C4=3,C5=2,C6=3,C7=3,C8=2,C9=2,C10=4 — structural ceiling ~32/50
+next_action: iter 28 — BUILD — round-3 anchor 2. C5 anchor 3 = "4-5 enemy roles; silhouette+palette+facing differ — code-cited via gen_tile.py outputs". Have 3 roles (Light/Heavy/Fast). Add a 4th — but Enemy.gd behavior is NOT sanctioned substrate (iter-23 found this). Either (a) the 4th role is a stat/palette parameterization of the existing Enemy.gd behavior (a new ENEMY_TYPES entry — Spawner-only, sanctioned) + a gen_tile silhouette, OR (b) diagnose C8 anchor 3 instead (depot band coverage — Depot.gd/Loadout.gd, arc-4-owned, no substrate). Recommend (a) if a stat-distinct 4th role is honestly a "role" per CONSULT constraint 3 (readable answer); else (b). Diagnose at iter start.
+score: 29/50 absolute · 29/50 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=2,C9=2,C10=4
 spike_report: loop/breach/iter-001-spike-report.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend} + check-silhouette-gate (14; test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #3 PLAYTEST REQUEST (critical path)]

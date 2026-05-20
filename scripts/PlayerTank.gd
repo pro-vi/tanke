@@ -37,9 +37,15 @@ var _shield_timer: float = 0.0
 # arc-4: optional Loadout. null = arc-2/3 baseline (unlimited AP).
 # When set, current_shell cycles via KEY_TAB and HE/HEAT consume reserves.
 @export var loadout: LoadoutT = null
+# arc-4 iter 27 (C3 anchor 4): shell-swap reload cost. After a swap the
+# tank cannot fire for shell_swap_cost seconds — pre-commitment under
+# reload pressure (CONSULT §2 "the interesting WoT idea"). Only ever
+# armed in breach mode (a swap requires a loadout); arc-2/3 unaffected.
+@export var shell_swap_cost: float = 0.5
 
 var current_shell: int = 0  # = BulletT.SHELL_CLASS_AP; cycled via KEY_TAB
 var _tab_was_pressed: bool = false
+var _swap_cooldown: float = 0.0  # >0 = mid reload beat, _fire blocked
 # arc-4: death-attribution recap. Created per-run in _ready when breach
 # mode is active (loadout != null). Null in arc-2/3 — those code paths
 # never touch run_recap, so behavior stays bit-identical.
@@ -130,6 +136,9 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if _iframe_timer > 0.0:
 		_iframe_timer -= delta
+	# arc-4 iter 27: tick down the shell-swap reload beat.
+	if _swap_cooldown > 0.0:
+		_swap_cooldown -= delta
 	# iter 82: tick down shield invulnerability
 	if _shield_timer > 0.0:
 		_shield_timer -= delta
@@ -215,6 +224,10 @@ func set_dir(new_dir: int) -> void:
 func _fire() -> void:
 	if not can_shoot:
 		return
+	# arc-4 iter 27: a shell swap imposes a reload beat — no fire until
+	# it elapses. The pre-commitment cost of choosing a shell.
+	if _swap_cooldown > 0.0:
+		return
 	# arc-4: determine the actual shell to fire. With no loadout, we
 	# always fire AP (arc-2/3 baseline). With a loadout, we attempt the
 	# current_shell — consume() falls back to AP if the chosen reserve
@@ -249,7 +262,10 @@ func _cycle_shell() -> void:
 	for hop in 3:
 		idx = (idx + 1) % order.size()
 		if loadout.can_fire(order[idx]):
-			current_shell = order[idx]
+			if order[idx] != current_shell:
+				current_shell = order[idx]
+				# arc-4 iter 27: a real swap arms the reload beat.
+				_swap_cooldown = shell_swap_cost
 			return
 	# All other classes empty; stay on current.
 
