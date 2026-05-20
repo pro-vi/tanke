@@ -27,6 +27,11 @@ const Bullet = preload("res://scripts/Bullet.gd")
 # positioning verb (PlayerTank reads this). The open_killbox band's
 # answer is facing-aware positioning; OVERDRIVE is its catalog entry.
 @export var has_overdrive: bool = false
+# arc-4 iter 41 (Round 6c) rule-changers — depot upgrades that change
+# HOW you climb (CONSULT 003 Q2). quick_swap: shell swaps cost no reload
+# beat. steel_salvage: an APCR steel-cluster breach refunds 1 APCR.
+@export var quick_swap: bool = false
+@export var steel_salvage: bool = false
 
 
 # Returns true if the player can fire the given shell class. AP is
@@ -103,6 +108,12 @@ func refill_apcr(amount: int) -> void:
 #   OVERDRIVE        → has_overdrive = true (positioning verb)
 #     "...climb through open killboxes by changing how I use
 #      positioning — a speed burst to break flanker sightlines."
+#   QUICK_SWAP       → quick_swap = true (rule-changer, iter 41)
+#     "...climb through pressure-mixed bands by changing how I use
+#      shell-swapping — free swaps, no reload beat, to adapt mid-fight."
+#   STEEL_SALVAGE    → steel_salvage = true (rule-changer, iter 41)
+#     "...climb through steel-walled bunkers by changing how I use
+#      APCR — opening a steel cluster refunds its own shell."
 #
 # Band-pressure coverage (C8 anchor 3 — >=1 upgrade per band):
 #   tutorial_choke (brick)   → HE_REFILL_2 / HE_MAX_EXPAND_2

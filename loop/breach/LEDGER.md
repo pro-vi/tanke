@@ -17,6 +17,50 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 041 — BUILD — Round 6c: depot rule-changers (Quick Swap + Steel Salvage)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **33/55** (Δ 0 — C1/C8 structural tiers are maxed; rule-changers
+  deepen the build-divergence axis but the lift is [FEEL]-gated.)
+- Round 6c (build divergence), piece 1. Answers CONSULT 003 Q2 — "the
+  depot catalog is mostly stock-refills; the player chooses quantity,
+  not doctrine." The catalog goes 5 refills + 2 rule-changers → 5 + 4.
+- Shipped 2 depot rule-changers (both economy verbs — CONSULT §9 #7 —
+  both conditional doctrine-definers, both low-risk):
+  - **QUICK_SWAP** — shell swaps cost no reload beat. The "adaptive
+    generalist" doctrine vs the committed-specialist default. PlayerTank
+    `_cycle_shell` gates `_swap_cooldown` on `not loadout.quick_swap`.
+  - **STEEL_SALVAGE** — an APCR shot that opens a steel cluster of ≥3
+    blocks refunds 1 APCR. The APCR analogue of Breach Dividend; the
+    "steel breacher" doctrine. Bullet `_apply_apcr_breach` now returns
+    the breach count; `_try_steel_salvage` mirrors `_try_breach_dividend`.
+  - Depot: 2 new UpgradeKinds + apply_upgrade cases + _label_for_kind
+    + the _ensure_rolled pool (now 9) — so iter 40's depot-offer
+    randomization draws from the richer catalog automatically.
+- Sentence test: QUICK_SWAP — "...climb through pressure-mixed bands by
+  changing how I use shell-swapping — free swaps to adapt mid-fight."
+  STEEL_SALVAGE — "...climb through steel-walled bunkers by changing how
+  I use APCR — opening a steel cluster refunds its own shell."
+- Constraints: respects 7 (verbs not %stats), 1 (depot-granted), 2
+  (still 4 shells).
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** — both
+  substrate edits are inside breach-only paths (APCR shells; loadout-
+  gated `_cycle_shell`); flag-off baseline bit-identical (seed 42).
+  `make test-all` 5/5. `make test-breach` 22/22 (NEW
+  check-breach-rulechangers; check-breach-overdrive updated for the
+  9-entry catalog).
+- Falsifications: none — the iter-41 falsifiable claim held in full.
+- Files: Loadout.gd, Bullet.gd, PlayerTank.gd, Depot.gd,
+  test_breach_overdrive.gd, test_breach_rulechangers.gd (NEW), Makefile,
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **The depot catalog now has 4 rule-changers, not 2.** Build
+  divergence has real doctrine-definers — HE (Breach Dividend), APCR
+  (Steel Salvage), positioning (Overdrive), swap-fluidity (Quick Swap).
+  Combined with iter 40's depot-offer randomization, which 3-of-9 a
+  depot offers — and which doctrines you can commit to — varies per run.
+  iter 42 = Round 6d (stakes & escalation; adds rubric C12).
+
 ## iter 040 — BUILD — Round 6b: depot-offer randomization
 
 - Date: 2026-05-20

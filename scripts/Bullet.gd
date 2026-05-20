@@ -105,7 +105,12 @@ func _on_body_entered(body: Node) -> void:
 	# (so AP/HE/HEAT are inert against it); APCR opens it + a small
 	# tank-passable cluster via _apply_apcr_breach.
 	if shell_class == SHELL_CLASS_APCR and body.is_in_group("steel"):
-		_apply_apcr_breach(body)
+		var steel_hits: int = _apply_apcr_breach(body)
+		# arc-4 iter 41 "Steel Salvage": opening a steel cluster of
+		# >=STEEL_SALVAGE_THRESHOLD blocks refunds 1 APCR if the player
+		# owns the upgrade. steel_hits is siblings; +1 for the primary.
+		if steel_hits + 1 >= STEEL_SALVAGE_THRESHOLD:
+			_try_steel_salvage()
 	_spawn_impact_spark()
 	queue_free()
 
@@ -168,13 +173,14 @@ const APCR_BREACH_RADIUS_PX: float = 18.0  # ~ tank-width hole
 # Breach the hit steel block + steel siblings within radius. Only nodes
 # in the "steel" group with a breach() method respond — bricks, enemies
 # and water are untouched (this path is APCR-only and steel-only).
-func _apply_apcr_breach(primary_body: Node) -> void:
+func _apply_apcr_breach(primary_body: Node) -> int:
 	if primary_body.has_method("breach"):
 		primary_body.breach()
 	var parent: Node = primary_body.get_parent()
 	if parent == null or not (primary_body is Node2D):
-		return
+		return 0
 	var origin: Vector2 = (primary_body as Node2D).global_position
+	var hits: int = 0
 	for sibling in parent.get_children():
 		if sibling == primary_body:
 			continue
@@ -187,6 +193,30 @@ func _apply_apcr_breach(primary_body: Node) -> void:
 		var d: float = (sibling as Node2D).global_position.distance_to(origin)
 		if d <= APCR_BREACH_RADIUS_PX:
 			sibling.breach()
+			hits += 1
+	return hits
+
+
+# arc-4 iter 41 "Steel Salvage": the APCR analogue of Breach Dividend.
+# An APCR shot that opens a steel cluster of >=STEEL_SALVAGE_THRESHOLD
+# blocks refunds 1 APCR — only if the player owns the Steel Salvage
+# depot upgrade. Threshold 3 = a real steel-wall breach, not a stray
+# block.
+const STEEL_SALVAGE_THRESHOLD: int = 3
+
+
+# Reach the firing player's Loadout via the Level parent; if Steel
+# Salvage is owned, refund 1 APCR (capped by refill_apcr). All reads
+# are defensive duck-typed — any missing link silently no-ops.
+func _try_steel_salvage() -> void:
+	var lvl: Node = get_parent()
+	if lvl == null or not ("player" in lvl):
+		return
+	var p = lvl.player
+	if p == null or not ("loadout" in p) or p.loadout == null:
+		return
+	if p.loadout.steel_salvage:
+		p.loadout.refill_apcr(1)
 
 
 # iter 41: visual juice — small white ColorRect at impact position, scaled +

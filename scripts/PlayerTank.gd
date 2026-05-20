@@ -305,8 +305,10 @@ func _cycle_shell() -> void:
 		if loadout.can_fire(order[idx]):
 			if order[idx] != current_shell:
 				current_shell = order[idx]
-				# arc-4 iter 27: a real swap arms the reload beat.
-				_swap_cooldown = shell_swap_cost
+				# arc-4 iter 27: a real swap arms the reload beat —
+				# unless the iter-41 QUICK_SWAP rule-changer is owned.
+				if not loadout.quick_swap:
+					_swap_cooldown = shell_swap_cost
 			return
 	# All other classes empty; stay on current.
 

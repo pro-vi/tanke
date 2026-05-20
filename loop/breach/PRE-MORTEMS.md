@@ -24,6 +24,52 @@ Format:
 
 ---
 
+## iter 041 — BUILD — Round 6c: depot rule-changers (Quick Swap + Steel Salvage)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 6c (build divergence), piece 1. Blueprint: iter-038-round6-architect.md.
+  Answers CONSULT 003 Q2 — "depots need more rule-changers; the player
+  chooses quantity, not doctrine." The catalog was 5 stock-refills + 2
+  rule-changers; this iter adds 2 more rule-changers → 5 + 4.
+- Δ note: the structural anchors C1 (build identity) + C8 (sentence
+  test) are already maxed; rule-changers deepen the build-divergence
+  AXIS but the lift is [FEEL]-gated. Expect Δ 0 — a real BUILD.
+- The 2 rule-changers (both CONSULT-§9-#7 verbs, conditional
+  doctrine-definers, low-risk — reuse existing patterns):
+  - QUICK_SWAP — shell swaps cost no reload beat. The "adaptive
+    generalist" doctrine vs the committed-specialist default.
+  - STEEL_SALVAGE — an APCR shot opening a steel cluster (>=3 blocks)
+    refunds 1 APCR. The APCR analogue of Breach Dividend; the "steel
+    breacher" doctrine. Mirrors _try_breach_dividend exactly.
+- CONSULT constraints respected: 7 (both are affordance verbs, not
+  %stats — sentence-tested in Loadout's UPGRADE CATALOG), 1 (granted
+  at depots), 2 (still 4 shells — no new shell).
+- Predicted failure modes:
+  - test_breach_overdrive.gd hard-asserts UK.size()==7 → adding 2 kinds
+    breaks it. Mitigation: update it to 9.
+  - QUICK_SWAP reads loadout.quick_swap in _cycle_shell — must not
+    affect arc-2/3 (loadout null → _cycle_shell early-returns before
+    the read).
+  - STEEL_SALVAGE must be gated on a real steel-CLUSTER breach, not a
+    stray block — threshold 3 (mirror of the HE-dividend's 4).
+- Falsifiable claim: post-edit — a new check-breach-rulechangers harness
+  shows QUICK_SWAP suppresses the swap reload beat (control still arms
+  it), STEEL_SALVAGE refunds APCR only with the upgrade + only on a
+  >=3-cluster, apply_upgrade sets both flags. Hash anchor
+  23d6a2ec3bf2821f preserved; test-all 5/5; test-breach 22/22.
+- Sentence test: QUICK_SWAP — "...climb through pressure-mixed bands by
+  changing how I use shell-swapping — free swaps to adapt mid-fight."
+  STEEL_SALVAGE — "...climb through steel-walled bunkers by changing how
+  I use APCR — opening a steel cluster refunds its own shell."
+- Substrate touched: Bullet.gd (_apply_apcr_breach returns a count +
+  _try_steel_salvage — sanctioned, breach-only path), PlayerTank.gd
+  (_cycle_shell quick_swap gate — sanctioned). Loadout.gd + Depot.gd
+  are arc-4-owned.
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42
+  — both substrate edits are inside breach-only paths (APCR shells /
+  loadout-gated _cycle_shell); flag-off baseline bit-identical.
+
 ## iter 040 — BUILD — Round 6b: depot-offer randomization
 
 - Date: 2026-05-20

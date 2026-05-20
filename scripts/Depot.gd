@@ -12,7 +12,7 @@ extends Area2D
 
 const LoadoutT = preload("res://scripts/Loadout.gd")
 
-# Upgrade catalog (C8 — 5 entries, all affordance/economy verbs, no
+# Upgrade catalog (C8 — 9 entries, all affordance/economy verbs, no
 # passive %stats). Each passes the sentence test "This upgrade helps me
 # climb through ___ by changing how I use ___" — verbatim sentences are
 # documented in Loadout.gd's UPGRADE CATALOG block.
@@ -21,9 +21,11 @@ enum UpgradeKind {
 	HEAT_REFILL_1,      # +1 HEAT reserve (capped at max_heat_reserve)
 	HE_MAX_EXPAND_2,    # +2 to max_he_reserve, then refill 2
 	HEAT_MAX_EXPAND_2,  # +2 to max_heat_reserve, then refill 2
-	FULL_RESUPPLY,      # refill BOTH reserves to their current caps
+	FULL_RESUPPLY,      # refill ALL reserves to their current caps
 	BREACH_DIVIDEND,    # rule-changer: HE breach of >=4 bricks refunds 1 HE
 	OVERDRIVE,          # positioning verb: grants the sprint-burst ability
+	QUICK_SWAP,         # rule-changer: shell swaps cost no reload beat
+	STEEL_SALVAGE,      # rule-changer: APCR steel-cluster breach refunds APCR
 }
 
 signal depot_entered(depot: Node)
@@ -153,7 +155,8 @@ func _ensure_rolled() -> void:
 		UpgradeKind.HE_REFILL_2, UpgradeKind.HEAT_REFILL_1,
 		UpgradeKind.HE_MAX_EXPAND_2, UpgradeKind.HEAT_MAX_EXPAND_2,
 		UpgradeKind.FULL_RESUPPLY, UpgradeKind.BREACH_DIVIDEND,
-		UpgradeKind.OVERDRIVE,
+		UpgradeKind.OVERDRIVE, UpgradeKind.QUICK_SWAP,
+		UpgradeKind.STEEL_SALVAGE,
 	]
 	for i in range(pool.size() - 1, 0, -1):
 		var j: int = rng.randi_range(0, i)
@@ -199,6 +202,8 @@ func _label_for_kind(kind: int) -> String:
 		UpgradeKind.FULL_RESUPPLY: return "Full resupply  (recover all shells)"
 		UpgradeKind.BREACH_DIVIDEND: return "Breach Dividend  (HE clusters refund)"
 		UpgradeKind.OVERDRIVE: return "Overdrive  (sprint-burst verb)"
+		UpgradeKind.QUICK_SWAP: return "Quick Swap  (free shell swaps)"
+		UpgradeKind.STEEL_SALVAGE: return "Steel Salvage  (APCR clusters refund)"
 	return "upgrade"
 
 
@@ -233,8 +238,9 @@ func apply_choice(idx: int) -> void:
 
 
 # Apply one UpgradeKind effect to a loadout. Public so the harness can
-# exercise every catalog entry directly. All 5 entries are economy
-# verbs — refill / expand capacity / resupply — not passive %stats.
+# exercise every catalog entry directly. All 9 entries are economy
+# verbs — refills, capacity expands, resupply, rule-changers — not
+# passive %stats.
 func apply_upgrade(kind: int, loadout) -> void:
 	if loadout == null:
 		return
@@ -257,6 +263,10 @@ func apply_upgrade(kind: int, loadout) -> void:
 			loadout.breach_dividend = true
 		UpgradeKind.OVERDRIVE:
 			loadout.has_overdrive = true
+		UpgradeKind.QUICK_SWAP:
+			loadout.quick_swap = true
+		UpgradeKind.STEEL_SALVAGE:
+			loadout.steel_salvage = true
 
 
 func _is_player(body: Node) -> bool:
