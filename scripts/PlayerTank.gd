@@ -95,6 +95,8 @@ var _min_y_reached: float = 0.0
 var _run_time: float = 0.0
 var _depth_label: Label
 var _time_label: Label
+var _best_label: Label = null  # arc-4 iter 42: live best-depth readout
+var _run_best_depth: int = 0
 # iter 30: depth milestone flash (Pro Consult 005 META — ascent legibility)
 var _last_milestone_depth: int = 0
 @export var depth_milestone_step: int = 10
@@ -145,6 +147,12 @@ func _ready() -> void:
 	_camera = get_parent().get_node_or_null("Camera2D") as Camera2D
 	_setup_hurtbox()
 	_setup_hud()
+	# arc-4 iter 42 (Round 6d): band-arrival banner — connect to the
+	# breach level's band-change signal. The signal exists only on
+	# ProceduralLevel and fires only when breach_mode_enabled, so this
+	# is breach-mode-only; arc-2/3 never connects.
+	if loadout != null and level != null and level.has_signal("breach_band_changed"):
+		level.breach_band_changed.connect(_on_breach_band_changed)
 	hp_changed.emit(hp, max_hp)
 	_update_run_hud()
 
@@ -688,6 +696,17 @@ func _setup_hud() -> void:
 	if loadout != null:
 		_build_shell_panel(canvas)
 		_build_shell_codex(canvas)
+		# arc-4 iter 42 (Round 6d, stakes): the live best-depth readout —
+		# the depth chase, always visible (not just on the death recap).
+		_run_best_depth = _load_best_depth()
+		_best_label = Label.new()
+		_best_label.name = "BestLabel"
+		_best_label.position = Vector2(232, 28)
+		_best_label.text = "BEST %d" % _run_best_depth
+		_best_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.5, 1.0))
+		_best_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		_best_label.add_theme_constant_override("outline_size", 2)
+		canvas.add_child(_best_label)
 	add_child(canvas)
 	hp_changed.connect(_on_hp_changed_hud)
 
@@ -855,6 +874,43 @@ func _build_shell_codex(canvas: CanvasLayer) -> void:
 		Vector2(12, 168), 8, Color(0.78, 0.8, 0.86, 1.0))
 
 
+# arc-4 iter 42 (Round 6d): the breach level reports a band crossing.
+func _on_breach_band_changed(band) -> void:
+	if band != null:
+		_show_band_banner(band)
+
+
+# arc-4 iter 42 (Round 6d, stakes & escalation): the band-arrival banner.
+# When the player crosses into a new depth band, name it + its dominant
+# pressure for ~2s — each band is a new climb problem (CONSULT §9 #5)
+# and the transition is the escalation beat the run is built around.
+func _show_band_banner(band) -> void:
+	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
+	if canvas == null:
+		return
+	var nm: String = ""
+	var pressure: String = ""
+	if "band_name" in band:
+		nm = String(band.band_name).to_upper().replace("_", " ")
+	if "dominant_pressure" in band:
+		pressure = String(band.dominant_pressure)
+	var banner: Label = Label.new()
+	banner.name = "BandBanner"
+	banner.text = "ENTERING:  %s\n%s" % [nm, pressure]
+	banner.position = Vector2(20, 58)
+	banner.size = Vector2(280, 40)
+	banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	banner.add_theme_color_override("font_color", Color(1.0, 0.95, 0.6, 1.0))
+	banner.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	banner.add_theme_constant_override("outline_size", 2)
+	banner.add_theme_font_size_override("font_size", 11)
+	canvas.add_child(banner)
+	var tween: Tween = banner.create_tween()
+	tween.tween_interval(1.3)
+	tween.tween_property(banner, "modulate:a", 0.0, 0.9)
+	tween.tween_callback(banner.queue_free)
+
+
 func _on_hp_changed_hud(new_hp: int, the_max_hp: int) -> void:
 	if _hp_label != null:
 		_hp_label.text = "HP %d/%d" % [new_hp, the_max_hp]
@@ -880,6 +936,13 @@ func _update_run_hud() -> void:
 			var crossed: int = (depth / depth_milestone_step) * depth_milestone_step
 			_last_milestone_depth = crossed
 			_flash_depth_milestone(crossed)
+		# arc-4 iter 42: best-depth live readout — once the run passes the
+		# prior best, the label live-tracks the new record.
+		if _best_label != null:
+			if depth > _run_best_depth:
+				_best_label.text = "NEW BEST %d" % depth
+			else:
+				_best_label.text = "BEST %d" % _run_best_depth
 	if _time_label != null:
 		var t: int = int(_run_time)
 		_time_label.text = "TIME %d:%02d" % [t / 60, t % 60]

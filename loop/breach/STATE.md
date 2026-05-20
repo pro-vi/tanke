@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 41
+iter: 42
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_41: 23d6a2ec3bf2821f  # bit-identical through 23 substrate writes
-substrate_writes_this_arc: 23  # ProceduralLevel.gd ×5 + Bullet.gd ×6 + PlayerTank.gd ×10 + Level.gd + Spawner.gd ×2
+hash_anchor_at_iter_42: 23d6a2ec3bf2821f  # bit-identical through 24 substrate writes
+substrate_writes_this_arc: 24  # ProceduralLevel.gd ×5 + Bullet.gd ×6 + PlayerTank.gd ×11 + Level.gd + Spawner.gd ×2
 current_round: 6-open
-current_round_phase: BUILD — Round 6d (stakes & escalation); blueprint iter-038-round6-architect.md
+current_round_phase: BUILD — Round 6e (meta-progression); blueprint iter-038-round6-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,12 +21,12 @@ last_consult: iter 37  # CONSULT 003 — written self-pre-mortem, Round 5 close
 playtest_log: [iter 33 — 2026-05-20 — verdict: structurally complete but illegible; F003 logged]
 structural_ceiling: RE-OPENED at iter 33. The iter-32 "30/50 ceiling" assumed harness-green structure would read as breach economy; the iter-33 playtest falsified that (F003). Real work exists above 30/50 — Round 5 (legibility), then Round 6+ (roguelite feel).
 loop_state: RUNNING (resumed iter 33). User playtested 2026-05-20; the loop integrated the verdict, logged F003, opened Round 5. The non-stop loop continues per PROMPT until the user writes `playtest` / `halt` / `stop`.
-next_action: iter 42 — BUILD — Round 6d: stakes & escalation. Read iter-038-round6-architect.md. Round 6d surfaces the single-life depth chase — a depth/score HUD beat, an escalation curve, death→restart framing — so the run feels like a roguelite run with stakes. Adds RUBRIC C12 (stakes & escalation) — the first roguelite-axis criterion since C11; iter 42 lifts it. Hash-anchor verify if substrate touched; test-all + test-breach green.
-score: 33/55 absolute · 33/55 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3
+next_action: iter 43 — BUILD — Round 6e: meta-progression (the last Round-6 sub-round). Read iter-038-round6-architect.md. CONSULT 003 — meta-progression must unlock OPTIONS, not raw power (power-creep dilutes "what will you spend"). Between-run unlocks earned by climbing deep — e.g. an alt starting loadout / a new starting shell-mix — persisted via ConfigFile like best-depth. Adds RUBRIC C13 (meta-progression). Then iter 44 = Round 6 CONSULT + QUEUE close. Hash-anchor verify if substrate touched; test-all + test-breach green.
+score: 36/60 absolute · 36/60 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
 round6_blueprint: loop/breach/iter-038-round6-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers} + check-silhouette-gate (22 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes} + check-silhouette-gate (23 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close]  # #3 CLOSED — playtest delivered 2026-05-20
 ```
 
@@ -101,21 +101,24 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-20 — **iter 41 (BUILD).** Round 6c — 2 depot rule-changers:
-  QUICK_SWAP (swaps cost no reload beat) + STEEL_SALVAGE (APCR
-  steel-cluster breach refunds APCR). Catalog 7→9 (4 rule-changers
-  now). Bullet + PlayerTank substrate writes; hash anchor preserved;
-  test-all 5/5, test-breach 22/22. Δ 0 (C1/C8 structural maxed). 33/55.
+- 2026-05-20 — **iter 42 (BUILD).** Round 6d — stakes & escalation: a
+  band-arrival banner (names each band on crossing) + a live best-depth
+  HUD readout. RUBRIC +C12, C12 0→3. PlayerTank HUD substrate write;
+  hash anchor preserved; test-all 5/5, test-breach 23/23. **36/60**
+  (Δ +3).
 
 ## Next action
 
-**Iter 42 — BUILD — Round 6d: stakes & escalation.**
-Read `loop/breach/iter-038-round6-architect.md`. Round 6d surfaces the
-single-life depth chase — a depth/score HUD beat, an escalation curve,
-a death→restart framing — so the run reads as a roguelite run with
-stakes. Adds RUBRIC C12 (stakes & escalation) — the first
-roguelite-axis criterion since C11; iter 42 lifts it. Hash-anchor
-verify if substrate touched; test-all + test-breach green.
+**Iter 43 — BUILD — Round 6e: meta-progression (last 6-sub-round).**
+Read `loop/breach/iter-038-round6-architect.md`. CONSULT 003 —
+meta-progression must unlock OPTIONS, not raw power (power-creep
+dilutes "what will you spend"). Between-run unlocks earned by climbing
+deep, persisted via ConfigFile like best-depth. Adds RUBRIC C13. Then
+iter 44 = Round 6 CONSULT + QUEUE close.
+
+The loop runs non-stop until the user writes `playtest` / `halt` /
+`stop`, or a correctness violation fires (hash anchor break, test-all
+regression, unsanctioned substrate write, unfixed band reachability).
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all

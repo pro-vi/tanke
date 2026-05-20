@@ -24,6 +24,41 @@ Format:
 
 ---
 
+## iter 042 — BUILD — Round 6d: stakes & escalation (band banner + live best-depth)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 6d (stakes & escalation), piece 1. Blueprint: iter-038-round6-architect.md.
+- DIAGNOSE: the arc-2 ascender already gives breach mode a lot of
+  "stakes" — a DEPTH/TIME HUD, depth-milestone flashes, a run-framed
+  death recap with best-depth, persistent best tracking, the [R]-restart
+  loop. The genuine GAP for the breach roguelite: (a) band transitions
+  are silent — nothing marks the escalation beat; (b) best-depth shows
+  only on death, not live. iter 42 fills both.
+- CONSULT constraints respected: 5 (the banner names each band's
+  specific pressure — reinforces "each band is a climb problem"), 1
+  (HUD readout, no combat-time decision).
+- Predicted failure modes:
+  - The band banner needs a breach_band_changed source. The signal
+    exists only on ProceduralLevel + fires only in breach mode — the
+    connect is gated on loadout != null + has_signal, so arc-2/3 never
+    wires it.
+  - The best-depth label must be breach-gated (loadout != null) so the
+    arc-2 procedural HUD stays bit-identical — NOT placed in the
+    show_ascender_hud block (which arc-2 shares).
+  - A missing-glyph risk in the banner — kept ASCII ("ENTERING:").
+- Falsifiable claim: post-edit — a new check-breach-stakes harness shows
+  a breach PlayerTank builds a BestLabel + raises a BandBanner naming
+  the band on a breach_band_changed emit; an arc-2/3 PlayerTank builds
+  neither. Hash anchor 23d6a2ec3bf2821f preserved; test-all 5/5;
+  test-breach 23/23. RUBRIC +C12, C12 → 3.
+- Sentence test: n/a (HUD/stakes, no upgrade).
+- Substrate touched: PlayerTank.gd (HUD + the band-signal connect —
+  sanctioned; all new HUD gated on loadout != null).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42
+  — the new HUD is loadout-gated; the procedural baseline PlayerTank
+  has no loadout → HUD path bit-identical.
+
 ## iter 041 — BUILD — Round 6c: depot rule-changers (Quick Swap + Steel Salvage)
 
 - Date: 2026-05-20

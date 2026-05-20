@@ -17,6 +17,48 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 042 — BUILD — Round 6d: stakes & escalation (band banner + live best-depth)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **36/60 absolute · 36/60 effective** (Δ +3 — C12 0→3. RUBRIC
+  extended +C12.)
+- Round 6d (stakes & escalation), piece 1 of the iter-038 blueprint.
+- DIAGNOSE: breach mode inherited strong stakes infrastructure from the
+  arc-2 ascender — DEPTH/TIME HUD, milestone flashes, a run-framed
+  death recap with best-depth, persistent best tracking, the [R]-restart
+  loop. The two genuine gaps: silent band transitions, and best-depth
+  visible only on death. iter 42 fills both.
+- Shipped:
+  - **Band-arrival banner** — PlayerTank connects to the breach level's
+    `breach_band_changed` signal (which had no consumer) and raises a
+    ~2s banner naming the new band + its dominant pressure on every
+    crossing. Each band transition is now an escalation beat. Pairs
+    with the iter-39 depot next-band preview.
+  - **Live best-depth** — a BestLabel on the HUD; once the run passes
+    the prior best it live-tracks the new record ("NEW BEST n"). The
+    depth chase is always visible, not just on the death recap.
+  - Both gated on loadout != null → arc-2/3 HUD bit-identical; the
+    band-signal connect is also has_signal-gated.
+- C12 (NEW criterion — Stakes & escalation): anchor 1 (live depth
+  readout — the DEPTH label), anchor 2 (band-arrival beat — NEW),
+  anchor 3 (best-depth live [NEW] + on-death + run-framed recap —
+  existing). C12 = 3.
+- RUBRIC: +C12 → 12 criteria / 60-pt ceiling (revision-log row 42).
+- Constraints: respects 5 (the banner names each band's specific
+  pressure), 1 (HUD readouts, no combat-time decision).
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** — all new HUD
+  is loadout-gated; the procedural baseline PlayerTank has no loadout
+  → HUD path bit-identical (seed 42). `make test-all` 5/5.
+  `make test-breach` 23/23 (NEW check-breach-stakes).
+- Falsifications: none — the iter-42 falsifiable claim held in full.
+- Files: PlayerTank.gd, RUBRIC.md, test_breach_stakes.gd (NEW),
+  Makefile, PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **The single-life climb now reads as a roguelite run.**
+  Each band entry is announced; the best-depth chase is always on
+  screen. iter 43 = Round 6e — meta-progression (the last sub-round;
+  options-not-power per CONSULT 003; adds rubric C13).
+
 ## iter 041 — BUILD — Round 6c: depot rule-changers (Quick Swap + Steel Salvage)
 
 - Date: 2026-05-20

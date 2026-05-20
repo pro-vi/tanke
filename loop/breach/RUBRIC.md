@@ -1,6 +1,6 @@
 # tanke — Breach Loop Rubric (arc 4, v1)
 
-**11 criteria**, 0–5 scale. **55-point absolute ceiling.** Score above 2 on any
+**12 criteria**, 0–5 scale. **60-point absolute ceiling.** Score above 2 on any
 upgrade-related anchor requires the upgrade to pass the sentence test:
 *"This upgrade helps me climb through ___ by changing how I use ___."*
 
@@ -213,17 +213,34 @@ per seed; this criterion is about the *band structure*.
 
 ---
 
+## 12. Stakes & escalation (0–5) — *structural+feel*
+
+The single-life run reads as a high-stakes climb. The depth chase is
+surfaced; each band transition is an escalation beat; death is
+run-framed and invites a retry.
+
+| Score | Anchor | Tag |
+|-------|--------|-----|
+| 0 | No surfaced run stakes (no depth chase, no run framing) | — |
+| 1 | A live depth readout on the HUD — the depth chase is visible — code-cited | [STRUCTURE] |
+| 2 | Each band transition surfaces an arrival beat naming the new band + its pressure — code-cited | [STRUCTURE] |
+| 3 | The persistent best-depth is surfaced (live + on death) AND death produces a run-framed recap (depth vs best, killing band) inviting a retry — code-cited | [STRUCTURE] |
+| 4 | Playtest: the single life feels like it matters — the player pushes for depth, plays carefully near a record | [FEEL] |
+| 5 | Playtest: the player chases their best-depth across consecutive runs unprompted | [FEEL] [IDENTITY-PROTECTED] |
+
+---
+
 ## Effective ceiling math (per R3)
 
 | Bucket | Criteria | Max | Notes |
 |--------|----------|-----|-------|
-| Auto-citable (structural) | C2-anchor-3, C3-anchor-4, C4-anchor-4, C6-anchor-3, C7-anchor-3, C8-anchor-3, C10 (all), C11-anchor-3 | ~33 | Reachable without playtest |
-| Cognitive (feel-only) | C1-anchor-4-5, C2-anchor-4-5, C3-anchor-5, C4-anchor-5, C5-anchor-4-5, C6-anchor-4-5, C7-anchor-4-5, C8-anchor-4-5, C9-anchor-3-5, C11-anchor-4-5 | ~22 | Requires 1-2 playtests |
-| Identity-protected (NEVER AUDIT-rephrased) | C1-anchor-5, C5-anchor-5, C7-anchor-5, C8-anchor-5, C9-anchor-5, C11-anchor-5 | ~5 | Gaming-prevention; playtest-only by design |
+| Auto-citable (structural) | C2-anchor-3, C3-anchor-4, C4-anchor-4, C6-anchor-3, C7-anchor-3, C8-anchor-3, C10 (all), C11-anchor-3, C12-anchor-3 | ~36 | Reachable without playtest |
+| Cognitive (feel-only) | C1-anchor-4-5, C2-anchor-4-5, C3-anchor-5, C4-anchor-5, C5-anchor-4-5, C6-anchor-4-5, C7-anchor-4-5, C8-anchor-4-5, C9-anchor-3-5, C11-anchor-4-5, C12-anchor-4-5 | ~24 | Requires 1-2 playtests |
+| Identity-protected (NEVER AUDIT-rephrased) | C1-anchor-5, C5-anchor-5, C7-anchor-5, C8-anchor-5, C9-anchor-5, C11-anchor-5, C12-anchor-5 | ~6 | Gaming-prevention; playtest-only by design |
 
-**Effective ceiling (auto + cognitive): ~55/55.** Same as absolute since
-identity-protected anchors are inside cognitive. Reports use "X/55" with
-breakdown. (Ceiling grows as Round-6 sub-rounds add C12/C13.)
+**Effective ceiling (auto + cognitive): ~60/60.** Same as absolute since
+identity-protected anchors are inside cognitive. Reports use "X/60" with
+breakdown. (Ceiling grows as Round-6 sub-round 6e adds C13.)
 
 ---
 
@@ -260,3 +277,4 @@ Evidence: LEDGER iter NNN cites results; BANDS.md checkbox flipped.
 | 26 | C4 anchor 4 re-tagged [STRUCTURE]→[FEEL] | Mismatch-AUDIT (L6): "avg shell-mix differs per band" is not harness-citable without a play-AI — it is honestly playtest-gated. Re-tag corrects the over-optimistic [STRUCTURE] tag. |
 | 34 | C3 anchors 2-3 updated for the 4-shell grammar — anchor 2 names APCR; anchor 3 restated as a per-shell terrain-affordance bar (AP tile / HE zone / APCR steel / HEAT none) | User override (iter-33 playtest) sanctioned APCR as the 4th shell (STATE.md §Arc-4 amendments). Factual correction — the rubric said "3 shells"; no score change (C3's structural tier was already maxed at iter 27). |
 | 39 | +C11 "Run-to-run variety" — 11 criteria, 55-pt absolute ceiling | Round 6 (roguelite feel) adds surface the breach-economy rubric never covered (PROMPT §RUBRIC IS MEASUREMENT — "extend RUBRIC.md to cover it"). The iter-38 blueprint proposed +3 (C11/C12/C13); revised to incremental — each roguelite criterion is added when its sub-round opens, so the rubric tracks built work, not speculative surface. C12 (stakes & escalation) lands with sub-round 6d; C13 (meta-progression) with 6e. |
+| 42 | +C12 "Stakes & escalation" — 12 criteria, 60-pt absolute ceiling | Round 6d (stakes & escalation) — surfaces the single-life depth chase (band-arrival banner + live best-depth). Per the iter-39 incremental plan, each roguelite criterion lands when its sub-round opens; C13 (meta-progression) lands with sub-round 6e. |
