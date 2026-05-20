@@ -24,6 +24,30 @@ Format:
 
 ---
 
+## iter 025 — META + QUEUE — round-2 close; parity-drift finding; playtest surfaced
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Meta-trigger: dice nat-13 /meta nudge (iter 24.5) named PARITY DRIFT
+  — 24 iters, 28/50, all structural/harness-cited, zero playtests;
+  ~14 of 22 remaining rubric points are playtest-gated by design.
+  Round 2 (iters 7-24) is structurally complete; this iter formalizes
+  the finding + closes round 2 + surfaces the playtest as critical path.
+- CONSULT constraints respected: all (process iter)
+- CONSULT constraints risked: none
+- Predicted failure: the playtest request, once in REVIEW-QUEUE, sits
+  unactioned (arc-1's user-look gate sat open 8 iters). Mitigation:
+  PushNotification surfaces it directly; the loop continues round 3
+  regardless (non-stop), so a stalled playtest doesn't stall the loop —
+  it just caps the reachable score at ~37/50 until the user plays.
+- Falsifiable claim: by end of iter, LEDGER has a META entry,
+  REVIEW-QUEUE has item #3 (playtest request, prominent), a
+  PushNotification fired, round 2 is marked closed, and STATE names
+  round 3's opening surface. Hash anchor untouched (no code).
+- Sentence test: n/a
+- Substrate touched: none (LEDGER / REVIEW-QUEUE / STATE — loop docs)
+- Hash-anchor verification plan: n/a
+
 ## iter 024 — BUILD-QUALITY — depot rule-changer "Breach Dividend"
 
 - Date: 2026-05-20

@@ -34,6 +34,34 @@ Format per item:
     avoid this trap by wiring *behavior*, not more schema. iter-6 fired
     consult 001 to ground-truth this risk read.
 
+#3 — ★ PLAYTEST REQUEST (critical path) — round 2 — SHA 3d70133 — OPEN, needs you
+  Finding: Round 2 (iters 7-24) is STRUCTURALLY COMPLETE — breach mode
+    is a full loop: 5-band climb, finite HE/HEAT reserves spent to
+    breach, 3 depots with a 6-entry catalog (5 stock + 1 rule-changer
+    "Breach Dividend"), band-aware enemy rosters, HEAT-solves-armor,
+    death recaps. 28/50, 14 harnesses + 5 arc-3 targets green, hash
+    anchor 23d6a2ec3bf2821f preserved through 12 substrate writes.
+  BUT: **no human has played it.** Every score is [STRUCTURE]/harness-
+    cited. The /meta lens (dice nat-13) named this PARITY DRIFT —
+    harness-green has been treated as "the game works". CONSULT 001 +
+    002 both flagged it. ~14 of the 22 remaining rubric points are
+    [FEEL]/playtest-gated BY DESIGN — the loop cannot honestly close
+    past ~37/50 without you at the controls.
+  The ask (CONSULT 002 #3 — the 5-person smoke test): play
+    `scenes/BreachLevel.tscn` (or `make run` → breach mode). The ONE
+    question that matters: **do you describe your run as route economy
+    ("I spent my HE opening the brick maze, entered the bunker band
+    HEAT-starved") rather than tank combat ("I shot things")?**
+    Secondary: do the depots feel like earned breath beats? does the
+    death recap tell you why you fell?
+  Affordance: a playtest unlocks the [FEEL] anchors (C1/4-5, C2/4-5,
+    C5/4-5, C6/4-5, C7/4-5, C8/4-5, C9/3-5) — the half of the rubric
+    that answers "is this actually breach economy, its own thing".
+  Risk: without it, the loop grinds the last ~8-10 structural points
+    (C3/4 swap-cost, C4/4 shell-mix harness, C5/3 4th role, C8/3 band
+    coverage) to ~37/50 and then genuinely ceiling-pauses — exactly
+    arc-2's diminishing-returns tail. To trigger: write `playtest`.
+
 #2 — Round 2 atomic verb (iter 7+8) — iters 7-8 — open
   Finding: CONSULT 001 returned (tab-timeout but response landed —
     arc-4 documented behavior reproduced). It named the missing piece:

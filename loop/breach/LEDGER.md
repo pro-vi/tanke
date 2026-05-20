@@ -17,6 +17,46 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 025 — META + QUEUE — round-2 close; parity-drift; playtest surfaced
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **28/50 absolute · 28/50 effective** (Δ 0 — META iter; process/
+  discipline, no anchor lift)
+- Meta-trigger: dice nat-13 /meta nudge → named **PARITY DRIFT**.
+- Constraints respected: all 7 (process iter)
+- Hash anchor: `23d6a2ec3bf2821f` untouched (no code).
+- Falsifications: none.
+- Files: `loop/breach/REVIEW-QUEUE.md` (item #3 — playtest request),
+  `loop/breach/LEDGER.md`, `loop/breach/PRE-MORTEMS.md`,
+  `loop/breach/STATE.md`
+- **Round 2 CLOSED.** Iters 7-24 built breach economy end-to-end:
+  HE-radius + finite reserves + shell cycle (the atomic verb) → depot
+  flow → BreachLevel scene → 5 depth bands → death recap → enemy
+  rosters → shell icons + grammar gate → 6-entry depot catalog →
+  HEAT-armor → Breach Dividend rule-changer. 28/50, all 10 criteria
+  non-zero, 14 arc-4 harnesses + 5 arc-3 targets green, hash anchor
+  preserved through 12 substrate writes. CONSULT 002's 3 recommendations
+  all executed.
+- **Meta-finding (parity drift)**: every one of the 28 points is
+  [STRUCTURE]/harness-cited; zero playtests across 25 iters. ~14 of the
+  22 remaining rubric points are [FEEL]/playtest-gated by rubric design.
+  The loop is at a structural ceiling — it can grind ~8-10 more
+  structural points (C3/4 swap-cost, C4/4 shell-mix harness, C5/3 4th
+  role, C8/3 band coverage) to ~37/50, then genuinely ceiling-pauses.
+  This recurs arc-2's #1 retro lesson ("identity, not mechanics, is
+  the limiter") and arc-3's L4 "ceiling-paused" loop state.
+- Action: REVIEW-QUEUE #3 logs the playtest request as the critical
+  path (not a passive note); PushNotification surfaces it to the user.
+  The loop does NOT halt (non-stop per PROMPT) — round 3 opens on the
+  remaining structural anchors, eyes-open that they're the last
+  ~8-10 points before the real ceiling.
+- Finding: **Breach mode is structurally done and evidenced; whether
+  it *plays* as breach economy is now a human's verdict.** Next iter
+  26: open round 3 SPIKE — weakest axes are C5 (2/5, anchor 3 = 4-5
+  enemy roles) and C8 (2/5, anchor 3 = all-5-band-pressure upgrade
+  coverage). Diagnose at iter start.
+
 ## iter 024 — BUILD-QUALITY — depot rule-changer "Breach Dividend"
 
 - Date: 2026-05-20

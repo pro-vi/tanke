@@ -2,14 +2,14 @@
 
 ```yaml
 phase: loop
-iter: 24
+iter: 25
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_24: 23d6a2ec3bf2821f  # bit-identical through 12 substrate writes
+hash_anchor_at_iter_25: 23d6a2ec3bf2821f  # bit-identical through 12 substrate writes
 substrate_writes_this_arc: 12  # ProceduralLevel.gd ×3 + Bullet.gd ×4 + PlayerTank.gd ×3 + Level.gd + Spawner.gd ×2
-current_round: 2
-current_round_phase: BUILD
+current_round: 2-closed  # round 3 opens iter 26
+current_round_phase: between-rounds
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24]
@@ -18,9 +18,9 @@ reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%
 audit_candidates: []
 last_audit: iter 21
 last_consult: iter 21
-consult_002_plan: iter 23 HEAT armor (DONE) → iter 24 Breach Dividend (DONE) → iter 25 surface PLAYTEST request to REVIEW-QUEUE (CONSULT 002 #3 — the 5-person smoke test; needs the user)
-meta_iter24.5: PARITY DRIFT named (dice nat-13 /meta). 24 iters, 28/50, ALL structural/harness-cited, ZERO playtests — CONSULT 001+002 both flagged "no human has played it". ~14 of the 22 remaining rubric points are playtest-gated BY DESIGN; the loop is at/near a structural ceiling (arc-3 L4 "ceiling-paused"). This is arc-2's #1 lesson recurring ("identity, not mechanics, is the limiter"). Remaining structural BUILDs (C3/4 swap-cost, C4/4 shell-mix harness, C5/3 4th role, C8/3 band coverage) ≈ +8-10 pts → ~37/50 then genuine ceiling.
-next_action: iter 25 — META + QUEUE — write the meta-finding (parity drift / structural-ceiling) to LEDGER as a META iter. Append PLAYTEST request to REVIEW-QUEUE.md #3 — framed PROMINENTLY as the critical path, not a passive note: round 2 is structurally complete; the loop cannot honestly close past ~37/50 without a human playtest (CONSULT 002 #3 — "do players describe their run as route economy?"). Surface to the user via PushNotification that round 2 is done + a playtest is the gating decision. THEN the loop may continue round 3 on the remaining structural anchors (it does NOT halt — non-stop per PROMPT) but with eyes open that those are the last ~8-10 structural points.
+meta_iter25: PARITY DRIFT named + formalized. Round 2 closed. Playtest surfaced as REVIEW-QUEUE #3 (critical path) + PushNotification. Structural ceiling ~37/50 without a human playtest.
+next_action: iter 26 — SPIKE/BUILD — open round 3. Weakest axes: C5 (2/5) + C8 (2/5). C5 anchor 3 = "4-5 enemy roles; silhouette+palette+facing differ — code-cited via gen_tile.py outputs" (have 3 roles — add a 4th, e.g. EnemyMortar = telegraphed area-denial per BANDS.md band 4). C8 anchor 3 = "catalog covers all 5 bands' pressures" (open_killbox has no dedicated upgrade). Recommend C5 anchor 3 (a 4th enemy role is a real mechanic + needs a gen_tile silhouette → also exercises the C7 grammar gate). Diagnose at iter start. EYES OPEN: round 3 is the last ~8-10 structural points; the back half of the rubric needs the playtest.
+review_queue_note: #3 is the playtest request — when the user writes `playtest` the loop pauses + surfaces the queue.
 score: 28/50 absolute · 28/50 effective  # C1=3,C2=3,C3=3,C4=3,C5=2,C6=3,C7=3,C8=2,C9=2,C10=4
 spike_report: loop/breach/iter-001-spike-report.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend} + check-silhouette-gate (14; test-breach aggregate)
