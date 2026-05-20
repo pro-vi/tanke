@@ -44,11 +44,18 @@ signal depot_picked(depot: Node, kind: int)
 @export var choice_c_kind: UpgradeKind = UpgradeKind.HE_MAX_EXPAND_2
 @export var choice_c_label: String = "+2 HE cap  (deeper run)"
 
+# arc-4 iter 40 (Round 6b): when true, the depot draws 3 distinct
+# upgrade kinds from the catalog per run (deterministic from the run
+# seed + this depot's depth) instead of the fixed choice_*_kind exports.
+# Default false preserves the fixed-choice path (and the harnesses).
+@export var randomize_offers: bool = false
+
 # Player loadout reference captured on entry; consumed by apply_choice.
 # Cleared on exit. Avoids the depot needing to know about PlayerTank.gd
 # directly (Layer-2 substrate stays untouched).
 var _player_loadout: LoadoutT = null
 var _picked: bool = false
+var _rolled_kinds: Array[int] = []  # arc-4 iter 40: drawn offers (lazy)
 
 
 func _ready() -> void:
@@ -89,9 +96,9 @@ func _show_panel() -> void:
 	if layer == null:
 		return
 	_set_panel_label("Panel/NextBand", "next: " + _resolve_next_band_hint())
-	_set_panel_label("Panel/ChoiceA", "1: " + choice_a_label)
-	_set_panel_label("Panel/ChoiceB", "2: " + choice_b_label)
-	_set_panel_label("Panel/ChoiceC", "3: " + choice_c_label)
+	_set_panel_label("Panel/ChoiceA", "1: " + _choice_label(1))
+	_set_panel_label("Panel/ChoiceB", "2: " + _choice_label(2))
+	_set_panel_label("Panel/ChoiceC", "3: " + _choice_label(3))
 	layer.visible = true
 
 
@@ -128,6 +135,73 @@ func _resolve_next_band_hint() -> String:
 	return nxt.band_name.replace("_", " ")
 
 
+# arc-4 iter 40 (Round 6b): roll this depot's 3 upgrade offers — 3
+# distinct UpgradeKinds drawn from the 7-entry catalog. Deterministic
+# from the run seed + this depot's depth (so each depot offers a
+# different set and a run stays reproducible). Rolled once, lazily, on
+# first need — by then the level's _ready has resolved level_seed.
+func _ensure_rolled() -> void:
+	if not randomize_offers or not _rolled_kinds.is_empty():
+		return
+	var seed_val: int = 0
+	var lvl: Node = get_parent()
+	if lvl != null and "level_seed" in lvl:
+		seed_val = int(lvl.level_seed)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_val + int(global_position.y)
+	var pool: Array[int] = [
+		UpgradeKind.HE_REFILL_2, UpgradeKind.HEAT_REFILL_1,
+		UpgradeKind.HE_MAX_EXPAND_2, UpgradeKind.HEAT_MAX_EXPAND_2,
+		UpgradeKind.FULL_RESUPPLY, UpgradeKind.BREACH_DIVIDEND,
+		UpgradeKind.OVERDRIVE,
+	]
+	for i in range(pool.size() - 1, 0, -1):
+		var j: int = rng.randi_range(0, i)
+		var t: int = pool[i]
+		pool[i] = pool[j]
+		pool[j] = t
+	_rolled_kinds = [pool[0], pool[1], pool[2]]
+
+
+# The UpgradeKind for a 1-based choice index. Randomized depots draw
+# from the rolled set; fixed depots use the choice_*_kind exports.
+func _choice_kind(idx: int) -> int:
+	if randomize_offers:
+		_ensure_rolled()
+		if idx >= 1 and idx <= _rolled_kinds.size():
+			return _rolled_kinds[idx - 1]
+	match idx:
+		2: return choice_b_kind
+		3: return choice_c_kind
+	return choice_a_kind
+
+
+# The panel label for a 1-based choice index. Randomized depots derive
+# the label from the rolled kind; fixed depots use the choice_*_label
+# exports.
+func _choice_label(idx: int) -> String:
+	if randomize_offers:
+		return _label_for_kind(_choice_kind(idx))
+	match idx:
+		2: return choice_b_label
+		3: return choice_c_label
+	return choice_a_label
+
+
+# Human label per UpgradeKind — used when a depot's offers are rolled.
+# Each phrasing is an economy VERB, not a %stat (CONSULT §9 #7).
+func _label_for_kind(kind: int) -> String:
+	match kind:
+		UpgradeKind.HE_REFILL_2: return "+2 HE  (open brick lanes)"
+		UpgradeKind.HEAT_REFILL_1: return "+1 HEAT  (crack armor)"
+		UpgradeKind.HE_MAX_EXPAND_2: return "+2 HE cap  (deeper HE economy)"
+		UpgradeKind.HEAT_MAX_EXPAND_2: return "+2 HEAT cap  (deeper HEAT economy)"
+		UpgradeKind.FULL_RESUPPLY: return "Full resupply  (recover all shells)"
+		UpgradeKind.BREACH_DIVIDEND: return "Breach Dividend  (HE clusters refund)"
+		UpgradeKind.OVERDRIVE: return "Overdrive  (sprint-burst verb)"
+	return "upgrade"
+
+
 # Iter 9: poll keys 1/2/3 while paused. Depot runs with PROCESS_MODE_ALWAYS
 # so _process fires during pause. Single-pick semantics: once picked,
 # `_picked` blocks repeat application until body_exited resets.
@@ -147,12 +221,9 @@ func _process(_delta: float) -> void:
 func apply_choice(idx: int) -> void:
 	if _player_loadout == null or _picked:
 		return
-	var kind: int
-	match idx:
-		1: kind = choice_a_kind
-		2: kind = choice_b_kind
-		3: kind = choice_c_kind
-		_: return
+	if idx < 1 or idx > 3:
+		return
+	var kind: int = _choice_kind(idx)
 	apply_upgrade(kind, _player_loadout)
 	_picked = true
 	# iter 29: pick locked — clear the panel so the player reads "done"

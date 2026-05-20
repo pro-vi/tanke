@@ -24,6 +24,42 @@ Format:
 
 ---
 
+## iter 040 — BUILD — Round 6b: depot-offer randomization
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 6b (deeper variety), piece 1. Blueprint: iter-038-round6-architect.md.
+- Δ note: C11's structural tier (anchors 1-3) was maxed by iter 39's
+  band-shuffle; depot-offer randomization deepens the run-variety AXIS
+  but cannot lift the integer (C11 anchors 4-5 are [FEEL]). Δ 0 — a real
+  BUILD (a new mechanic the playtest's roguelite-feel ask demands), not
+  BUILD-QUALITY. The lift is [FEEL]-gated. Today the 3 BreachLevel
+  depots all offer the IDENTICAL fixed 3 choices every run; this makes
+  each depot draw a different 3-of-7 per run.
+- CONSULT constraints respected: 1 (offers shown only at the safe gate),
+  7 (every rolled label is an economy verb, not a %stat).
+- Predicted failure modes:
+  - Randomization breaks test_breach_depot_choice.gd, which drives
+    apply_choice(1/2/3) expecting the @export defaults. Mitigation:
+    randomize_offers defaults FALSE — bare/harness depots keep the fixed
+    choices; only the BreachLevel depots (flag set true in the .tscn)
+    randomize.
+  - The roll runs before level_seed is resolved. Mitigation: lazy roll
+    on first need (_ensure_rolled) — by then the level's _ready has
+    resolved the seed.
+  - A depot rolls duplicate kinds. Mitigation: Fisher-Yates over the
+    7-kind pool, take the first 3 — distinct by construction.
+- Falsifiable claim: post-edit — a new check-breach-depot-roll harness
+  shows randomize_offers=true depots roll 3 distinct kinds with >=2
+  distinct sets across seeds, and a randomize_offers=false depot uses
+  the @export defaults; test_breach_depot_choice still green; hash
+  anchor 23d6a2ec3bf2821f preserved; test-all 5/5; test-breach 21/21.
+- Sentence test: the 7 catalog entries are unchanged (all pass — Loadout
+  UPGRADE CATALOG block); this iter only changes WHICH 3 are offered.
+- Substrate touched: none — Depot.gd + BreachLevel.tscn are arc-4-owned.
+- Hash-anchor verification plan: Depot.gd is not on the procedural hash
+  path; flag-off baseline unaffected. Verified as a regression guard.
+
 ## iter 039 — BUILD — Round 6a: per-run band-order shuffle + dynamic depot preview
 
 - Date: 2026-05-20

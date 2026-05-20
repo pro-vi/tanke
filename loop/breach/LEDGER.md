@@ -17,6 +17,48 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 040 — BUILD — Round 6b: depot-offer randomization
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **33/55** (Δ 0 — C11's structural tier was maxed by iter 39's
+  band-shuffle; depot-offer randomization deepens the run-variety axis
+  but cannot lift the integer, C11 anchors 4-5 are [FEEL].)
+- Round 6b (deeper variety), piece 1 of the iter-038 blueprint.
+- Shipped: **depot-offer randomization.** Before iter 40 the 3
+  BreachLevel depots all offered the IDENTICAL fixed 3 choices every
+  run. Now each depot draws 3 distinct UpgradeKinds from the 7-entry
+  catalog — deterministic from the run seed + the depot's depth, so the
+  3 depots differ from each other and a run differs from the next.
+  - Depot.gd: `randomize_offers` flag (default false — bare/harness
+    depots keep the fixed @export choices); `_ensure_rolled` (lazy
+    Fisher-Yates draw of 3-of-7); `_choice_kind` / `_choice_label` /
+    `_label_for_kind` route choices through the roll when the flag is
+    on. apply_choice + _show_panel use them.
+  - BreachLevel.tscn: the 3 depots set `randomize_offers = true`.
+- Process note: the apply_choice edit dropped the `var kind`
+  declaration but left a dangling `depot_picked.emit(self, kind)` — a
+  parse error that broke Depot.gd loading and HUNG the depot harnesses
+  (no script → no quit()). The `make test` hook missed it (it loads
+  ProceduralLevel.tscn, which has no depots); the depot harnesses
+  caught it. Fixed within-iter. Not an F — an implementation slip
+  caught by a harness, not a falsified prediction.
+- Constraints: respects 1 (offers only at the safe gate), 7 (every
+  rolled label is an economy verb — _label_for_kind phrasings).
+- Hash anchor: `23d6a2ec3bf2821f` verified (regression guard — Depot.gd
+  is off the procedural hash path). `make test-all` 5/5. `make
+  test-breach` 21/21 (NEW check-breach-depot-roll; check-breach-depot-
+  choice still green via the flag-off default path).
+- Falsifications: none — the iter-40 falsifiable claim held in full.
+- Files: Depot.gd, BreachLevel.tscn, test_breach_depot_roll.gd (NEW),
+  Makefile, PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **Depot offers now vary run-to-run.** Combined with iter
+  39's band-order shuffle, a run differs in both terrain-sequence AND
+  build-options. The randomization is currently over a thin catalog
+  (5 refills + 2 rule-changers) — iter 41 (Round 6c) adds depot
+  rule-changers so the varying offer has more doctrine to draw from
+  (CONSULT 003 Q2).
+
 ## iter 039 — BUILD — Round 6a: per-run band-order shuffle + dynamic depot preview
 
 - Date: 2026-05-20

@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 39
+iter: 40
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
 hash_anchor_at_iter_39: 23d6a2ec3bf2821f  # bit-identical through 21 substrate writes
 substrate_writes_this_arc: 21  # ProceduralLevel.gd ×5 + Bullet.gd ×5 + PlayerTank.gd ×9 + Level.gd + Spawner.gd ×2
 current_round: 6-open
-current_round_phase: BUILD — Round 6b (deeper variety); blueprint iter-038-round6-architect.md
+current_round_phase: BUILD — Round 6c (build divergence — depot rule-changers); blueprint iter-038-round6-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,12 +21,12 @@ last_consult: iter 37  # CONSULT 003 — written self-pre-mortem, Round 5 close
 playtest_log: [iter 33 — 2026-05-20 — verdict: structurally complete but illegible; F003 logged]
 structural_ceiling: RE-OPENED at iter 33. The iter-32 "30/50 ceiling" assumed harness-green structure would read as breach economy; the iter-33 playtest falsified that (F003). Real work exists above 30/50 — Round 5 (legibility), then Round 6+ (roguelite feel).
 loop_state: RUNNING (resumed iter 33). User playtested 2026-05-20; the loop integrated the verdict, logged F003, opened Round 5. The non-stop loop continues per PROMPT until the user writes `playtest` / `halt` / `stop`.
-next_action: iter 40 — BUILD — Round 6b: deeper variety. Read iter-038-round6-architect.md. Round 6b deepens run-variety beyond band-order shuffle — a band-pool draw (define >5 band archetypes, draw 5 per run — option B from the iter-38 SPIKE) and/or depot-offer randomization (each depot draws its 3 choices from the catalog). SPIKE-within-BUILD the cheaper-first piece. Hash-anchor verify; multi-seed reachability sweep; test-all + test-breach green.
+next_action: iter 41 — BUILD — Round 6c: build divergence (depot rule-changers). Read iter-038-round6-architect.md. CONSULT 003 Q2 — the depot catalog is mostly stock-refills (5 of 7); the player "chooses quantity, not doctrine." Round 6c adds depot RULE-CHANGERS — upgrades that change HOW you climb, not how much. Each must pass the sentence test + be a verb/affordance, not a %stat. Prefer rule-changers reusing existing affordances (low new-mechanic risk). Hash-anchor verify if substrate touched; test-all + test-breach green.
 score: 33/55 absolute · 33/55 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
 round6_blueprint: loop/breach/iter-038-round6-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle} + check-silhouette-gate (20 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll} + check-silhouette-gate (21 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close]  # #3 CLOSED — playtest delivered 2026-05-20
 ```
 
@@ -101,22 +101,27 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-20 — **iter 39 (BUILD).** Round 6a — per-run band-order
-  shuffle (3 middle bands permute into fixed slots; tutorial+endgame
-  pinned; deterministic from seed; source unmutated) + dynamic depot
-  next-band preview. RUBRIC +C11 (run-to-run variety). C11 0→3.
-  ProceduralLevel substrate write; hash anchor preserved; test-all 5/5,
-  test-breach 20/20. **33/55** (Δ +3 — first lift since iter 32).
+- 2026-05-20 — **iter 40 (BUILD).** Round 6b — depot-offer
+  randomization: each of the 3 depots now draws 3 distinct upgrades
+  from the 7-catalog per run (was: identical fixed 3 every run).
+  `randomize_offers` flag (default-off harness-safe). A within-iter
+  parse slip (dangling `kind`) hung the depot harnesses; caught + fixed
+  same-iter. test-all 5/5, test-breach 21/21. Δ 0 (C11 structural
+  maxed). 33/55.
 
 ## Next action
 
-**Iter 40 — BUILD — Round 6b: deeper variety.**
-Read `loop/breach/iter-038-round6-architect.md`. Round 6b deepens
-run-variety beyond band-order shuffle — a band-pool draw (define >5
-band archetypes, draw 5 per run — option B from the iter-38 SPIKE)
-and/or depot-offer randomization (each depot draws its 3 choices from
-the catalog). SPIKE-within-BUILD the cheaper-first piece. Hash-anchor
-verify; multi-seed reachability sweep; test-all + test-breach green.
+**Iter 41 — BUILD — Round 6c: build divergence (depot rule-changers).**
+Read `loop/breach/iter-038-round6-architect.md`. CONSULT 003 Q2 — the
+depot catalog is mostly stock-refills (5 of 7); the player "chooses
+quantity, not doctrine." Round 6c adds depot RULE-CHANGERS — upgrades
+that change HOW you climb, not how much. Each must pass the sentence
+test + be a verb/affordance, not a %stat. Prefer rule-changers that
+reuse existing affordances (low new-mechanic risk).
+
+The loop runs non-stop until the user writes `playtest` / `halt` /
+`stop`, or a correctness violation fires (hash anchor break, test-all
+regression, unsanctioned substrate write, unfixed band reachability).
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all
