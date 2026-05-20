@@ -24,6 +24,49 @@ Format:
 
 ---
 
+## iter 035 — BUILD-QUALITY — shell UI panel + APCR icon (Round 5 legibility)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE] [QUALITY]
+- Round 5 (shell legibility), piece 2. Blueprint: iter-033-round5-architect.md.
+  Directly answers iter-33 playtest finding 1 ("no shell UI") + finding 3
+  (illegible shell roles). Legibility craft — no [STRUCTURE] integer lift
+  (the playtest's lift is the [FEEL] tier); BUILD-QUALITY per the iter-29/30
+  precedent (depot UI + shell HUD were also BUILD-QUALITY). Last
+  BUILD-QUALITY was iter 30 — well within the L3/R4 1-per-3 cap.
+- CONSULT constraints respected: 3 (a readable shell relationship needs the
+  shell + reserve visible at a glance), 4 (the gen_shell_apcr icon is routed
+  through the silhouette-grammar gate before commit), CONSULT 002
+  (legibility in <5s).
+- CONSULT constraints risked: none.
+- Predicted failure modes:
+  - The shell panel replaces the iter-30 `_shell_label`; test_breach_hud.gd
+    asserts a "ShellLabel" node — it must be rewritten for the new panel
+    or it fails.
+  - The panel must stay gated on `loadout != null` — arc-2/3 HUD must be
+    bit-identical (no panel built, no update branch).
+  - The APCR icon must be silhouette-distinct from AP/HE/HEAT or the gate
+    rejects it (MIN_SILHOUETTE_DIFF=8, MIN_PALETTE_DIFF=20).
+- Scope note: in-flight bullet shape-differentiation (beyond the iter-34
+  per-shell modulate colour) is DEFERRED — a sprite-scale change cannot be
+  visually verified by a headless loop, and the F003 lesson says do not
+  ship an unverifiable visual. The legibility win this iter is the panel +
+  colour consistency (chip colours match the Bullet modulate).
+- Falsifiable claim: post-edit — `make check-silhouette-gate` passes with
+  4 icons; `make check-breach-assets` reports "4 shell icons"; the rewritten
+  test_breach_hud verifies a 4-slot ShellPanel reflecting current_shell +
+  per-shell reserves + selection highlight, and arc-2/3 PlayerTank has
+  none; hash anchor `23d6a2ec3bf2821f` preserved; `make test-all` 5/5;
+  `make test-breach` 18/18.
+- Sentence test: n/a (UI/asset iter, no upgrade).
+- Substrate touched: PlayerTank.gd (HUD — sanctioned). gen_tile.py is
+  extendable per PROMPT. check_shell_icons.py / Makefile / test_breach_hud
+  are loop tooling.
+- Hash-anchor verification plan: post-edit, run loop/test_runner.gd seed 42
+  — the panel is gated on loadout != null; the procedural baseline's
+  PlayerTank has no loadout, so the HUD path is bit-identical. Verify
+  before commit.
+
 ## iter 034 — BUILD — APCR 4th shell + steel as a destroyable band pressure
 
 - Date: 2026-05-20

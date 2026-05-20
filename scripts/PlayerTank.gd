@@ -76,7 +76,12 @@ var _iframe_timer: float = 0.0
 var _dead: bool = false
 var _restart_armed: bool = false
 var _hp_label: Label
-var _shell_label: Label = null  # arc-4 iter 30: breach-mode shell HUD
+# arc-4 iter 35: breach-mode shell panel (4 slots — AP/HE/HEAT/APCR).
+var _shell_panel: ColorRect = null
+var _shell_slot_classes: Array[int] = []
+var _shell_slot_bgs: Array[ColorRect] = []
+var _shell_slot_chips: Array[ColorRect] = []
+var _shell_slot_labels: Array[Label] = []
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
@@ -671,18 +676,11 @@ func _setup_hud() -> void:
 		_time_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 		_time_label.add_theme_constant_override("outline_size", 2)
 		canvas.add_child(_time_label)
-	# arc-4 iter 30: breach-mode shell HUD — current shell + HE/HEAT
-	# reserve counts. Gated on loadout != null so arc-2/3 HUD is
-	# bit-identical (no label created, _update_run_hud branch skipped).
+	# arc-4 iter 35: breach-mode shell panel — a 4-slot HUD strip
+	# (AP/HE/HEAT/APCR). Gated on loadout != null so arc-2/3 HUD is
+	# bit-identical (no panel built, _update_run_hud branch skipped).
 	if loadout != null:
-		_shell_label = Label.new()
-		_shell_label.name = "ShellLabel"
-		_shell_label.position = Vector2(4, 210)
-		_shell_label.text = "SHELL AP   HE 0  HEAT 0  APCR 0"
-		_shell_label.add_theme_color_override("font_color", Color.WHITE)
-		_shell_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
-		_shell_label.add_theme_constant_override("outline_size", 2)
-		canvas.add_child(_shell_label)
+		_build_shell_panel(canvas)
 	add_child(canvas)
 	hp_changed.connect(_on_hp_changed_hud)
 
@@ -696,6 +694,94 @@ func _shell_name(sc: int) -> String:
 	if sc == BulletT.SHELL_CLASS_APCR:
 		return "APCR"
 	return "AP"
+
+
+# arc-4 iter 35: per-shell HUD colour — matches the Bullet.gd in-flight
+# modulate so the panel chip and the airborne shell read as one thing.
+func _shell_color(sc: int) -> Color:
+	if sc == BulletT.SHELL_CLASS_HE:
+		return Color(1.0, 0.85, 0.25, 1.0)
+	if sc == BulletT.SHELL_CLASS_HEAT:
+		return Color(1.0, 0.35, 0.25, 1.0)
+	if sc == BulletT.SHELL_CLASS_APCR:
+		return Color(0.6, 0.85, 1.0, 1.0)
+	return Color(0.92, 0.92, 0.95, 1.0)  # AP — pale steel
+
+
+# arc-4 iter 35: finite reserve for a shell class. AP is unlimited → 0
+# here; the panel renders AP as "--" rather than a count.
+func _shell_reserve(sc: int) -> int:
+	if loadout == null:
+		return 0
+	if sc == BulletT.SHELL_CLASS_HE:
+		return loadout.he_reserve
+	if sc == BulletT.SHELL_CLASS_HEAT:
+		return loadout.heat_reserve
+	if sc == BulletT.SHELL_CLASS_APCR:
+		return loadout.apcr_reserve
+	return 0
+
+
+# arc-4 iter 35 (Round 5, playtest finding 1 — "no shell UI"): build the
+# breach-mode shell panel. A 4-slot strip — one slot per shell class —
+# each with a colour chip (matching the in-flight Bullet modulate), the
+# shell name, and the finite reserve. Gated on loadout != null by the
+# caller, so arc-2/3 HUD is bit-identical (panel never built).
+func _build_shell_panel(canvas: CanvasLayer) -> void:
+	_shell_panel = ColorRect.new()
+	_shell_panel.name = "ShellPanel"
+	_shell_panel.position = Vector2(2, 209)
+	_shell_panel.size = Vector2(316, 26)
+	_shell_panel.color = Color(0.07, 0.07, 0.09, 0.82)
+	canvas.add_child(_shell_panel)
+	_shell_slot_classes = [
+		BulletT.SHELL_CLASS_AP, BulletT.SHELL_CLASS_HE,
+		BulletT.SHELL_CLASS_HEAT, BulletT.SHELL_CLASS_APCR,
+	]
+	for i in _shell_slot_classes.size():
+		var slot_x: float = 4.0 + float(i) * 78.0
+		var bg: ColorRect = ColorRect.new()
+		bg.position = Vector2(slot_x, 2)
+		bg.size = Vector2(76, 22)
+		bg.color = Color(0, 0, 0, 0)  # set per-frame by _update_shell_panel
+		_shell_panel.add_child(bg)
+		_shell_slot_bgs.append(bg)
+		var chip: ColorRect = ColorRect.new()
+		chip.position = Vector2(slot_x + 4.0, 9)
+		chip.size = Vector2(8, 8)
+		chip.color = _shell_color(_shell_slot_classes[i])
+		_shell_panel.add_child(chip)
+		_shell_slot_chips.append(chip)
+		var lbl: Label = Label.new()
+		lbl.position = Vector2(slot_x + 15.0, 4)
+		lbl.add_theme_color_override("font_color", Color.WHITE)
+		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		lbl.add_theme_constant_override("outline_size", 2)
+		lbl.add_theme_font_size_override("font_size", 10)
+		_shell_panel.add_child(lbl)
+		_shell_slot_labels.append(lbl)
+	_update_shell_panel()
+
+
+# arc-4 iter 35: refresh the shell panel — reserve counts, the selection
+# highlight on current_shell, and dimming for out-of-reserve shells.
+func _update_shell_panel() -> void:
+	if _shell_panel == null or loadout == null:
+		return
+	for i in _shell_slot_classes.size():
+		var sc: int = _shell_slot_classes[i]
+		var shell_nm: String = _shell_name(sc)
+		if sc == BulletT.SHELL_CLASS_AP:
+			_shell_slot_labels[i].text = "%s  --" % shell_nm  # AP unlimited
+		else:
+			_shell_slot_labels[i].text = "%s  %d" % [shell_nm, _shell_reserve(sc)]
+		if sc == current_shell:
+			_shell_slot_bgs[i].color = Color(0.95, 0.95, 0.55, 0.45)
+		else:
+			_shell_slot_bgs[i].color = Color(0, 0, 0, 0)
+		var dim: float = 1.0 if loadout.can_fire(sc) else 0.4
+		_shell_slot_labels[i].modulate.a = dim
+		_shell_slot_chips[i].modulate.a = dim
 
 
 func _on_hp_changed_hud(new_hp: int, the_max_hp: int) -> void:
@@ -726,13 +812,10 @@ func _update_run_hud() -> void:
 	if _time_label != null:
 		var t: int = int(_run_time)
 		_time_label.text = "TIME %d:%02d" % [t / 60, t % 60]
-	# arc-4 iter 30: shell HUD — current shell + reserves. Only when a
-	# loadout exists (the label is null otherwise → branch skipped).
-	if _shell_label != null and loadout != null:
-		_shell_label.text = "SHELL %-4s HE %d  HEAT %d  APCR %d" % [
-			_shell_name(current_shell), loadout.he_reserve,
-			loadout.heat_reserve, loadout.apcr_reserve
-		]
+	# arc-4 iter 35: refresh the shell panel — current shell + reserves.
+	# Only when a loadout exists (the panel is null otherwise).
+	if _shell_panel != null and loadout != null:
+		_update_shell_panel()
 
 
 # iter 30 (Pro Consult 005 META — "readable upward intent"): when player

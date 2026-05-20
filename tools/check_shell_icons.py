@@ -2,7 +2,7 @@
 """
 Arc-4 breach mode: shell-icon asset verifier (C7 anchor 1).
 
-Generates the 3 shell-class HUD icons via gen_tile.py's shell
+Generates the 4 shell-class HUD icons via gen_tile.py's shell
 generators, then routes them through tools/silhouette_gate.py — the
 reusable CONSULT §9 constraint-4 grammar gate (C7 anchor 2).
 
@@ -20,7 +20,7 @@ sys.path.insert(0, str(REPO / "tools"))
 from silhouette_gate import gate  # noqa: E402
 
 OUT = REPO / "tools" / "out"
-SHELLS = ["shell_ap", "shell_he", "shell_heat"]
+SHELLS = ["shell_ap", "shell_he", "shell_heat", "shell_apcr"]
 
 
 def main() -> int:
@@ -48,7 +48,7 @@ def main() -> int:
         print("BREACH_ASSETS_FAIL — silhouette gate rejected the shell icons")
         return 1
 
-    print("BREACH_ASSETS_OK 3 shell icons — passed the silhouette-grammar gate")
+    print("BREACH_ASSETS_OK 4 shell icons — passed the silhouette-grammar gate")
     return 0
 
 

@@ -17,6 +17,45 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 035 — BUILD-QUALITY — shell UI panel + APCR icon (Round 5 legibility)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE] [QUALITY]
+- Score: **30/50** (Δ 0 — legibility craft; no [STRUCTURE] integer, the
+  lift is [FEEL]-gated. BUILD-QUALITY per the iter-29/30 precedent.)
+- Round 5 (shell legibility), piece 2 of the iter-033 blueprint. Directly
+  answers iter-33 playtest finding 1 ("no shell UI") + finding 3
+  (illegible shell roles).
+- Shipped:
+  - **4-slot shell panel** (`ShellPanel` in PlayerTank's HUD) — one slot
+    per shell (AP/HE/HEAT/APCR), each a colour chip + name + finite
+    reserve. The current shell's slot is highlighted; out-of-reserve
+    shells dim. Chip colours match the in-flight Bullet modulate, so an
+    HE shell in the air and the HE slot read as one thing. Replaces the
+    iter-30 one-line text `_shell_label`.
+  - **gen_shell_apcr** — the 4th shell icon (gen_tile.py): a heavy headed
+    bolt in steel-blue. Silhouette-distinct from AP/HE/HEAT — all 6 pairs
+    pass the grammar gate (SILHOUETTE_GATE_PASS 4 assets).
+- Scope note: in-flight bullet shape-differentiation (beyond the iter-34
+  per-shell modulate colour) was DEFERRED — a sprite-scale change cannot
+  be visually verified headless, and the F003 lesson says don't ship an
+  unverifiable visual. The legibility win is the panel + the chip↔bullet
+  colour consistency.
+- Constraints: respects 3 (shell + reserve legible at a glance), 4 (the
+  APCR icon routed through the silhouette gate before commit), CONSULT 002.
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** — the panel is
+  gated on loadout != null; the procedural baseline's PlayerTank has no
+  loadout, so the HUD path is bit-identical (`playable: true`, seed 42).
+  `make test-all` 5/5. `make test-breach` 18/18 — BREACH_HUD_OK rewritten
+  for the panel; BREACH_ASSETS_OK now reports 4 icons.
+- Falsifications: none — the iter-35 falsifiable claim held in full.
+- Files: gen_tile.py, check_shell_icons.py, Makefile, PlayerTank.gd,
+  test_breach_hud.gd, PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **The 4-shell grammar is now legible.** The player sees all
+  four shells, which is selected, and how much of each remains — at a
+  glance, colour-coded to the bullets. iter 36 ships the shell codex /
+  tutorial (what each shell is FOR) — playtest findings 2-3.
+
 ## iter 034 — BUILD — APCR 4th shell + steel as a destroyable band pressure
 
 - Date: 2026-05-20

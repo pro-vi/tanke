@@ -201,7 +201,7 @@ check-breach-enemies:
 	@$(HEADLESS) --script res://loop/breach/test_breach_enemies.gd 2>&1 | grep -E "^(  (band|role)|BREACH_ENEMIES_OK|FAIL|ERROR|SCRIPT ERROR)"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_enemies.gd 2>&1 | grep -q "^BREACH_ENEMIES_OK"
 
-# Arc-4 breach mode: generate + verify the 3 shell-class HUD icons via
+# Arc-4 breach mode: generate + verify the 4 shell-class HUD icons via
 # gen_tile.py; routes them through the silhouette-grammar gate. C7
 # anchor 1.
 check-breach-assets:
@@ -211,9 +211,9 @@ check-breach-assets:
 # run tools/silhouette_gate.py directly on the generated shell icons.
 # The reusable PASS/FAIL gate for CONSULT §9 constraint 4.
 check-silhouette-gate:
-	@for s in shell_ap shell_he shell_heat; do python3 $(PROJECT_DIR)/tools/gen_tile.py --tile $$s --variant 0 >/dev/null; done
+	@for s in shell_ap shell_he shell_heat shell_apcr; do python3 $(PROJECT_DIR)/tools/gen_tile.py --tile $$s --variant 0 >/dev/null; done
 	python3 $(PROJECT_DIR)/tools/silhouette_gate.py \
-		$(FRAMES_DIR)/shell_ap_000.png $(FRAMES_DIR)/shell_he_000.png $(FRAMES_DIR)/shell_heat_000.png
+		$(FRAMES_DIR)/shell_ap_000.png $(FRAMES_DIR)/shell_he_000.png $(FRAMES_DIR)/shell_heat_000.png $(FRAMES_DIR)/shell_apcr_000.png
 
 # Arc-4 breach mode: verify HEAT armor-bypass — armored-group bodies
 # take AP/HE mitigated (blocked at base damage 1); HEAT bypasses.
@@ -246,7 +246,7 @@ check-breach-overdrive:
 # Arc-4 breach mode: verify the breach-mode shell HUD — current shell
 # + HE/HEAT reserve counts; arc-2/3 HUD unaffected. Round-4 legibility.
 check-breach-hud:
-	@$(HEADLESS) --script res://loop/breach/test_breach_hud.gd 2>&1 | grep -E "^(  breach|BREACH_HUD_OK|FAIL|ERROR|SCRIPT ERROR)"; \
+	@$(HEADLESS) --script res://loop/breach/test_breach_hud.gd 2>&1 | grep -E "^(  (slots|selection|panel)|BREACH_HUD_OK|FAIL|ERROR|SCRIPT ERROR)"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_hud.gd 2>&1 | grep -q "^BREACH_HUD_OK"
 
 # Arc-4 breach mode: verify the APCR 4th shell — breaches SteelBlock
