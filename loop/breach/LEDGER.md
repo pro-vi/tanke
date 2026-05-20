@@ -17,6 +17,43 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 033 — PLAYTEST — user playtest integrated; F003; Round 5 opened
+
+- Date: 2026-05-20
+- Tag: [FEEL]
+- Score: **30/50** (Δ 0 — the playtest moves the plan, not the number;
+  the structure is intact, but the FEEL tier is now EVIDENCED-unmet
+  rather than predicted-unmet)
+- The event: user playtested breach mode — REVIEW-QUEUE #3, the gate the
+  loop paused for at iter 32. Verdict: breach mode does not READ as
+  breach economy. "The game feels the same"; shell roles illegible
+  ("when do I use HE vs HEAT vs AP?"); no shell UI; no tutorial; "it
+  doesn't feel like a roguelite."
+- Falsification: **F003** — harness-green ≠ legible. 32 iters built the
+  structure; none of it reached the player. Parity drift, confirmed.
+- User design decisions (override the PROMPT; recorded STATE.md §Arc-4
+  amendments):
+  - Q1 → 4 shells: APCR sanctioned as the 4th shell class (overrides
+    CONSULT constraint 2). APCR = the steel-terrain breacher.
+  - Q2 → all four roguelite ingredients wanted (run variety, build
+    divergence, stakes/escalation, meta-progression) → the Round 6+
+    program.
+- Round 5 opened — **shell legibility + APCR** (findings 1-4). Blueprint:
+  `loop/breach/iter-033-round5-architect.md`. Pieces: iter 34 APCR +
+  steel-as-band-pressure; iter 35 shell UI panel + distinct shell
+  visuals; iter 36 shell codex/tutorial; iter 37 CONSULT + QUEUE close.
+- Hash anchor: n/a (no code change — integration/planning iter).
+- Falsifications: F003 added.
+- Files: `loop/breach/FALSIFICATIONS.md` (F003),
+  `loop/breach/iter-033-round5-architect.md` (NEW blueprint),
+  `loop/breach/REVIEW-QUEUE.md` (#3 closed, #5 appended),
+  `loop/breach/STATE.md` (unpaused, Round 5, §Arc-4 amendments),
+  `loop/breach/PRE-MORTEMS.md`, `loop/breach/LEDGER.md`
+- Finding: **The playtest re-opened the loop with real, honest work.**
+  Breach mode is structurally complete but illegible — Round 5 makes the
+  breach economy visible, differentiated, and explained; Round 6+ builds
+  the roguelite feel. The loop is RUNNING again, not paused.
+
 ## iter 032 — HALT — honest loop pause (autonomous work complete)
 
 - Date: 2026-05-20

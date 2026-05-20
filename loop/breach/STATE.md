@@ -1,31 +1,52 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: paused
-iter: 32
+phase: running
+iter: 33
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
 hash_anchor_at_iter_30: 23d6a2ec3bf2821f  # bit-identical through 15 substrate writes
 substrate_writes_this_arc: 15  # ProceduralLevel.gd ×3 + Bullet.gd ×4 + PlayerTank.gd ×6 + Level.gd + Spawner.gd ×2
-current_round: 4-closed
-current_round_phase: awaiting-playtest  # all autonomous work delivered; REVIEW-QUEUE #3 is the gate
+current_round: 5-open
+current_round_phase: BUILD — Round 5 (shell legibility); blueprint iter-033-round5-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
-falsifications: [F001-resolved, F002-resolved]
+falsifications: [F001-resolved, F002-resolved, F003-open]
 reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%)
 audit_candidates: []
 last_audit: iter 26
 last_consult: iter 21
-structural_ceiling: REACHED at 30/50 (iter 28). Round 4 (legibility) closed iter 30 — breach mode is playtest-ready.
-loop_state: PAUSED (iter 32). The autonomous run is complete — 30/50 structural, all 17 breach harnesses + 5 arc-3 green, hash anchor preserved through 15 substrate writes. Every harness-citable [STRUCTURE] anchor is closed; the remaining 20 rubric points are [FEEL]/playtest-gated by rubric design. No honest autonomous work remains, so the loop pauses rather than spin a do-nothing heartbeat (arc-1/arc-3 retro precedent).
-next_action: AWAIT USER. The loop is paused, not abandoned — all work committed + evidenced. Re-engage by: (a) writing `playtest` → surface REVIEW-QUEUE #1-4 (#3 is the 5-person smoke test ask: "do players describe their run as route economy?"), integrate findings, lift the [FEEL] anchors; or (b) re-firing `/loop` for further exploration. To resume a future session, read this STATE + LEDGER tail + REVIEW-QUEUE.
+playtest_log: [iter 33 — 2026-05-20 — verdict: structurally complete but illegible; F003 logged]
+structural_ceiling: RE-OPENED at iter 33. The iter-32 "30/50 ceiling" assumed harness-green structure would read as breach economy; the iter-33 playtest falsified that (F003). Real work exists above 30/50 — Round 5 (legibility), then Round 6+ (roguelite feel).
+loop_state: RUNNING (resumed iter 33). User playtested 2026-05-20; the loop integrated the verdict, logged F003, opened Round 5. The non-stop loop continues per PROMPT until the user writes `playtest` / `halt` / `stop`.
+next_action: iter 34 — BUILD — Round 5 piece 1: APCR 4th shell + steel as a band pressure. Read iter-033-round5-architect.md. Investigate ProceduralLevel steel placement first; then ship APCR (Bullet.gd + Loadout.gd + PlayerTank.gd — sanctioned substrate writes, default-on gating) + a steel-gated lane in bunker_zone. Hash-anchor verify post-edit.
 score: 30/50 absolute · 30/50 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4
 spike_report: loop/breach/iter-001-spike-report.md
+round5_blueprint: loop/breach/iter-033-round5-architect.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud} + check-silhouette-gate (17 in test-breach aggregate)
-review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #3 PLAYTEST REQUEST (critical path), #4 round-3 + ceiling]
+review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch]  # #3 CLOSED — playtest delivered 2026-05-20
 ```
+
+---
+
+## Arc-4 amendments (user overrides — recorded iter 33)
+
+The user has override authority over cadence and direction (PROMPT
+§USER-LOOK PROTOCOL). Recorded amendments:
+
+- **2026-05-20, playtest (iter 33):** PROMPT CONSULT constraint 2
+  ("no more than three primary shell classes at first — AP/HE/HEAT")
+  is **overridden**. APCR is sanctioned as the 4th shell class. Each
+  shell must still keep one crisp, distinct job (constraint 3 stands):
+  AP cheap/precise, HE brick-zone breacher, HEAT 2× anti-armor burst,
+  APCR steel-terrain breacher + armor-piercing at 1× damage.
+- **2026-05-20, playtest (iter 33):** the loop's mandate is extended
+  past structural completeness — the user wants all four roguelite
+  ingredients (run-to-run variety, build divergence, stakes &
+  escalation, meta-progression). This is the Round 6+ program; see the
+  blueprint tail in `iter-033-round5-architect.md`.
 
 ---
 
@@ -79,37 +100,29 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-19 — Scaffolding written (PROMPT, RUBRIC, STATE, BANDS, README).
-  CONSULT captured to `.research/synthesis-arc4-creative-consult-2026-05-19.md`.
-- 2026-05-19 — PROMPT v1 reframed: non-stop loop, REVIEW-QUEUE pattern,
-  SPIKE → DECISION → BUILD×N → CONSULT → QUEUE → bootstrap-next cadence.
-- 2026-05-19 — **iter 0 (this entry).** Preloop reads + substrate verify
-  complete. Machinery files scaffolded (LEDGER, PRE-MORTEMS, REVIEW-QUEUE,
-  FALSIFICATIONS, creative-consults). `preloop_complete: yes`.
-  `tile_hash[:16]=23d6a2ec3bf2821f` confirmed on seed 42 / default
-  procedural config. OG `check-chain` 25 stages PASS.
+- 2026-05-20 — **iter 33 (PLAYTEST).** User playtested breach mode —
+  the REVIEW-QUEUE #3 gate. Verdict: structurally complete but
+  illegible ("the game feels the same," shell roles unclear, no shell
+  UI, no tutorial, "doesn't feel like a roguelite"). Logged F003
+  (harness-green ≠ legible). User overrode the 3-shell constraint —
+  APCR sanctioned as the 4th shell. Round 5 (shell legibility) opened;
+  the loop resumed from its iter-32 pause.
 
 ## Next action
 
-**Iter 1 — SPIKE.** Two parallel investigations of the mode-integration fork
-(PROMPT §SUBSTRATE FREEZE: "Mode integration — iter 1 DECISION, gated"):
+**Iter 34 — BUILD — Round 5 piece 1: APCR + steel pressure.**
+Read `loop/breach/iter-033-round5-architect.md` for the full blueprint.
+Investigate first: does `ProceduralLevel.gd` place SteelBlock tiles,
+and how does HE's brick-zone destruction work today? Then implement
+APCR — `SHELL_CLASS_APCR` in Bullet.gd, `apcr_reserve` in Loadout.gd,
+a 4-shell KEY_TAB cycle in PlayerTank.gd (all sanctioned substrate
+writes, default-on gating) — and place a steel-gated lane in the
+bunker_zone band so APCR has a canonical use. Hash-anchor verify the
+flag-off codepath; `make test-breach` + `make test-all` green.
 
-- **Path A spike:** Add `@export var breach_mode_enabled: bool = false`
-  to `ProceduralLevel.gd` behind the default-on gating template (L5 +
-  PATTERN 2). Probe: is the surface large enough to fit
-  Depot/Shell/Loadout hooks without snowballing PlayerTank / Spawner /
-  Bullet writes beyond the sanctioned set? Hash-anchor verify post-edit
-  on flag-off codepath.
-- **Path B spike:** Sketch `scenes/BreachLevel.tscn` as a sibling. Probe:
-  how much ProceduralStep wiring duplicates? Does it cleanly avoid an H1
-  surface multiplication?
-
-SPIKE outputs a DECISION (iter 2) with a winning blueprint stashed at
-`loop/breach/iter-001-NNN-architect.md` (L2 compaction discipline).
-
-The only exits are user signal (`playtest` / `halt` / `stop`) and
-correctness violations (hash anchor break, test-all regression, hard
-substrate violation, band reachability failure not fixed same-iter).
+The loop runs non-stop until the user writes `playtest` / `halt` /
+`stop`, or a correctness violation fires (hash anchor break, test-all
+regression, unsanctioned substrate write, unfixed band reachability).
 
 ---
 

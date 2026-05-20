@@ -50,7 +50,7 @@ Format per item:
     (depot UI, shell HUD) so a playtest can actually be meaningful —
     but the playtest itself (#3) remains the gate.
 
-#3 — ★ PLAYTEST REQUEST (critical path) — round 2 — SHA 3d70133 — OPEN, needs you
+#3 — ★ PLAYTEST REQUEST (critical path) — round 2 — SHA 3d70133 — CLOSED — playtest delivered 2026-05-20 (see #5)
   Finding: Round 2 (iters 7-24) is STRUCTURALLY COMPLETE — breach mode
     is a full loop: 5-band climb, finite HE/HEAT reserves spent to
     breach, 3 depots with a 6-entry catalog (5 stock + 1 rule-changer
@@ -94,4 +94,22 @@ Format per item:
     The lived breach decision doesn't happen yet — no band yet places
     bricks in a choke that *requires* HE to breach. Round 2's next
     iter (iter 9+) wires the choke band + the 2-choice depot.
+
+#5 — Playtest verdict + Round 5 launch — round 5 — iter 33 — open (informational)
+  Finding: User playtested breach mode 2026-05-20 (closes #3). Verdict —
+    structurally complete but ILLEGIBLE: "the game feels the same,"
+    shell roles unclear ("when do I use HE vs HEAT vs AP?"), no shell UI,
+    no tutorial, "it doesn't feel like a roguelite." Logged as F003
+    (harness-green ≠ legible — the parity-drift /meta, confirmed). User
+    overrode the 3-shell constraint: APCR is the sanctioned 4th shell.
+  Affordance: re-opens the loop with real, honest work. Round 5
+    (iters 34-37) = shell legibility — APCR + steel pressure, shell UI
+    panel + distinct in-flight visuals, shell codex/tutorial. Round 6+ =
+    the roguelite-feel program the user asked for (run-to-run variety,
+    build divergence, stakes & escalation, meta-progression). Blueprint:
+    `loop/breach/iter-033-round5-architect.md`.
+  Risk: Round 5 fixes legibility — it does NOT by itself make the game
+    feel roguelite. That is the Round 6+ program (finding 5). Watch for
+    the loop declaring breach mode "fixed" after Round 5 while finding 5
+    is still open. The next user playtest gate is after Round 6.
 

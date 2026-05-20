@@ -24,6 +24,36 @@ Format:
 
 ---
 
+## iter 033 — PLAYTEST — integrate user playtest; F003; bootstrap Round 5
+
+- Date: 2026-05-20
+- Tag: [FEEL] (the iter's input is a human playtest — the FEEL tier's
+  evidence source; the iter integrates that evidence)
+- Round: between rounds. Round 4 closed iter 30; the loop paused iter 32;
+  the user playtest re-opens it. This iter integrates the playtest and
+  bootstraps Round 5.
+- CONSULT constraints respected: all 7 — this is an integration/planning
+  iter, no design surface touched. The Round-5 blueprint is written to
+  RESPECT them: constraint 1 (tutorial at safe gates, never combat),
+  constraint 3 (each shell keeps one readable relationship), constraint 4
+  (the APCR icon is silhouette-gated).
+- CONSULT constraints risked: constraint 2 ("no more than three primary
+  shell classes at first") — the user EXPLICITLY OVERRODE it; APCR is
+  sanctioned as the 4th shell. Not a loop violation: the PROMPT grants
+  the user override authority over cadence/direction. Recorded in
+  STATE.md §Arc-4 amendments.
+- Predicted failure: the Round-5 plan may under-scope finding 5 ("doesn't
+  feel like a roguelite") — that is a multi-round program, not a Round-5
+  piece. Mitigation: Round 5 is explicitly findings 1-4 (legibility);
+  finding 5 is bootstrapped as the Round 6+ program in the blueprint tail.
+- Falsifiable claim: this iter commits F003 + `iter-033-round5-architect.md`
+  + STATE unpaused to `loop_state: RUNNING` + REVIEW-QUEUE #3 closed and
+  #5 appended. No code changes → no hash-anchor risk. iter 34 begins the
+  Round-5 BUILD.
+- Sentence test: n/a (no upgrade this iter)
+- Substrate touched: none (loop docs only)
+- Hash-anchor verification plan: n/a (no code change)
+
 ## iter 030 — BUILD-QUALITY — shell HUD (round-4 piece 2)
 
 - Date: 2026-05-20

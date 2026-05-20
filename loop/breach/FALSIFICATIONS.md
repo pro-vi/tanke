@@ -17,6 +17,40 @@ Format:
 
 ---
 
+## F003 — harness-green breach mode did not READ as breach economy — iter 33
+
+- Predicted: 32 iters of [STRUCTURE]-cited anchors (4-wait-3 shells with
+  distinct behavior, swap cost, depots, bands, recaps) were treated as
+  evidence that breach mode WORKS as breach economy. The /meta (dice
+  nat-13) named the risk — "parity drift" — but the loop still scored
+  30/50, paused at iter 32, and implicitly bet the structure would read.
+- Observed: user playtest 2026-05-20 (the REVIEW-QUEUE #3 gate). Verdict:
+  "the game feels the same"; "I don't understand when I should use HE vs
+  HEAT vs AP"; "it just doesn't feel like a roguelite." No shell UI, no
+  tutorial, shell roles illegible. The structure is all there in code —
+  and none of it reaches the player.
+- Root cause: FEEL — specifically a LEGIBILITY failure. Every mechanic
+  was built and harness-verified; none was made visible, explained, or
+  differentiated sharply enough to be felt. A harness can verify "HE
+  destroys 4 bricks"; it cannot verify "the player knows HE is the wall
+  shell."
+- Why no harness caught it: by construction. Harnesses test code paths;
+  legibility is a property of the screen plus the player's mental model.
+  This is the parity-drift /meta made concrete — the loop's test model
+  (harness-green) did not match the real condition (a human reading the
+  screen).
+- Lesson: a mechanic is not done when its harness is green — it is done
+  when it is VISIBLE, EXPLAINED, and DIFFERENTIATED enough to change a
+  decision. Round 5 (iters 34-37) is the legibility round: shell UI,
+  distinct visuals, shell codex/tutorial. Every future round carries a
+  legibility check alongside the harness check.
+- Codified where: this file + STATE.md (Round 5 mandate + §Arc-4
+  amendments) + `iter-033-round5-architect.md`. Candidate PROMPT
+  anti-pattern row — "harness-green cited as playtest-equivalent" — to be
+  added if the pattern recurs after Round 5.
+- Single F (not ≥3) — no "scope too broad" trigger. It is one root cause:
+  legibility was never built.
+
 ## F002 — "armored" group tag leaked into arc-3 OG mode — iter 23
 
 - Predicted: iter-23 PRE-MORTEM treated the group-tag approach
