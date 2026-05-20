@@ -21,6 +21,9 @@ depth_max = 30
 dominant_pressure = "brick walls + light scouts"
 canonical_answer = "AP — cheap pierce; conserve HE+HEAT for later bands"
 level_config = SubResource("lc_choke")
+enemy_weights = {
+"Light": 1.0
+}
 
 [sub_resource type="Resource" id="lc_maze"]
 script = ExtResource("3_lc")
@@ -39,6 +42,10 @@ depth_max = 70
 dominant_pressure = "dense brick layouts; long detours unless breached"
 canonical_answer = "HE — open vertical lanes; trade shells for time"
 level_config = SubResource("lc_maze")
+enemy_weights = {
+"Fast": 0.4,
+"Light": 0.6
+}
 
 [sub_resource type="Resource" id="lc_bunker"]
 script = ExtResource("3_lc")
@@ -57,6 +64,10 @@ depth_max = 120
 dominant_pressure = "steel-armored bunkers; entrenched heavy tanks"
 canonical_answer = "HEAT — anti-armor commitment; AP useless vs bunkers"
 level_config = SubResource("lc_bunker")
+enemy_weights = {
+"Heavy": 0.75,
+"Light": 0.25
+}
 
 [sub_resource type="Resource" id="lc_killbox"]
 script = ExtResource("3_lc")
@@ -75,6 +86,10 @@ depth_max = 180
 dominant_pressure = "wide sightlines; fast scouts; rear-flank patrols"
 canonical_answer = "AP precision + facing-aware positioning; HE wasted here"
 level_config = SubResource("lc_killbox")
+enemy_weights = {
+"Fast": 0.65,
+"Light": 0.35
+}
 
 [sub_resource type="Resource" id="lc_endgame"]
 script = ExtResource("3_lc")
@@ -93,6 +108,11 @@ depth_max = 260
 dominant_pressure = "all prior pressures composed; no further depots"
 canonical_answer = "build cohesion test — chosen identity determines reach"
 level_config = SubResource("lc_endgame")
+enemy_weights = {
+"Fast": 0.33,
+"Heavy": 0.33,
+"Light": 0.34
+}
 
 [resource]
 script = ExtResource("1_cfg")

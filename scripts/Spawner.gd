@@ -487,6 +487,14 @@ func _pick_enemy_type() -> Dictionary:
 		if picked.is_empty():
 			picked = ENEMY_TYPES[0]
 		return picked
+	# arc-4 iter 15: breach-mode roster. When the parent level is in
+	# breach mode and the active BreachBand declares enemy_weights, those
+	# weights drive the pick — replacing the arc-2 DEPTH_BANDS table.
+	# Gated: arc-2 procedural + arc-3 OG paths never enter this branch,
+	# so the hash anchor + OG behavior stay bit-identical.
+	var breach_weights: Dictionary = _breach_band_weights()
+	if not breach_weights.is_empty():
+		return _weighted_pick(breach_weights)
 	var band: Dictionary = _current_band()
 	# iter 27: band-entry guarantee
 	if _band_first_spawn_pending:
@@ -502,13 +510,40 @@ func _pick_enemy_type() -> Dictionary:
 		total += float(weights.get(t.name, t.weight))
 	if total <= 0.0:
 		return ENEMY_TYPES[0]
+	return _weighted_pick(weights)
+
+
+# arc-4 iter 15: weighted pick from a {role_name: weight} map. Shared by
+# the arc-2 DEPTH_BANDS path and the breach-mode path.
+func _weighted_pick(weights: Dictionary) -> Dictionary:
+	var total: float = 0.0
+	for t in ENEMY_TYPES:
+		total += float(weights.get(t.name, 0.0))
+	if total <= 0.0:
+		return ENEMY_TYPES[0]
 	var roll: float = randf() * total
 	var accum: float = 0.0
 	for t in ENEMY_TYPES:
-		accum += float(weights.get(t.name, t.weight))
+		accum += float(weights.get(t.name, 0.0))
 		if roll <= accum:
 			return t
 	return ENEMY_TYPES[0]
+
+
+# arc-4 iter 15: read the active BreachBand's enemy_weights via the
+# parent level. Returns {} when not in breach mode (→ arc-2 fallback).
+func _breach_band_weights() -> Dictionary:
+	var lvl: Node = get_parent()
+	if lvl == null:
+		return {}
+	if not ("breach_mode_enabled" in lvl) or not lvl.breach_mode_enabled:
+		return {}
+	if not ("_current_breach_band" in lvl) or lvl._current_breach_band == null:
+		return {}
+	var band = lvl._current_breach_band
+	if "enemy_weights" in band and band.enemy_weights is Dictionary:
+		return band.enemy_weights
+	return {}
 
 
 # iter 27: helper for guarantee_first_type lookup

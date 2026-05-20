@@ -24,6 +24,47 @@ Format:
 
 ---
 
+## iter 015 — BUILD — band-aware enemy roster (C5 anchor 1)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Discovery: arc-2 Spawner.gd ALREADY has 3 distinct enemy roles
+  (Light = rare-fire lane-invader, Heavy = paused-aim corridor-denier,
+  Fast = continuous-fire harasser) + a `DEPTH_BANDS` table with
+  per-band `type_weights`. C5 anchor 1's "≥3 enemy roles" is already
+  satisfied; the gap is "each spawns in correct bands per **BreachConfig**"
+  (arc-2 uses its own DEPTH_BANDS, not the arc-4 5-band BreachConfig).
+- CONSULT constraints respected: 3 (each enemy role has a readable
+  shell/positioning answer — the 3 roles are behaviorally distinct), 5
+  (each band's enemy pressure is now declared per BreachBand)
+- CONSULT constraints risked: 3 — the canonical shell answer per role
+  isn't yet *enforced* (no role demands a specific shell). Honest gap;
+  C5 anchor 2 ("documented canonical answer per role") is later work.
+- Predicted failure modes:
+  - Spawner substrate write #9 — `_pick_enemy_type()` gets a 3rd branch
+    (breach). It must be gated: arc-2 procedural + arc-3 OG paths
+    unchanged → hash anchor preserved.
+  - Spawner reads the band via `get_parent()` → level →
+    `_current_breach_band`. If the level isn't breach mode, the breach
+    branch must no-op and fall through to DEPTH_BANDS.
+  - BreachBand.enemy_weights Dictionary in .tres — typed-Dictionary
+    .tres syntax could be fiddly; use untyped Dictionary.
+- Falsifiable claim: post-edit, `make test` exit 0, `tile_hash` =
+  `23d6a2ec3bf2821f` (arc-2 procedural unaffected — Spawner breach
+  branch gated off), `make test-all` PASS (arc-3 OG Spawner path
+  unchanged), `make test-breach` PASS, new `make check-breach-enemies`
+  reports `BREACH_ENEMIES_OK` verifying all 5 bands declare non-empty
+  enemy_weights with valid role names + Spawner picks band-appropriate
+  types in breach mode.
+- Sentence test: n/a (enemy roster, not an upgrade)
+- Substrate touched: `scripts/Spawner.gd` (substrate write #9 —
+  sanctioned per PROMPT §SUBSTRATE FREEZE "Spawner.gd — band-aware
+  spawning if iter-1 chooses path A"; gated breach branch).
+  `scripts/BreachBand.gd` (add enemy_weights field — arc-4-owned, not
+  substrate). `configs/breach_default.tres` (populate weights).
+- Hash-anchor verification plan: post-edit, before commit. Mandatory —
+  Spawner substrate touch.
+
 ## iter 014 — BUILD — RunRecap.gd death attribution (C6 anchors 1+2)
 
 - Date: 2026-05-19

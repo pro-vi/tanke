@@ -17,6 +17,45 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 015 — BUILD — band-aware enemy roster (C5 anchor 1)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **19/50 absolute · 19/50 effective** (Δ +1 vs prior — C5 anchor 1)
+  - C5 (Enemy role vocabulary): 0 → 1 (anchor 1: ≥3 enemy roles in
+    code — Light/Heavy/Fast already in arc-2 Spawner ENEMY_TYPES; each
+    now spawns in correct bands per BreachConfig — code-cited via
+    `make check-breach-enemies`. All 5 bands declare enemy_weights;
+    Spawner._pick_enemy_type reads the active BreachBand in breach mode)
+  - C1=3, C2=2, C3=2, C4=3, C6=2, C8=1, C9=2, C10=3 unchanged
+  - **9 of 10 criteria now non-zero** (only C7 silhouette grammar at 0)
+- Constraints respected: 3 (3 behaviorally-distinct roles), 5 (each
+  band's enemy pressure declared per BreachBand.enemy_weights)
+- Constraints risked: 3 — per-role canonical shell answer not yet
+  *enforced* (C5 anchor 2 work)
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** post substrate
+  write #9 (Spawner.gd — gated breach branch; arc-2 procedural + arc-3
+  OG paths untouched). `make test` exit 0. `make test-all` PASS (5
+  arc-3 — OG Spawner path unchanged). `make test-breach` PASS (10
+  arc-4 harnesses).
+- Falsifications: none. Discovery: arc-2 Spawner already had 3 roles +
+  band weights — C5 anchor 1's "≥3 roles" was pre-satisfied; only the
+  BreachConfig-band wiring was new.
+- Files: `scripts/BreachBand.gd` (+enemy_weights field),
+  `configs/breach_default.tres` (5 bands populated with rosters),
+  `scripts/Spawner.gd` (substrate write #9 — _pick_enemy_type breach
+  branch + extracted _weighted_pick + _breach_band_weights helper),
+  `loop/breach/test_breach_enemies.gd` (NEW), `Makefile`
+  (check-breach-enemies), `loop/breach/PRE-MORTEMS.md`, LEDGER, STATE
+- Finding: **Each depth band now has a distinct enemy roster.**
+  tutorial_choke = Light only; brick_maze = Light + Fast; bunker_zone =
+  Heavy-dominant; open_killbox = Fast-dominant; endgame_mixed = all.
+  Spawner._pick_enemy_type gained a gated breach branch reading the
+  active BreachBand's enemy_weights. Next iter 16: **AUDIT** — 15 iters
+  since the iter-0 baseline, PROMPT cadence is "every 5 iters". Re-score
+  all 10 criteria with fresh evidence; resolve the C1-anchor-2 wording
+  mismatch (audit_candidate from iter 14).
+
 ## iter 014 — BUILD — RunRecap.gd death attribution (C6 anchors 1+2, C1 anchors 2+3)
 
 - Date: 2026-05-19

@@ -2,12 +2,12 @@
 
 ```yaml
 phase: loop
-iter: 14
+iter: 15
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_14: 23d6a2ec3bf2821f  # bit-identical through 8 substrate writes
-substrate_writes_this_arc: 8  # ProceduralLevel.gd ×3 + Bullet.gd ×2 + PlayerTank.gd ×2 + Level.gd
+hash_anchor_at_iter_15: 23d6a2ec3bf2821f  # bit-identical through 9 substrate writes
+substrate_writes_this_arc: 9  # ProceduralLevel.gd ×3 + Bullet.gd ×2 + PlayerTank.gd ×2 + Level.gd + Spawner.gd
 current_round: 2
 current_round_phase: BUILD
 consult_001_status: adopted
@@ -15,10 +15,10 @@ build_quality_iters: [10]
 falsifications: [F001-resolved]
 reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%)
 audit_candidates: [C1-anchor-2-wording]  # "via Loadout.gd permutations" — mechanism is actually RunRecap.build_tag (R1 mismatch)
-next_action: iter 15 — BUILD — C5 enemy role vocabulary (biggest untouched axis, currently 0/5). Extend Spawner.gd (substrate write #9, sanctioned per PROMPT §SUBSTRATE FREEZE "Spawner.gd — band-aware spawning") with a band-driven enemy roster: each BreachBand declares which enemy roles spawn in it. Arc-2 has EnemyLight + EnemyHeavy (2 roles); add ≥1 more (EnemyMedium) to reach ≥3 roles. Target C5 anchor 1 (≥3 enemy roles in code; each spawns in correct bands per BreachConfig — code-cited). Note: AUDIT due soon (every 5 iters; last was iter 0 baseline — iter 15 or 16 should AUDIT-rescore all criteria with fresh evidence + resolve the C1-anchor-2 wording).
-score: 18/50 absolute · 18/50 effective  # C1=3, C2=2, C3=2, C4=3, C6=2, C8=1, C9=2, C10=3
+next_action: iter 16 — AUDIT — 15 iters since the iter-0 baseline (PROMPT cadence "every 5 iters"). Re-score all 10 criteria with fresh evidence from the LEDGER + the 10 breach harnesses. Resolve the C1-anchor-2 wording mismatch (audit_candidate — "via Loadout.gd permutations" vs actual RunRecap.build_tag mechanism; R1 bundled/mismatched anchor — rephrase or split). Three-tier ceiling report per R3. Identity-protected anchors (C1/5, C5/5, C7/5, C8/5, C9/5) are NOT AUDIT-eligible (R2). Output: AUDIT block in LEDGER + any RUBRIC.md revision-log entry.
+score: 19/50 absolute · 19/50 effective  # C1=3,C2=2,C3=2,C4=3,C5=1,C6=2,C8=1,C9=2,C10=3 — 9/10 criteria non-zero (only C7=0)
 spike_report: loop/breach/iter-001-spike-report.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap} (9; test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies} (10; test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb]
 ```
 
