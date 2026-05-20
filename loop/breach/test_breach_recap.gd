@@ -14,6 +14,7 @@ extends SceneTree
 const RunRecapT = preload("res://scripts/RunRecap.gd")
 const LoadoutT = preload("res://scripts/Loadout.gd")
 const BulletT = preload("res://scripts/Bullet.gd")
+const BreachBandT = preload("res://scripts/BreachBand.gd")
 const PlayerTankScene = preload("res://scenes/PlayerTank.tscn")
 
 
@@ -33,13 +34,18 @@ func _initialize() -> void:
 	var lo: LoadoutT = LoadoutT.new()
 	lo.he_reserve = 1
 	lo.heat_reserve = 0
-	rc.capture_death(84, "bunker_zone", lo)
+	var band: BreachBandT = BreachBandT.new()
+	band.band_name = "bunker_zone"
+	band.dominant_pressure = "steel-armored bunkers; entrenched heavy tanks"
+	rc.capture_death(84, band, lo)
 	if not rc.captured:
 		push_error("FAIL — capture_death did not set captured"); quit(1); return
 	if rc.depth_reached != 84:
 		push_error("FAIL — depth_reached = %d, want 84" % rc.depth_reached); quit(1); return
 	if rc.killing_band != "bunker_zone":
 		push_error("FAIL — killing_band = %s" % rc.killing_band); quit(1); return
+	if rc.killing_pressure.find("steel-armored bunkers") == -1:
+		push_error("FAIL — killing_pressure not captured: '%s'" % rc.killing_pressure); quit(1); return
 	if rc.he_reserve_at_death != 1:
 		push_error("FAIL — he_reserve_at_death = %d, want 1" % rc.he_reserve_at_death); quit(1); return
 
@@ -52,6 +58,8 @@ func _initialize() -> void:
 		push_error("FAIL — recap text missing depth/band:\n%s" % text); quit(1); return
 	if text.find("AP 1 / HE 2 / HEAT 1") == -1:
 		push_error("FAIL — recap text missing shell breakdown:\n%s" % text); quit(1); return
+	if text.find("band pressure") == -1 or text.find("steel-armored bunkers") == -1:
+		push_error("FAIL — recap text missing band pressure:\n%s" % text); quit(1); return
 	print(text)
 
 	# === Test 2: build_tag variants.
@@ -82,5 +90,5 @@ func _initialize() -> void:
 		push_error("FAIL — arc-2/3 PlayerTank created run_recap (regression)"); quit(1); return
 	pt_arc2.queue_free()
 
-	print("BREACH_RECAP_OK depth + band + per-type shells + reserves captured")
+	print("BREACH_RECAP_OK depth + band + pressure + per-type shells + reserves captured")
 	quit(0)

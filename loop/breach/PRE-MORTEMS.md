@@ -24,6 +24,44 @@ Format:
 
 ---
 
+## iter 018 — BUILD — C6 anchor 3 (recap band pressure) + C7 anchor 2 (grammar gate)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Two cheap lifts bundled:
+  - **C6 anchor 3**: "Recap includes build identity tag + dominant
+    pressure of killing band — code-cited". RunRecap already has
+    build_tag() (✓ identity) + killing_band NAME. Gap: the band's
+    `dominant_pressure` text. Fix: capture_death takes the BreachBand
+    object (not just name) → store `killing_pressure`.
+  - **C7 anchor 2**: "Silhouette-grammar check exists in
+    analyze_frame.py or sibling tool; outputs PASS/FAIL — code-cited".
+    Promote the iter-17 distinctness logic into a reusable
+    `tools/silhouette_gate.py` gate (PASS/FAIL on any PNG set);
+    check_shell_icons.py uses it.
+- CONSULT constraints respected: 6 (recap now names the route pressure
+  that killed the run — "steel-armored bunkers", not "got
+  overwhelmed"), 4 (the grammar gate is now a reusable tool, not a
+  one-off — future assets pass through it)
+- CONSULT constraints risked: none
+- Predicted failure modes:
+  - capture_death signature change (band_name String → BreachBand
+    object) — 3 call sites: PlayerTank._die, test_breach_recap.gd.
+    Both must update atomically.
+  - PlayerTank substrate write #10 — _die's capture_death call.
+    Gated on run_recap != null (breach mode only) — arc-2/3 untouched.
+  - silhouette_gate.py refactor — check_shell_icons.py must still
+    report BREACH_ASSETS_OK.
+- Falsifiable claim: post-edit, `make test` exit 0, `tile_hash` =
+  `23d6a2ec3bf2821f`, `make test-all` PASS, `make test-breach` PASS
+  (check-breach-recap now also verifies killing_pressure;
+  check-breach-assets routes through silhouette_gate.py), new
+  `make check-silhouette-gate` reports `SILHOUETTE_GATE_PASS`.
+- Sentence test: n/a
+- Substrate touched: `scripts/PlayerTank.gd` (substrate write #10 —
+  _die capture_death call; gated). `scripts/RunRecap.gd` (arc-4-owned).
+- Hash-anchor verification plan: post-edit, before commit.
+
 ## iter 017 — BUILD — gen_tile.py shell-icon generator (C7 anchor 1)
 
 - Date: 2026-05-19

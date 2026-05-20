@@ -17,6 +17,54 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 018 — BUILD — recap band pressure + silhouette-grammar gate (C6/3, C7/2)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **23/50 absolute · 23/50 effective** (Δ +2 vs prior — C6 anchor 3, C7 anchor 2)
+  - C6 (Death attribution): 2 → 3 (anchor 3: recap includes build
+    identity tag — `build_tag()` — + dominant pressure of killing band
+    — `killing_pressure` — code-cited via `make check-breach-recap`
+    showing "band pressure: steel-armored bunkers; entrenched heavy
+    tanks")
+  - C7 (Silhouette grammar): 1 → 2 (anchor 2: silhouette-grammar check
+    exists as a sibling tool — `tools/silhouette_gate.py` — outputs
+    PASS/FAIL — code-cited via `make check-silhouette-gate` reporting
+    `SILHOUETTE_GATE_PASS`)
+  - C1=3, C2=2, C3=2, C4=3, C5=1, C8=1, C9=2, C10=4 unchanged
+- Constraints respected: 6 (recap now names the route pressure that
+  killed the run), 4 (the grammar gate is reusable — future assets
+  route through it; not a one-off)
+- Constraints risked: none
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** post substrate
+  write #10 (PlayerTank.gd `_die` — capture_death signature; gated on
+  run_recap != null). `make test` exit 0. `make test-all` PASS.
+  `make test-breach` PASS (12 checks).
+- Silhouette-grammar gate artifact (C7 anchor 3 evidence):
+  `SILHOUETTE_GATE_PASS 3 assets` — shell_ap/he/heat, pairwise
+  silhouette 24/9/21px + palette 67/107/52 distinct. The 3 arc-4
+  generated assets all pass the gate. (C7 anchor 3 — "all new assets
+  verified via the gate before commit, log artifact in LEDGER" — held
+  for now; one asset-set is thin evidence of a sustained discipline.
+  Next asset iter that routes through the gate cites anchor 3.)
+- Falsifications: none
+- Files: `scripts/RunRecap.gd` (+killing_pressure; capture_death takes
+  the BreachBand object), `scripts/PlayerTank.gd` (substrate write #10
+  — _die passes the band object), `loop/breach/test_breach_recap.gd`
+  (band-pressure assertion), `tools/silhouette_gate.py` (NEW — reusable
+  PASS/FAIL grammar gate), `tools/check_shell_icons.py` (routes through
+  the gate), `Makefile` (check-silhouette-gate), PRE-MORTEMS, LEDGER,
+  STATE
+- Finding: **Death recaps now name the killing band's pressure; the
+  silhouette gate is a reusable tool.** The recap reads as a full
+  resource/build/route diagnosis ("depth 84 (bunker_zone band) / band
+  pressure: steel-armored bunkers / build: rubble plow / shells fired
+  ... / reserve left ..."). silhouette_gate.py is the codified
+  CONSULT-constraint-4 enforcement point for every future generated
+  asset. Next iter 19: candidates — C8 anchor 2 (expand depot catalog
+  to 5+ upgrades), C2 anchor 3 (≥3 depots per run), C3 anchor 3 (HEAT
+  armor-bypass). Diagnose at iter start.
+
 ## iter 017 — BUILD — gen_tile.py shell-icon generator (C7 anchor 1)
 
 - Date: 2026-05-19

@@ -15,6 +15,7 @@ const Bullet = preload("res://scripts/Bullet.gd")
 # Captured at death:
 var depth_reached: int = 0
 var killing_band: String = ""        # the breach band the player died in
+var killing_pressure: String = ""    # that band's dominant_pressure text
 var killer: String = "shell impact"  # what dealt the fatal blow
 var he_reserve_at_death: int = 0
 var heat_reserve_at_death: int = 0
@@ -36,10 +37,14 @@ func record_shot(shell_class: int) -> void:
 		shells_fired[shell_class] = 1
 
 
-# Snapshot run state at death. `loadout` may be null (defensive).
-func capture_death(depth: int, band_name: String, loadout) -> void:
+# Snapshot run state at death. `band` is a BreachBand (or null if the
+# player died outside any band); `loadout` may be null. Defensive on
+# both — duck-typed reads.
+func capture_death(depth: int, band, loadout) -> void:
 	depth_reached = depth
-	killing_band = band_name
+	if band != null:
+		killing_band = band.band_name
+		killing_pressure = band.dominant_pressure
 	if loadout != null:
 		he_reserve_at_death = loadout.he_reserve
 		heat_reserve_at_death = loadout.heat_reserve
@@ -81,6 +86,7 @@ func format() -> String:
 	return "\n".join([
 		"RUN RECAP",
 		"  depth reached : %d  (%s band)" % [depth_reached, killing_band],
+		"  band pressure : %s" % killing_pressure,
 		"  build         : %s" % build_tag(),
 		"  killed by     : %s" % killer,
 		"  shells fired  : AP %d / HE %d / HEAT %d" % [ap, he, heat],

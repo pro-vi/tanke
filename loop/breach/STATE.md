@@ -2,12 +2,12 @@
 
 ```yaml
 phase: loop
-iter: 17
+iter: 18
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_17: 23d6a2ec3bf2821f  # bit-identical through 9 substrate writes
-substrate_writes_this_arc: 9  # ProceduralLevel.gd ×3 + Bullet.gd ×2 + PlayerTank.gd ×2 + Level.gd + Spawner.gd
+hash_anchor_at_iter_18: 23d6a2ec3bf2821f  # bit-identical through 10 substrate writes
+substrate_writes_this_arc: 10  # ProceduralLevel.gd ×3 + Bullet.gd ×2 + PlayerTank.gd ×3 + Level.gd + Spawner.gd
 current_round: 2
 current_round_phase: BUILD
 consult_001_status: adopted
@@ -16,10 +16,10 @@ falsifications: [F001-resolved]
 reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%)
 audit_candidates: []
 last_audit: iter 16  # next AUDIT ~iter 21
-next_action: iter 18 — BUILD — diagnose weakest axis at start. ALL 10 criteria now non-zero (21/50). Leading candidates: (a) C6 anchor 3 — RunRecap stores killing band's dominant_pressure (capture_death takes the BreachBand, not just name) → C6 2→3, ~2-line lift; (b) C7 anchor 2 — promote check_shell_icons.py into a formal reusable silhouette-grammar PASS/FAIL gate → C7 1→2; (c) C8 anchor 2 — expand depot catalog to 5+ upgrades. Recommend (a) bundled with (b) — both cheap, both lift.
-score: 21/50 absolute · 21/50 effective  # C1=3,C2=2,C3=2,C4=3,C5=1,C6=2,C7=1,C8=1,C9=2,C10=4 — ALL 10 non-zero
+next_action: iter 19 — BUILD — diagnose weakest axis. C5 (1/5) is now the lowest. C5 anchor 2 = "each role has a documented canonical answer shell+positioning in BANDS.md; harness verifies presence in band rosters". OR C8 anchor 2 (5+ depot upgrades) OR C2 anchor 3 (≥3 depots/run). Recommend C5 anchor 2 (lowest criterion) — document per-role canonical answers + verify. Diagnose at iter start.
+score: 23/50 absolute · 23/50 effective  # C1=3,C2=2,C3=2,C4=3,C5=1,C6=3,C7=2,C8=1,C9=2,C10=4
 spike_report: loop/breach/iter-001-spike-report.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets} (11; test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets} + check-silhouette-gate (12; test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb]
 ```
 

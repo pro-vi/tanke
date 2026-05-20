@@ -378,16 +378,16 @@ func _die() -> void:
 	velocity = Vector2.ZERO
 	# iter 31: ascender run summary on death (Pro Consult 005 H4)
 	var depth: int = int(maxf(0.0, (_start_y - _min_y_reached) / 16.0))
-	# arc-4: capture death attribution. Reads the killing band from the
-	# parent level's _current_breach_band (set by ProceduralLevel breach
-	# mode); falls back to "" if absent (arc-2/3 path never gets here
-	# with run_recap set).
+	# arc-4: capture death attribution. Passes the killing BreachBand
+	# object from the parent level's _current_breach_band (set by
+	# ProceduralLevel breach mode) so the recap can name both the band
+	# and its dominant_pressure. null when absent.
 	if run_recap != null:
-		var band_name: String = ""
+		var band = null
 		var lvl: Node = get_parent()
-		if lvl != null and "_current_breach_band" in lvl and lvl._current_breach_band != null:
-			band_name = lvl._current_breach_band.band_name
-		run_recap.capture_death(depth, band_name, loadout)
+		if lvl != null and "_current_breach_band" in lvl:
+			band = lvl._current_breach_band
+		run_recap.capture_death(depth, band, loadout)
 	var t: int = int(_run_time)
 	var ascent_rate: float = 0.0
 	if _run_time > 0.0:
