@@ -62,7 +62,7 @@ band_name = "bunker_zone"
 depth_min = 70
 depth_max = 120
 dominant_pressure = "steel-armored bunkers; entrenched heavy tanks"
-canonical_answer = "HEAT — anti-armor commitment; AP useless vs bunkers"
+canonical_answer = "APCR breaches steel bunker walls; HEAT kills entrenched heavies"
 level_config = SubResource("lc_bunker")
 enemy_weights = {
 "Heavy": 0.75,

@@ -69,8 +69,8 @@ finite per band (until depot resupply).
 |-------|--------|-----|
 | 0 | Single bullet type (arc-2 baseline) | — |
 | 1 | ≥2 shell types in code; player can fire either — code-cited | [STRUCTURE] |
-| 2 | All 3 shells (AP/HE/HEAT) implemented; each has distinct combat behavior — code-cited | [STRUCTURE] |
-| 3 | HE affects terrain (destroys brick zones beyond AP's reach OR creates new tile state like rubble); HEAT bypasses heavy armor; AP cheap+precise — code-cited via terrain-change verification | [STRUCTURE] |
+| 2 | All shell classes (AP/HE/HEAT, + APCR per the iter-33 user override) implemented; each has distinct combat behavior — code-cited | [STRUCTURE] |
+| 3 | Each shell has a distinct terrain affordance: AP single-tile, HE brick-zone blast, APCR breaches steel (the only shell that can), HEAT pure combat; HEAT + APCR bypass armor — code-cited via terrain-change verification | [STRUCTURE] |
 | 4 | Shell-swap has a reload cost (≥0.5s) — pre-commitment under reload pressure (CONSULT §2 "the interesting WoT idea") — code-cited (iter-26 AUDIT: de-bundled — the original "+ harness measuring per-band shell consumption" clause was R1 bundled debt; per-band consumption needs play-sim and now lives in the [FEEL] tier / C4 anchor 4) | [STRUCTURE] |
 | 5 | Playtest: user describes a tradeoff explicitly ("I held HEAT for the bunker band but ran out in mid-floor") | [FEEL] |
 
@@ -239,3 +239,4 @@ Evidence: LEDGER iter NNN cites results; BANDS.md checkbox flipped.
 | 16 | C1 anchor 2 citation rephrased — "via Loadout.gd permutations" → "via the Loadout reserve mix + RunRecap.build_tag() enumeration" | Mismatch-AUDIT (L6): the build-identity expression mechanism is shell-usage-derived (RunRecap.build_tag enumerates lane sniper / rubble plow / bunker cracker / mixed breacher), not Loadout-permutation-derived. Score unchanged (C1=3); citation made honest. |
 | 26 | C3 anchor 4 de-bundled — dropped the "+ harness measuring per-band shell consumption" clause; anchor 4 is now the single swap-cost mechanic | R1 bundled-anchor debt: the anchor fused a structural mechanic (swap reload cost) with a measurement that needs play-sim. De-bundled per R1/L6 — swap-cost stays [STRUCTURE], per-band consumption lives in the [FEEL] tier. |
 | 26 | C4 anchor 4 re-tagged [STRUCTURE]→[FEEL] | Mismatch-AUDIT (L6): "avg shell-mix differs per band" is not harness-citable without a play-AI — it is honestly playtest-gated. Re-tag corrects the over-optimistic [STRUCTURE] tag. |
+| 34 | C3 anchors 2-3 updated for the 4-shell grammar — anchor 2 names APCR; anchor 3 restated as a per-shell terrain-affordance bar (AP tile / HE zone / APCR steel / HEAT none) | User override (iter-33 playtest) sanctioned APCR as the 4th shell (STATE.md §Arc-4 amendments). Factual correction — the rubric said "3 shells"; no score change (C3's structural tier was already maxed at iter 27). |

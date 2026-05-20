@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 33
+iter: 34
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_30: 23d6a2ec3bf2821f  # bit-identical through 15 substrate writes
-substrate_writes_this_arc: 15  # ProceduralLevel.gd ×3 + Bullet.gd ×4 + PlayerTank.gd ×6 + Level.gd + Spawner.gd ×2
+hash_anchor_at_iter_34: 23d6a2ec3bf2821f  # bit-identical through 18 substrate writes
+substrate_writes_this_arc: 18  # ProceduralLevel.gd ×4 + Bullet.gd ×5 + PlayerTank.gd ×7 + Level.gd + Spawner.gd ×2
 current_round: 5-open
-current_round_phase: BUILD — Round 5 (shell legibility); blueprint iter-033-round5-architect.md
+current_round_phase: BUILD — Round 5 piece 2 (shell UI + visuals); blueprint iter-033-round5-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,11 +21,11 @@ last_consult: iter 21
 playtest_log: [iter 33 — 2026-05-20 — verdict: structurally complete but illegible; F003 logged]
 structural_ceiling: RE-OPENED at iter 33. The iter-32 "30/50 ceiling" assumed harness-green structure would read as breach economy; the iter-33 playtest falsified that (F003). Real work exists above 30/50 — Round 5 (legibility), then Round 6+ (roguelite feel).
 loop_state: RUNNING (resumed iter 33). User playtested 2026-05-20; the loop integrated the verdict, logged F003, opened Round 5. The non-stop loop continues per PROMPT until the user writes `playtest` / `halt` / `stop`.
-next_action: iter 34 — BUILD — Round 5 piece 1: APCR 4th shell + steel as a band pressure. Read iter-033-round5-architect.md. Investigate ProceduralLevel steel placement first; then ship APCR (Bullet.gd + Loadout.gd + PlayerTank.gd — sanctioned substrate writes, default-on gating) + a steel-gated lane in bunker_zone. Hash-anchor verify post-edit.
+next_action: iter 35 — BUILD — Round 5 piece 2: shell UI panel + distinct in-flight shell visuals. Read iter-033-round5-architect.md. Extend gen_tile.py with a gen_shell_apcr icon (silhouette-gate all 4); give Bullet a distinct in-flight visual per shell; replace PlayerTank's text ShellLabel with a 4-slot shell panel (icons, current selection highlit, per-shell reserve). Answers playtest finding 1.
 score: 30/50 absolute · 30/50 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud} + check-silhouette-gate (17 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr} + check-silhouette-gate (18 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch]  # #3 CLOSED — playtest delivered 2026-05-20
 ```
 
@@ -100,25 +100,22 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-20 — **iter 33 (PLAYTEST).** User playtested breach mode —
-  the REVIEW-QUEUE #3 gate. Verdict: structurally complete but
-  illegible ("the game feels the same," shell roles unclear, no shell
-  UI, no tutorial, "doesn't feel like a roguelite"). Logged F003
-  (harness-green ≠ legible). User overrode the 3-shell constraint —
-  APCR sanctioned as the 4th shell. Round 5 (shell legibility) opened;
-  the loop resumed from its iter-32 pause.
+- 2026-05-20 — **iter 34 (BUILD).** Round 5 piece 1 — APCR, the
+  sanctioned 4th shell. APCR breaches steel (new destroyable SteelBlock
+  nodes) and pierces armor at 1×. Bullet / ProceduralLevel / PlayerTank
+  substrate writes; hash anchor 23d6a2ec3bf2821f preserved; test-all
+  5/5, test-breach 18/18 (NEW check-breach-apcr). Δ 0 — C3's structural
+  tier was maxed at iter 27; the lift is [FEEL]-gated. 30/50.
 
 ## Next action
 
-**Iter 34 — BUILD — Round 5 piece 1: APCR + steel pressure.**
-Read `loop/breach/iter-033-round5-architect.md` for the full blueprint.
-Investigate first: does `ProceduralLevel.gd` place SteelBlock tiles,
-and how does HE's brick-zone destruction work today? Then implement
-APCR — `SHELL_CLASS_APCR` in Bullet.gd, `apcr_reserve` in Loadout.gd,
-a 4-shell KEY_TAB cycle in PlayerTank.gd (all sanctioned substrate
-writes, default-on gating) — and place a steel-gated lane in the
-bunker_zone band so APCR has a canonical use. Hash-anchor verify the
-flag-off codepath; `make test-breach` + `make test-all` green.
+**Iter 35 — BUILD — Round 5 piece 2: shell UI + distinct visuals.**
+Read `loop/breach/iter-033-round5-architect.md`. Extend `gen_tile.py`
+with a `gen_shell_apcr` icon (silhouette-gate all 4 shell icons); give
+Bullet a distinct in-flight visual per shell (shape, not only
+modulate); replace PlayerTank's text-only ShellLabel with a 4-slot
+shell panel — generated icons, current selection highlit, per-shell
+reserve count. Directly answers playtest finding 1 (no shell UI).
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all

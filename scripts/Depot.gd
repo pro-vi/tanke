@@ -163,6 +163,7 @@ func apply_upgrade(kind: int, loadout) -> void:
 		UpgradeKind.FULL_RESUPPLY:
 			loadout.refill_he(loadout.max_he_reserve)
 			loadout.refill_heat(loadout.max_heat_reserve)
+			loadout.refill_apcr(loadout.max_apcr_reserve)
 		UpgradeKind.BREACH_DIVIDEND:
 			loadout.breach_dividend = true
 		UpgradeKind.OVERDRIVE:

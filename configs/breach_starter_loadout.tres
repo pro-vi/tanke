@@ -6,5 +6,7 @@
 script = ExtResource("1")
 he_reserve = 2
 heat_reserve = 1
+apcr_reserve = 2
 max_he_reserve = 6
 max_heat_reserve = 3
+max_apcr_reserve = 4

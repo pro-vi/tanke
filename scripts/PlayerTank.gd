@@ -273,23 +273,24 @@ func _fire() -> void:
 		run_recap.record_shot(actual_shell)
 
 
-# arc-4: cycle current_shell among AP/HE/HEAT, skipping classes the
+# arc-4: cycle current_shell among AP/HE/HEAT/APCR, skipping classes the
 # loadout can't fire (zero reserve). If loadout is null this is a no-op
 # (input check up-stream gates it).
 func _cycle_shell() -> void:
 	if loadout == null:
 		return
-	# AP → HE → HEAT → AP (skip out-of-reserve when cycling onto it).
+	# AP → HE → HEAT → APCR → AP (skip out-of-reserve when cycling onto it).
 	var order: Array[int] = [
 		BulletT.SHELL_CLASS_AP,
 		BulletT.SHELL_CLASS_HE,
 		BulletT.SHELL_CLASS_HEAT,
+		BulletT.SHELL_CLASS_APCR,
 	]
 	var idx: int = order.find(current_shell)
 	if idx < 0:
 		idx = 0
-	# Try at most 3 hops (full ring).
-	for hop in 3:
+	# Try at most order.size() hops (full ring).
+	for hop in order.size():
 		idx = (idx + 1) % order.size()
 		if loadout.can_fire(order[idx]):
 			if order[idx] != current_shell:
@@ -677,7 +678,7 @@ func _setup_hud() -> void:
 		_shell_label = Label.new()
 		_shell_label.name = "ShellLabel"
 		_shell_label.position = Vector2(4, 210)
-		_shell_label.text = "SHELL AP   HE 0  HEAT 0"
+		_shell_label.text = "SHELL AP   HE 0  HEAT 0  APCR 0"
 		_shell_label.add_theme_color_override("font_color", Color.WHITE)
 		_shell_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 		_shell_label.add_theme_constant_override("outline_size", 2)
@@ -692,6 +693,8 @@ func _shell_name(sc: int) -> String:
 		return "HE"
 	if sc == BulletT.SHELL_CLASS_HEAT:
 		return "HEAT"
+	if sc == BulletT.SHELL_CLASS_APCR:
+		return "APCR"
 	return "AP"
 
 
@@ -726,8 +729,9 @@ func _update_run_hud() -> void:
 	# arc-4 iter 30: shell HUD — current shell + reserves. Only when a
 	# loadout exists (the label is null otherwise → branch skipped).
 	if _shell_label != null and loadout != null:
-		_shell_label.text = "SHELL %-4s HE %d  HEAT %d" % [
-			_shell_name(current_shell), loadout.he_reserve, loadout.heat_reserve
+		_shell_label.text = "SHELL %-4s HE %d  HEAT %d  APCR %d" % [
+			_shell_name(current_shell), loadout.he_reserve,
+			loadout.heat_reserve, loadout.apcr_reserve
 		]
 
 

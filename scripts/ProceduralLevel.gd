@@ -2,6 +2,7 @@ extends "res://scripts/Level.gd"
 
 const ProceduralStep = preload("res://scripts/ProceduralStep.gd")
 const DebugBlock: PackedScene = preload("res://scenes/DebugBlock.tscn")
+const SteelBlockScene: PackedScene = preload("res://scenes/SteelBlock.tscn")
 const LevelConfigT = preload("res://scripts/LevelConfig.gd")
 const BiomeConfigT = preload("res://scripts/BiomeConfig.gd")
 const BreachConfigT = preload("res://scripts/BreachConfig.gd")
@@ -186,6 +187,24 @@ func _generate_level_perlin() -> void:
 				steelTileMap.set_cell(Vector2i(x, y), 0, Vector2i(0, 0))
 			elif (sample > 0.25) or (sample > -0.033 and sample < 0.033):
 				brickTileMap.set_cell(Vector2i(x, y), 0, Vector2i(0, 0))
+
+
+# arc-4 iter 34: in breach mode, steel becomes destroyable. Level's
+# _replace_blocks converts brick + water TileMapLayer cells into nodes
+# but leaves steel as an inert TileMapLayer. This override additionally
+# converts steel cells into SteelBlock nodes — destroyable ONLY by APCR
+# (Bullet._apply_apcr_breach). When breach_mode_enabled is false the
+# override runs super only → arc-2/3 terrain is bit-identical and the
+# hash anchor 23d6a2ec3bf2821f on the flag-off codepath is preserved.
+func _replace_blocks() -> void:
+	super._replace_blocks()
+	if not breach_mode_enabled:
+		return
+	for cell in steelTileMap.get_used_cells():
+		var steel_block: Node2D = SteelBlockScene.instantiate()
+		steel_block.global_position = steelTileMap.map_to_local(cell)
+		add_child(steel_block)
+	steelTileMap.clear()
 
 
 # arc-4 breach mode entry points. Never called when breach_mode_enabled

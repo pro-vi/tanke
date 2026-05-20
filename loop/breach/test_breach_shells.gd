@@ -1,7 +1,7 @@
 # Arc-4 breach mode: shell-class schema verifier (C3 anchor 1).
-# Verifies scripts/Bullet.gd exposes 3 distinct shell classes (AP/HE/HEAT)
-# and that Bullet instances accept shell_class via @export or start()
-# override.
+# Verifies scripts/Bullet.gd exposes 4 distinct shell classes
+# (AP/HE/HEAT/APCR) and that Bullet instances accept shell_class via
+# @export or start() override.
 #
 # Run with:
 #   godot --headless --path . --script res://loop/breach/test_breach_shells.gd
@@ -17,11 +17,15 @@ func _init() -> void:
 	var ap: int = BulletT.SHELL_CLASS_AP
 	var he: int = BulletT.SHELL_CLASS_HE
 	var heat: int = BulletT.SHELL_CLASS_HEAT
-	print("shell_classes: AP=%d HE=%d HEAT=%d" % [ap, he, heat])
-	if ap == he or ap == heat or he == heat:
-		push_error("FAIL — shell class constants not distinct")
-		quit(1)
-		return
+	var apcr: int = BulletT.SHELL_CLASS_APCR
+	print("shell_classes: AP=%d HE=%d HEAT=%d APCR=%d" % [ap, he, heat, apcr])
+	var classes: Array[int] = [ap, he, heat, apcr]
+	for i in classes.size():
+		for j in range(i + 1, classes.size()):
+			if classes[i] == classes[j]:
+				push_error("FAIL — shell class constants not distinct")
+				quit(1)
+				return
 
 	# 2. Default Bullet @export shell_class is AP (preserves arc-2 baseline).
 	var b: Node = BulletScene.instantiate()
@@ -31,7 +35,7 @@ func _init() -> void:
 		return
 
 	# 3. Each shell class is set-able by overriding @export.
-	for c in [ap, he, heat]:
+	for c in [ap, he, heat, apcr]:
 		b.shell_class = c
 		if b.shell_class != c:
 			push_error("FAIL — shell_class assignment did not stick (got %d, want %d)" % [b.shell_class, c])
@@ -49,5 +53,5 @@ func _init() -> void:
 	# (Full start() is exercised via the procedural baseline in make test.)
 
 	b.queue_free()
-	print("BREACH_SHELLS_OK 3 distinct shell classes, default = AP")
+	print("BREACH_SHELLS_OK 4 distinct shell classes, default = AP")
 	quit(0)

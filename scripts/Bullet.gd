@@ -1,13 +1,17 @@
 extends Area2D
 
-# Arc-4 breach mode: 3 primary shell classes (CONSULT §9 constraint 2).
-# AP = cheap precise; HE = terrain-mutating; HEAT = anti-heavy-armor.
+# Arc-4 breach mode: 4 primary shell classes. AP = cheap precise;
+# HE = brick-zone breacher; HEAT = anti-armor burst (2×); APCR = the
+# steel-terrain breacher (also pierces armor at 1×). APCR is the
+# sanctioned 4th shell — the user overrode CONSULT §9 constraint 2 in
+# the iter-33 playtest (see loop/breach/STATE.md §Arc-4 amendments).
 # Default = AP for arc-2 baseline bit-identicality (hash anchor
 # 23d6a2ec3bf2821f… on seed 42 procedural fires AP bullets only via
 # the arc-2 codepath; Spawner-fired enemy bullets stay AP too).
 const SHELL_CLASS_AP: int = 0
 const SHELL_CLASS_HE: int = 1
 const SHELL_CLASS_HEAT: int = 2
+const SHELL_CLASS_APCR: int = 3
 
 @export var speed: int = 120
 @export var damage: int = 1
@@ -39,10 +43,10 @@ func start(pos: Vector2, dir: int, target_mask: int = -1, shell: int = -1) -> vo
 		if sprite != null:
 			sprite.modulate = Color(1.0, 0.5, 0.3, 1.0)
 	# Arc-4 shell-class visual hint. AP = no mutation (preserves arc-2
-	# look + the damage>=2 warm-orange code path above). HE = soft yellow.
-	# HEAT = warm crimson. Visual is a temporary scaffold until iter ~6+
-	# replaces sprite per shell with gen_tile.py outputs (constraint 4
-	# silhouette-grammar gate applies then).
+	# look + the damage>=2 warm-orange code path above). HE = soft yellow,
+	# HEAT = warm crimson, APCR = cold steel-blue. Modulate is a temporary
+	# scaffold — iter 35 (Round 5) replaces it with distinct per-shell
+	# sprites via gen_tile.py (constraint-4 silhouette-grammar gate).
 	if shell_class != SHELL_CLASS_AP:
 		var s: Sprite2D = $Sprite2D
 		if s != null:
@@ -50,6 +54,8 @@ func start(pos: Vector2, dir: int, target_mask: int = -1, shell: int = -1) -> vo
 				s.modulate = Color(1.0, 0.85, 0.25, 1.0)
 			elif shell_class == SHELL_CLASS_HEAT:
 				s.modulate = Color(1.0, 0.35, 0.25, 1.0)
+			elif shell_class == SHELL_CLASS_APCR:
+				s.modulate = Color(0.6, 0.85, 1.0, 1.0)  # cold steel-blue
 
 
 func _physics_process(delta: float) -> void:
@@ -73,14 +79,17 @@ func _on_body_entered(body: Node) -> void:
 	# Arc-4 shell-class routing.
 	# AP (default) = single-hit, baseline damage — arc-2 path, bit-identical
 	#   when shell_class = SHELL_CLASS_AP (the procedural baseline never
-	#   touches the HE/HEAT branches; hash anchor 23d6a2ec3bf2821f stays).
-	# HE         = single-hit + radius brick-blast. Sentence-test compliant.
-	# HEAT       = 2x damage AND ignores armor — the anti-armor answer.
+	#   touches the HE/HEAT/APCR branches; hash anchor 23d6a2ec3bf2821f stays).
+	# HE   = single-hit + radius brick-blast. Sentence-test compliant.
+	# HEAT = 2x damage AND ignores armor — the anti-armor burst.
+	# APCR = the steel breacher: opens SteelBlock terrain AP/HE/HEAT can't,
+	#   and pierces armor at 1x (a cheaper, weaker anti-armor than HEAT).
 	var deal: int = damage
 	if shell_class == SHELL_CLASS_HEAT:
 		deal = damage * 2
-	# armor mitigation: AP/HE blunted vs armored bodies; HEAT bypasses.
-	if shell_class != SHELL_CLASS_HEAT and body.is_in_group("armored"):
+	# armor mitigation: AP/HE blunted vs armored bodies; HEAT + APCR pierce.
+	if shell_class != SHELL_CLASS_HEAT and shell_class != SHELL_CLASS_APCR \
+			and body.is_in_group("armored"):
 		deal = max(0, deal - ARMOR_MITIGATION)
 	if body.has_method("take_damage"):
 		body.take_damage(deal)
@@ -92,6 +101,11 @@ func _on_body_entered(body: Node) -> void:
 		# 1 (the primary) = total bodies the blast struck.
 		if radius_hits + 1 >= DIVIDEND_THRESHOLD:
 			_try_breach_dividend()
+	# arc-4 iter 34: APCR breaches steel. SteelBlock has no take_damage
+	# (so AP/HE/HEAT are inert against it); APCR opens it + a small
+	# tank-passable cluster via _apply_apcr_breach.
+	if shell_class == SHELL_CLASS_APCR and body.is_in_group("steel"):
+		_apply_apcr_breach(body)
 	_spawn_impact_spark()
 	queue_free()
 
@@ -143,6 +157,36 @@ func _apply_he_blast(primary_body: Node) -> int:
 			sibling.take_damage(damage)
 			hits += 1
 	return hits
+
+
+# arc-4 iter 34: APCR steel-breach radius. One APCR shell opens the hit
+# SteelBlock plus steel siblings within APCR_BREACH_RADIUS_PX — a
+# tank-passable hole from a single shot: the verb that buys a steel lane.
+const APCR_BREACH_RADIUS_PX: float = 18.0  # ~ tank-width hole
+
+
+# Breach the hit steel block + steel siblings within radius. Only nodes
+# in the "steel" group with a breach() method respond — bricks, enemies
+# and water are untouched (this path is APCR-only and steel-only).
+func _apply_apcr_breach(primary_body: Node) -> void:
+	if primary_body.has_method("breach"):
+		primary_body.breach()
+	var parent: Node = primary_body.get_parent()
+	if parent == null or not (primary_body is Node2D):
+		return
+	var origin: Vector2 = (primary_body as Node2D).global_position
+	for sibling in parent.get_children():
+		if sibling == primary_body:
+			continue
+		if not sibling.is_in_group("steel"):
+			continue
+		if not sibling.has_method("breach"):
+			continue
+		if not (sibling is Node2D):
+			continue
+		var d: float = (sibling as Node2D).global_position.distance_to(origin)
+		if d <= APCR_BREACH_RADIUS_PX:
+			sibling.breach()
 
 
 # iter 41: visual juice — small white ColorRect at impact position, scaled +

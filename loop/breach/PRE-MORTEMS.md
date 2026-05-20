@@ -24,6 +24,49 @@ Format:
 
 ---
 
+## iter 034 — BUILD — APCR 4th shell + steel as a destroyable band pressure
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 5 (shell legibility), piece 1. Blueprint: iter-033-round5-architect.md.
+- CONSULT constraints respected: 3 (APCR gets one crisp job — the steel
+  breacher — distinct from HEAT's anti-armor burst), 5 (bunker_zone's
+  dominant pressure becomes a *specific* climb problem: steel walls
+  answered by APCR), 7 (APCR is a verb-shell, not a passive stat).
+- CONSULT constraints overridden: 2 ("no more than three shell classes
+  at first") — overridden by the user in the iter-33 playtest; recorded
+  STATE.md §Arc-4 amendments. APCR is the sanctioned 4th shell.
+- Predicted failure modes:
+  - Steel is a TileMapLayer in arc-2/3 (Level._replace_blocks converts
+    only brick + water). Converting steel → SteelBlock nodes could
+    (a) break the hash anchor if the conversion runs on the flag-off
+    codepath, or (b) change collision so tanks/bullets pass through.
+  - The reachability oracle treats steel as a wall (test_breach_harness
+    line 9). APCR makes steel breachable — the oracle must NOT change:
+    a band stays playable WITHOUT forced breaching; APCR opens an
+    optional faster lane.
+  - APCR vs HEAT collapse — if APCR also did burst armor damage it would
+    duplicate HEAT. Mitigation: APCR pierces armor at 1× (HEAT 2×);
+    APCR's identity is steel terrain, HEAT's is the armored-enemy kill.
+- Falsifiable claim: post-edit — hash anchor flag-off codepath =
+  `23d6a2ec3bf2821f`; `make test-all` 5/5; `make test-breach` 18/18
+  (incl. new check-breach-apcr); the new harness proves APCR breaches a
+  SteelBlock and AP/HE/HEAT do NOT, and APCR pierces an armored stub at
+  full damage while AP is mitigated to 0. If the hash breaks the iter
+  HALTS (correctness violation).
+- Sentence test: APCR is a shell, not a depot upgrade — the per-shell
+  grammar is the cite: "APCR helps me climb through steel-walled bunkers
+  by changing how I use my shell reserve — the only key to a steel lane."
+- Substrate touched: Bullet.gd (SHELL_CLASS_APCR + steel-breach +
+  armor-pierce — sanctioned, PROMPT §DEFAULT-ON "Bullet.gd multi-shell
+  support"), ProceduralLevel.gd (_replace_blocks override, breach-gated
+  — sanctioned), PlayerTank.gd (4-shell cycle — sanctioned). Loadout.gd
+  + Depot.gd are arc-4-owned (not substrate). SteelBlock.gd/.tscn new.
+- Hash-anchor verification plan: post-edit, run loop/test_runner.gd on
+  seed 42 / default config; the _replace_blocks override returns after
+  super on the flag-off codepath (steel stays a TileMapLayer), so the
+  baseline is bit-identical. Verify before commit.
+
 ## iter 033 — PLAYTEST — integrate user playtest; F003; bootstrap Round 5
 
 - Date: 2026-05-20

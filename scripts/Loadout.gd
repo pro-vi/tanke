@@ -2,7 +2,7 @@ class_name Loadout
 extends Resource
 
 # Arc-4 breach mode: player loadout state. AP is unlimited (baseline
-# capability — like vanilla BC). HE + HEAT are *finite breach
+# capability — like vanilla BC). HE, HEAT + APCR are *finite breach
 # resources* — the atomic verb of breach economy per CONSULT 001:
 # "no player has yet sacrificed one resource to alter one route".
 #
@@ -15,8 +15,10 @@ const Bullet = preload("res://scripts/Bullet.gd")
 
 @export var he_reserve: int = 0       # finite; spent on HE fire
 @export var heat_reserve: int = 0     # finite; spent on HEAT fire
+@export var apcr_reserve: int = 0     # finite; spent on APCR fire (steel)
 @export var max_he_reserve: int = 6   # cap; depot upgrades extend
 @export var max_heat_reserve: int = 3 # cap; depot upgrades extend
+@export var max_apcr_reserve: int = 4 # cap; the steel-lane budget
 # arc-4 iter 24: "Breach Dividend" depot rule-changer (CONSULT 002).
 # When true, an HE shot that breaches >=4 bricks refunds 1 HE (capped
 # at max_he_reserve). Default false — granted only by the depot upgrade.
@@ -36,6 +38,8 @@ func can_fire(shell_class: int) -> bool:
 		return he_reserve > 0
 	if shell_class == Bullet.SHELL_CLASS_HEAT:
 		return heat_reserve > 0
+	if shell_class == Bullet.SHELL_CLASS_APCR:
+		return apcr_reserve > 0
 	return false
 
 
@@ -53,6 +57,11 @@ func consume(shell_class: int) -> int:
 			heat_reserve -= 1
 			return Bullet.SHELL_CLASS_HEAT
 		return Bullet.SHELL_CLASS_AP
+	if shell_class == Bullet.SHELL_CLASS_APCR:
+		if apcr_reserve > 0:
+			apcr_reserve -= 1
+			return Bullet.SHELL_CLASS_APCR
+		return Bullet.SHELL_CLASS_AP
 	return Bullet.SHELL_CLASS_AP
 
 
@@ -62,6 +71,10 @@ func refill_he(amount: int) -> void:
 
 func refill_heat(amount: int) -> void:
 	heat_reserve = min(max_heat_reserve, heat_reserve + amount)
+
+
+func refill_apcr(amount: int) -> void:
+	apcr_reserve = min(max_apcr_reserve, apcr_reserve + amount)
 
 
 # === UPGRADE CATALOG (C8) ===========================================
@@ -81,7 +94,7 @@ func refill_heat(amount: int) -> void:
 #   HEAT_MAX_EXPAND_2 → max_heat_reserve += 2; refill_heat(2)
 #     "...climb through deep bunker chains by changing how I use my
 #      HEAT economy."
-#   FULL_RESUPPLY    → refill_he(max); refill_heat(max)
+#   FULL_RESUPPLY    → refill_he(max); refill_heat(max); refill_apcr(max)
 #     "...climb through the band after an over-spend by changing how I
 #      use a recovery beat."
 #   BREACH_DIVIDEND  → breach_dividend = true (rule-changer, not stock)
@@ -97,4 +110,7 @@ func refill_heat(amount: int) -> void:
 #   bunker_zone    (steel)   → HEAT_REFILL_1 / HEAT_MAX_EXPAND_2
 #   open_killbox   (position)→ OVERDRIVE
 #   endgame_mixed  (composed)→ FULL_RESUPPLY
+#
+# arc-4 iter 34: APCR (the 4th shell — steel breacher) is refilled by
+# FULL_RESUPPLY. A dedicated APCR depot upgrade is a Round-5 follow-up.
 # ====================================================================

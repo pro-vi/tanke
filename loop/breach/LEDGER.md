@@ -17,6 +17,57 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 034 — BUILD — APCR 4th shell + steel as a destroyable band pressure
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **30/50** (Δ 0 — see scoring note)
+- Round 5 (shell legibility), piece 1 of the iter-033 blueprint.
+- Shipped: **APCR**, the sanctioned 4th shell (user override of CONSULT
+  constraint 2; STATE §Arc-4 amendments). APCR breaches steel terrain —
+  the only shell that can — and pierces armor at 1× (HEAT stays the 2×
+  burst). Steel, previously an inert TileMapLayer, becomes destroyable
+  SteelBlock nodes in breach mode.
+- Mechanic detail:
+  - NEW `scripts/SteelBlock.gd` + `scenes/SteelBlock.tscn` — StaticBody2D
+    steel wall, group "steel", `breach()`; deliberately no take_damage,
+    so AP/HE/HEAT are inert against it.
+  - Bullet.gd: SHELL_CLASS_APCR=3; `_apply_apcr_breach` opens the hit
+    SteelBlock + steel within an 18px radius (one shot = a tank-passable
+    hole); APCR excluded from armor mitigation.
+  - ProceduralLevel.gd: `_replace_blocks()` override converts steel
+    cells → SteelBlock nodes in breach mode; super-only when flag-off.
+  - Loadout.gd: apcr_reserve / max_apcr_reserve / can_fire / consume /
+    refill_apcr. PlayerTank.gd: KEY_TAB cycle now AP→HE→HEAT→APCR.
+  - Depot FULL_RESUPPLY refills APCR; starter loadout grants 2 APCR;
+    bunker_zone canonical_answer updated (APCR breaches steel walls).
+- Scoring note: Δ 0 — honest. C3's structural tier was maxed at iter 27
+  (anchor 4 swap-cost; anchor 5 is [FEEL]). APCR deepens the C3 *axis*
+  (4th shell, a new steel-terrain affordance) but cannot lift the
+  integer — the real lift is the [FEEL] tier, gated on the post-Round-6
+  playtest. This is a BUILD (a core mechanic the playtest demanded),
+  NOT BUILD-QUALITY (it is not cosmetic). RUBRIC C3 anchors 2-3 were
+  updated to the 4-shell grammar (revision-log row 34; factual
+  correction, no score change).
+- Constraints: respects 3 (APCR = one crisp job — the steel breacher,
+  distinct from HEAT), 5 (bunker_zone is now a specific climb problem),
+  7 (APCR is a verb-shell). Constraint 2 overridden by the user.
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** post 3
+  substrate writes (Bullet / ProceduralLevel / PlayerTank) — flag-off
+  codepath bit-identical (`playable: true`, reachable 676, seed 42).
+  `make test-all` 5/5. `make test-breach` 18/18 (NEW check-breach-apcr).
+  Reachability: BREACH_HARNESS_OK all 5 bands — the oracle treats steel
+  as a wall, so APCR opens an *optional* faster lane, not a required one.
+- Falsifications: none — the iter-34 falsifiable claim held in full.
+- Files: SteelBlock.gd (NEW), SteelBlock.tscn (NEW), Bullet.gd,
+  ProceduralLevel.gd, Loadout.gd, PlayerTank.gd, Depot.gd,
+  breach_starter_loadout.tres, breach_default.tres,
+  test_breach_apcr.gd (NEW), test_breach_shells.gd, Makefile, RUBRIC.md,
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **APCR is in — steel is now a breachable band pressure.** The
+  4-shell grammar is mechanically complete and harness-proven; iter 35
+  makes it legible (shell UI panel + distinct in-flight visuals).
+
 ## iter 033 — PLAYTEST — user playtest integrated; F003; Round 5 opened
 
 - Date: 2026-05-20
