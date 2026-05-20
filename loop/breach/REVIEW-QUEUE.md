@@ -129,3 +129,39 @@ Format per item:
     decision-density, then build roguelite feel. The next playtest must
     ask "did you ever agonise over a shell?" — not "is it legible?".
 
+#7 — ★ PLAYTEST REQUEST — Rounds 5-6 complete — iter 46 — OPEN, needs you
+  Finding: Rounds 5-6 (iters 34-46) are STRUCTURALLY COMPLETE — they
+    built every one of the five iter-33 playtest findings + the full
+    roguelite-feel package:
+      • shell legibility — APCR (4th shell, breaches steel), a 4-slot
+        shell panel, a run-start shell codex (Round 5);
+      • run-to-run variety — band-order shuffle + depot-offer
+        randomisation (Round 6a/6b);
+      • build divergence — 4 depot rule-changers (Round 6c);
+      • stakes & escalation — band-arrival banners + a live best-depth
+        chase (Round 6d);
+      • meta-progression — depth-gated depot-pool unlocks (Round 6e).
+    Plus F004 fixed (the restart loop was silently broken — runs leaked
+    state). 39/65, 24 breach harnesses + 5 arc-3 green, hash anchor
+    23d6a2ec3bf2821f preserved through 26 substrate writes.
+  BUT: no human has played any of it. Every score is [STRUCTURE] /
+    harness-cited. ~26 of the 65 rubric points are the [FEEL] tier —
+    playtest-locked by design (CONSULT 004).
+  The ask: play `scenes/BreachLevel.tscn` (or `make run` → breach).
+    The THREE questions that matter (CONSULT 004):
+      1. Did you ever AGONISE over a shell — was "spend it or detour"
+         ever a real dilemma? (the core economy)
+      2. Did a run's band-shuffle change your plan — did runs feel
+         different? (run variety)
+      3. Did you climb deeper partly to unlock something? (meta)
+    Secondary: do the shells read as 4 distinct tools now? do depots
+    feel like real build choices? does the single life feel like it
+    matters?
+  Affordance: a playtest unlocks the [FEEL] tier — C1/4-5, C3/5,
+    C9/3-5, C11/4-5, C12/4-5, C13/4-5 — the half of the rubric that
+    answers "is this actually a breach roguelite, its own thing."
+  Risk: CONSULT 004 Q3 — the loop has built 13 iters of structure
+    since the last human signal; if the core economy doesn't bite, the
+    roguelite scaffolding decorates a shallow loop. Only a playtest
+    tells. To trigger: write `playtest`.
+

@@ -24,6 +24,26 @@ Format:
 
 ---
 
+## iter 046 — CONSULT — Round 6 close (CONSULT 004) + playtest gate / pause
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 6 (roguelite feel) close iter. Mode: CONSULT — written
+  self-pre-mortem (iter 46 is the playtest-handoff; the user playtest
+  is THE creative check and it is next, so a frontier CONSULT is
+  redundant — CONSULT 003 precedent).
+- CONSULT constraints respected: all 7 (review iter, no design surface).
+- Predicted failure: the CONSULT rubber-stamps Rounds 5-6, or the loop
+  spins Round 7 on unverified structure. Mitigation: CONSULT 004 names
+  the seductive-but-hollow risk (the core economy's felt depth is still
+  unverified after 13 autonomous iters) and the loop PAUSES rather than
+  pile more — the iter-32 judgement, the F003 lesson.
+- Falsifiable claim: this iter writes CONSULT 004 + REVIEW-QUEUE #7
+  (playtest request) + STATE → paused. No code change → no hash risk.
+  The loop pauses; no wakeup scheduled.
+- Sentence test: n/a. Substrate touched: none (loop docs only).
+- Hash-anchor verification plan: n/a (no code change).
+
 ## iter 045 — BUILD — Round 6e: meta-progression (depot-pool widening)
 
 - Date: 2026-05-20

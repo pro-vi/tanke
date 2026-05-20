@@ -17,6 +17,43 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 046 — CONSULT — Round 6 close (CONSULT 004) + playtest gate / pause
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **39/65** (Δ 0 — CONSULT iters are review, not anchor lift.)
+- Round 6 (roguelite feel) CLOSED. Rounds 5-6 (iters 34-46) built the
+  full response to the iter-33 playtest + the roguelite package.
+- CONSULT 004 — written self-pre-mortem (iter 46 is the playtest-
+  handoff iter; the user playtest is THE creative check and it is
+  next). Captured to creative-consults.md.
+- CONSULT 004 key finding (Q3): CONSULT 003's "legible but not
+  verified-deep" RECURSED — Round 6 added variety / divergence /
+  stakes / meta, all genuine roguelite scaffolding, all decorating a
+  core shell economy whose felt depth the loop has never verified. 13
+  iters autonomous since the last human signal.
+- **The loop pauses here** — the iter-32 judgement at a far more
+  complete state (39/65, the full breach roguelite built). Rounds 5-6
+  delivered every iter-33 finding; the remaining ~26 points are the
+  [FEEL] tier (playtest-locked); the remaining structural surfaces are
+  substrate-blocked (C5) or unrequested new scope. Piling more
+  structure on 13 iters of unverified work is the parity-drift trap
+  (F003). The honest move is to hand back for the playtest.
+- REVIEW-QUEUE #7 appended — the PLAYTEST REQUEST. The three questions
+  that matter: did you agonise over a shell? did the band-shuffle
+  change your plan? did you climb to unlock?
+- Hash anchor: n/a (no code change — review iter).
+- Falsifications: none.
+- Files: creative-consults.md (CONSULT 004), REVIEW-QUEUE.md (#7),
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **Round 6 closed; the breach roguelite is built. The loop
+  pauses for the playtest.** iters 34-46 delivered the full Rounds 5-6
+  — legibility + the roguelite-feel package — every iter-33 finding
+  answered, F004 fixed, 24 breach + 5 arc-3 harnesses green, hash
+  anchor preserved through 26 substrate writes. Re-engage by writing
+  `playtest` (the loop surfaces REVIEW-QUEUE #7 + integrates findings)
+  — or `/loop` to push a new structural round. No wakeup scheduled.
+
 ## iter 045 — BUILD — Round 6e: meta-progression (depot-pool widening)
 
 - Date: 2026-05-20

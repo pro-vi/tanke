@@ -20,6 +20,76 @@ Format:
 
 ---
 
+## Consult 004 — iter 46 — written self-pre-mortem — Round 6 close
+
+- Date: 2026-05-20
+- Tab status: n/a — written self-pre-mortem, in place of an external
+  /agentify call. Rationale: iter 46 is the playtest-handoff iter — the
+  loop closes Round 6 and surfaces the next USER PLAYTEST (REVIEW-QUEUE
+  #7). The user's hands-on verdict is THE creative check and it is the
+  very next thing; a frontier CONSULT minutes before it is redundant,
+  and its sharp questions are playtest-gated. (CONSULT 003 set this
+  written mode; 001/002 were external.)
+- Three permanent questions answered? YES (+ a Round-6 question).
+- Key reframe: Rounds 5-6 built everything the iter-33 playtest
+  mandated + the full roguelite-feel package — but every bit of it is
+  [FEEL]-gated for its VALUE. The loop is at the honest autonomous
+  ceiling; the playtest is the gate.
+- Adopted into: REVIEW-QUEUE #7; the iter-46 honest pause.
+
+### Q1 — distinct from BC, or BC with shell colours?
+
+Structurally: now firmly distinct. 4 shells with sharp terrain+combat
+grammar (AP/HE/HEAT/APCR), finite reserves, depots with 4 rule-changers
++ randomised offers, depth bands that shuffle per run, a surfaced
+single-life depth chase, depth-gated meta-unlocks. BC has none of it.
+The iter-33 "feels the same" verdict predated Rounds 5-6. Whether it
+now FEELS distinct is the playtest's call.
+
+### Q2 — depots earned beats, or menu-grind?
+
+Far richer than CONSULT 003's "logistics salad" — randomised 3-of-9
+offers, 4 rule-changers (HE / APCR / positioning / swap doctrines), a
+dynamic next-band preview, a meta-gated pool. A depot pick can now be
+doctrine-defining. Whether it FEELS like an earned beat — playtest.
+
+### Q3 — what's seductive-but-hollow about Rounds 5-6?
+
+The sharp finding, and it is CONSULT 003's Q3 RECURSED. Round 5 made
+the economy legible; Round 6 made the run varied, divergent, staked,
+and meta-hooked. All of it is genuine, well-built roguelite scaffolding
+— and ALL of it decorates a core shell economy whose felt DEPTH the
+loop has still never verified. 13 iters of autonomous building since
+the iter-33 playtest; none of it could answer CONSULT 003's question —
+"does a player ever AGONISE over a shell? is detour-vs-spend a real
+dilemma?" The seductive-but-hollow: a beautifully-systemed breach
+roguelite whose central loop might still be shallow — and the loop
+cannot know without a human. The omission that would look stupid in 6
+months: shipping all this structure without one playtest confirming
+the economy bites.
+
+### Q4 — does Round 6 make it a roguelite, or roguelite-DECORATED?
+
+Structurally a roguelite (variety / divergence / stakes / meta — the
+four ingredients the user named). Felt — playtest-gated. Same answer.
+
+### Implication — the loop is at the honest autonomous ceiling
+
+Rounds 5-6 (iters 34-46) delivered every iter-33 playtest finding plus
+the roguelite package. The remaining ~26 rubric points are the [FEEL]
+tier — playtest-locked by design. The remaining structural surfaces
+are either substrate-blocked (C5's 4th enemy role, iter 28) or
+genuinely new scope the user has not asked for — and piling new
+structure on 13 iters of playtest-unverified work IS the parity-drift
+trap (F003).
+
+So the loop PAUSES here — the iter-32 judgement, now at a far more
+complete state (39/65, the full breach roguelite built). The next
+playtest must NOT ask "is it legible" (Round 5 settled that) — it must
+ask: **did you agonise over a shell? did a run's band-shuffle change
+your plan? did you climb deeper to unlock something?** Those three
+questions are the whole [FEEL] tier.
+
 ## Consult 003 — iter 37 — written self-pre-mortem — Round 5 close
 
 - Date: 2026-05-20
