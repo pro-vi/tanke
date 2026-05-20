@@ -17,6 +17,52 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 010 — BUILD-QUALITY — BreachLevel.tscn integration scene
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE] [QUALITY] (integration milestone; no NEW rubric
+  anchor ticks — honest use of the L3/R4 BUILD-QUALITY release valve.
+  First BUILD-QUALITY iter of arc 4; within the 1-per-3-BUILDs cap
+  — iters 7/8/9 were all anchor-lifting BUILDs.)
+- Score: **12/50 absolute · 12/50 effective** (Δ 0 — no anchor lift;
+  this iter integrates prior pieces into one playable scene)
+  - C1=1, C2=2, C3=2, C4=1, C8=1, C9=2, C10=3 — unchanged
+- Constraints respected: all 7 structurally (integration scene; no new
+  design surface)
+- Constraints risked: 5 — band-aware procedural generation still not
+  wired (`_init_breach_mode` / `_process_breach_depth` stubs empty);
+  BreachLevel generates terrain identically to arc-2 procedural. The
+  depth-band *experience* is iter 11+ work.
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** — BreachLevel
+  is a NEW inherited scene; ProceduralLevel.tscn / .gd byte-identical.
+  `make test` exit 0. `make test-all` PASS. New `make test-breach`
+  aggregate (all 7 arc-4 harnesses) PASS.
+- Falsifications: none. Pre-mortem prediction "inherited-scene syntax
+  may fail" — confirmed quirk-free; Godot 4.6 inherited scene with
+  `[node name="BreachLevel" instance=ExtResource(base)]` root rename +
+  child-override-by-path works cleanly.
+- Files: `scenes/BreachLevel.tscn` (NEW — inherited from
+  ProceduralLevel.tscn; overrides breach_mode_enabled=true +
+  breach_config + PlayerTank.loadout; adds 1 Depot child),
+  `configs/breach_starter_loadout.tres` (NEW — 2 HE / 1 HEAT starter),
+  `loop/breach/test_breach_level.gd` (NEW verifier), `Makefile` (new
+  `check-breach-level` + `test-breach` aggregate targets),
+  `loop/breach/PRE-MORTEMS.md`, `loop/breach/LEDGER.md`,
+  `loop/breach/STATE.md`
+- Finding: **First end-to-end breach scene exists.** BreachLevel.tscn
+  is an inherited scene — thin override layer over ProceduralLevel.tscn
+  (no sub-resource duplication; changes to the base scene propagate;
+  H1 surface burden minimized per Scout B's iter-1 concern). It wires:
+  breach_mode_enabled=true, breach_config=breach_default.tres,
+  PlayerTank.loadout=breach_starter_loadout (2 HE / 1 HEAT), + a Depot1
+  placed at y=-248 (≈band-1 exit). `make check-breach-level` confirms
+  bands=2, he_reserve=2, depots=1, 30 frames clean. **The pieces now
+  co-exist in a playable surface** — but the band *experience* (terrain
+  shifting per depth) is still inert because the breach stubs are
+  empty. Next iter 11: wire `_process_breach_depth` to drive per-band
+  LevelConfig selection from breach_config + extend breach_default.tres
+  to ≥3 bands. Target C4 anchor 2.
+
 ## iter 009 — BUILD — Depot 3-choice upgrade catalog (C2 anchor 2, C8 anchor 1)
 
 - Date: 2026-05-19

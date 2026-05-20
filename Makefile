@@ -11,7 +11,7 @@ NOISE_FILTER    = grep -Ev "RID allocations|resources still in use"
 FRAMES_DIR      = $(PROJECT_DIR)/tools/out
 REFS_DIR        = $(PROJECT_DIR)/tools/refs
 
-.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain check-chain-35 og-band-check check-titlescreen-nav test-all check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice
+.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain check-chain-35 og-band-check check-titlescreen-nav test-all check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level test-breach
 
 # Parse/load validation — catches bad scripts and missing nodes
 check:
@@ -167,6 +167,17 @@ check-breach-loadout:
 check-breach-depot-choice:
 	@$(HEADLESS) --script res://loop/breach/test_breach_depot_choice.gd 2>&1 | grep -E "^(  (he|heat)|BREACH_DEPOT_CHOICE_OK|FAIL|ERROR|SCRIPT ERROR)"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_depot_choice.gd 2>&1 | grep -q "^BREACH_DEPOT_CHOICE_OK"
+
+# Arc-4 breach mode: verify scenes/BreachLevel.tscn — the first
+# end-to-end breach scene — instantiates with breach_mode_enabled,
+# breach_config, a player Loadout, and a Depot placement; runs 30
+# frames clean. Integration smoke test.
+check-breach-level:
+	@$(HEADLESS) --script res://loop/breach/test_breach_level.gd 2>&1 | grep -E "^(BREACH_LEVEL_OK|FAIL|ERROR|SCRIPT ERROR)" | grep -v "RID alloc"; \
+	$(HEADLESS) --script res://loop/breach/test_breach_level.gd 2>&1 | grep -q "^BREACH_LEVEL_OK"
+
+# Arc-4 breach mode: all breach harnesses in one target.
+test-breach: check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level
 
 # Arc-3 → arc-2 metric handshake: compute per-stage structural metrics
 # across all 35 BC stages and emit loop/originals/og-metrics.json.

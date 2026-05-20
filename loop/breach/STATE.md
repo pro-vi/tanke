@@ -2,19 +2,20 @@
 
 ```yaml
 phase: loop
-iter: 9
+iter: 10
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_9: 23d6a2ec3bf2821f  # bit-identical through 6 substrate writes
+hash_anchor_at_iter_10: 23d6a2ec3bf2821f  # bit-identical through 6 substrate writes
 substrate_writes_this_arc: 6  # ProceduralLevel.gd ×2 + Bullet.gd ×2 + PlayerTank.gd + Level.gd
 current_round: 2
-current_round_phase: BUILD  # depot upgrade flow shipped
+current_round_phase: BUILD  # round 2 — integration milestone reached
 consult_001_status: adopted
-next_action: iter 10 — BUILD — wire BreachLevel.tscn (sibling scene) that integrates everything: spawns ProceduralLevel with breach_mode_enabled=true + breach_config=breach_default.tres + a PlayerTank with a starting Loadout (e.g. 2 HE, 1 HEAT) + a Depot placed at depth-band transition (e.g. y = -30 rows × 16 grid_size = -480px). This is the **first end-to-end breach scene** — visual playable surface. Target: C9 anchor 3 (a first-time tester opening arc-4 mode describes it differently from "arc-2 ascender" within 60s — playtest cited) [FEEL] — DEFERRED for first playtest. iter-10 scope: structural cite that the scene exists + reachability passes via a new harness. Plus consider: C4 anchor 3 (5 bands per BANDS.md) by extending breach_default.tres with 3 more bands — easy lift.
+build_quality_iters: [10]  # L3/R4 release valve — 1 per 3 BUILDs cap
+next_action: iter 11 — BUILD — wire breach depth-band experience. Implement `_init_breach_mode()` + `_process_breach_depth(player_y)` in ProceduralLevel.gd (substrate write #7 — fills the iter-2 stubs; sanctioned): track rows_climbed from player_y, look up active BreachBand via breach_config.band_for_depth(), and when the band's level_config is non-null, swap the active per-row config so terrain pressure shifts per band. ALSO extend breach_default.tres from 2 → 3+ bands (add bunker_zone). Target: C4 anchor 2 (≥3 bands each with stated dominant pressure — code-cited) + trail toward anchor 3-4. Hash anchor: the stubs only run when breach_mode_enabled=true, so flag-off procedural stays bit-identical — verify post-edit.
 score: 12/50 absolute · 12/50 effective  # C1=1, C2=2, C3=2, C4=1, C8=1, C9=2, C10=3
 spike_report: loop/breach/iter-001-spike-report.md
-new_harness_targets: check-breach-config, check-breach-shells, check-breach-depot, check-breach-he-blast, check-breach-loadout, check-breach-depot-choice
+new_harness_targets: check-breach-config, check-breach-shells, check-breach-depot, check-breach-he-blast, check-breach-loadout, check-breach-depot-choice, check-breach-level (+ test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb]
 ```
 

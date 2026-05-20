@@ -24,6 +24,43 @@ Format:
 
 ---
 
+## iter 010 — BUILD — BreachLevel.tscn (first end-to-end breach scene)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 structurally — this iter wires
+  the integration scene that lets all prior pieces (flag, BreachConfig,
+  shells, Loadout, Depot) exist together in one playable surface
+- CONSULT constraints risked: 5 — band-aware procedural generation
+  still not wired (`_init_breach_mode` / `_process_breach_depth` stubs
+  remain empty); BreachLevel generates terrain identically to arc-2
+  procedural for now. The depth-band *experience* lands iter 11+ when
+  the stubs route `breach_config` into per-row LevelConfig selection.
+- Predicted failure modes:
+  - Inherited-scene .tscn syntax: Godot 4.6 inherited scenes use
+    `[node name="X" instance=ExtResource("base")]` on the root +
+    child-override nodes by path. If the syntax is wrong, the scene
+    won't load. Mitigation: keep it minimal; test load immediately.
+  - The root node of ProceduralLevel.tscn is named "ProceduralLevel";
+    inherited scene can rename to "BreachLevel". Child-override paths
+    (`PlayerTank`) must match the base scene's node names exactly.
+  - Depot placed at a fixed world-y may sit below/above the climbable
+    region — depot reachability matters. For iter 10, depot is a
+    *placement smoke test*, not yet a tuned band-transition gate.
+- Falsifiable claim: post-edit, `make test` exit 0 (ProceduralLevel.tscn
+  untouched) AND `tile_hash` = `23d6a2ec3bf2821f` AND `make test-all`
+  PASS AND all 6 prior breach harnesses PASS AND new
+  `make check-breach-level` reports `BREACH_LEVEL_OK` with: BreachLevel
+  instantiates, `breach_mode_enabled == true`, `breach_config != null`,
+  PlayerTank has a non-null loadout, ≥1 Depot child present, no script
+  errors over 30 frames.
+- Sentence test: n/a (integration iter, no new upgrade)
+- Substrate touched: none — BreachLevel.tscn is a NEW inherited scene;
+  ProceduralLevel.tscn / .gd untouched. configs/breach_starter_loadout
+  .tres is new. The hash anchor is trivially preserved (the procedural
+  baseline scene is byte-identical).
+- Hash-anchor verification plan: post-edit, before commit.
+
 ## iter 009 — BUILD — Depot 3-choice upgrade catalog + next-band preview
 
 - Date: 2026-05-19

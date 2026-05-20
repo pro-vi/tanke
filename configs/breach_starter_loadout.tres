@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Loadout" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Loadout.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+he_reserve = 2
+heat_reserve = 1
+max_he_reserve = 6
+max_heat_reserve = 3

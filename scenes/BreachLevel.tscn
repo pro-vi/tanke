@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/ProceduralLevel.tscn" id="1_base"]
+[ext_resource type="Resource" path="res://configs/breach_default.tres" id="2_breach"]
+[ext_resource type="Resource" path="res://configs/breach_starter_loadout.tres" id="3_loadout"]
+[ext_resource type="PackedScene" path="res://scenes/Depot.tscn" id="4_depot"]
+
+[node name="BreachLevel" instance=ExtResource("1_base")]
+breach_mode_enabled = true
+breach_config = ExtResource("2_breach")
+
+[node name="PlayerTank" parent="." index="1"]
+loadout = ExtResource("3_loadout")
+
+[node name="Depot1" parent="." index="5" instance=ExtResource("4_depot")]
+position = Vector2(160, -248)
+depot_name = "depot_1"
+band_name_next = "brick_maze"
+next_band_hint = "brick maze ahead"
