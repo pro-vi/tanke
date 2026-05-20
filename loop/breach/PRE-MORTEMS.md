@@ -24,6 +24,54 @@ Format:
 
 ---
 
+## iter 020 — BUILD — depot upgrade catalog → 5 (C8 anchor 2)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- DIAGNOSE: C8 (sentence-test compliance) at 1/5 is joint-lowest.
+  Anchor 2: "5+ upgrades; all pass; sentence cited verbatim per
+  upgrade — Loadout.gd documents". Have 3 (HE_REFILL_2 / HEAT_REFILL_1
+  / HE_MAX_EXPAND_2) — need 5+.
+- CONSULT constraints respected: 7 (verbs/affordances not passive
+  stats — the 2 new upgrades are economy verbs: HEAT capacity expand +
+  full resupply, NOT "+%damage"), 1 (catalog grows; depot still shows
+  3-at-a-time — no scrolling), 2 (still 3 shell classes)
+- CONSULT constraints risked: 4 — 5 refill/expand variants risk
+  reading as "reserve stat soup". Honest mitigation: reserve size +
+  resupply are CONSULT-§2-endorsed depot upgrade axes ("Depot upgrades
+  improve swap speed or reserve size"); they ARE the breach economy's
+  currency, not passive %stats. Genuinely-different affordance
+  upgrades (swap-speed, refund-on-kill, first-shot-pierce) need
+  mechanics not yet built (swap cost, kill hooks) — scheduled later,
+  not faked now.
+- Predicted failure modes:
+  - UpgradeKind enum 3→5 + apply_upgrade extraction — the harness must
+    exercise all 5 enum values. test_breach_depot_choice currently
+    tests 3.
+  - "Loadout.gd documents" — the catalog enum lives in Depot.gd; I add
+    a documentation block to Loadout.gd citing the 5 verbatim
+    sentences (the anchor's named location).
+- Falsifiable claim: post-edit, `make test` exit 0, `tile_hash` =
+  `23d6a2ec3bf2821f`, `make test-all` PASS, `make test-breach` PASS,
+  `make check-breach-depot-choice` verifies all 5 UpgradeKind values
+  apply distinct loadout effects. All 5 upgrades pass the sentence
+  test (cited verbatim in this pre-mortem + Loadout.gd).
+- Sentence tests (all 5, verbatim):
+  - HE_REFILL_2: "This upgrade helps me climb through brick mazes by
+    changing how I use HE shells."
+  - HEAT_REFILL_1: "This upgrade helps me climb through bunker bands
+    by changing how I use HEAT shells."
+  - HE_MAX_EXPAND_2: "This upgrade helps me climb through long
+    HE-required stretches by changing how I use my HE economy."
+  - HEAT_MAX_EXPAND_2: "This upgrade helps me climb through deep
+    bunker chains by changing how I use my HEAT economy."
+  - FULL_RESUPPLY: "This upgrade helps me climb through the band after
+    an over-spend by changing how I use a recovery beat."
+  All 5 are "changing how I use <resource/verb>" — none is "by making
+  me stronger" or "+N%". Pass.
+- Substrate touched: none — Depot.gd + Loadout.gd are arc-4-owned.
+- Hash-anchor verification plan: post-edit; trivially preserved.
+
 ## iter 019 — BUILD — per-role canonical answers (C5 anchor 2)
 
 - Date: 2026-05-19

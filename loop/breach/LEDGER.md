@@ -17,6 +17,48 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 020 — BUILD — depot upgrade catalog → 5 (C8 anchor 2)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **25/50 absolute · 25/50 effective** (Δ +1 vs prior — C8 anchor 2)
+  — exactly half the absolute ceiling at iter 20.
+  - C8 (Sentence test compliance): 1 → 2 (anchor 2: 5+ upgrades — the
+    UpgradeKind catalog now has 5 (HE_REFILL_2 / HEAT_REFILL_1 /
+    HE_MAX_EXPAND_2 / HEAT_MAX_EXPAND_2 / FULL_RESUPPLY); all pass the
+    sentence test, cited verbatim in Loadout.gd's UPGRADE CATALOG doc
+    block — code-cited via `make check-breach-depot-choice`)
+  - C1=3, C2=2, C3=2, C4=3, C5=2, C6=3, C7=2, C9=2, C10=4 unchanged
+- DIAGNOSE: C8 at 1/5 was joint-lowest.
+- Constraints respected: 7 (all 5 upgrades are economy verbs — refill /
+  expand capacity / resupply — not passive %stats), 1 (catalog grew to
+  5 but the depot still shows 3-at-a-time — no scrolling), 2
+- Constraints risked: 4 — 5 refill/expand variants risk reading as
+  "reserve stat soup". Honest position (LEDGER): reserve-size +
+  resupply are CONSULT-§2-endorsed depot axes ("Depot upgrades improve
+  swap speed or reserve size") — they ARE the breach currency, not
+  passive %stats. Genuinely-different affordance upgrades (swap-speed,
+  refund-on-kill, first-shot-pierce) need mechanics not yet built —
+  scheduled, not faked.
+- Sentence test: all 5 upgrades pass — verbatim sentences in this
+  iter's PRE-MORTEM + Loadout.gd UPGRADE CATALOG block. None is "by
+  making me stronger" / "+N%".
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** (no substrate
+  touched — Depot.gd + Loadout.gd arc-4-owned). `make test` exit 0,
+  `make test-all` PASS, `make test-breach` PASS (12 checks).
+- Falsifications: none
+- Files: `scripts/Depot.gd` (UpgradeKind 3→5; extracted public
+  apply_upgrade), `scripts/Loadout.gd` (UPGRADE CATALOG doc block +
+  verbatim sentences), `loop/breach/test_breach_depot_choice.gd`
+  (+Test 6 — 5-entry catalog, HEAT_MAX_EXPAND_2 + FULL_RESUPPLY
+  verified), PRE-MORTEMS, LEDGER, STATE
+- Finding: **Depot catalog at 5 sentence-test-passing upgrades.**
+  apply_upgrade is now a public per-kind entry the harness exercises
+  directly. Loadout.gd documents the catalog with verbatim sentence
+  tests. Next iter 21: **AUDIT** due (last iter 16, every-5 cadence) —
+  re-score all 10 criteria; also a natural CONSULT window (~every 10
+  iters; last CONSULT iter 6, so iter ~21-22 due).
+
 ## iter 019 — BUILD — per-role canonical answers (C5 anchor 2)
 
 - Date: 2026-05-19

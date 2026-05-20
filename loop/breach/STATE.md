@@ -2,11 +2,11 @@
 
 ```yaml
 phase: loop
-iter: 19
+iter: 20
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_19: 23d6a2ec3bf2821f  # bit-identical through 10 substrate writes
+hash_anchor_at_iter_20: 23d6a2ec3bf2821f  # bit-identical through 10 substrate writes
 substrate_writes_this_arc: 10  # ProceduralLevel.gd ×3 + Bullet.gd ×2 + PlayerTank.gd ×3 + Level.gd + Spawner.gd
 current_round: 2
 current_round_phase: BUILD
@@ -15,9 +15,10 @@ build_quality_iters: [10]
 falsifications: [F001-resolved]
 reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%)
 audit_candidates: []
-last_audit: iter 16  # next AUDIT ~iter 21
-next_action: iter 20 — BUILD — diagnose weakest axis. C8 (1/5) is now joint-lowest with C5(2 now). C8 anchor 2 = "5+ upgrades; all pass sentence test; sentence cited verbatim per upgrade — Loadout.gd documents". Currently 3 depot upgrades (HE_REFILL_2/HEAT_REFILL_1/HE_MAX_EXPAND_2). Add ≥2 more affordance-upgrades (e.g. swap-speed, refund-on-kill, first-shot-pierce) — each must pass the sentence test. OR C2 anchor 3 (≥3 depots/run). Recommend C8 anchor 2. NOTE: AUDIT due ~iter 21.
-score: 24/50 absolute · 24/50 effective  # C1=3,C2=2,C3=2,C4=3,C5=2,C6=3,C7=2,C8=1,C9=2,C10=4
+last_audit: iter 16
+last_consult: iter 6
+next_action: iter 21 — AUDIT + CONSULT window. (a) AUDIT — every-5 cadence (last iter 16); re-score all 10 criteria fresh. (b) CONSULT — ~every-10 cadence (last iter 6); fire CONSULT 002 via /agentify with the 3 permanent questions — round 2 is deep (25/50, breach economy is a full loop now: climb / spend / breach / depot / recap). Good moment to ground-truth "is breach economy distinct" again + surface seductive-but-hollow. Do AUDIT first (fast), fire CONSULT fire-and-forget, iter 22 reads it.
+score: 25/50 absolute · 25/50 effective  # C1=3,C2=2,C3=2,C4=3,C5=2,C6=3,C7=2,C8=2,C9=2,C10=4 — half the ceiling
 spike_report: loop/breach/iter-001-spike-report.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets} + check-silhouette-gate (12; test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb]

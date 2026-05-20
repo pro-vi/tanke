@@ -45,9 +45,35 @@ func _initialize() -> void:
 	if not (depot.next_band_hint is String):
 		push_error("FAIL — Depot.next_band_hint not a String field")
 		quit(1); return
+
+	# Test 6 (C8 anchor 2): the upgrade catalog has 5 entries, and each
+	# UpgradeKind applies a distinct, real loadout effect via apply_upgrade.
+	var UK = depot.UpgradeKind
+	if UK.size() < 5:
+		push_error("FAIL — UpgradeKind catalog has %d entries, want >=5" % UK.size())
+		quit(1); return
+	# HEAT_MAX_EXPAND_2: max_heat 3 -> 5.
+	var lo_a: LoadoutT = LoadoutT.new()
+	lo_a.heat_reserve = 0
+	lo_a.max_heat_reserve = 3
+	depot.apply_upgrade(UK.HEAT_MAX_EXPAND_2, lo_a)
+	if lo_a.max_heat_reserve != 5 or lo_a.heat_reserve != 2:
+		push_error("FAIL — HEAT_MAX_EXPAND_2: max=%d reserve=%d (want 5/2)" % [lo_a.max_heat_reserve, lo_a.heat_reserve])
+		quit(1); return
+	# FULL_RESUPPLY: both reserves refilled to their caps.
+	var lo_b: LoadoutT = LoadoutT.new()
+	lo_b.he_reserve = 0
+	lo_b.heat_reserve = 0
+	lo_b.max_he_reserve = 6
+	lo_b.max_heat_reserve = 3
+	depot.apply_upgrade(UK.FULL_RESUPPLY, lo_b)
+	if lo_b.he_reserve != 6 or lo_b.heat_reserve != 3:
+		push_error("FAIL — FULL_RESUPPLY: he=%d heat=%d (want 6/3)" % [lo_b.he_reserve, lo_b.heat_reserve])
+		quit(1); return
+	print("  catalog: %d upgrade kinds; HEAT_MAX_EXPAND_2 + FULL_RESUPPLY verified" % UK.size())
 	depot.queue_free()
 
-	print("BREACH_DEPOT_CHOICE_OK 3 choices apply distinct effects + preview field present")
+	print("BREACH_DEPOT_CHOICE_OK 5-entry catalog; choices apply distinct effects + preview field present")
 	quit(0)
 
 

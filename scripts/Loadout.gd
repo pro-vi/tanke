@@ -54,3 +54,26 @@ func refill_he(amount: int) -> void:
 
 func refill_heat(amount: int) -> void:
 	heat_reserve = min(max_heat_reserve, heat_reserve + amount)
+
+
+# === UPGRADE CATALOG (C8) ===========================================
+# The 5 depot upgrades (Depot.gd UpgradeKind enum) all mutate this
+# Loadout. Every entry is an economy VERB — refill / expand capacity /
+# resupply — not a passive %stat (CONSULT §9 constraint 7). Each passes
+# the sentence test "This upgrade helps me climb through ___ by
+# changing how I use ___" — cited verbatim:
+#
+#   HE_REFILL_2      → refill_he(2)
+#     "...climb through brick mazes by changing how I use HE shells."
+#   HEAT_REFILL_1    → refill_heat(1)
+#     "...climb through bunker bands by changing how I use HEAT shells."
+#   HE_MAX_EXPAND_2  → max_he_reserve += 2; refill_he(2)
+#     "...climb through long HE-required stretches by changing how I
+#      use my HE economy."
+#   HEAT_MAX_EXPAND_2 → max_heat_reserve += 2; refill_heat(2)
+#     "...climb through deep bunker chains by changing how I use my
+#      HEAT economy."
+#   FULL_RESUPPLY    → refill_he(max); refill_heat(max)
+#     "...climb through the band after an over-spend by changing how I
+#      use a recovery beat."
+# ====================================================================

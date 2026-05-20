@@ -12,10 +12,16 @@ extends Area2D
 
 const LoadoutT = preload("res://scripts/Loadout.gd")
 
+# Upgrade catalog (C8 — 5 entries, all affordance/economy verbs, no
+# passive %stats). Each passes the sentence test "This upgrade helps me
+# climb through ___ by changing how I use ___" — verbatim sentences are
+# documented in Loadout.gd's UPGRADE CATALOG block.
 enum UpgradeKind {
 	HE_REFILL_2,        # +2 HE reserve (capped at max_he_reserve)
 	HEAT_REFILL_1,      # +1 HEAT reserve (capped at max_heat_reserve)
-	HE_MAX_EXPAND_2,    # +2 to max_he_reserve, then refill 2 (immediate effect)
+	HE_MAX_EXPAND_2,    # +2 to max_he_reserve, then refill 2
+	HEAT_MAX_EXPAND_2,  # +2 to max_heat_reserve, then refill 2
+	FULL_RESUPPLY,      # refill BOTH reserves to their current caps
 }
 
 signal depot_entered(depot: Node)
@@ -94,16 +100,31 @@ func apply_choice(idx: int) -> void:
 		2: kind = choice_b_kind
 		3: kind = choice_c_kind
 		_: return
-	match kind:
-		UpgradeKind.HE_REFILL_2:
-			_player_loadout.refill_he(2)
-		UpgradeKind.HEAT_REFILL_1:
-			_player_loadout.refill_heat(1)
-		UpgradeKind.HE_MAX_EXPAND_2:
-			_player_loadout.max_he_reserve += 2
-			_player_loadout.refill_he(2)
+	apply_upgrade(kind, _player_loadout)
 	_picked = true
 	depot_picked.emit(self, kind)
+
+
+# Apply one UpgradeKind effect to a loadout. Public so the harness can
+# exercise every catalog entry directly. All 5 entries are economy
+# verbs — refill / expand capacity / resupply — not passive %stats.
+func apply_upgrade(kind: int, loadout) -> void:
+	if loadout == null:
+		return
+	match kind:
+		UpgradeKind.HE_REFILL_2:
+			loadout.refill_he(2)
+		UpgradeKind.HEAT_REFILL_1:
+			loadout.refill_heat(1)
+		UpgradeKind.HE_MAX_EXPAND_2:
+			loadout.max_he_reserve += 2
+			loadout.refill_he(2)
+		UpgradeKind.HEAT_MAX_EXPAND_2:
+			loadout.max_heat_reserve += 2
+			loadout.refill_heat(2)
+		UpgradeKind.FULL_RESUPPLY:
+			loadout.refill_he(loadout.max_he_reserve)
+			loadout.refill_heat(loadout.max_heat_reserve)
 
 
 func _is_player(body: Node) -> bool:
