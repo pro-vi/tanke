@@ -2,27 +2,27 @@
 
 ```yaml
 phase: loop
-iter: 23
+iter: 24
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_23: 23d6a2ec3bf2821f  # bit-identical through 11 substrate writes
-substrate_writes_this_arc: 11  # ProceduralLevel.gd ×3 + Bullet.gd ×3 + PlayerTank.gd ×3 + Level.gd + Spawner.gd ×2 (NOTE: Spawner ×2 = iter 15 + iter 23)
+hash_anchor_at_iter_24: 23d6a2ec3bf2821f  # bit-identical through 12 substrate writes
+substrate_writes_this_arc: 12  # ProceduralLevel.gd ×3 + Bullet.gd ×4 + PlayerTank.gd ×3 + Level.gd + Spawner.gd ×2
 current_round: 2
 current_round_phase: BUILD
 consult_001_status: adopted
-consult_002_status: adopted  # iter 23 — read despite tab-timeout; "next 3 iters" mapped
-build_quality_iters: [10]
+consult_002_status: adopted
+build_quality_iters: [10, 24]
 falsifications: [F001-resolved, F002-resolved]
 reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%)
 audit_candidates: []
 last_audit: iter 21
 last_consult: iter 21
-consult_002_plan: iter 23 HEAT armor (DONE) → iter 24 depot rule-changer "Breach Dividend" → iter ~25 surface PLAYTEST request to REVIEW-QUEUE (the 5-person smoke test — needs the user)
-next_action: iter 24 — BUILD — CONSULT 002 #2: one depot rule-changer (not a stock-changer). "Breach Dividend" — destroying ≥4 bricks with one HE shot refunds 1 HE (capped once per band). Needs an HE-cluster-kill count + a refund hook. Add as a 6th UpgradeKind. This makes the depot fork a *playstyle* (precise cluster breaching) not just quantity. Target: C8 trail / C2 anchor toward feel; C1 build-identity depth.
+consult_002_plan: iter 23 HEAT armor (DONE) → iter 24 Breach Dividend (DONE) → iter 25 surface PLAYTEST request to REVIEW-QUEUE (CONSULT 002 #3 — the 5-person smoke test; needs the user)
+next_action: iter 25 — QUEUE/META — CONSULT 002 #3: the 5-person smoke test is a user-look gate, not a BUILD. Append a PLAYTEST request to REVIEW-QUEUE.md (#3) framed as the CONSULT specified: "do players describe their run as route economy rather than tank combat?" Round 2 has now executed all 3 of CONSULT 002's recommendations (HEAT armor / depot rule-changer / playtest-surface). After QUEUE, this is a natural round-2-close → bootstrap round 3 SPIKE on the weakest remaining surface (C5 enemy roles 2/5, or C8 anchor 3 all-band-pressure coverage, or C4 anchor 4 shell-mix harness).
 score: 28/50 absolute · 28/50 effective  # C1=3,C2=3,C3=3,C4=3,C5=2,C6=3,C7=3,C8=2,C9=2,C10=4
 spike_report: loop/breach/iter-001-spike-report.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor} + check-silhouette-gate (13; test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend} + check-silhouette-gate (14; test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb]
 ```
 

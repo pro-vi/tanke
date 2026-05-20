@@ -85,9 +85,33 @@ func _on_body_entered(body: Node) -> void:
 	if body.has_method("take_damage"):
 		body.take_damage(deal)
 	if shell_class == SHELL_CLASS_HE:
-		_apply_he_blast(body)
+		var radius_hits: int = _apply_he_blast(body)
+		# arc-4 iter 24 "Breach Dividend": an HE shot that breaches a
+		# cluster of >=DIVIDEND_THRESHOLD bricks refunds 1 HE — IF the
+		# player picked the Breach Dividend depot upgrade. radius_hits +
+		# 1 (the primary) = total bodies the blast struck.
+		if radius_hits + 1 >= DIVIDEND_THRESHOLD:
+			_try_breach_dividend()
 	_spawn_impact_spark()
 	queue_free()
+
+
+# arc-4 iter 24: reach the firing player's Loadout via the Level parent
+# and, if Breach Dividend is owned, refund 1 HE (capped at max by
+# refill_he). All reads are defensive duck-typed — any missing link
+# silently no-ops.
+const DIVIDEND_THRESHOLD: int = 4
+
+
+func _try_breach_dividend() -> void:
+	var lvl: Node = get_parent()
+	if lvl == null or not ("player" in lvl):
+		return
+	var p = lvl.player
+	if p == null or not ("loadout" in p) or p.loadout == null:
+		return
+	if p.loadout.breach_dividend:
+		p.loadout.refill_he(1)
 
 
 # HE radius blast: iterate siblings of the hit body that respond to
@@ -99,11 +123,14 @@ func _on_body_entered(body: Node) -> void:
 const HE_BLAST_RADIUS_PX: float = 18.0  # ~1.1 tile radius at grid_size=16
 
 
-func _apply_he_blast(primary_body: Node) -> void:
+# Returns the count of sibling bodies the blast struck (used by the
+# Breach Dividend threshold check).
+func _apply_he_blast(primary_body: Node) -> int:
 	var parent: Node = primary_body.get_parent()
 	if parent == null or not (primary_body is Node2D):
-		return
+		return 0
 	var origin: Vector2 = (primary_body as Node2D).global_position
+	var hits: int = 0
 	for sibling in parent.get_children():
 		if sibling == primary_body:
 			continue
@@ -114,6 +141,8 @@ func _apply_he_blast(primary_body: Node) -> void:
 		var d: float = (sibling as Node2D).global_position.distance_to(origin)
 		if d <= HE_BLAST_RADIUS_PX:
 			sibling.take_damage(damage)
+			hits += 1
+	return hits
 
 
 # iter 41: visual juice — small white ColorRect at impact position, scaled +

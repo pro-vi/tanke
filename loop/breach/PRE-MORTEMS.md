@@ -24,6 +24,53 @@ Format:
 
 ---
 
+## iter 024 — BUILD-QUALITY — depot rule-changer "Breach Dividend"
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE] [QUALITY] — CONSULT 002's #2 recommendation; a
+  genuine playstyle-forking depot entry but it does NOT lift a
+  [STRUCTURE] rubric anchor (C8 anchor 3 needs all-5-band coverage;
+  the build-identity anchors it serves — C1/4-5, C9/3+ — are
+  playtest-gated). Honest BUILD-QUALITY per L3/R4. Last BUILD-QUALITY
+  was iter 10 — well within the 1-per-3-BUILDs cap.
+- CONSULT 002 Q2 verbatim: "Replace one depot entry with a
+  rule-changer, not a stock-changer. Breach Dividend — destroying 4+
+  bricks with one HE refunds 1 HE ... creates a playstyle: precise
+  cluster breaching."
+- CONSULT constraints respected: 7 (a rule-changer verb — "cluster
+  breaching pays for itself" — not a passive %stat), 1 (depot still
+  shows 3-of-N; catalog grows to 6)
+- CONSULT constraints risked: 4 — risk of farming (infinite HE from
+  repeated cluster-breaches). Mitigation: `refill_he` caps at
+  `max_he_reserve` — a dividend can never exceed the reserve cap, so
+  it sustains efficient play but can't snowball. The CONSULT's
+  "capped once per band" is a stronger guard; deferred (the
+  max-reserve cap suffices for iter 24; per-band cap if playtest
+  shows farming).
+- Predicted failure modes:
+  - The refund chain Bullet → get_parent() (the Level) → `.player` →
+    `.loadout`. Level.gd has `@onready var player`. If any link is
+    null (defensive duck-typed reads), the dividend silently no-ops.
+  - "4+ bricks" count: `_apply_he_blast` returns radius-sibling count;
+    total = radius + 1 (primary). In a brick maze the primary IS a
+    brick; counting the primary unconditionally is a slight
+    over-count if the HE shot's primary hit is an enemy — acceptable
+    (the dividend is about cluster breaching; an HE shot that opens a
+    4-tile lane qualifies regardless of what the centre cell was).
+- Falsifiable claim: post-edit, `make test` exit 0, `tile_hash` =
+  `23d6a2ec3bf2821f`, `make test-all` PASS, `make test-breach` PASS,
+  new `make check-breach-dividend` verifies: HE blast of ≥4 bricks
+  with breach_dividend ON → he_reserve +1 (capped at max); same blast
+  with breach_dividend OFF → no refund; HE blast of <4 bricks → no
+  refund even with the upgrade on.
+- Sentence test: BREACH_DIVIDEND passes — "This upgrade helps me
+  climb through brick mazes by changing how I use HE — precise
+  cluster breaches refund their own shell."
+- Substrate touched: `scripts/Bullet.gd` (substrate write — Bullet's
+  4th; sanctioned). `scripts/Loadout.gd` + `scripts/Depot.gd`
+  arc-4-owned.
+- Hash-anchor verification plan: post-edit, before commit.
+
 ## iter 023 — BUILD — HEAT armor-bypass (C3 anchor 3)
 
 - Date: 2026-05-20

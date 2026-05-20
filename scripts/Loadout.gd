@@ -17,6 +17,10 @@ const Bullet = preload("res://scripts/Bullet.gd")
 @export var heat_reserve: int = 0     # finite; spent on HEAT fire
 @export var max_he_reserve: int = 6   # cap; depot upgrades extend
 @export var max_heat_reserve: int = 3 # cap; depot upgrades extend
+# arc-4 iter 24: "Breach Dividend" depot rule-changer (CONSULT 002).
+# When true, an HE shot that breaches >=4 bricks refunds 1 HE (capped
+# at max_he_reserve). Default false — granted only by the depot upgrade.
+@export var breach_dividend: bool = false
 
 
 # Returns true if the player can fire the given shell class. AP is
@@ -76,4 +80,7 @@ func refill_heat(amount: int) -> void:
 #   FULL_RESUPPLY    → refill_he(max); refill_heat(max)
 #     "...climb through the band after an over-spend by changing how I
 #      use a recovery beat."
+#   BREACH_DIVIDEND  → breach_dividend = true (rule-changer, not stock)
+#     "...climb through brick mazes by changing how I use HE — precise
+#      cluster breaches (>=4 bricks) refund their own shell."
 # ====================================================================

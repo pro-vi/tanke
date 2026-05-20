@@ -17,6 +17,52 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 024 — BUILD-QUALITY — depot rule-changer "Breach Dividend"
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE] [QUALITY]
+- Score: **28/50 absolute · 28/50 effective** (Δ 0 — BUILD-QUALITY;
+  CONSULT-directed playstyle work, no [STRUCTURE] anchor lift)
+  - All 10 criteria unchanged (C1=3, C2=3, C3=3, C4=3, C5=2, C6=3,
+    C7=3, C8=2, C9=2, C10=4)
+- CONSULT 002 #2 recommendation, verbatim: "Replace one depot entry
+  with a rule-changer, not a stock-changer. Breach Dividend —
+  destroying 4+ bricks with one HE refunds 1 HE ... creates a
+  playstyle: precise cluster breaching."
+- Why BUILD-QUALITY (L3/R4): Breach Dividend is a genuine
+  playstyle-forking depot entry, but it does not lift a [STRUCTURE]
+  anchor — C8 anchor 3 needs all-5-band-pressure coverage (open_killbox
+  still has no dedicated upgrade); the build-identity it serves (C1
+  anchors 4-5, C9 anchor 3+) is playtest-gated. Honest BUILD-QUALITY.
+  Last BUILD-QUALITY was iter 10 — well within the 1-per-3 cap.
+- Constraints respected: 7 (a rule-changer verb — "cluster breaching
+  pays for itself" — not a passive %stat; the CONSULT's exact
+  prescription against logistics salad), 1
+- Constraints risked: 4 (farming) — mitigated: `refill_he` caps at
+  `max_he_reserve`, so a dividend sustains efficient play but never
+  snowballs. CONSULT's stronger "once per band" cap deferred.
+- Sentence test: BREACH_DIVIDEND passes — "...climb through brick mazes
+  by changing how I use HE — precise cluster breaches refund their own
+  shell." (documented in Loadout.gd UPGRADE CATALOG)
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** post Bullet.gd
+  write (Bullet's 4th — sanctioned). `make test` exit 0. `make
+  test-all` PASS (5 arc-3). `make test-breach` PASS (14 checks).
+- Falsifications: none
+- Files: `scripts/Loadout.gd` (+breach_dividend flag + catalog doc),
+  `scripts/Depot.gd` (UpgradeKind += BREACH_DIVIDEND), `scripts/
+  Bullet.gd` (_apply_he_blast returns hit count; _try_breach_dividend
+  reaches the loadout via get_parent().player.loadout),
+  `loop/breach/test_breach_dividend.gd` (NEW), `Makefile`
+  (check-breach-dividend), PRE-MORTEMS, LEDGER, STATE
+- Finding: **The depot now has a rule-changer, not just stock.** Breach
+  Dividend: an HE shot that breaches ≥4 bricks refunds 1 HE — but only
+  if the player picked the upgrade. This forks a playstyle (precise
+  cluster breaching = self-sustaining HE economy) per CONSULT 002 Q2.
+  6-entry catalog now: 5 stock-changers + 1 rule-changer. Next iter 25:
+  CONSULT 002 #3 — surface a PLAYTEST request to REVIEW-QUEUE (the
+  5-person smoke test — "do players describe their run as route
+  economy?"). That's a user-look gate, not a BUILD.
+
 ## iter 023 — BUILD — HEAT armor-bypass (C3 anchor 3)
 
 - Date: 2026-05-20
