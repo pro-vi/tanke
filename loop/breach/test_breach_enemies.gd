@@ -73,5 +73,19 @@ func _initialize() -> void:
 		push_error("FAIL — bunker_zone Heavy share too low: %d/200" % heavy_n)
 		quit(1); return
 
-	print("BREACH_ENEMIES_OK 5 bands rostered; Spawner picks band-appropriate types")
+	# === Test 3: role coverage — each of the 3 roles appears in >=1 band
+	# roster (C5 anchor 2 clause b — "harness verifies presence in band
+	# rosters"; per-role canonical answers are documented in BANDS.md).
+	var seen: Dictionary = {}
+	for band in cfg.bands:
+		for role in band.enemy_weights:
+			if float(band.enemy_weights[role]) > 0.0:
+				seen[role] = true
+	for role in VALID_ROLES:
+		if not seen.has(role):
+			push_error("FAIL — role '%s' appears in no band roster" % role)
+			quit(1); return
+	print("  role coverage: %s — all appear in >=1 band" % str(seen.keys()))
+
+	print("BREACH_ENEMIES_OK 5 bands rostered; 3 roles covered; Spawner picks band-appropriate types")
 	quit(0)

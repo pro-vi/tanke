@@ -24,6 +24,40 @@ Format:
 
 ---
 
+## iter 019 — BUILD — per-role canonical answers (C5 anchor 2)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- DIAGNOSE: C5 (enemy role vocabulary) at 1/5 is the lowest criterion.
+  C5 anchor 2: "Each role has a documented 'canonical answer'
+  shell+positioning in BANDS.md; harness verifies presence in band
+  rosters — code-cited". Two clauses (R1): (a) BANDS.md documents a
+  shell+positioning answer per role; (b) a harness verifies each role
+  appears in ≥1 band roster.
+- CONSULT constraints respected: 3 (every enemy type must have a
+  readable shell/positioning relationship — this iter is the literal
+  documentation of that), 5
+- CONSULT constraints risked: 3 — the canonical answer is *documented*,
+  not yet *enforced* in code (no enemy demands a specific shell to
+  kill). Honest: C5 anchor 2 is a documentation+coverage anchor;
+  mechanical enforcement is later (would need armor/HEAT-bypass — also
+  C3 anchor 3 territory).
+- Predicted failure modes:
+  - Roster coverage: a role with no band could fail clause (b).
+    Current rosters — Light in all 5, Heavy in 2, Fast in 3 — all 3
+    roles covered. Low risk; the harness makes it explicit.
+  - No substrate touch — BANDS.md is a doc, the harness is arc-4-owned.
+- Falsifiable claim: post-edit, BANDS.md has a per-role canonical-answer
+  section for Light/Heavy/Fast (shell + positioning each), and
+  `make check-breach-enemies` additionally verifies all 3 roles appear
+  in ≥1 band roster. `make test` exit 0, `tile_hash` =
+  `23d6a2ec3bf2821f`, `make test-all` PASS, `make test-breach` PASS.
+- Sentence test: n/a (enemy doc)
+- Substrate touched: none (BANDS.md doc + test_breach_enemies.gd
+  arc-4-owned harness).
+- Hash-anchor verification plan: n/a (no code/config edit) — verify
+  anyway.
+
 ## iter 018 — BUILD — C6 anchor 3 (recap band pressure) + C7 anchor 2 (grammar gate)
 
 - Date: 2026-05-19

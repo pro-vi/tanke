@@ -74,6 +74,26 @@ verifies each band's spawn-to-exit geometry pre-commit.
 
 ---
 
+## Per-role canonical answers (C5 anchor 2)
+
+The 3 enemy roles in `Spawner.gd` ENEMY_TYPES. Each has a canonical
+shell + positioning answer (CONSULT §9 constraint 3 — "every enemy type
+must have a readable shell/positioning relationship"). Role spawn
+weights per band live in `configs/breach_default.tres` `enemy_weights`;
+`make check-breach-enemies` verifies every role appears in ≥1 band.
+
+| Role | Behavior | Canonical shell | Canonical positioning |
+|------|----------|-----------------|------------------------|
+| **Light** | rare-fire lane-invader (commits to a lane, fires seldom) | **AP** — 1 HP, cheap precise kill; never spend HE/HEAT | Intercept the lane head-on before it reaches the eagle line; a single AP shot resolves it |
+| **Heavy** | paused-aim corridor-denier (stops, telegraphs, bursts when aligned) | **HEAT** — 2 HP, HEAT 2× one-shots it; or 2 AP if HEAT-starved | Break line-of-sight during the red aim telegraph; strike from the side while it is committed to a stop |
+| **Fast** | continuous-fire harasser (high speed, fires while moving, no telegraph) | **AP** — 1 HP, volume threat not durability; lead the moving target | Keep moving, never get cornered; AP on the lead — do not waste HE/HEAT on a 1-HP rusher |
+
+Bands compose these: tutorial_choke = Light only (AP economy intro);
+bunker_zone = Heavy-dominant (HEAT band); open_killbox = Fast-dominant
+(AP-precision + facing band); endgame_mixed = all three.
+
+---
+
 ## Depot placement summary
 
 | Depot | After band | Function |

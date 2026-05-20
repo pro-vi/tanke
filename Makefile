@@ -198,7 +198,7 @@ check-breach-recap:
 # declare valid enemy_weights; Spawner picks band-appropriate types in
 # breach mode. C5 anchor 1 structural cite.
 check-breach-enemies:
-	@$(HEADLESS) --script res://loop/breach/test_breach_enemies.gd 2>&1 | grep -E "^(  band|BREACH_ENEMIES_OK|FAIL|ERROR|SCRIPT ERROR)"; \
+	@$(HEADLESS) --script res://loop/breach/test_breach_enemies.gd 2>&1 | grep -E "^(  (band|role)|BREACH_ENEMIES_OK|FAIL|ERROR|SCRIPT ERROR)"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_enemies.gd 2>&1 | grep -q "^BREACH_ENEMIES_OK"
 
 # Arc-4 breach mode: generate + verify the 3 shell-class HUD icons via

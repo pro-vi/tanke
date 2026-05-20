@@ -17,6 +17,42 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 019 — BUILD — per-role canonical answers (C5 anchor 2)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **24/50 absolute · 24/50 effective** (Δ +1 vs prior — C5 anchor 2)
+  - C5 (Enemy role vocabulary): 1 → 2 (anchor 2: each role has a
+    documented canonical answer shell+positioning in BANDS.md — new
+    "Per-role canonical answers" table for Light/Heavy/Fast; harness
+    verifies presence in band rosters — code-cited via `make
+    check-breach-enemies` Test 3 reporting all 3 roles covered)
+  - C1=3, C2=2, C3=2, C4=3, C6=3, C7=2, C8=1, C9=2, C10=4 unchanged
+- DIAGNOSE: C5 at 1/5 was the lowest criterion.
+- Constraints respected: 3 (every enemy type now has a documented
+  readable shell/positioning answer — Light→AP-lane-intercept,
+  Heavy→HEAT-or-2AP/break-LOS-during-telegraph, Fast→AP-on-the-lead/
+  keep-moving), 5
+- Constraints risked: 3 — the canonical answer is *documented*, not yet
+  *mechanically enforced* (no enemy demands a specific shell to die).
+  Honest: anchor 2 is a documentation+coverage anchor. Mechanical
+  enforcement (e.g. Heavy armor that only HEAT bypasses) is C3 anchor 3
+  / C5 anchor-3+ territory.
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** (no code/config
+  touched — BANDS.md doc + harness assertion only). `make test` exit 0,
+  `make test-all` PASS, `make test-breach` PASS (12 checks).
+- Falsifications: none
+- Files: `loop/breach/BANDS.md` (+Per-role canonical answers table),
+  `loop/breach/test_breach_enemies.gd` (+Test 3 role coverage),
+  `Makefile` (grep surfaces the role-coverage line), PRE-MORTEMS,
+  LEDGER, STATE
+- Finding: **Each enemy role now has a documented canonical answer.**
+  BANDS.md's per-role table names the shell + positioning for Light /
+  Heavy / Fast; the harness confirms all 3 appear in ≥1 band roster.
+  Next iter 20: candidates — C8 anchor 2 (5+ depot upgrades — have 3),
+  C2 anchor 3 (≥3 depots per run), C3 anchor 3 (HEAT armor-bypass).
+  Diagnose at iter start.
+
 ## iter 018 — BUILD — recap band pressure + silhouette-grammar gate (C6/3, C7/2)
 
 - Date: 2026-05-19
