@@ -2,27 +2,27 @@
 
 ```yaml
 phase: loop
-iter: 22
+iter: 23
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_22: 23d6a2ec3bf2821f  # bit-identical through 10 substrate writes
-substrate_writes_this_arc: 10  # ProceduralLevel.gd ×3 + Bullet.gd ×2 + PlayerTank.gd ×3 + Level.gd + Spawner.gd
+hash_anchor_at_iter_23: 23d6a2ec3bf2821f  # bit-identical through 11 substrate writes
+substrate_writes_this_arc: 11  # ProceduralLevel.gd ×3 + Bullet.gd ×3 + PlayerTank.gd ×3 + Level.gd + Spawner.gd ×2 (NOTE: Spawner ×2 = iter 15 + iter 23)
 current_round: 2
 current_round_phase: BUILD
 consult_001_status: adopted
-consult_002_status: pending  # queryId 72ec60ef-f236-4454-8f1b-b0338805c99c — iter 23 reads
+consult_002_status: adopted  # iter 23 — read despite tab-timeout; "next 3 iters" mapped
 build_quality_iters: [10]
-falsifications: [F001-resolved]
+falsifications: [F001-resolved, F002-resolved]
 reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%)
 audit_candidates: []
 last_audit: iter 21
 last_consult: iter 21
-substrate_note: Enemy.gd is Layer-2 substrate NOT in the arc-4 PROMPT's sanctioned-write list (PlayerTank/ProceduralLevel/Spawner/Bullet). HEAT-armor-bypass (C3 anchor 3) likely needs an Enemy.gd touch — iter 23 must either route armor through Bullet.gd (sanctioned) or treat the Enemy.gd extension as a halt+investigate per PROMPT §DEFAULT-ON.
-next_action: iter 23 — read CONSULT 002 response (queryId 72ec60ef…, key tanke-arc4-iter21-consult2) via agentify_get_run + agentify_read_page (check page even on tab-timeout — arc-4 documented behavior). Integrate its redirect; record to creative-consults.md. Then BUILD per the CONSULT's "next 3 iters" recommendation.
-score: 27/50 absolute · 27/50 effective  # C1=3,C2=3,C3=2,C4=3,C5=2,C6=3,C7=3,C8=2,C9=2,C10=4
+consult_002_plan: iter 23 HEAT armor (DONE) → iter 24 depot rule-changer "Breach Dividend" → iter ~25 surface PLAYTEST request to REVIEW-QUEUE (the 5-person smoke test — needs the user)
+next_action: iter 24 — BUILD — CONSULT 002 #2: one depot rule-changer (not a stock-changer). "Breach Dividend" — destroying ≥4 bricks with one HE shot refunds 1 HE (capped once per band). Needs an HE-cluster-kill count + a refund hook. Add as a 6th UpgradeKind. This makes the depot fork a *playstyle* (precise cluster breaching) not just quantity. Target: C8 trail / C2 anchor toward feel; C1 build-identity depth.
+score: 28/50 absolute · 28/50 effective  # C1=3,C2=3,C3=3,C4=3,C5=2,C6=3,C7=3,C8=2,C9=2,C10=4
 spike_report: loop/breach/iter-001-spike-report.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets} + check-silhouette-gate (12; test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor} + check-silhouette-gate (13; test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb]
 ```
 

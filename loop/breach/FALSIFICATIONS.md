@@ -17,6 +17,37 @@ Format:
 
 ---
 
+## F002 — "armored" group tag leaked into arc-3 OG mode — iter 23
+
+- Predicted: iter-23 PRE-MORTEM treated the group-tag approach
+  (Spawner adds `armored` group, Bullet mitigates) as cleanly
+  substrate-safe and breach-scoped.
+- Observed: caught during the hash-anchor reasoning while writing the
+  LEDGER — NOT by a harness. The Heavy `ENEMY_TYPES` entry is SHARED
+  between arc-2 ascender, arc-3 OG, and arc-4 breach modes. Spawner's
+  instantiation block runs for all three. So an unguarded
+  `if type_data.get("armored"): enemy.add_to_group("armored")` would
+  tag arc-3 OG Heavy enemies too — and the OG player (fires AP, no
+  loadout → shell_class AP) would deal `max(0, 1-1) = 0` damage to OG
+  Heavy enemies, breaking OG combat.
+- Root cause: STRUCTURE — a shared data table (ENEMY_TYPES) consumed
+  by 3 modes; a new per-type flag was added without scoping its
+  *effect* to the mode that introduced it.
+- Why no harness caught it: `make test-all`'s CHAIN tests instantiate
+  every OG stage but fire no bullets — the 0-damage bug only manifests
+  in live OG combat, which no harness exercises. The hash-anchor
+  discipline (reasoning through every cross-mode effect before commit)
+  caught what the harness could not.
+- Fixed within-iter: added `_is_breach_mode()` (reads the parent
+  level's `breach_mode_enabled`) and gated the `add_to_group` call on
+  it. Arc-2/3 enemies never get the tag; Bullet's mitigation only ever
+  engages in breach mode.
+- Lesson: when adding a flag to a shared data table (ENEMY_TYPES,
+  LevelConfig, etc.), scope the flag's *effect* to the introducing
+  mode — a default value on the table is NOT enough if the table is
+  cross-mode. Codified: this file. The hash-anchor "reason through
+  every cross-arc effect" discipline is the real catch — keep it.
+
 ## F001 — Breach band terrain density eyeballed, not reachability-verified — iter 11
 
 - Predicted: iter-11 PRE-MORTEM claimed "keep band configs gentle

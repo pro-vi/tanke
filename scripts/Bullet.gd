@@ -61,20 +61,27 @@ func _on_area_entered(_area: Area2D) -> void:
 	queue_free()
 
 
+# arc-4 iter 23: armor mitigation. Bodies in the "armored" group (set
+# by Spawner.gd for Heavy enemies) take ARMOR_MITIGATION less damage
+# from AP + HE — HEAT bypasses armor entirely. With base damage 1,
+# AP/HE deal 0 to armored Heavies (blocked); HEAT one-shots them. The
+# player learns: "HE changes the map; HEAT solves armor" (CONSULT 002).
+const ARMOR_MITIGATION: int = 1
+
+
 func _on_body_entered(body: Node) -> void:
 	# Arc-4 shell-class routing.
 	# AP (default) = single-hit, baseline damage — arc-2 path, bit-identical
 	#   when shell_class = SHELL_CLASS_AP (the procedural baseline never
 	#   touches the HE/HEAT branches; hash anchor 23d6a2ec3bf2821f stays).
-	# HE         = single-hit + radius brick-blast (CONSULT §4 "good upgrade"
-	#   "HE shots leave rubble ramps you can cross"). Sentence-test compliant:
-	#   "helps me climb through brick mazes by changing how I use HE shells".
-	# HEAT       = 2x damage on the direct hit (anti-heavy commitment).
-	#   Sentence-test compliant: "helps me climb through bunker bands by
-	#   changing how I use HEAT". Iter 8+ extends with facing/armor check.
+	# HE         = single-hit + radius brick-blast. Sentence-test compliant.
+	# HEAT       = 2x damage AND ignores armor — the anti-armor answer.
 	var deal: int = damage
 	if shell_class == SHELL_CLASS_HEAT:
 		deal = damage * 2
+	# armor mitigation: AP/HE blunted vs armored bodies; HEAT bypasses.
+	if shell_class != SHELL_CLASS_HEAT and body.is_in_group("armored"):
+		deal = max(0, deal - ARMOR_MITIGATION)
 	if body.has_method("take_damage"):
 		body.take_damage(deal)
 	if shell_class == SHELL_CLASS_HE:

@@ -17,6 +17,70 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 023 — BUILD — HEAT armor-bypass (C3 anchor 3)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **28/50 absolute · 28/50 effective** (Δ +1 vs prior — C3 anchor 3)
+  - C3 (Ammo as logistics): 2 → 3 (anchor 3: HE affects terrain ✓
+    (radius blast, iter 7) + HEAT bypasses heavy armor ✓ NEW + AP
+    cheap+precise ✓ — code-cited via `make check-breach-armor`:
+    AP/HE deal 0 to armored bodies, HEAT deals full 2×)
+  - C1=3, C2=3, C4=3, C5=2, C6=3, C7=3, C8=2, C9=2, C10=4 unchanged
+- CONSULT 002 ADOPTED — this iter is its #1 "next 3 iters"
+  recommendation ("make HEAT real with one armor-facing/bypass rule";
+  Q3's stupid-in-6-months omission: "'2× damage' is a placeholder").
+- Constraints respected: 3 (armored Heavy now MECHANICALLY demands
+  HEAT — the readable shell relationship is real, not asserted), 2, 7
+- Constraints risked: 1 — a HEAT-starved player vs an armored Heavy is
+  stuck on that enemy (the intended breach-economy tension; recap names
+  "ran out of HEAT"). Mitigation: armored Heavies are route-avoidable
+  + AP/HE still kill all non-armored roles.
+- **Substrate investigation** (PROMPT §DEFAULT-ON): HEAT-armor needs an
+  enemy-side "armored" marker; Enemy.gd is NOT in the sanctioned write
+  list. Resolved by AVOIDING the Enemy.gd touch — used a Godot group
+  tag: Spawner.gd (sanctioned) calls `add_to_group("armored")` for
+  Heavy; Bullet.gd (sanctioned) checks `is_in_group("armored")`. No
+  halt-and-investigate needed; no Enemy.gd write.
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** post substrate
+  writes #11 (Spawner.gd) + Bullet.gd. `make test` exit 0. `make
+  test-all` PASS (5 arc-3 — Spawner OG path unaffected; armored group
+  only set for breach Heavies, and arc-3 OG enemies via the
+  stage_number branch don't hit the armored-key path... they DO go
+  through the same instantiation block — `type_data.get("armored",
+  false)` returns false for OG Light/Heavy picks since OG uses
+  `_get_type_by_name` which returns the same ENEMY_TYPES dict — so
+  arc-3 OG Heavies WOULD get the armored tag. But Bullet's armor
+  mitigation only changes outcomes for HE/HEAT shells, and arc-3 OG
+  player fires AP only (no loadout) → AP vs armored = max(0,1-1)=0.
+  WAIT — that WOULD change OG: OG AP shots vs Heavy enemies would deal
+  0 instead of 1. **Checked: `make test-all` CHAIN tests instantiate
+  stages but fire no bullets — they pass. But this is a real OG
+  behavior risk.**) — see Falsification note.
+- Falsifications: **F002 logged** — the armored group tag leaks into
+  arc-3 OG mode (OG Heavy enemies use the same ENEMY_TYPES Heavy entry
+  → get `armored` → OG player AP would deal 0). Caught during the
+  hash-anchor reasoning. FIXED within-iter: gate the `add_to_group`
+  call on breach mode (only tag when the level is in breach mode).
+- Files: `scripts/Spawner.gd` (write #11 — armored ENEMY_TYPES key +
+  `_is_breach_mode()` helper + breach-gated group tag), `scripts/
+  Bullet.gd` (armor mitigation), `loop/breach/test_breach_armor.gd`
+  (NEW), `Makefile` (check-breach-armor), `loop/breach/
+  creative-consults.md` (CONSULT 002 ADOPTED + findings),
+  `loop/breach/FALSIFICATIONS.md` (F002), PRE-MORTEMS, LEDGER, STATE
+- Finding: **HEAT is now mechanically real.** Armored Heavies (the
+  bunker-band threat) take 0 from AP/HE and full 2× from HEAT — the
+  player learns "HE changes the map; HEAT solves armor" (CONSULT 002
+  Q3). F002 (the armored tag leaking into arc-3 OG mode) was caught by
+  the hash-anchor cross-mode-effect discipline + fixed within-iter via
+  `_is_breach_mode()` gating. `make test` exit 0, `tile_hash`
+  `23d6a2ec3bf2821f`, `make test-all` PASS (5 arc-3 — OG Heavies are
+  NOT tagged armored), `make test-breach` PASS (13 checks). Next iter
+  24: CONSULT 002's #2 recommendation — one depot rule-changer
+  ("Breach Dividend": HE 4+-brick cluster-kill refunds 1 HE).
+
+## iter 022 — BUILD — 3 depots at band transitions (C2 anchor 3)
+
 ## iter 022 — BUILD — 3 depots at band transitions (C2 anchor 3)
 
 - Date: 2026-05-20

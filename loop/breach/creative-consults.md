@@ -20,21 +20,56 @@ Format:
 
 ---
 
-## Consult 002 — iter 21 — extended-pro via /agentify — fire-and-forget (PENDING)
+## Consult 002 — iter 21 — extended-pro via /agentify — ADOPTED (iter 23)
 
-- Date: 2026-05-19
-- Tab status: fire-and-forget — async dispatch confirmed, response pending
-- Trigger: ~every-10-iter cadence (last CONSULT iter 6). Round 2 deep
-  (25/50; breach economy is a full loop — climb / spend / breach /
-  depot / recap).
-- Three permanent questions asked? YES (Q1 distinctness, Q2 depots
-  earned-beats-vs-restock-menus, Q3 seductive-but-hollow). Prompt
-  embedded the honest gaps: depot upgrades all reserve-refill (no
-  build-fork), HEAT hollow (2× only, no armor), no playtest.
-- Adopted into: TBD — iter 22 reads the response.
-- Conversation URL / queryId: `72ec60ef-f236-4454-8f1b-b0338805c99c`
-  (tabId: `eda5ebde-138f-4841-876c-943f4f2436e3`, key:
+- Date: 2026-05-19 (fired) / read 2026-05-20 iter 23
+- Tab status: response landed on the conversation page (read via
+  agentify_read_page). "Thought for 5m 23s".
+- Trigger: ~every-10-iter cadence (last CONSULT iter 6).
+- Three permanent questions answered? YES — full response captured.
+- Conversation / queryId: `72ec60ef-f236-4454-8f1b-b0338805c99c`
+  (tabId `eda5ebde-138f-4841-876c-943f4f2436e3`, key
   `tanke-arc4-iter21-consult2`)
+- Adopted into: iter 23+ BUILD sequence — the CONSULT's explicit
+  "next 3 iters" recommendation.
+
+### Key findings (paraphrased)
+
+**Q1 — distinct?**: "Distinct in kind, but only at the floor. Iter 8
+gives the real atomic verb. But if HE is usually replenished / the
+right breach is obvious / depots only restore spent resource, it
+collapses back to 'BC plus consumable wall bombs.'"
+→ **implication**: build one band where the same obstacle has ≥2 valid
+solves (spend HE shortcut into danger / conserve HE + longer enemy
+route / HEAT through a Heavy-held lane); the recap names the decision.
+
+**Q2 — depots earned or restock menus?**: "Right now, depots are
+restock menus. Not stat salad — but logistics salad: refill, cap,
+refill, cap, full refill. The player chooses quantity, not doctrine."
+→ **implication**: replace one depot entry with a *rule-changer*, not
+a stock-changer. Example given: **"Breach Dividend — destroying 4+
+bricks with one HE refunds 1 HE, capped once per room/band"** —
+preserves the reserve axis but creates a playstyle.
+
+**Q3 — seductive-but-hollow / 6-month-stupid omission?**: "The
+stupid-in-6-months omission would be not making HEAT mechanically
+real. '2× damage' is a placeholder that survives too long because it
+passes harnesses. If HE alters terrain and HEAT merely hurts more,
+AP/HE/HEAT is not a triangle — it's AP, bombs, and bigger AP."
+→ **implication**: give HEAT one unmistakable anti-armor rule —
+"Heavy tanks have frontal mitigation against AP/HE, but HEAT ignores
+it." Brutally simple. Player learns: "HE changes the map; HEAT solves
+armor."
+
+**Closing — "next 3 iters"**:
+> make HEAT real with one armor-facing/bypass rule, then add one depot
+> rule-changer that alters shell economics, then run a 5-person smoke
+> test asking only whether players describe their run as route
+> economy rather than tank combat.
+
+Loop mapping: iter 23 = HEAT armor rule (C3 anchor 3); iter 24 = depot
+rule-changer "Breach Dividend"; iter ~25 = surface a PLAYTEST request
+to REVIEW-QUEUE (the 5-person smoke test — needs the user).
 
 ## Consult 001 — iter 6 — extended-pro via /agentify — ADOPTED (iter 8)
 

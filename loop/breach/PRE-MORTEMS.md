@@ -24,6 +24,55 @@ Format:
 
 ---
 
+## iter 023 — BUILD — HEAT armor-bypass (C3 anchor 3)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- CONSULT 002 ADOPTED. Its #1 "next 3 iters" recommendation: "make
+  HEAT real with one armor-facing/bypass rule" — Q3's
+  stupid-in-6-months omission ("'2× damage' is a placeholder").
+- CONSULT constraints respected: 3 (every enemy type gets a readable
+  shell relationship — armored Heavy now MECHANICALLY demands HEAT),
+  2 (still 3 shells), 7 (HEAT becomes a verb-with-a-rule, not "+N%")
+- CONSULT constraints risked: 1 — armored Heavy is HEAT-only; a
+  HEAT-starved player meeting an armored Heavy is genuinely stuck on
+  that enemy. That IS the breach-economy tension (death recap names
+  "ran out of HEAT") — but if it softlocks (cornered, no escape) it's
+  bad. Mitigation: armored enemies are killable-by-avoidance (the
+  player can route around — they're not lane-blockers by terrain) and
+  AP/HE still kill all non-armored roles.
+- **Substrate investigation** (PROMPT §DEFAULT-ON "any other substrate
+  write = halt+investigate"): HEAT-armor needs an enemy-side "armored"
+  marker. Enemy.gd is Layer-2 substrate NOT in the sanctioned list
+  (PlayerTank/ProceduralLevel/Spawner/Bullet). **Resolution: avoid the
+  Enemy.gd touch entirely** — use a Godot group tag. Spawner.gd
+  (sanctioned) calls `enemy.add_to_group("armored")` for Heavy types;
+  Bullet.gd (sanctioned) checks `body.is_in_group("armored")`.
+  `add_to_group` is a Node method — no Enemy.gd script property
+  needed. Both substrate writes are on the sanctioned list. No
+  halt-and-investigate needed; no Enemy.gd write.
+- The armor rule (brutally simple, per CONSULT): armored enemies take
+  `max(0, deal − ARMOR_MITIGATION)` from AP/HE; HEAT ignores armor
+  (full `deal`). ARMOR_MITIGATION = 1; Heavy base-damage-1 AP/HE →
+  0 (blocked), HEAT 2× → 2 (one-shots Heavy's 2 HP). Player learns:
+  "armored = HEAT".
+- Predicted failure modes:
+  - Spawner sets enemy params via `enemy.set(...)`; `add_to_group`
+    is a different call — must be placed in the same pre-add_child
+    block. Heavy ENEMY_TYPES entry needs an `"armored": true` key.
+  - take_damage(0) on an armored enemy hit by AP — harmless (hp -= 0),
+    impact spark still fires = readable "armor blocked it" feedback.
+- Falsifiable claim: post-edit, `make test` exit 0, `tile_hash` =
+  `23d6a2ec3bf2821f`, `make test-all` PASS, `make test-breach` PASS,
+  new `make check-breach-armor` verifies an "armored"-group stub takes
+  0 from AP + 0 from HE + full (2×) from HEAT, and a non-armored stub
+  takes full from all 3.
+- Sentence test: n/a (combat mechanic, not an upgrade)
+- Substrate touched: `scripts/Spawner.gd` (substrate write #11 —
+  sanctioned), `scripts/Bullet.gd` (substrate write — Bullet's 3rd;
+  sanctioned). NO Enemy.gd touch (group-tag approach).
+- Hash-anchor verification plan: post-edit, before commit.
+
 ## iter 022 — BUILD — 3 depots at band transitions (C2 anchor 3)
 
 - Date: 2026-05-20

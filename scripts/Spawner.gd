@@ -69,6 +69,7 @@ const ENEMY_TYPES: Array = [
 		"bullet_damage": 2,  # iter 52: corridor-denier hits harder
 		"sprite_tint": Color(1.0, 1.0, 1.0, 1.0),  # iter 67: white (telegraph handles ID)
 		"sprite_scale": 1.15,  # iter 86: bigger = toughness signal
+		"armored": true,  # arc-4 iter 23: AP/HE mitigated; only HEAT bypasses
 	},
 	# iter 40: 3rd type "Fast" — harassment rusher. Continuous fire while
 	# moving (no state machine, no aim, no telegraph). Distinct from Light
@@ -455,6 +456,15 @@ func _telegraph_then_spawn(plan: Dictionary) -> void:
 	enemy.set("bullet_damage", type_data.bullet_damage)  # iter 52
 	enemy.set("sprite_tint", type_data.sprite_tint)  # iter 67
 	enemy.set("sprite_scale", type_data.sprite_scale)  # iter 86
+	# arc-4 iter 23: armored enemies join the "armored" group — Bullet.gd
+	# mitigates AP/HE against group members; HEAT bypasses. Uses a group
+	# tag (a Node method) rather than an Enemy.gd @export, so no Layer-2
+	# Enemy.gd substrate write is needed.
+	# F002: gated on breach mode — the Heavy ENEMY_TYPES entry is shared
+	# with arc-3 OG mode; without this gate, OG Heavy enemies would be
+	# tagged armored and the OG player's AP would deal 0 damage to them.
+	if type_data.get("armored", false) and _is_breach_mode():
+		enemy.add_to_group("armored")
 	enemy.global_position = pos
 	# iter 101 (review-fix): explicit domain signals replace tree_exited
 	# piggy-backing for kill counter. tree_exited still drives _enemies_alive
@@ -528,6 +538,15 @@ func _weighted_pick(weights: Dictionary) -> Dictionary:
 		if roll <= accum:
 			return t
 	return ENEMY_TYPES[0]
+
+
+# arc-4 iter 23: is the parent level in breach mode? Used to gate
+# breach-only behavior (armored enemy tagging) off the arc-2/3 paths.
+func _is_breach_mode() -> bool:
+	var lvl: Node = get_parent()
+	if lvl == null:
+		return false
+	return ("breach_mode_enabled" in lvl) and lvl.breach_mode_enabled
 
 
 # arc-4 iter 15: read the active BreachBand's enemy_weights via the
