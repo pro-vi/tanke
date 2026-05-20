@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BreachConfig" load_steps=10 format=3]
+[gd_resource type="Resource" script_class="BreachConfig" load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/BreachConfig.gd" id="1_cfg"]
 [ext_resource type="Script" path="res://scripts/BreachBand.gd" id="2_band"]
@@ -58,6 +58,42 @@ dominant_pressure = "steel-armored bunkers; entrenched heavy tanks"
 canonical_answer = "HEAT — anti-armor commitment; AP useless vs bunkers"
 level_config = SubResource("lc_bunker")
 
+[sub_resource type="Resource" id="lc_killbox"]
+script = ExtResource("3_lc")
+merge_probability = 0.22
+empty_weight = 0.62
+brick_weight = 0.20
+steel_weight = 0.05
+grass_weight = 0.10
+water_weight = 0.03
+
+[sub_resource type="Resource" id="band_killbox"]
+script = ExtResource("2_band")
+band_name = "open_killbox"
+depth_min = 120
+depth_max = 180
+dominant_pressure = "wide sightlines; fast scouts; rear-flank patrols"
+canonical_answer = "AP precision + facing-aware positioning; HE wasted here"
+level_config = SubResource("lc_killbox")
+
+[sub_resource type="Resource" id="lc_endgame"]
+script = ExtResource("3_lc")
+merge_probability = 0.24
+empty_weight = 0.54
+brick_weight = 0.24
+steel_weight = 0.10
+grass_weight = 0.10
+water_weight = 0.02
+
+[sub_resource type="Resource" id="band_endgame"]
+script = ExtResource("2_band")
+band_name = "endgame_mixed"
+depth_min = 180
+depth_max = 260
+dominant_pressure = "all prior pressures composed; no further depots"
+canonical_answer = "build cohesion test — chosen identity determines reach"
+level_config = SubResource("lc_endgame")
+
 [resource]
 script = ExtResource("1_cfg")
-bands = Array[Resource]([SubResource("band_choke"), SubResource("band_maze"), SubResource("band_bunker")])
+bands = Array[Resource]([SubResource("band_choke"), SubResource("band_maze"), SubResource("band_bunker"), SubResource("band_killbox"), SubResource("band_endgame")])

@@ -2,21 +2,21 @@
 
 ```yaml
 phase: loop
-iter: 12
+iter: 13
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_12: 23d6a2ec3bf2821f  # bit-identical through 7 substrate writes
+hash_anchor_at_iter_13: 23d6a2ec3bf2821f  # bit-identical through 7 substrate writes
 substrate_writes_this_arc: 7  # ProceduralLevel.gd ×3 + Bullet.gd ×2 + PlayerTank.gd + Level.gd
 current_round: 2
 current_round_phase: BUILD
 consult_001_status: adopted
 build_quality_iters: [10]
-falsifications: [F001-resolved]  # iter-12 per-band oracle verified all 3 bands
-reachability_status: 3 bands verified — 9/10-seed sweep (90%, floor ≥80%); canonical seed 42 solid
+falsifications: [F001-resolved]
+reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%); canonical seed 42 solid
 reachability_floor: ">=80% of a 10-seed per-band sweep (arc-3 band_check precedent)"
-next_action: iter 13 — BUILD — extend breach_default.tres from 3 → 5 bands per BANDS.md roadmap (add band 4 open_killbox depth 120-180, band 5 endgame_mixed depth 180+). Each new band config must pass the per-band reachability oracle (≥80% of 10-seed sweep) BEFORE commit — retune within-iter if not (F001 lesson). Update BANDS.md status checkboxes. Target: C4 anchor 3 (5 bands implemented per BANDS.md; reachability passes on all — harness-cited).
-score: 13/50 absolute · 13/50 effective  # C1=1, C2=2, C3=2, C4=2, C8=1, C9=2, C10=3
+next_action: iter 14 — BUILD — author scripts/RunRecap.gd (death attribution; C6 currently 0/5 — untouched criterion). Capture on player death: depth reached, killing entity, shell consumption per type, reserve at death, build identity tag. Target C6 anchor 1 (RunRecap.gd captures depth + killing entity — code-cited) and trail to anchor 2 (shell consumption per type). New file — no substrate touch (RunRecap hooks into PlayerTank's `died` signal, which already exists). Per CONSULT 000 — death attribution is the "paired omission" alongside depots.
+score: 14/50 absolute · 14/50 effective  # C1=1, C2=2, C3=2, C4=3, C8=1, C9=2, C10=3
 spike_report: loop/breach/iter-001-spike-report.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness} (8; test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb]

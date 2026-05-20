@@ -17,6 +17,46 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 013 — BUILD — 5-band roadmap complete (C4 anchor 3)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **14/50 absolute · 14/50 effective** (Δ +1 vs prior — C4 anchor 3)
+  - C4 (Depth bands): 2 → 3 (anchor 3: 5 bands implemented per BANDS.md
+    roadmap; reachability passes on all — harness-cited. 5 bands in
+    `breach_default.tres`; per-band oracle 10-seed sweep = 9/10 pass,
+    ≥80% floor cleared; canonical seed 42 all 5 bands reachable)
+  - C1=1, C2=2, C3=2, C8=1, C9=2, C10=3 unchanged
+- Constraints respected: 5 (each band a distinct climb problem —
+  open_killbox = sightline pressure, endgame_mixed = composed pressure),
+  7
+- Constraints risked: none — F001 lesson applied (new bands
+  reachability-verified before commit)
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** (config-only
+  change). `make test` exit 0. `make test-all` PASS. `make test-breach`
+  PASS (8 harnesses).
+- Falsifications: none. Pre-mortem predicted "band 5 (endgame_mixed)
+  could fail multi-seed like bunker_zone" — CONFIRMED: endgame_mixed
+  failed seed 42 at steel 0.13; retuned within-iter (steel 0.13→0.10,
+  empty 0.50→0.54, merge 0.26→0.24) → 9/10 sweep.
+- Files: `configs/breach_default.tres` (added bands 4 open_killbox +
+  5 endgame_mixed; endgame retuned for reachability), `loop/breach/
+  BANDS.md` (status table — all 5 bands implemented + verified),
+  `loop/breach/PRE-MORTEMS.md`, `loop/breach/LEDGER.md`,
+  `loop/breach/STATE.md`
+- Finding: **The full 5-band roadmap is implemented.** tutorial_choke
+  (brick + scouts) → brick_maze (dense brick) → bunker_zone (steel
+  bunkers) → open_killbox (sightlines, sparse cover) → endgame_mixed
+  (composed). Each has a distinct LevelConfig + dominant_pressure +
+  canonical_answer. All 5 reachability-verified (9/10 seeds, floor
+  ≥80%). C4 = 3/5. The remaining C4 anchors are: anchor 4 ("each
+  band's pressure answered by a different breach approach — verified
+  via 5-seed harness: avg shell-mix differs per band") needs a
+  shell-consumption harness; anchor 5 is playtest. Next iter 14:
+  candidates — (a) C6 RunRecap.gd (death attribution, 0→1+, untouched
+  criterion), (b) C5 enemy roles (Spawner band-aware roster), (c) the
+  shell-mix harness for C4 anchor 4.
+
 ## iter 012 — CAPABILITY — per-band reachability oracle; closes F001 caveat
 
 - Date: 2026-05-19

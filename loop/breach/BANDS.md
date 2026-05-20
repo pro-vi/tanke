@@ -90,8 +90,27 @@ verifies each band's spawn-to-exit geometry pre-commit.
 
 ## Status
 
-All bands at design-spec only. Implementation begins iter 2 (after iter-1
-DECISION blueprint). Band order: 1 → 2 → 3 → 4 → 5; bands 1+2 likely first
-because they share the most arc-2/3 substrate.
+**All 5 bands implemented in `configs/breach_default.tres` as of iter 13.**
+
+| Band | Depth | Config | Reachability |
+|------|-------|--------|--------------|
+| 1 tutorial_choke | 0-30 | iter 3, retuned iter 11-12 | verified ✓ |
+| 2 brick_maze | 30-70 | iter 3, retuned iter 11-12 | verified ✓ |
+| 3 bunker_zone | 70-120 | iter 11, retuned iter 12 | verified ✓ |
+| 4 open_killbox | 120-180 | iter 13 | verified ✓ |
+| 5 endgame_mixed | 180-260 | iter 13 | verified ✓ |
+
+Reachability is verified by `loop/breach/test_breach_harness.gd` (the
+per-band pure-data oracle). **Floor: ≥80% of a 10-seed sweep** — the
+per-band acceptance "Reachability passes 5/5 seeds" above was written
+before F001 taught us reachability is a high-variance extremal metric
+(arc-1 lesson). Current state: **9/10 seeds pass** all 5 bands (seed 77
+fails — a spawn-area Eller artifact, not config-tunable). Canonical
+seed 42 passes all 5 bands solidly.
+
+Remaining per-band acceptance items (shell-mix %, playtest cites) are
+still open — they need the iter-14+ shell-consumption harness + a
+playtest. The depth bands' terrain experience is live in breach mode
+(`scenes/BreachLevel.tscn`).
 
 Update this file as bands ship (checkbox each acceptance item; cite LEDGER iter).

@@ -24,6 +24,37 @@ Format:
 
 ---
 
+## iter 013 — BUILD — extend breach_default.tres to 5 bands (C4 anchor 3)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 5 (each band a specific climb problem
+  — band 4 open killbox = sightline pressure, band 5 endgame = composed
+  pressure), 7
+- CONSULT constraints risked: 5's reachability flip-side — F001 lesson:
+  new band configs must be reachability-verified, not eyeballed. Band 5
+  (endgame_mixed) carries steel — the bunker-zone failure mode could
+  recur.
+- Predicted failure modes:
+  - Band 5 (endgame_mixed) has steel ~0.16 + brick ~0.26 — could fail
+    the per-band oracle multi-seed like bunker_zone did pre-retune.
+    Mitigation: verify via the 10-seed sweep; retune within-iter.
+  - Band 4 (open_killbox) is high-empty — should be trivially
+    reachable; the risk is the OPPOSITE (too empty = no climb problem),
+    but that's a feel concern, not a reachability one.
+  - .tres load_steps must cover the 4 new sub_resources.
+- Falsifiable claim: post-edit, all 5 bands pass the per-band
+  reachability oracle on ≥80% of a 10-seed sweep (the codified floor).
+  `make check-breach-config` reports 5 bands. `make
+  check-breach-harness` (deep, seed 42) reports all 5 reachable.
+  `make test` exit 0, `tile_hash` = `23d6a2ec3bf2821f`, `make
+  test-all` PASS.
+- Sentence test: n/a (band config, no upgrade)
+- Substrate touched: none — `configs/breach_default.tres` (not
+  substrate) + `loop/breach/BANDS.md` (doc).
+- Hash-anchor verification plan: post-edit; config-only change, flag-off
+  codepath untouched — trivially preserved, verify anyway.
+
 ## iter 012 — CAPABILITY — deep-climb reachability harness (bands 2+3)
 
 - Date: 2026-05-19
