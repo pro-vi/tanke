@@ -24,6 +24,34 @@ Format:
 
 ---
 
+## iter 037 — CONSULT — Round 5 close (CONSULT 003, written) + QUEUE
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 5 (shell legibility), close iter. Blueprint: iter-033-round5-architect.md.
+- Mode: CONSULT — done as a written self-pre-mortem (the arc-1/arc-3
+  sanctioned fallback), NOT an external /agentify call. Rationale: the
+  iter-33 USER PLAYTEST is Round 5's real creative check — a human
+  played the actual game and gave concrete findings that drove every
+  Round-5 iter; it literally fulfilled CONSULT 002's closing "5-person
+  smoke test" recommendation. A frontier CONSULT now would be a weaker,
+  redundant second-order check, and its sharpest question ("do the 4
+  shells read as economy choices?") is playtest-gated. If Round 6 —
+  which runs autonomously, no fresh playtest — needs outside
+  perspective, fire a real /agentify CONSULT then.
+- CONSULT constraints respected: all 7 (review iter, no design surface).
+- Predicted failure: the written self-critique rubber-stamps Round 5
+  instead of stress-testing it. Mitigation: the critique MUST surface
+  at least one concrete seductive-but-hollow risk and one Round-6
+  course-correction, or it has failed its purpose.
+- Falsifiable claim: this iter writes CONSULT 003 to creative-consults.md
+  (4 questions answered with teeth), appends REVIEW-QUEUE #6, updates
+  STATE + LEDGER. No code change → no hash risk. iter 38 bootstraps
+  Round 6.
+- Sentence test: n/a.
+- Substrate touched: none (loop docs only).
+- Hash-anchor verification plan: n/a (no code change).
+
 ## iter 036 — BUILD-QUALITY — shell codex / run-start tutorial (Round 5)
 
 - Date: 2026-05-20

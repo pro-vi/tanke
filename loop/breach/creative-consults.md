@@ -20,6 +20,81 @@ Format:
 
 ---
 
+## Consult 003 — iter 37 — written self-pre-mortem — Round 5 close
+
+- Date: 2026-05-20
+- Tab status: n/a — written self-pre-mortem (arc-1/arc-3 fallback mode),
+  fired in place of an external /agentify call. Rationale: the iter-33
+  user playtest is Round 5's real creative check (a human played the
+  game); it fulfilled CONSULT 002's closing "5-person smoke test"
+  recommendation. An external frontier CONSULT now would be redundant,
+  and its key question is playtest-gated. An external CONSULT will be
+  fired during Round 6 if the loop, running autonomously again, needs
+  outside perspective.
+- Three permanent questions answered? YES (+ the Round-5 question).
+- Key reframe: Round 5 made the breach economy LEGIBLE; it did not
+  verify the economy is DEEP. The next playtest must check scarcity,
+  not just clarity.
+- Adopted into: REVIEW-QUEUE #6; the Round-6 framing in STATE + LEDGER.
+
+### Q1 — Is breach economy distinct from BC, or BC with shell colours?
+
+Structurally distinct — finite reserves, depots, depth bands,
+steel-as-APCR-gated terrain, death recaps; a BC clone has none of it.
+But the iter-33 playtest verdict was "the game feels the same" — the
+structure is distinct, the *felt* experience (as of iter 33) was not.
+Round 5 is the bet that legibility closes that gap. The bet is unverified.
+
+### Q2 — Are depots earned breath beats, or menu-grind?
+
+Structurally a breath beat (combat pauses, 3 choices, next-band
+preview). But the iter-33 playtest never mentioned depots — positive or
+negative. That silence is data: depots did not register. The catalog is
+still mostly stock-refills (refill / expand) with only 2 rule-changers.
+The user's Round-6 ask for "build divergence" lands here: depots need
+more rule-changers — upgrades that change HOW you climb, not how MUCH.
+
+### Q3 — What's seductive-but-hollow about Round 5?
+
+The sharpest finding. Round 5 built a clean dashboard — panel, icons,
+codex — for an economy whose actual DECISIONS may be thin. Legibility is
+not depth. The omission that would look stupid in 6 months: **the loop
+has never verified the economy creates real scarcity.** Do players run
+out of shells at tense moments? Is "detour vs spend" ever an agonising
+choice? Does a run ever hit steel where breach-vs-detour genuinely
+bites? Round 5 polished the *presentation* of the economy without
+confirming the economy underneath demands choices. This is F003
+recursing one level up: we made the thing legible without confirming
+the thing is worth making legible.
+
+### Q4 — Do the 4 shells read as 4 economy choices or 4 damage colours?
+
+Structurally 4 distinct tools (cheap-precise / brick-zone / armor-burst
+/ steel). They are 4 economy CHOICES only if (a) the finite three are
+genuinely scarce and (b) bands present brick-walls AND armored-heavies
+AND steel often enough to want all three. If a run rarely hits steel,
+APCR is dead weight the codex still advertises. The icons + codex make
+them LOOK like 4 choices; whether they ARE is playtest-gated.
+
+### Round 6 implication
+
+The user picked all four roguelite ingredients. But CONSULT 003 Q3 says:
+do NOT open Round 6 with cosmetic roguelite-feel. Round 6 must FIRST
+verify + deepen the economy's scarcity and decision-density — otherwise
+run-variety / meta-progression just decorate a shallow core. Priority:
+  1. Run-to-run variety — band-order shuffle / depot-offer variation.
+     The user named this ("every run is the same") — the #1
+     not-roguelite cause, and the cheapest scarcity lever (variety
+     forces adaptation).
+  2. Build divergence — more depot rule-changers (per Q2), so shells +
+     upgrades compose into distinct doctrines.
+  3. Stakes / escalation — surface the single-life depth chase.
+  4. Meta-progression LAST, and carefully — it must unlock OPTIONS
+     (new shells, alt loadouts) NOT raw power; power-creep meta dilutes
+     the "what will you spend" core that is the whole identity.
+The next playtest gate (after Round 6) must ask not "is it legible"
+(Round 5 settled that) but "did you ever agonise over a shell?".
+
 ## Consult 002 — iter 21 — extended-pro via /agentify — ADOPTED (iter 23)
 
 - Date: 2026-05-19 (fired) / read 2026-05-20 iter 23

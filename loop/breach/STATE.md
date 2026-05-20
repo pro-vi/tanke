@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 36
+iter: 37
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
 hash_anchor_at_iter_36: 23d6a2ec3bf2821f  # bit-identical through 20 substrate writes
 substrate_writes_this_arc: 20  # ProceduralLevel.gd ×4 + Bullet.gd ×5 + PlayerTank.gd ×9 + Level.gd + Spawner.gd ×2
-current_round: 5-open
-current_round_phase: CONSULT + QUEUE — Round 5 close (iter 37); blueprint iter-033-round5-architect.md
+current_round: 5-closed
+current_round_phase: BOOTSTRAP — Round 6 (roguelite feel) SPIKE opens iter 38
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -17,16 +17,16 @@ falsifications: [F001-resolved, F002-resolved, F003-open]
 reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%)
 audit_candidates: []
 last_audit: iter 26
-last_consult: iter 21
+last_consult: iter 37  # CONSULT 003 — written self-pre-mortem, Round 5 close
 playtest_log: [iter 33 — 2026-05-20 — verdict: structurally complete but illegible; F003 logged]
 structural_ceiling: RE-OPENED at iter 33. The iter-32 "30/50 ceiling" assumed harness-green structure would read as breach economy; the iter-33 playtest falsified that (F003). Real work exists above 30/50 — Round 5 (legibility), then Round 6+ (roguelite feel).
 loop_state: RUNNING (resumed iter 33). User playtested 2026-05-20; the loop integrated the verdict, logged F003, opened Round 5. The non-stop loop continues per PROMPT until the user writes `playtest` / `halt` / `stop`.
-next_action: iter 37 — CONSULT + QUEUE — close Round 5. Fire the creative CONSULT ("do the 4 shells read as 4 distinct economy choices, or 4 damage colours?" + the 3 permanent questions) via /agentify. Append REVIEW-QUEUE #6 (Round 5 finding). Address the rubric gap (no legibility integer — all Round-5 work scored BUILD-QUALITY Δ 0). Bootstrap Round 6 (roguelite feel — run variety / build divergence / stakes / meta-progression) per the blueprint tail.
+next_action: iter 38 — SPIKE — open Round 6 (roguelite feel). Read iter-033-round5-architect.md (Round 6+ tail) + creative-consults.md CONSULT 003. CONSULT 003 says verify economy DEPTH first; priority (1) run-to-run variety, (2) build divergence via depot rule-changers, (3) stakes/escalation, (4) meta-progression last (options, not power). iter 38 also extends RUBRIC.md with criteria for the roguelite axes (none exist yet). SPIKE 2-4 POCs on the highest-leverage surface, then DECISION.
 score: 30/50 absolute · 30/50 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex} + check-silhouette-gate (19 in test-breach aggregate)
-review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch]  # #3 CLOSED — playtest delivered 2026-05-20
+review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close]  # #3 CLOSED — playtest delivered 2026-05-20
 ```
 
 ---
@@ -100,23 +100,23 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-20 — **iter 36 (BUILD-QUALITY).** Round 5 piece 3 — the shell
-  codex: a run-start `ShellCodex` overlay naming all 4 shells + their
-  BRICK/STEEL roles, dismissed on first input. PlayerTank HUD substrate
-  write; hash anchor preserved; test-all 5/5, test-breach 19/19 (NEW
-  check-breach-codex). Δ 0 — legibility craft. 2nd consecutive
-  BUILD-QUALITY — flagged honestly (playtest-mandated, not drift). 30/50.
+- 2026-05-20 — **iter 37 (CONSULT).** Round 5 (shell legibility)
+  CLOSED. CONSULT 003 (written self-pre-mortem) — key finding: Round 5
+  made the economy legible but never verified it is DEEP (F003
+  recursing). REVIEW-QUEUE #6 appended. 30/50. iters 34-37 = the full
+  Round 5 (APCR + steel, shell panel, codex, close).
 
 ## Next action
 
-**Iter 37 — CONSULT + QUEUE — close Round 5.**
-Read `loop/breach/iter-033-round5-architect.md`. Fire the creative
-CONSULT via /agentify: "do the 4 shells read as 4 distinct *economy*
-choices, or 4 damage colours?" + the 3 permanent questions. Append
-`REVIEW-QUEUE.md` #6 with the Round-5 finding. Address the rubric gap
-(no legibility integer — Round 5's mandated work all scored
-BUILD-QUALITY Δ 0). Then bootstrap Round 6 — the roguelite-feel
-program (run variety / build divergence / stakes / meta-progression).
+**Iter 38 — SPIKE — open Round 6 (roguelite feel).**
+Read `loop/breach/iter-033-round5-architect.md` (Round 6+ tail) +
+`creative-consults.md` CONSULT 003. Round 6 builds the roguelite
+program the user asked for — but CONSULT 003 says verify economy DEPTH
+first. Priority: (1) run-to-run variety, (2) build divergence via depot
+rule-changers, (3) stakes/escalation, (4) meta-progression last
+(options, not power). iter 38 also extends RUBRIC.md with criteria for
+the roguelite axes (none exist yet). SPIKE 2-4 POCs on the
+highest-leverage surface, then DECISION.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all

@@ -17,6 +17,46 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 037 — CONSULT — Round 5 close (CONSULT 003) + REVIEW-QUEUE #6
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **30/50** (Δ 0 — CONSULT iters are review, not anchor lift.)
+- Round 5 (shell legibility) CLOSED. Iters 34-37: APCR 4th shell +
+  steel terrain (34), shell UI panel + APCR icon (35), shell codex
+  (36), this close (37).
+- CONSULT 003 — written self-pre-mortem (arc-1/arc-3 fallback mode), in
+  place of an external /agentify call. Rationale: the iter-33 USER
+  PLAYTEST is Round 5's real creative check — it fulfilled CONSULT 002's
+  "5-person smoke test" recommendation; a frontier CONSULT now would be
+  redundant and its key question is playtest-gated. Captured to
+  creative-consults.md.
+- CONSULT 003 key finding (Q3, seductive-but-hollow): **Round 5 made
+  the economy LEGIBLE; it never verified the economy is DEEP.** F003
+  recursing — the loop polished the presentation without confirming the
+  thing presented demands real choices. The next playtest must ask
+  "did you ever agonise over a shell?" not "is it legible?".
+- Cap reconsidered: the iters-35-36 "rubric gap" flagged earlier is
+  WITHDRAWN — legibility is a [FEEL]-prerequisite the rubric credits
+  indirectly (a player can't describe a tradeoff they can't see).
+  iters 35-36 BUILD-QUALITY mirrors Round 4's iters 29-30 exactly — a
+  legibility round is *expected* to be consecutive BUILD-QUALITY. Not
+  drift, not a gap. The rubric DOES need new criteria for Round 6's
+  roguelite axes (run variety / meta-progression / escalation) — that
+  extension is the iter-38 Round-6 bootstrap.
+- Round 6 direction (CONSULT 003): verify economy depth FIRST, then
+  roguelite feel. Priority — (1) run-to-run variety, (2) build
+  divergence via depot rule-changers, (3) stakes/escalation, (4)
+  meta-progression last + options-not-power.
+- Hash anchor: n/a (no code change — review iter).
+- Falsifications: none.
+- Files: creative-consults.md (CONSULT 003), REVIEW-QUEUE.md (#6),
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **Round 5 closed at 30/50 — the breach economy is legible.**
+  Round 6 opens next — the roguelite-feel program, but economy-depth
+  verification first (CONSULT 003). iter 38 = Round 6 SPIKE + the
+  rubric extension for the roguelite axes.
+
 ## iter 036 — BUILD-QUALITY — shell codex / run-start tutorial (Round 5)
 
 - Date: 2026-05-20

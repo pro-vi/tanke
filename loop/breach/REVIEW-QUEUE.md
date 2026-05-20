@@ -113,3 +113,19 @@ Format per item:
     the loop declaring breach mode "fixed" after Round 5 while finding 5
     is still open. The next user playtest gate is after Round 6.
 
+#6 — Round 5 close: shell legibility — round 5 — iter 37 — open (informational)
+  Finding: Round 5 (iters 34-37) made the 4-shell breach economy
+    legible — APCR (the 4th shell, breaches steel) + a colour-coded
+    4-slot shell panel + a run-start shell codex. 30/50 (Δ 0 across the
+    round — legibility is BUILD-QUALITY bridge work, like Round 4).
+    19/19 breach harnesses + 5 arc-3 green; hash anchor preserved
+    through 6 substrate writes (iters 34-36).
+  Affordance: the shell economy is now visible, differentiated, and
+    explained — a playtest can now meaningfully judge whether it PLAYS
+    as breach economy (Round 5 removed the legibility excuse).
+  Risk: CONSULT 003 (Q3) — Round 5 polished the *presentation* of the
+    economy without verifying the economy is *deep*. Legibility is not
+    scarcity. Round 6 must first confirm/deepen the economy's
+    decision-density, then build roguelite feel. The next playtest must
+    ask "did you ever agonise over a shell?" — not "is it legible?".
+
