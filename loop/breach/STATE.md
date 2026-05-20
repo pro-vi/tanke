@@ -2,25 +2,29 @@
 
 ```yaml
 phase: loop
-iter: 25
+iter: 26
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_25: 23d6a2ec3bf2821f  # bit-identical through 12 substrate writes
+hash_anchor_at_iter_26: 23d6a2ec3bf2821f  # bit-identical through 12 substrate writes
 substrate_writes_this_arc: 12  # ProceduralLevel.gd ×3 + Bullet.gd ×4 + PlayerTank.gd ×3 + Level.gd + Spawner.gd ×2
-current_round: 2-closed  # round 3 opens iter 26
-current_round_phase: between-rounds
+current_round: 3
+current_round_phase: BUILD  # round 3 = the last 3 structural anchors
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24]
 falsifications: [F001-resolved, F002-resolved]
 reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%)
 audit_candidates: []
-last_audit: iter 21
+last_audit: iter 26
 last_consult: iter 21
-meta_iter25: PARITY DRIFT named + formalized. Round 2 closed. Playtest surfaced as REVIEW-QUEUE #3 (critical path) + PushNotification. Structural ceiling ~37/50 without a human playtest.
-next_action: iter 26 — SPIKE/BUILD — open round 3. Weakest axes: C5 (2/5) + C8 (2/5). C5 anchor 3 = "4-5 enemy roles; silhouette+palette+facing differ — code-cited via gen_tile.py outputs" (have 3 roles — add a 4th, e.g. EnemyMortar = telegraphed area-denial per BANDS.md band 4). C8 anchor 3 = "catalog covers all 5 bands' pressures" (open_killbox has no dedicated upgrade). Recommend C5 anchor 3 (a 4th enemy role is a real mechanic + needs a gen_tile silhouette → also exercises the C7 grammar gate). Diagnose at iter start. EYES OPEN: round 3 is the last ~8-10 structural points; the back half of the rubric needs the playtest.
-review_queue_note: #3 is the playtest request — when the user writes `playtest` the loop pauses + surfaces the queue.
+structural_ceiling: ~32/50  # iter-26 AUDIT — only C3/4 (swap cost), C5/3 (4th role), C8/3 (band coverage), C10/5 (arc close) are harness-reachable; the other 18 pts are [FEEL]/playtest
+meta_iter25: PARITY DRIFT — REVIEW-QUEUE #3 is the playtest request (critical path). Loop continues non-stop; eyes open the back half needs the playtest.
+next_action: iter 27 — BUILD — C3 anchor 4: shell-swap reload cost. Add a swap cooldown (≥0.5s) to PlayerTank._cycle_shell (substrate — PlayerTank sanctioned). The CONSULT-core "pre-commitment under reload pressure" (CONSULT 000 §2). Harness verifies a swap sets a cooldown that blocks the next swap for ≥0.5s. Target C3 anchor 4 (now de-bundled — clean single-clause).
+score: 28/50 absolute · 28/50 effective  # C1=3,C2=3,C3=3,C4=3,C5=2,C6=3,C7=3,C8=2,C9=2,C10=4 — structural ceiling ~32/50
+spike_report: loop/breach/iter-001-spike-report.md
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend} + check-silhouette-gate (14; test-breach aggregate)
+review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #3 PLAYTEST REQUEST (critical path)]
 score: 28/50 absolute · 28/50 effective  # C1=3,C2=3,C3=3,C4=3,C5=2,C6=3,C7=3,C8=2,C9=2,C10=4
 spike_report: loop/breach/iter-001-spike-report.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend} + check-silhouette-gate (14; test-breach aggregate)

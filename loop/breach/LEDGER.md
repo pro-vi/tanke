@@ -17,6 +17,66 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 026 — AUDIT — de-bundle remaining anchors; structural ceiling ~32/50
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **28/50 absolute · 28/50 effective** (Δ 0 — AUDIT; re-score
+  holds, no anchor moved since iter 21)
+- Trigger: AUDIT cadence (every 5; last iter 21) + Mismatch-AUDIT (L6)
+  prompted by the iter-25 parity-drift /meta finding.
+- Evidence: 14 breach checks GREEN, 5 arc-3 GREEN, hash anchor
+  `23d6a2ec3bf2821f` + `playable: true`.
+- Re-score: all 10 hold — C1=3, C2=3, C3=3, C4=3, C5=2, C6=3, C7=3,
+  C8=2, C9=2, C10=4. No over- or under-claims found.
+
+### AUDIT actions (2 anchor rephrases — RUBRIC.md revision rows 26)
+
+1. **C3 anchor 4 de-bundled** (R1): was "Shell-swap has reload cost
+   (≥0.5s); reserve-per-band limits create resupply tension —
+   code-cited via harness measuring per-band shell consumption" — two
+   clauses fused. Per-band shell-consumption measurement needs a
+   play-AI; it is not a structural cite. De-bundled: anchor 4 is now
+   the single swap-cost mechanic ("shell-swap has a reload cost
+   ≥0.5s — pre-commitment under reload pressure"). Clean [STRUCTURE]
+   target for round 3.
+2. **C4 anchor 4 re-tagged [STRUCTURE]→[FEEL]** (Mismatch-AUDIT): "avg
+   shell-mix differs per band" can only be measured by simulated or
+   real play — it was mis-tagged structural. Now honestly playtest-
+   gated.
+- Identity-protected anchors (C1/5, C5/5, C7/5, C8/5, C9/5) NOT
+  inspected (R2).
+
+### Structural ceiling — sharpened
+
+The iter-25 /meta finding estimated "~8-10 remaining structural
+points". This AUDIT sharpens it: after de-bundling, the genuinely
+harness-reachable anchors are **only**:
+- C3 anchor 4 — shell-swap reload cost (+1)
+- C5 anchor 3 — a 4th enemy role + gen_tile silhouette (+1)
+- C8 anchor 3 — depot catalog covers all 5 band pressures (+1)
+- C10 anchor 5 — arc-4 close + META-RETRO (+1, at arc close)
+
+**True structural ceiling ≈ 32/50.** The remaining 18 points are
+[FEEL]/playtest-gated by rubric design — they need the REVIEW-QUEUE #3
+playtest. The meta over-estimated because it counted C4/4 (now [FEEL])
+and assorted bundled clauses as structural.
+
+- Constraints respected: all 7 (process iter)
+- Hash anchor: `23d6a2ec3bf2821f` confirmed (no code touched)
+- Falsifications: none. Pre-mortem (28/50 holds, 2 rephrases, ~32/50
+  ceiling) — CONFIRMED.
+- Files: `loop/breach/RUBRIC.md` (C3/4 de-bundle + C4/4 re-tag + 2
+  revision rows), `loop/breach/PRE-MORTEMS.md`, LEDGER, STATE
+- Finding: **The honest ceiling is ~32/50 structural, ~50 with the
+  playtest.** Round 3 has 3 clean structural anchors left
+  (C3/4 swap-cost, C5/3 4th role, C8/3 band coverage). Next iter 27:
+  BUILD — C3 anchor 4, shell-swap reload cost on PlayerTank (the
+  CONSULT-core "pre-commitment under reload pressure"). The loop runs
+  these 3, reaches ~31-32/50, then genuinely ceiling-pauses on the
+  playtest — exactly as the parity-drift meta predicted, now with a
+  precise number.
+
 ## iter 025 — META + QUEUE — round-2 close; parity-drift; playtest surfaced
 
 - Date: 2026-05-20

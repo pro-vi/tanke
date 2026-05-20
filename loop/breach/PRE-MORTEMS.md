@@ -24,6 +24,33 @@ Format:
 
 ---
 
+## iter 026 — AUDIT — de-bundle remaining anchors; sharpen the ceiling
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Trigger: AUDIT cadence (every 5; last iter 21). Also Mismatch-AUDIT
+  (L6) — the parity-drift /meta finding flagged that the remaining
+  structural anchors are bundled/mis-tagged; this AUDIT de-bundles them
+  so round 3 has honest single-clause targets + a sharp ceiling number.
+- CONSULT constraints respected: all (process iter)
+- Predicted finding: re-score holds at 28/50 (no anchor moved since
+  iter 21's AUDIT + the BUILD-QUALITY iter 24). Two anchor rephrases:
+  (1) C3 anchor 4 is bundled (swap-cost + per-band-consumption-harness)
+  — R1 debt; de-bundle to the swap-cost clause (the CONSULT-core
+  mechanic), the consumption-measurement belongs to the [FEEL] tier.
+  (2) C4 anchor 4 ("avg shell-mix differs per band — 5-seed harness")
+  is mis-tagged [STRUCTURE] — shell-mix can only be measured by
+  simulated/real play; re-tag [FEEL]. Net: the true structural ceiling
+  is ~32/50 (C3/4 swap-cost + C5/3 4th role + C8/3 band coverage +
+  C10/5 arc-close), sharper than the meta's ~8-10 estimate.
+- Falsifiable claim: re-score = 28/50 unchanged; RUBRIC.md gets 2
+  revision-log rows (C3/4 de-bundle, C4/4 re-tag); LEDGER AUDIT block
+  states the ~32/50 structural ceiling. Identity-protected anchors
+  (C1/5, C5/5, C7/5, C8/5, C9/5) untouched (R2). Hash anchor untouched.
+- Sentence test: n/a
+- Substrate touched: none (RUBRIC.md + loop docs)
+- Hash-anchor verification plan: n/a
+
 ## iter 025 — META + QUEUE — round-2 close; parity-drift finding; playtest surfaced
 
 - Date: 2026-05-20
