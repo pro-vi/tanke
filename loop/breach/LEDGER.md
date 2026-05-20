@@ -17,6 +17,36 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 038 — SPIKE — Round 6 open: run-to-run variety verdict + blueprint
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **30/50** (Δ 0 — SPIKE iters are investigation, not anchor lift.)
+- Round 6 (roguelite feel) opened. SPIKE investigated the run-variety
+  surface — CONSULT 003 priority 1, and the user's #1 not-roguelite
+  complaint ("every run is the same 5 bands in the same order").
+- Investigated 3 options:
+  - A — band-order shuffle (permute the 3 middle bands per run).
+  - B — band-pool draw (define >5 archetypes, draw 5 per run).
+  - C — per-run band-parameter variation (roll terrain weights).
+- Verdict: **A first.** Cheap; reachability-safe — the oracle is
+  per-band-LOCAL, so band order is irrelevant to it; and it directly
+  fixes the literal complaint. Its one coupling cost: depot next-band
+  previews are static @exports and must become dynamic. B is sub-round
+  6b (deeper variety); C is a later tuning lever.
+- Blueprint: loop/breach/iter-038-round6-architect.md — Round 6
+  sub-round sequence (6a variety / 6b deeper variety + depot-offer
+  randomization / 6c build divergence / 6d stakes & escalation / 6e
+  meta-progression) + a RUBRIC extension proposal (+3 criteria for the
+  roguelite axes — C11 run variety, C12 stakes/escalation, C13
+  meta-progression; → 13 criteria / 65-pt ceiling).
+- Hash anchor: n/a (no code change — SPIKE).
+- Falsifications: none.
+- Files: iter-038-round6-architect.md (NEW), PRE-MORTEMS.md, LEDGER.md,
+  STATE.md
+- Finding: **Round 6 is scoped.** iter 39 = DECISION/BUILD-1 — band-order
+  shuffle + dynamic depot previews — and applies the rubric extension.
+
 ## iter 037 — CONSULT — Round 5 close (CONSULT 003) + REVIEW-QUEUE #6
 
 - Date: 2026-05-20

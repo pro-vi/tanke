@@ -24,6 +24,30 @@ Format:
 
 ---
 
+## iter 038 — SPIKE — Round 6 open: run-to-run variety investigation
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 6 (roguelite feel) opens. Mode: SPIKE — investigate the
+  highest-leverage run-variety option, output a verdict + the Round 6
+  blueprint. No code commits this iter (SPIKE = scouting; iter-1
+  precedent).
+- CONSULT constraints respected: all 7 (investigation, no design surface
+  committed). The blueprint is written to respect 5 (each band stays a
+  specific climb problem — shuffling order does not blur pressures).
+- Predicted failure: the SPIKE picks band-order shuffle without seeing a
+  hidden coupling cost. Known candidate: depot next-band previews are
+  static @exports — shuffling bands makes them wrong; the blueprint must
+  account for dynamic depot previews.
+- Falsifiable claim: this iter writes loop/breach/iter-038-round6-architect.md
+  — a Round 6 blueprint with (a) a run-variety verdict across >=2
+  investigated options, (b) the Round-6 sub-round sequence, (c) a RUBRIC
+  extension proposal for the roguelite axes. No code change -> no hash
+  risk. iter 39 begins Round 6 BUILD.
+- Sentence test: n/a (SPIKE).
+- Substrate touched: none (investigation + blueprint doc).
+- Hash-anchor verification plan: n/a (no code change).
+
 ## iter 037 — CONSULT — Round 5 close (CONSULT 003, written) + QUEUE
 
 - Date: 2026-05-20
