@@ -24,6 +24,48 @@ Format:
 
 ---
 
+## iter 028 — BUILD — OVERDRIVE sprint upgrade (C8 anchor 3)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- DIAGNOSE: round-3 anchor 2. Two candidates — C5 anchor 3 (4th enemy
+  role) and C8 anchor 3 (depot catalog covers all 5 band pressures).
+  **C5/3 is substrate-blocked** — a genuine 4th role needs an Enemy.gd
+  behavior branch, and Enemy.gd is NOT in the sanctioned-write list
+  (iter-23 finding); a stat-only variant violates CONSULT constraint 3
+  ("no canonical answer = decorative complexity = cut it"). So iter 28
+  takes **C8 anchor 3**: the open_killbox band has no depot upgrade —
+  its pressure ("wide sightlines, fast scouts, rear-flank patrols";
+  answer "facing-aware positioning") has no shell-economy upgrade
+  because AP (its answer) is the deliberately-unupgradeable baseline.
+  The honest fix: add a *positioning* verb — OVERDRIVE, a sprint burst.
+- CONSULT constraints respected: 7 (OVERDRIVE is a movement VERB —
+  "burst to break a flanker's sightline" — not a passive +speed%; it
+  has a cost: a burst window then a cooldown), 1
+- CONSULT constraints risked: 2 — OVERDRIVE is a non-shell upgrade, the
+  first one. But it is NOT shell-class bloat (still 3 shells); it is a
+  chassis/positioning affordance, which CONSULT 000 §7 explicitly
+  endorses ("verbs and affordances"). Acceptable.
+- Predicted failure modes:
+  - The sprint multiplies `velocity` in `_physics_process` line 195.
+    Gated on `loadout != null and loadout.has_overdrive` → arc-2/3
+    never sprint → movement bit-identical.
+  - Burst→cooldown transition: detect `_overdrive_timer` crossing >0→≤0
+    and arm `_overdrive_cd` once.
+- Falsifiable claim: post-edit, `make test` exit 0, `tile_hash` =
+  `23d6a2ec3bf2821f`, `make test-all` PASS, `make test-breach` PASS,
+  new `make check-breach-overdrive` verifies: OVERDRIVE upgrade sets
+  `has_overdrive`; a SHIFT burst (when owned) raises effective speed
+  for `overdrive_burst` s then cools down; arc-2/3 PlayerTank never
+  sprints. The 7-entry catalog now maps an upgrade to each of the 5
+  band pressures (HE-economy / HEAT-economy / positioning / recovery).
+- Sentence test: OVERDRIVE passes — "This upgrade helps me climb
+  through open killboxes by changing how I use positioning — a speed
+  burst to break flanker sightlines."
+- Substrate touched: `scripts/PlayerTank.gd` (substrate write —
+  sanctioned). `scripts/Loadout.gd` + `scripts/Depot.gd` arc-4-owned.
+- Hash-anchor verification plan: post-edit, before commit.
+
 ## iter 027 — BUILD — shell-swap reload cost (C3 anchor 4)
 
 - Date: 2026-05-20

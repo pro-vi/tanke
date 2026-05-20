@@ -42,10 +42,19 @@ var _shield_timer: float = 0.0
 # reload pressure (CONSULT §2 "the interesting WoT idea"). Only ever
 # armed in breach mode (a swap requires a loadout); arc-2/3 unaffected.
 @export var shell_swap_cost: float = 0.5
+# arc-4 iter 28 (C8 anchor 3): OVERDRIVE sprint burst. The open_killbox
+# band's positioning answer — a speed burst (KEY_SHIFT) to break flanker
+# sightlines. Granted by the depot OVERDRIVE upgrade (loadout.has_overdrive).
+@export var overdrive_mult: float = 1.6      # speed × this during a burst
+@export var overdrive_burst: float = 1.0     # burst duration (s)
+@export var overdrive_cooldown: float = 2.5  # cooldown after a burst (s)
 
 var current_shell: int = 0  # = BulletT.SHELL_CLASS_AP; cycled via KEY_TAB
 var _tab_was_pressed: bool = false
 var _swap_cooldown: float = 0.0  # >0 = mid reload beat, _fire blocked
+var _overdrive_timer: float = 0.0   # >0 = sprint burst active
+var _overdrive_cd: float = 0.0      # >0 = burst on cooldown
+var _shift_was_pressed: bool = false
 # arc-4: death-attribution recap. Created per-run in _ready when breach
 # mode is active (loadout != null). Null in arc-2/3 — those code paths
 # never touch run_recap, so behavior stays bit-identical.
@@ -139,6 +148,14 @@ func _physics_process(delta: float) -> void:
 	# arc-4 iter 27: tick down the shell-swap reload beat.
 	if _swap_cooldown > 0.0:
 		_swap_cooldown -= delta
+	# arc-4 iter 28: tick the OVERDRIVE sprint burst → cooldown.
+	if _overdrive_timer > 0.0:
+		_overdrive_timer -= delta
+		if _overdrive_timer <= 0.0:
+			_overdrive_timer = 0.0
+			_overdrive_cd = overdrive_cooldown
+	elif _overdrive_cd > 0.0:
+		_overdrive_cd -= delta
 	# iter 82: tick down shield invulnerability
 	if _shield_timer > 0.0:
 		_shield_timer -= delta
@@ -192,7 +209,19 @@ func _physics_process(delta: float) -> void:
 	else:
 		sprite.stop()
 
-	velocity = input_vector * float(speed)
+	# arc-4 iter 28: OVERDRIVE sprint — KEY_SHIFT triggers a speed burst
+	# when the depot upgrade is owned. Gated on loadout.has_overdrive, so
+	# arc-2/3 movement is bit-identical (no loadout → branch never taken).
+	if loadout != null and loadout.has_overdrive:
+		var shift_now: bool = Input.is_physical_key_pressed(KEY_SHIFT)
+		if shift_now and not _shift_was_pressed \
+				and _overdrive_timer <= 0.0 and _overdrive_cd <= 0.0:
+			_overdrive_timer = overdrive_burst
+		_shift_was_pressed = shift_now
+	var move_speed: float = float(speed)
+	if _overdrive_timer > 0.0:
+		move_speed *= overdrive_mult
+	velocity = input_vector * move_speed
 	sprite.set_dir_set(input_vector)
 
 	var collision: KinematicCollision2D = move_and_collide(velocity * delta)

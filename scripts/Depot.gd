@@ -23,6 +23,7 @@ enum UpgradeKind {
 	HEAT_MAX_EXPAND_2,  # +2 to max_heat_reserve, then refill 2
 	FULL_RESUPPLY,      # refill BOTH reserves to their current caps
 	BREACH_DIVIDEND,    # rule-changer: HE breach of >=4 bricks refunds 1 HE
+	OVERDRIVE,          # positioning verb: grants the sprint-burst ability
 }
 
 signal depot_entered(depot: Node)
@@ -128,6 +129,8 @@ func apply_upgrade(kind: int, loadout) -> void:
 			loadout.refill_heat(loadout.max_heat_reserve)
 		UpgradeKind.BREACH_DIVIDEND:
 			loadout.breach_dividend = true
+		UpgradeKind.OVERDRIVE:
+			loadout.has_overdrive = true
 
 
 func _is_player(body: Node) -> bool:

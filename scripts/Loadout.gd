@@ -21,6 +21,10 @@ const Bullet = preload("res://scripts/Bullet.gd")
 # When true, an HE shot that breaches >=4 bricks refunds 1 HE (capped
 # at max_he_reserve). Default false — granted only by the depot upgrade.
 @export var breach_dividend: bool = false
+# arc-4 iter 28: "Overdrive" depot upgrade — grants the sprint-burst
+# positioning verb (PlayerTank reads this). The open_killbox band's
+# answer is facing-aware positioning; OVERDRIVE is its catalog entry.
+@export var has_overdrive: bool = false
 
 
 # Returns true if the player can fire the given shell class. AP is
@@ -83,4 +87,14 @@ func refill_heat(amount: int) -> void:
 #   BREACH_DIVIDEND  → breach_dividend = true (rule-changer, not stock)
 #     "...climb through brick mazes by changing how I use HE — precise
 #      cluster breaches (>=4 bricks) refund their own shell."
+#   OVERDRIVE        → has_overdrive = true (positioning verb)
+#     "...climb through open killboxes by changing how I use
+#      positioning — a speed burst to break flanker sightlines."
+#
+# Band-pressure coverage (C8 anchor 3 — >=1 upgrade per band):
+#   tutorial_choke (brick)   → HE_REFILL_2 / HE_MAX_EXPAND_2
+#   brick_maze     (brick)   → BREACH_DIVIDEND
+#   bunker_zone    (steel)   → HEAT_REFILL_1 / HEAT_MAX_EXPAND_2
+#   open_killbox   (position)→ OVERDRIVE
+#   endgame_mixed  (composed)→ FULL_RESUPPLY
 # ====================================================================

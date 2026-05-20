@@ -17,6 +17,54 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 028 — BUILD — OVERDRIVE sprint upgrade (C8 anchor 3)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **30/50 absolute · 30/50 effective** (Δ +1 vs prior — C8 anchor 3)
+  - C8 (Sentence test compliance): 2 → 3 (anchor 3: upgrade catalog
+    covers all 5 depth bands' dominant pressures — 7-entry catalog;
+    OVERDRIVE fills the open_killbox positioning gap. Coverage map:
+    tutorial_choke/brick_maze→HE, bunker_zone→HEAT, open_killbox→
+    OVERDRIVE, endgame_mixed→FULL_RESUPPLY. Documented in Loadout.gd,
+    code-cited via `make check-breach-overdrive`)
+  - C1=3, C2=3, C3=4, C4=3, C5=2, C6=3, C7=3, C9=2, C10=4 unchanged
+- DIAGNOSE: round-3 anchor 2. C5 anchor 3 (4th enemy role) is
+  substrate-blocked — a genuine new role needs an Enemy.gd behavior
+  branch (not sanctioned; iter-23 finding) and a stat-only variant
+  violates CONSULT constraint 3. So took C8 anchor 3 instead.
+- Constraints respected: 7 (OVERDRIVE is a movement VERB with a cost —
+  burst then cooldown — not a passive +speed%; CONSULT 000 §7 "verbs
+  and affordances"), 1
+- Constraints risked: 2 — OVERDRIVE is the first non-shell upgrade;
+  acceptable (it's a chassis/positioning affordance, not shell-class
+  bloat; still 3 shells).
+- Sentence test: OVERDRIVE passes — "...climb through open killboxes by
+  changing how I use positioning — a speed burst to break flanker
+  sightlines" (documented in Loadout.gd UPGRADE CATALOG).
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** post
+  PlayerTank.gd write. The sprint is gated on `loadout.has_overdrive`
+  — arc-2/3 movement bit-identical. `make test` exit 0. `make
+  test-all` PASS. `make test-breach` PASS (16 checks).
+- Falsifications: none. Pre-mortem-adjacent lesson (not an F): headless
+  `await process_frame` does not reliably tick `_physics_process` —
+  the harness drives `_physics_process(delta)` directly. (Same as
+  arc-3's input-sim pattern; session-local, not codified.)
+- Files: `scripts/Loadout.gd` (+has_overdrive + catalog doc + coverage
+  map), `scripts/Depot.gd` (UpgradeKind += OVERDRIVE),
+  `scripts/PlayerTank.gd` (substrate write — overdrive sprint burst:
+  KEY_SHIFT → speed×mult for overdrive_burst s → cooldown),
+  `loop/breach/test_breach_overdrive.gd` (NEW), `Makefile`
+  (check-breach-overdrive), PRE-MORTEMS, LEDGER, STATE
+- Finding: **The depot now forks a positioning playstyle.** OVERDRIVE
+  grants a sprint burst — the open_killbox band's answer. The 7-entry
+  catalog covers all 5 band pressures. **Round 3 structural work is
+  effectively complete: C3/4 (iter 27) + C8/3 (iter 28) shipped; C5/3
+  is substrate-blocked.** 30/50 — the honest structural finish. The
+  remaining 20 points (incl. C10/5 at arc close) are playtest-gated.
+  Next iter 29: round-3 close — the loop has reached its true
+  structural ceiling; honestly hold for the playtest (REVIEW-QUEUE #3).
+
 ## iter 027 — BUILD — shell-swap reload cost (C3 anchor 4)
 
 - Date: 2026-05-20
