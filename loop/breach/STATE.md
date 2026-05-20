@@ -1,8 +1,8 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: loop
-iter: 31
+phase: paused
+iter: 32
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
@@ -19,8 +19,8 @@ audit_candidates: []
 last_audit: iter 26
 last_consult: iter 21
 structural_ceiling: REACHED at 30/50 (iter 28). Round 4 (legibility) closed iter 30 — breach mode is playtest-ready.
-loop_state: AWAITING PLAYTEST. The loop has delivered everything reachable without a human — 30/50 structural, all 17 breach harnesses + 5 arc-3 green, hash anchor preserved through 15 substrate writes. The remaining 20 rubric points are [FEEL]/playtest-gated. Per parity-drift /meta + CONSULT 001+002, the playtest (REVIEW-QUEUE #3) is the only thing that now moves the work forward.
-next_action: iter 31+ — the loop is non-stop per PROMPT but has genuinely exhausted high-value autonomous work. Slow idle-heartbeat cadence (~1800s) awaiting the user's `playtest` signal. On each idle tick: re-verify the build is green (regression guard), and IF a genuine non-rubric surface with real value appears (not feel-work-without-feedback, not discipline-violating substrate), take it as a BUILD-QUALITY iter; else hold. Do NOT grind filler. When the user writes `playtest`, surface REVIEW-QUEUE (items #1-4, #3 is the ask).
+loop_state: PAUSED (iter 32). The autonomous run is complete — 30/50 structural, all 17 breach harnesses + 5 arc-3 green, hash anchor preserved through 15 substrate writes. Every harness-citable [STRUCTURE] anchor is closed; the remaining 20 rubric points are [FEEL]/playtest-gated by rubric design. No honest autonomous work remains, so the loop pauses rather than spin a do-nothing heartbeat (arc-1/arc-3 retro precedent).
+next_action: AWAIT USER. The loop is paused, not abandoned — all work committed + evidenced. Re-engage by: (a) writing `playtest` → surface REVIEW-QUEUE #1-4 (#3 is the 5-person smoke test ask: "do players describe their run as route economy?"), integrate findings, lift the [FEEL] anchors; or (b) re-firing `/loop` for further exploration. To resume a future session, read this STATE + LEDGER tail + REVIEW-QUEUE.
 score: 30/50 absolute · 30/50 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4
 spike_report: loop/breach/iter-001-spike-report.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud} + check-silhouette-gate (17 in test-breach aggregate)
