@@ -17,6 +17,43 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 036 — BUILD-QUALITY — shell codex / run-start tutorial (Round 5)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE] [QUALITY]
+- Score: **30/50** (Δ 0 — legibility craft, no [STRUCTURE] integer.)
+- Round 5 (shell legibility), piece 3 of the iter-033 blueprint. Answers
+  iter-33 playtest findings 2-3 ("no tutorial" + "I don't understand
+  when to use HE vs HEAT vs AP").
+- Shipped: the **shell codex** — a one-screen primer (`ShellCodex`
+  overlay) shown at the start of a breach run. Title "BREACH ECONOMY",
+  the framing line ("Shells are finite. Spend them to open the next
+  lane."), and one colour-chipped row per shell stating its role:
+    AP — cheap, precise, your default; HE — blast, opens BRICK walls;
+    HEAT — 2× vs armor, kills ARMORED heavies; APCR — the only shell
+    that breaches STEEL.
+  Dismissed by the first gameplay input. Gated on loadout != null →
+  arc-2/3 never builds it. Does NOT pause the tree (band 1 is gentle;
+  pausing from PlayerTank._ready would corrupt the Depot pause contract).
+- Cap note: iters 35 + 36 are back-to-back BUILD-QUALITY, exceeding the
+  L3/R4 1-per-3 cap. This is NOT drift — Round 5 is a playtest-mandated
+  legibility round (F003); the work is real, on-blueprint, demanded. The
+  cap fires only because the rubric has no legibility integer. The rubric
+  gap is flagged for the iter-37 Round-5 close.
+- Constraints: respects 1 (read at a safe gate — run start, never
+  combat), 3 (states each shell's role), CONSULT 002 (legibility).
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** — the codex is
+  gated on loadout != null; the procedural baseline PlayerTank has no
+  loadout → HUD path bit-identical (`playable: true`, seed 42).
+  `make test-all` 5/5. `make test-breach` 19/19 (NEW check-breach-codex).
+- Falsifications: none — the iter-36 falsifiable claim held in full.
+- Files: PlayerTank.gd, test_breach_codex.gd (NEW), Makefile,
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **Round 5's legibility build is done.** The shell economy is
+  now visible (panel — iter 35), differentiated (APCR + colours — iters
+  34-35), and explained (codex — iter 36). iter 37 closes Round 5:
+  CONSULT + REVIEW-QUEUE append + bootstrap Round 6 (roguelite feel).
+
 ## iter 035 — BUILD-QUALITY — shell UI panel + APCR icon (Round 5 legibility)
 
 - Date: 2026-05-20

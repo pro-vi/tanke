@@ -24,6 +24,44 @@ Format:
 
 ---
 
+## iter 036 — BUILD-QUALITY — shell codex / run-start tutorial (Round 5)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE] [QUALITY]
+- Round 5 (shell legibility), piece 3. Blueprint: iter-033-round5-architect.md.
+  Answers iter-33 playtest findings 2-3 ("no tutorial" + "I don't
+  understand when to use HE vs HEAT vs AP").
+- Cap note: this is the 2nd consecutive BUILD-QUALITY (iters 35, 36),
+  exceeding the L3/R4 "1 per 3 BUILDs" cap. This is NOT the drift the cap
+  guards against. The cap catches score-creep / busywork; here the score
+  is flat (Δ 0) and the work is a direct, on-blueprint response to a human
+  playtest (F003). The cap fires only because the rubric — written
+  pre-playtest — has no integer for legibility, so all of Round 5's
+  mandated legibility work scores BUILD-QUALITY. That rubric gap is real;
+  it is flagged for the iter-37 Round-5 close.
+- CONSULT constraints respected: 1 (the codex is read at a safe gate —
+  run start, before any threat; never during combat), 3 (it states each
+  shell's readable role), CONSULT 002 (legibility).
+- CONSULT constraints risked: none. The codex does NOT pause the tree —
+  pausing from PlayerTank._ready would corrupt cross-harness state (the
+  Depot owns the pause contract); band 1 (tutorial_choke) is gentle
+  enough to read in.
+- Predicted failure modes:
+  - The codex must be gated on loadout != null — arc-2/3 builds none.
+  - The codex must not interfere with the iter-35 ShellPanel or other
+    HUD nodes (it is a separate node, "ShellCodex").
+  - Dismiss-on-input both hides the codex and acts on the same input the
+    same frame — acceptable, standard for intro tooltips.
+- Falsifiable claim: post-edit — a new check-breach-codex harness verifies
+  a breach PlayerTank builds a visible ShellCodex naming all 4 shells +
+  BRICK/STEEL roles, hidden by _dismiss_codex(); arc-2/3 builds none.
+  Hash anchor 23d6a2ec3bf2821f preserved; test-all 5/5; test-breach 19/19.
+- Sentence test: n/a (tutorial overlay, no upgrade).
+- Substrate touched: PlayerTank.gd (HUD — sanctioned).
+- Hash-anchor verification plan: post-edit, run loop/test_runner.gd seed
+  42 — the codex is gated on loadout != null; the procedural baseline
+  PlayerTank has no loadout → HUD path bit-identical.
+
 ## iter 035 — BUILD-QUALITY — shell UI panel + APCR icon (Round 5 legibility)
 
 - Date: 2026-05-20

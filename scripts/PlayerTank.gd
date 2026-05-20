@@ -82,6 +82,7 @@ var _shell_slot_classes: Array[int] = []
 var _shell_slot_bgs: Array[ColorRect] = []
 var _shell_slot_chips: Array[ColorRect] = []
 var _shell_slot_labels: Array[Label] = []
+var _shell_codex: ColorRect = null  # arc-4 iter 36: run-start shell primer
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
@@ -149,6 +150,10 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# arc-4 iter 36: the shell codex is dismissed by the first gameplay
+	# input — the player reads the breach-economy primer, then plays.
+	if _shell_codex != null and _shell_codex.visible and _any_gameplay_input():
+		_dismiss_codex()
 	if _iframe_timer > 0.0:
 		_iframe_timer -= delta
 	# arc-4 iter 27: tick down the shell-swap reload beat.
@@ -676,11 +681,11 @@ func _setup_hud() -> void:
 		_time_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 		_time_label.add_theme_constant_override("outline_size", 2)
 		canvas.add_child(_time_label)
-	# arc-4 iter 35: breach-mode shell panel — a 4-slot HUD strip
-	# (AP/HE/HEAT/APCR). Gated on loadout != null so arc-2/3 HUD is
-	# bit-identical (no panel built, _update_run_hud branch skipped).
+	# arc-4 iter 35-36: breach-mode shell panel + run-start codex. Gated
+	# on loadout != null so arc-2/3 HUD is bit-identical (neither built).
 	if loadout != null:
 		_build_shell_panel(canvas)
+		_build_shell_codex(canvas)
 	add_child(canvas)
 	hp_changed.connect(_on_hp_changed_hud)
 
@@ -782,6 +787,70 @@ func _update_shell_panel() -> void:
 		var dim: float = 1.0 if loadout.can_fire(sc) else 0.4
 		_shell_slot_labels[i].modulate.a = dim
 		_shell_slot_chips[i].modulate.a = dim
+
+
+# arc-4 iter 36: any movement / fire / shell-swap key — used to dismiss
+# the shell codex overlay once the player starts playing.
+func _any_gameplay_input() -> bool:
+	return Input.is_action_pressed("ui_up") or Input.is_action_pressed("ui_down") \
+		or Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right") \
+		or Input.is_action_pressed("ui_accept") \
+		or Input.is_physical_key_pressed(KEY_TAB)
+
+
+# arc-4 iter 36: hide the shell codex. Called on first gameplay input;
+# public so the harness can dismiss it without synthesising input.
+func _dismiss_codex() -> void:
+	if _shell_codex != null:
+		_shell_codex.visible = false
+
+
+# arc-4 iter 36: a styled Label inside the codex panel.
+func _codex_line(parent: Control, text: String, pos: Vector2,
+		font_size: int, color: Color) -> void:
+	var lbl: Label = Label.new()
+	lbl.text = text
+	lbl.position = pos
+	lbl.add_theme_color_override("font_color", color)
+	lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	lbl.add_theme_constant_override("outline_size", 2)
+	lbl.add_theme_font_size_override("font_size", font_size)
+	parent.add_child(lbl)
+
+
+# arc-4 iter 36 (Round 5, playtest findings 2-3 — "no tutorial" + "I
+# don't understand when to use which shell"): the shell codex. A
+# one-screen primer shown at the start of a breach run — the breach-
+# economy framing + each shell's one-line role. Dismissed by the first
+# gameplay input (_physics_process). Gated on loadout != null by the
+# caller, so arc-2/3 never builds it.
+func _build_shell_codex(canvas: CanvasLayer) -> void:
+	_shell_codex = ColorRect.new()
+	_shell_codex.name = "ShellCodex"
+	_shell_codex.position = Vector2(28, 26)
+	_shell_codex.size = Vector2(264, 188)
+	_shell_codex.color = Color(0.05, 0.05, 0.08, 0.96)
+	canvas.add_child(_shell_codex)
+	_codex_line(_shell_codex, "BREACH ECONOMY", Vector2(12, 8), 13,
+		Color(1.0, 0.95, 0.6, 1.0))
+	_codex_line(_shell_codex, "Shells are finite. Spend them to open the next lane.",
+		Vector2(12, 27), 8, Color(0.82, 0.84, 0.9, 1.0))
+	var rows: Array = [
+		[BulletT.SHELL_CLASS_AP, "AP - cheap, precise. Your default shell."],
+		[BulletT.SHELL_CLASS_HE, "HE - blast. Opens BRICK walls fast."],
+		[BulletT.SHELL_CLASS_HEAT, "HEAT - 2x vs armor. Kills ARMORED heavies."],
+		[BulletT.SHELL_CLASS_APCR, "APCR - the only shell that breaches STEEL."],
+	]
+	for i in rows.size():
+		var row_y: float = 48.0 + float(i) * 29.0
+		var chip: ColorRect = ColorRect.new()
+		chip.position = Vector2(14, row_y + 3.0)
+		chip.size = Vector2(10, 10)
+		chip.color = _shell_color(rows[i][0])
+		_shell_codex.add_child(chip)
+		_codex_line(_shell_codex, rows[i][1], Vector2(32, row_y), 9, Color.WHITE)
+	_codex_line(_shell_codex, "TAB swaps shells.  Move or fire to begin.",
+		Vector2(12, 168), 8, Color(0.78, 0.8, 0.86, 1.0))
 
 
 func _on_hp_changed_hud(new_hp: int, the_max_hp: int) -> void:
