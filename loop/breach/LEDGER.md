@@ -17,6 +17,62 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 021 — AUDIT + CONSULT — re-score (26/50); CONSULT 002 fired
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **26/50 absolute · 26/50 effective** (Δ +1 vs prior — C7 anchor 3 via AUDIT)
+- Triggers: AUDIT (every-5; last iter 16) + CONSULT (~every-10; last iter 6).
+- Evidence: 12 breach checks GREEN, 5 arc-3 GREEN, hash anchor
+  `23d6a2ec3bf2821f` + `playable: true`, `SILHOUETTE_GATE_PASS`.
+
+### Re-score (all 10 criteria)
+
+| C# | Score | AUDIT note |
+|----|-------|------------|
+| C1 | 3 | anchors 1-3 hold (Loadout / ≥3 builds / build in recap). |
+| C2 | 2 | anchors 1-2 hold. Anchor 3 (≥3 depots/run) — BreachLevel has 1. |
+| C3 | 2 | anchors 1-2 hold. Anchor 3 (HEAT armor-bypass) — not done. |
+| C4 | 3 | anchors 1-3 hold (5 bands, reachability). Anchor 4 (shell-mix-per-band harness) — not done. |
+| C5 | 2 | anchors 1-2 hold (3 roles + rosters + per-role answers). Anchor 3 (4-5 roles) — have 3. |
+| C6 | 3 | anchors 1-3 hold (depth/killer; shells/reserves; build_tag + band pressure). |
+| C7 | **2 → 3** | **anchor 3 NOW claimed** (AUDIT correction): "All new assets in arc 4 verified via the grammar gate before commit — log artifact in LEDGER" — the anchor has NO minimum-count clause; all 3 arc-4 generated assets (shell icons) ARE gated by silhouette_gate.py + the iter-18 LEDGER logs the SILHOUETTE_GATE_PASS artifact. The iter-18 hold ("one asset-set is thin evidence") was an under-claim; AUDIT corrects it. |
+| C8 | 2 | anchors 1-2 hold (5 sentence-passing upgrades). Anchor 3 (catalog covers all 5 bands' pressures) — partial. |
+| C9 | 2 | anchors 1-2 hold. Anchor 3+ [FEEL] — playtest. |
+| C10 | 4 | anchors 1-4 hold. Anchor 5 — arc-4 close. |
+
+**Total: 26/50.** Effective = absolute (R3). No over-claims found.
+
+### AUDIT action
+
+- **C7 2→3** — corrective re-read of anchor 3. Not score-creep: the
+  evidence (3 assets gated, artifact logged iter 18) was already real;
+  iter 18 simply under-claimed out of conservatism. AUDIT is the
+  designated place to correct both over- AND under-claims.
+- No RUBRIC.md rephrase this AUDIT (iter-16 fixed the one mismatch).
+- Identity-protected anchors not inspected (R2).
+
+### CONSULT 002
+
+Fired fire-and-forget via /agentify extended-pro. 3 permanent questions
++ embedded honest gaps (depot upgrades all reserve-refill — no
+build-fork; HEAT hollow — 2× only; no playtest). queryId
+`72ec60ef-f236-4454-8f1b-b0338805c99c`. Recorded to
+creative-consults.md. Iter 22 reads the response.
+
+- Constraints respected: all 7 (process iter)
+- Hash anchor: `23d6a2ec3bf2821f` confirmed (no code touched)
+- Falsifications: none. Pre-mortem (C7 2→3, all else holds, 26/50) —
+  CONFIRMED exactly.
+- Files: `loop/breach/creative-consults.md` (CONSULT 002),
+  `loop/breach/PRE-MORTEMS.md`, LEDGER, STATE
+- Finding: **26/50, honestly re-scored.** C7 is the silhouette-grammar
+  axis fully structural-capped at 3 (anchors 4-5 are [FEEL]/identity-
+  protected — playtest). Next iter 22: read CONSULT 002, integrate its
+  redirect. Tentative (pending CONSULT): the honest gaps point at
+  HEAT-armor-bypass (C3 anchor 3) or depot build-forking — CONSULT
+  decides.
+
 ## iter 020 — BUILD — depot upgrade catalog → 5 (C8 anchor 2)
 
 - Date: 2026-05-19

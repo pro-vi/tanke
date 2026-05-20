@@ -24,6 +24,28 @@ Format:
 
 ---
 
+## iter 021 — AUDIT + CONSULT — re-score + fire CONSULT 002
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Triggers: AUDIT (every-5 cadence; last iter 16) + CONSULT (~every-10;
+  last iter 6).
+- CONSULT constraints respected: all (process iter)
+- Predicted finding: the rolling 25/50 is honest, but C7 anchor 3
+  ("All new assets in arc 4 verified via the grammar gate before
+  commit — log artifact in LEDGER") was conservatively HELD at iter 18
+  ("one asset-set is thin evidence"). On AUDIT re-read, anchor 3 has no
+  minimum-count clause — all 3 arc-4 generated assets (shell icons) ARE
+  gated + the iter-18 LEDGER logs the SILHOUETTE_GATE_PASS artifact.
+  Expect C7 2→3 (the iter-18 hold was an under-claim; AUDIT corrects).
+  Total → 26/50. No over-claims expected.
+- Falsifiable claim: the AUDIT re-score changes at most C7 (2→3); all
+  other 9 criteria hold. CONSULT 002 fires fire-and-forget; queryId
+  recorded to creative-consults.md regardless of tab status.
+- Sentence test: n/a
+- Substrate touched: none
+- Hash-anchor verification plan: n/a (no code edit)
+
 ## iter 020 — BUILD — depot upgrade catalog → 5 (C8 anchor 2)
 
 - Date: 2026-05-19

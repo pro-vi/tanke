@@ -20,6 +20,22 @@ Format:
 
 ---
 
+## Consult 002 — iter 21 — extended-pro via /agentify — fire-and-forget (PENDING)
+
+- Date: 2026-05-19
+- Tab status: fire-and-forget — async dispatch confirmed, response pending
+- Trigger: ~every-10-iter cadence (last CONSULT iter 6). Round 2 deep
+  (25/50; breach economy is a full loop — climb / spend / breach /
+  depot / recap).
+- Three permanent questions asked? YES (Q1 distinctness, Q2 depots
+  earned-beats-vs-restock-menus, Q3 seductive-but-hollow). Prompt
+  embedded the honest gaps: depot upgrades all reserve-refill (no
+  build-fork), HEAT hollow (2× only, no armor), no playtest.
+- Adopted into: TBD — iter 22 reads the response.
+- Conversation URL / queryId: `72ec60ef-f236-4454-8f1b-b0338805c99c`
+  (tabId: `eda5ebde-138f-4841-876c-943f4f2436e3`, key:
+  `tanke-arc4-iter21-consult2`)
+
 ## Consult 001 — iter 6 — extended-pro via /agentify — ADOPTED (iter 8)
 
 - Date: 2026-05-19

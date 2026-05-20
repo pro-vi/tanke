@@ -2,23 +2,24 @@
 
 ```yaml
 phase: loop
-iter: 20
+iter: 21
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_20: 23d6a2ec3bf2821f  # bit-identical through 10 substrate writes
+hash_anchor_at_iter_21: 23d6a2ec3bf2821f  # bit-identical through 10 substrate writes
 substrate_writes_this_arc: 10  # ProceduralLevel.gd ×3 + Bullet.gd ×2 + PlayerTank.gd ×3 + Level.gd + Spawner.gd
 current_round: 2
 current_round_phase: BUILD
 consult_001_status: adopted
+consult_002_status: pending  # queryId 72ec60ef-f236-4454-8f1b-b0338805c99c — iter 22 reads
 build_quality_iters: [10]
 falsifications: [F001-resolved]
 reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%)
 audit_candidates: []
-last_audit: iter 16
-last_consult: iter 6
-next_action: iter 21 — AUDIT + CONSULT window. (a) AUDIT — every-5 cadence (last iter 16); re-score all 10 criteria fresh. (b) CONSULT — ~every-10 cadence (last iter 6); fire CONSULT 002 via /agentify with the 3 permanent questions — round 2 is deep (25/50, breach economy is a full loop now: climb / spend / breach / depot / recap). Good moment to ground-truth "is breach economy distinct" again + surface seductive-but-hollow. Do AUDIT first (fast), fire CONSULT fire-and-forget, iter 22 reads it.
-score: 25/50 absolute · 25/50 effective  # C1=3,C2=2,C3=2,C4=3,C5=2,C6=3,C7=2,C8=2,C9=2,C10=4 — half the ceiling
+last_audit: iter 21
+last_consult: iter 21
+next_action: iter 22 — read CONSULT 002 response (queryId 72ec60ef…) via agentify_get_run + agentify_read_page. Integrate its redirect. Tentative pending CONSULT — the honest gaps point at C3 anchor 3 (HEAT armor-bypass — make HEAT mechanically distinct, not just 2×) or depot build-forking. Follow the CONSULT's "next 3 iters" recommendation.
+score: 26/50 absolute · 26/50 effective  # C1=3,C2=2,C3=2,C4=3,C5=2,C6=3,C7=3,C8=2,C9=2,C10=4
 spike_report: loop/breach/iter-001-spike-report.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets} + check-silhouette-gate (12; test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb]
