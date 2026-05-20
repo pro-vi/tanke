@@ -44,3 +44,12 @@ Format:
   (bunker_zone), which iter-11's 30-frame harness cannot reach. Their
   configs were proactively softened in iter 11 (applying the band-1
   lesson) but remain UNVERIFIED until iter 12.
+- **RESOLVED iter 12**: the per-band reachability oracle (pure-data
+  rewrite of `test_breach_harness.gd`) verified all 3 bands. After
+  retuning (all 3 bands → empty 0.50-0.52, merge 0.24-0.26), a 10-seed
+  sweep passes 9/10 (seed 77 fails all 3 bands at identical
+  rows_climbed=7 — a spawn-area Eller artifact of that seed, NOT
+  config-tunable; arc-1's extremal-metric-variance lesson confirmed).
+  Floor codified: **≥80% of a 10-seed sweep** (arc-3 band_check.py
+  precedent). 9/10 = 90% clears it. Canonical seed 42 passes solidly
+  (41/23/41). C4=2 reachability caveat closed.

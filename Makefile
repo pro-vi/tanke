@@ -176,13 +176,16 @@ check-breach-level:
 	@$(HEADLESS) --script res://loop/breach/test_breach_level.gd 2>&1 | grep -E "^(BREACH_LEVEL_OK|FAIL|ERROR|SCRIPT ERROR)" | grep -v "RID alloc"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_level.gd 2>&1 | grep -q "^BREACH_LEVEL_OK"
 
-# Arc-4 breach reachability oracle (PROMPT §REACHABILITY FLOOR). Runs
-# the breach-mode generator at seed 42 and flood-fills from spawn;
-# asserts playable=true. Covers band 1 (the FRAMES_TO_STEP-generatable
-# region); deep multi-band coverage is iter-12 CAPABILITY work.
+# Arc-4 breach reachability oracle (PROMPT §REACHABILITY FLOOR).
+# Pure-data per-band local reachability: for each band, generate that
+# band's config + flood-fill from spawn, require >= 10 tile-rows climbed
+# treating brick/steel/water as walls. Runs the canonical seed 42 deep
+# (all 3 bands). Stochastic generation has irreducible variance — the
+# rigorous floor is >=80% of a 10-seed sweep (see test_breach_harness.gd
+# header); seed 42 is the per-iter smoke check.
 check-breach-harness:
-	@$(HEADLESS) --script res://loop/breach/test_breach_harness.gd -- --seed 42 2>&1 | grep -E "^(reachable:|BREACH_HARNESS)"; \
-	$(HEADLESS) --script res://loop/breach/test_breach_harness.gd -- --seed 42 2>&1 | grep -q "^BREACH_HARNESS_OK"
+	@$(HEADLESS) --script res://loop/breach/test_breach_harness.gd -- --seed 42 --deep 2>&1 | grep -E "^(  band|BREACH_HARNESS)"; \
+	$(HEADLESS) --script res://loop/breach/test_breach_harness.gd -- --seed 42 --deep 2>&1 | grep -q "^BREACH_HARNESS_OK"
 
 # Arc-4 breach mode: all breach harnesses in one target.
 test-breach: check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness

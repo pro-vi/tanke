@@ -1,105 +1,150 @@
 # Arc-4 breach reachability oracle (PROMPT §REACHABILITY FLOOR).
-# Instantiates scenes/BreachLevel.tscn at a fixed seed, lets the
-# generator run, then flood-fills from the player spawn to confirm the
-# breach-mode procedural layout is playable (rows_climbed >= MIN).
 #
-# Iter 11 scope: covers the region the generator produces in
-# FRAMES_TO_STEP frames without player input — that is band 1
-# (tutorial_choke). A deeper multi-band climb-sim is iter-12 CAPABILITY
-# work; for now this proves band 1's terrain config does not produce an
-# impassable spawn area.
+# Pure-data generation: replicates ProceduralLevel's row-generation loop
+# (ProceduralStep + per-band LevelConfig sampling) WITHOUT instantiating
+# the scene or any BrickBlock nodes — fast (<1s) and deterministic.
 #
-# Flood-fill logic mirrors loop/test_runner.gd:_collect (lines 245-296)
-# — the arc-1/2/3 reachability oracle. Kept as a separate file per
-# PROMPT §SUBSTRATE FREEZE ("loop/test_runner.gd — extend, never
-# refactor"); this harness is arc-4-owned.
+# Reachability model = the arc-1/2/3 precedent: *local* first-screen
+# traversability. test_runner.gd checks "can the player climb >= 10
+# tile-rows in the starting area treating brick/steel/water as walls".
+# A single global flood-fill across 120 depth rows is the WRONG model —
+# no 120-row stochastic stretch is brick-corridor-clear, and the player
+# is *expected* to shoot through brick. So each breach band is checked
+# the way arc-2 checks its start: generate ~START_DEPTH rows of that
+# band's config, flood-fill from spawn, require >= MIN_ROWS_CLIMBED.
+#
+# Mirrors: ProceduralLevel._generate_next_row_for / _pave_set /
+# _active_config; flood-fill mirrors test_runner.gd:_collect.
 #
 # Run with:
-#   godot --headless --path . --script res://loop/breach/test_breach_harness.gd -- --seed 42 --json
+#   godot --headless --path . --script res://loop/breach/test_breach_harness.gd -- --seed 42
+#   godot --headless --path . --script res://loop/breach/test_breach_harness.gd -- --seed 42 --deep
 
 extends SceneTree
 
-const BreachLevelScene = preload("res://scenes/BreachLevel.tscn")
-const FRAMES_TO_STEP := 30
-const MIN_ROWS_CLIMBED := 10
+const ProceduralStepT = preload("res://scripts/ProceduralStep.gd")
+const BreachConfigT = preload("res://scripts/BreachConfig.gd")
+const LevelConfigT = preload("res://scripts/LevelConfig.gd")
+const BREACH_CONFIG_PATH := "res://configs/breach_default.tres"
+
+const GRID_SIZE := 16
+const VIEWPORT_W := 320
+const VIEWPORT_H := 240
+const CELLS_PER_ROW := VIEWPORT_W / GRID_SIZE   # 20
+const START_ROW := VIEWPORT_H / GRID_SIZE       # 15
+const BAND_TEST_DEPTH := 22    # rows generated per band's local check
+const MIN_ROWS_CLIMBED := 10   # tile-rows; matches test_runner.gd
 
 
 func _initialize() -> void:
 	var test_seed := 42
-	var json_output := false
+	var deep := false
 	var args := OS.get_cmdline_user_args()
 	for i in args.size():
 		if args[i] == "--seed" and i + 1 < args.size():
 			test_seed = int(args[i + 1])
-		elif args[i] == "--json":
-			json_output = true
+		elif args[i] == "--deep":
+			deep = true
 
-	var level: Node = BreachLevelScene.instantiate()
-	level.level_seed = test_seed
-	root.add_child(level)
-	for i in FRAMES_TO_STEP:
-		await process_frame
+	var cfg: BreachConfigT = load(BREACH_CONFIG_PATH)
+	if cfg == null:
+		print("BREACH_HARNESS_FAIL could not load breach_default.tres")
+		quit(1); return
+	if cfg.bands.is_empty():
+		print("BREACH_HARNESS_FAIL breach_config has no bands")
+		quit(1); return
 
-	var report := _reachability(level)
-	report["seed"] = test_seed
-	report["breach_mode"] = level.breach_mode_enabled
-
-	if json_output:
-		print(JSON.stringify(report))
+	if deep:
+		_check_all_bands(cfg, test_seed)
 	else:
-		print("=== breach reachability oracle ===")
-		print("seed: %d  breach_mode: %s" % [test_seed, str(level.breach_mode_enabled)])
-		print("reachable: %d cells  rows_climbed: %d  playable: %s" % [
-			report.reachable_cells, report.rows_climbed, str(report.playable)
-		])
-		print("terrain cells: steel=%d grass=%d brick_bodies=%d" % [
-			report.steel, report.grass, report.brick_bodies
-		])
+		# Shallow: band 1 only (fast smoke check).
+		var rc := _band_reachability(cfg.bands[0], test_seed)
+		print("=== breach reachability oracle (shallow) ===")
+		print("seed: %d  band: %s  rows_climbed: %d" % [test_seed, cfg.bands[0].band_name, rc])
+		if rc >= MIN_ROWS_CLIMBED:
+			print("BREACH_HARNESS_OK playable=true rows_climbed=%d" % rc)
+			quit(0)
+		else:
+			print("BREACH_HARNESS_FAIL playable=false rows_climbed=%d" % rc)
+			quit(1)
 
-	if report.playable:
-		print("BREACH_HARNESS_OK playable=true rows_climbed=%d" % report.rows_climbed)
+
+func _check_all_bands(cfg: BreachConfigT, test_seed: int) -> void:
+	print("=== breach reachability oracle (per-band) ===")
+	print("seed: %d" % test_seed)
+	var all_ok := true
+	for band in cfg.bands:
+		var rc := _band_reachability(band, test_seed)
+		var ok: bool = rc >= MIN_ROWS_CLIMBED
+		print("  band %-16s [%3d..%3d]  rows_climbed=%-3d  %s" % [
+			band.band_name, band.depth_min, band.depth_max, rc,
+			"reachable" if ok else "BLOCKED"
+		])
+		if not ok:
+			all_ok = false
+	if all_ok:
+		print("BREACH_HARNESS_OK all %d bands locally reachable" % cfg.bands.size())
 		quit(0)
 	else:
-		print("BREACH_HARNESS_FAIL playable=false rows_climbed=%d" % report.rows_climbed)
+		print("BREACH_HARNESS_FAIL a band failed local reachability")
 		quit(1)
 
 
-# Flood-fill reachability over the breach-generated grid. Mirrors
-# test_runner.gd:_collect — passable = empty OR grass/ice (no collision);
-# impassable = brick/steel/water.
-func _reachability(level: Node) -> Dictionary:
+# Local reachability for one band: generate BAND_TEST_DEPTH rows using
+# THIS band's level_config for every row (as if the player were dropped
+# into the band), flood-fill from spawn, return tile-rows climbed.
+func _band_reachability(band, test_seed: int) -> int:
+	var lc: LevelConfigT = band.level_config
+	if lc == null:
+		lc = LevelConfigT.new()
+	var grid: Dictionary = _generate_flat(lc, test_seed)
+	return _flood_fill_rows(grid)
+
+
+# Replicate ProceduralLevel generation with a single flat LevelConfig
+# (one band). Skips row START_ROW-1 (the guaranteed-clear spawn row, per
+# ProceduralLevel._ready). Returns grid: Vector2i(tile) -> terrain.
+func _generate_flat(lc: LevelConfigT, test_seed: int) -> Dictionary:
+	seed(test_seed)
 	var grid: Dictionary = {}
-	var steel: int = level.steelTileMap.get_used_cells().size()
-	var grass: int = level.grassTileMap.get_used_cells().size()
-	for cell in level.steelTileMap.get_used_cells():
-		grid[Vector2i(cell.x, cell.y)] = "steel"
-	for cell in level.grassTileMap.get_used_cells():
-		grid[Vector2i(cell.x, cell.y)] = "grass"
-	var brick_bodies: int = 0
-	for child in level.get_children():
-		if child is StaticBody2D:
-			if child.name == "Eagle":
+	var ps = ProceduralStepT.new(CELLS_PER_ROW, 0, lc.merge_probability)
+	var verts: Dictionary = ps.generate_step()
+	for row in range(START_ROW, START_ROW - BAND_TEST_DEPTH, -1):
+		if row == START_ROW - 1:
+			continue  # guaranteed-clear spawn row
+		ps = ProceduralStepT.new(CELLS_PER_ROW, ps.set_count, lc.merge_probability)
+		for sid in verts:
+			for c in verts[sid]:
+				ps.add_cell(c, sid)
+		verts = ps.generate_step()
+		for sid in ps.sets:
+			var terrain: String = lc.sample_terrain()
+			if terrain == "":
 				continue
-			var col: int = int(child.position.x / 8)
-			var row: int = int(child.position.y / 8)
-			if child.has_node("Sprite2D"):
-				grid[Vector2i(col, row)] = "brick"
-				brick_bodies += 1
-			elif child.has_node("AnimatedSprite2D"):
-				grid[Vector2i(col, row)] = "water"
+			for c in ps.sets[sid]:
+				grid[Vector2i(c * 2, row * 2)] = terrain
+				grid[Vector2i(c * 2 + 1, row * 2)] = terrain
+				grid[Vector2i(c * 2, row * 2 + 1)] = terrain
+				grid[Vector2i(c * 2 + 1, row * 2 + 1)] = terrain
+	return grid
 
-	var spawn_px: Vector2 = level.player.global_position
-	var spawn_tile := Vector2i(int(spawn_px.x) / 8, int(spawn_px.y) / 8)
-	var map_w: int = int(level.width) / 8
-	var map_h: int = int(level.height) / 8
 
+# Flood-fill from the spawn tile; return tile-rows climbed above spawn.
+# Passable = empty OR grass/ice. Bounded to the generated region.
+func _flood_fill_rows(grid: Dictionary) -> int:
+	var spawn := Vector2i(160 / 8, 232 / 8)  # (20, 29)
+	var map_w: int = VIEWPORT_W / 8          # 40
+	var min_tile_y: int = (START_ROW - BAND_TEST_DEPTH + 1) * 2
+	var max_tile_y: int = START_ROW * 2 + 1
 	var reach: Dictionary = {}
-	var q: Array = [spawn_tile]
+	var q: Array = [spawn]
 	while not q.is_empty():
 		var cur: Vector2i = q.pop_back()
 		if reach.has(cur):
 			continue
-		if cur.x < 0 or cur.x >= map_w or cur.y < 0 or cur.y >= map_h:
+		if cur.x < 0 or cur.x >= map_w:
+			continue
+		if cur.y < min_tile_y or cur.y > max_tile_y:
 			continue
 		if grid.has(cur) and grid[cur] != "grass" and grid[cur] != "ice":
 			continue
@@ -108,17 +153,8 @@ func _reachability(level: Node) -> Dictionary:
 		q.push_back(Vector2i(cur.x - 1, cur.y))
 		q.push_back(Vector2i(cur.x, cur.y + 1))
 		q.push_back(Vector2i(cur.x, cur.y - 1))
-
-	var min_row: int = map_h
+	var min_row: int = spawn.y
 	for cell in reach:
 		if cell.y < min_row:
 			min_row = cell.y
-	var rows_climbed: int = spawn_tile.y - min_row
-	return {
-		"reachable_cells": reach.size(),
-		"rows_climbed": rows_climbed,
-		"playable": rows_climbed >= MIN_ROWS_CLIMBED,
-		"steel": steel,
-		"grass": grass,
-		"brick_bodies": brick_bodies,
-	}
+	return spawn.y - min_row

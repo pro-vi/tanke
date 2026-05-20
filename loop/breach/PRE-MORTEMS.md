@@ -24,6 +24,46 @@ Format:
 
 ---
 
+## iter 012 — CAPABILITY — deep-climb reachability harness (bands 2+3)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- CAPABILITY justification (PROMPT MODE table — "must justify against a
+  rubric axis"): the deep-climb harness is the §REACHABILITY FLOOR
+  verification tool for C4. Without it, C4 anchor 2's reachability
+  caveat (bands 2+3 unverified, F001) can't close, and C4 anchor 3
+  ("5 bands … reachability passes on all — harness-cited") is
+  unreachable. This iter directly unblocks C4.
+- CONSULT constraints respected: 5 (verifies each band is a *playable*
+  climb problem, not an impassable wall), 6 (harness is a clean
+  band-level segmentation point for metrics)
+- CONSULT constraints risked: none — verification tooling
+- Predicted failure modes:
+  - The climb mechanism (programmatically advancing player.position.y)
+    must stay in step with ProceduralLevel._process generation (1 row
+    per frame). If the player climbs faster than generation, it
+    outruns the generated grid. Mitigation: climb 1 grid_size/frame.
+  - F001 strongly predicts bands 2+3 will FAIL on first deep run —
+    brick_maze + bunker_zone were softened blind in iter 11. If they
+    fail, retune within-iter (PROMPT §HALT — reachability fail must be
+    fixed same iter).
+  - Node count: ~150 rows × multiple BrickBlocks/row = thousands of
+    nodes over the climb. Headless should handle it; if slow, reduce
+    climb depth or sample.
+- Falsifiable claim: post-edit, the deep-climb harness reports, per
+  seed, whether the spawn flood-fill frontier crosses each band's
+  depth_max. By end of iter, bands 1/2/3 ALL report
+  `playable: true` / chain-reachable across ≥5 seeds (1/7/42/100/333) —
+  retuning band configs within-iter if any fail. `make test` exit 0,
+  `tile_hash` = `23d6a2ec3bf2821f`, `make test-all` PASS.
+- Sentence test: n/a (CAPABILITY iter)
+- Substrate touched: none — `loop/breach/test_breach_harness.gd` is
+  arc-4-owned (extend freely). `configs/breach_default.tres` may be
+  retuned (not substrate).
+- Hash-anchor verification plan: post-edit (only if breach_default.tres
+  retuned — config changes don't touch the flag-off codepath, so
+  trivially preserved; verify anyway).
+
 ## iter 011 — BUILD — wire depth-band terrain selection + 3rd band
 
 - Date: 2026-05-19

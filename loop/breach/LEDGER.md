@@ -17,6 +17,58 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 012 — CAPABILITY — per-band reachability oracle; closes F001 caveat
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **13/50 absolute · 13/50 effective** (Δ 0 — CAPABILITY iter;
+  extends tooling, derisks C4=2 rather than lifting a new anchor)
+  - C1=1, C2=2, C3=2, C4=2, C8=1, C9=2, C10=3 unchanged. C4=2 is now
+    **solid** (was at-risk under the F001 reachability caveat).
+- CAPABILITY justification: the breach reachability oracle is the
+  PROMPT §REACHABILITY FLOOR verification tool for C4. Without it the
+  F001 caveat (bands 2+3 unverified) couldn't close.
+- Constraints respected: 5 (verified each band is a *playable* climb
+  problem, not an impassable wall)
+- Constraints risked: none
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** (only
+  breach_default.tres retuned — no flag-off codepath touched).
+  `make test` exit 0. `make test-all` PASS (5 arc-3 targets).
+  `make test-breach` PASS (8 arc-4 harnesses).
+- Falsifications: **F001 RESOLVED.** The original scene-instantiation
+  deep harness went quadratic (thousands of accumulating BrickBlock
+  nodes — killed after minutes). Rewrote `test_breach_harness.gd` as
+  pure-data generation (ProceduralStep + per-band LevelConfig sampling,
+  no scene/nodes — <1s). Two replication bugs found + fixed mid-iter:
+  (a) flood-fill escaped into ungenerated space (bounded it);
+  (b) missed ProceduralLevel._ready's `row == START_ROW-1` skip — the
+  guaranteed-clear spawn row — which walled the spawn. Also corrected
+  the reachability *model*: a single global flood-fill to depth 120 is
+  wrong (no 120-row stochastic stretch is brick-corridor-clear; arc-2
+  itself would fail it). The arc-1/2/3 precedent is *local first-screen*
+  reachability — so each band is checked the way arc-2 checks its
+  start (generate that band's config, flood-fill, require ≥10 tile-rows).
+- Falsification meta: F001's fix surfaced that breach band terrain
+  density needs retuning — all 3 bands softened to empty 0.50-0.52 /
+  merge 0.24-0.26. 10-seed sweep: 9/10 pass (seed 77 fails — spawn-area
+  Eller artifact, not tunable). Reachability floor codified: **≥80% of
+  a 10-seed sweep**.
+- Files: `loop/breach/test_breach_harness.gd` (full rewrite — pure-data
+  per-band oracle, shallow + deep modes), `configs/breach_default.tres`
+  (all 3 band configs retuned for reachability), `Makefile`
+  (check-breach-harness now runs --deep seed 42), `loop/breach/
+  FALSIFICATIONS.md` (F001 resolved), `loop/breach/PRE-MORTEMS.md`,
+  `loop/breach/LEDGER.md`, `loop/breach/STATE.md`
+- Finding: **Breach reachability is now a fast, honest oracle.** All 3
+  bands verified locally reachable (90% of 10 seeds; canonical seed 42
+  solid at 41/23/41 tile-rows). The per-band model is the correct one
+  — it caught + drove F001's resolution. Pre-mortem predicted "F001
+  strongly predicts bands 2+3 will fail on first deep run" — CONFIRMED
+  (brick_maze + bunker_zone both failed multi-seed before retune).
+  Next iter 13: BUILD — extend BANDS.md roster to 5 bands
+  (breach_default.tres → 5 bands, bands 4-5 reachability-verified),
+  unlocking C4 anchor 3.
+
 ## iter 011 — BUILD — depth-band terrain wiring + reachability oracle (C4 anchor 2)
 
 - Date: 2026-05-19

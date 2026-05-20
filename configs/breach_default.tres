@@ -6,11 +6,11 @@
 
 [sub_resource type="Resource" id="lc_choke"]
 script = ExtResource("3_lc")
-merge_probability = 0.30
-empty_weight = 0.46
-brick_weight = 0.32
-steel_weight = 0.03
-grass_weight = 0.16
+merge_probability = 0.26
+empty_weight = 0.50
+brick_weight = 0.30
+steel_weight = 0.02
+grass_weight = 0.15
 water_weight = 0.03
 
 [sub_resource type="Resource" id="band_choke"]
@@ -24,12 +24,12 @@ level_config = SubResource("lc_choke")
 
 [sub_resource type="Resource" id="lc_maze"]
 script = ExtResource("3_lc")
-merge_probability = 0.36
-empty_weight = 0.38
-brick_weight = 0.42
-steel_weight = 0.04
-grass_weight = 0.13
-water_weight = 0.03
+merge_probability = 0.24
+empty_weight = 0.50
+brick_weight = 0.35
+steel_weight = 0.02
+grass_weight = 0.11
+water_weight = 0.02
 
 [sub_resource type="Resource" id="band_maze"]
 script = ExtResource("2_band")
@@ -42,10 +42,10 @@ level_config = SubResource("lc_maze")
 
 [sub_resource type="Resource" id="lc_bunker"]
 script = ExtResource("3_lc")
-merge_probability = 0.40
-empty_weight = 0.40
-brick_weight = 0.22
-steel_weight = 0.28
+merge_probability = 0.24
+empty_weight = 0.52
+brick_weight = 0.15
+steel_weight = 0.23
 grass_weight = 0.08
 water_weight = 0.02
 
