@@ -76,6 +76,7 @@ var _iframe_timer: float = 0.0
 var _dead: bool = false
 var _restart_armed: bool = false
 var _hp_label: Label
+var _shell_label: Label = null  # arc-4 iter 30: breach-mode shell HUD
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
@@ -669,8 +670,29 @@ func _setup_hud() -> void:
 		_time_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 		_time_label.add_theme_constant_override("outline_size", 2)
 		canvas.add_child(_time_label)
+	# arc-4 iter 30: breach-mode shell HUD — current shell + HE/HEAT
+	# reserve counts. Gated on loadout != null so arc-2/3 HUD is
+	# bit-identical (no label created, _update_run_hud branch skipped).
+	if loadout != null:
+		_shell_label = Label.new()
+		_shell_label.name = "ShellLabel"
+		_shell_label.position = Vector2(4, 210)
+		_shell_label.text = "SHELL AP   HE 0  HEAT 0"
+		_shell_label.add_theme_color_override("font_color", Color.WHITE)
+		_shell_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		_shell_label.add_theme_constant_override("outline_size", 2)
+		canvas.add_child(_shell_label)
 	add_child(canvas)
 	hp_changed.connect(_on_hp_changed_hud)
+
+
+# arc-4 iter 30: render the shell HUD line. Shell-class index → name.
+func _shell_name(sc: int) -> String:
+	if sc == BulletT.SHELL_CLASS_HE:
+		return "HE"
+	if sc == BulletT.SHELL_CLASS_HEAT:
+		return "HEAT"
+	return "AP"
 
 
 func _on_hp_changed_hud(new_hp: int, the_max_hp: int) -> void:
@@ -701,6 +723,12 @@ func _update_run_hud() -> void:
 	if _time_label != null:
 		var t: int = int(_run_time)
 		_time_label.text = "TIME %d:%02d" % [t / 60, t % 60]
+	# arc-4 iter 30: shell HUD — current shell + reserves. Only when a
+	# loadout exists (the label is null otherwise → branch skipped).
+	if _shell_label != null and loadout != null:
+		_shell_label.text = "SHELL %-4s HE %d  HEAT %d" % [
+			_shell_name(current_shell), loadout.he_reserve, loadout.heat_reserve
+		]
 
 
 # iter 30 (Pro Consult 005 META — "readable upward intent"): when player

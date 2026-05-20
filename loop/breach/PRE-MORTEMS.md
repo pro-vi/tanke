@@ -24,6 +24,33 @@ Format:
 
 ---
 
+## iter 030 — BUILD-QUALITY — shell HUD (round-4 piece 2)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE] [QUALITY]
+- Round 4 (pre-playtest legibility), piece 2. Breach-economy state —
+  which shell is selected, how much HE/HEAT reserve remains — is
+  currently invisible. A playtester can't see their breach budget. The
+  shell HUD surfaces it.
+- CONSULT constraints respected: 3 (the readable shell relationship
+  needs the shell to be *visible*), CONSULT 002 (legibility)
+- CONSULT constraints risked: none
+- Predicted failure modes:
+  - PlayerTank `_setup_hud` builds a CanvasLayer. The shell label must
+    be gated on `loadout != null` — arc-2/3 HUD stays bit-identical
+    (no shell label, no `_update_run_hud` shell branch fires).
+  - `_update_run_hud` runs each frame (cheap text update).
+- Falsifiable claim: post-edit, `make test` exit 0, `tile_hash` =
+  `23d6a2ec3bf2821f`, `make test-all` PASS (arc-2/3 HUD unchanged —
+  no loadout → no shell label), `make test-breach` PASS, new
+  `make check-breach-hud` verifies a breach PlayerTank (loadout set)
+  has a ShellLabel reflecting current_shell + he/heat reserves, and an
+  arc-2/3 PlayerTank (no loadout) has none.
+- Sentence test: n/a (HUD)
+- Substrate touched: `scripts/PlayerTank.gd` (substrate write —
+  sanctioned; `_setup_hud` + `_update_run_hud` extension, breach-gated).
+- Hash-anchor verification plan: post-edit, before commit.
+
 ## iter 029 — BUILD-QUALITY — depot UI panel (round-3 close, round-4 open)
 
 - Date: 2026-05-20

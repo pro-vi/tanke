@@ -17,6 +17,46 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 030 — BUILD-QUALITY — shell HUD (round 4 close; loop hits true end-of-autonomous-work)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE] [QUALITY]
+- Score: **30/50 absolute · 30/50 effective** (Δ 0 — BUILD-QUALITY,
+  round-4 legibility, no [STRUCTURE] anchor lift)
+- Round 4 (pre-playtest legibility), piece 2 + close. Breach-economy
+  state — current shell, HE/HEAT reserves — is now visible: a breach
+  PlayerTank builds a ShellLabel ("SHELL HE  HE 3  HEAT 2"), updated
+  each `_update_run_hud`. Gated on `loadout != null` → arc-2/3 HUD
+  bit-identical (no ShellLabel, no shell branch).
+- Constraints respected: 3 (a readable shell relationship needs the
+  shell visible), CONSULT 002 (legibility)
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** post
+  PlayerTank.gd write. `make test` exit 0. `make test-all` PASS
+  (5 arc-3 — arc-2/3 HUD unchanged). `make test-breach` PASS (17).
+- Falsifications: none
+- Files: `scripts/PlayerTank.gd` (substrate write — `_shell_label` +
+  `_setup_hud` breach-gated block + `_shell_name` + `_update_run_hud`
+  shell line), `loop/breach/test_breach_hud.gd` (NEW), `Makefile`
+  (check-breach-hud), PRE-MORTEMS, LEDGER, STATE
+- **Regime signal**: iters 29 + 30 are back-to-back BUILD-QUALITY —
+  exceeding the L3/R4 "1 per 3 BUILDs" cap. This is not drift; it is
+  the cap correctly reporting the structural ceiling: with every
+  [STRUCTURE] anchor closed or blocked (iter 28), ALL remaining honest
+  work is necessarily BUILD-QUALITY craft. The cap assumes anchor-lift
+  BUILDs to interleave; at the ceiling there are none. The loop has
+  genuinely reached the end of high-value autonomous work.
+- Finding: **Round 4 closed — breach mode is playtest-ready.** The
+  player can now see HP/depth (arc-2 HUD), current shell + HE/HEAT
+  reserves (iter 30), and depot upgrade choices (iter 29 panel). Every
+  piece of breach economy is legible. The loop has now delivered:
+  the full 5-band climb, finite shell economy with swap cost, 3 depots
+  + 7-upgrade catalog, HEAT-solves-armor, death recaps, band-aware
+  enemies, and the legibility layer. **30/50 structural; the remaining
+  20 points are the playtest's verdict.** Per the parity-drift /meta +
+  both CONSULTs, the loop has built everything reachable without a
+  human. The honest next event is the REVIEW-QUEUE #3 playtest — the
+  loop shifts to a slow idle heartbeat awaiting it.
+
 ## iter 029 — BUILD-QUALITY — depot UI panel (round-3 close, round-4 open)
 
 - Date: 2026-05-20
