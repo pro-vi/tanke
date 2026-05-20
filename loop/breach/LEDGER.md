@@ -17,6 +17,44 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 031 — IDLE — heartbeat tick; regression guard green
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **30/50** (Δ 0 — idle tick; the loop is in awaiting-playtest
+  state, no BUILD)
+- First idle-heartbeat tick after the iter-30 end-of-autonomous-work.
+  Per STATE: re-verify green, take genuine non-rubric work if any
+  appears, else hold. Diagnosis: no genuine non-rubric BUILD work that
+  isn't feel-work-needing-playtest or discipline-violating substrate.
+  Hold.
+- Regression guard: `make test` exit 0, `tile_hash 23d6a2ec3bf2821f`,
+  `playable: true`, `make test-all` 5/5, `make test-breach` 17/17.
+  All green — no drift.
+- Housekeeping (honest, not filler):
+  - `project.godot` had a Godot headless-re-serialization artifact
+    (it dropped `window/dpi/allow_hidpi` + `window/stretch/aspect`).
+    The loop never authored that — reverted to the committed config.
+  - Committed the 5 arc-4 `scripts/*.gd.uid` files (BreachBand /
+    BreachConfig / Depot / Loadout / RunRecap) — the repo convention
+    tracks `scripts/*.gd.uid`; these were missed by the by-name
+    `git add` in iters 3/5/8/14. `loop/**/*.uid` stays untracked
+    (no loop .uid is tracked — consistent).
+- Hash anchor: `23d6a2ec3bf2821f` confirmed.
+- Falsifications: none.
+- Files: 5 `scripts/*.gd.uid` (now tracked), LEDGER, STATE.
+- STATE.md integrity fix: the regression-guard tick found a stale
+  duplicate-key block in STATE.md's yaml (leftover iter-21-era
+  `score: 28/50` + old harness count + a `review_queue_open` missing
+  #3 — duplicate keys would shadow the correct values). Removed the
+  4 stale lines; corrected `new_harness_targets` to the current 17.
+  A real find — the idle tick's regression guard earned its keep.
+- Finding: **Loop holding at 30/50, build green, awaiting the
+  REVIEW-QUEUE #3 playtest.** No autonomous work remains that would be
+  honest to do. Heartbeat continues at ~1800s; each tick is a
+  regression guard + hold. The user's `playtest` / `halt` / `stop` is
+  the next event.
+
 ## iter 030 — BUILD-QUALITY — shell HUD (round 4 close; loop hits true end-of-autonomous-work)
 
 - Date: 2026-05-20

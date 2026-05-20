@@ -2,7 +2,7 @@
 
 ```yaml
 phase: loop
-iter: 30
+iter: 31
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
@@ -23,12 +23,8 @@ loop_state: AWAITING PLAYTEST. The loop has delivered everything reachable witho
 next_action: iter 31+ — the loop is non-stop per PROMPT but has genuinely exhausted high-value autonomous work. Slow idle-heartbeat cadence (~1800s) awaiting the user's `playtest` signal. On each idle tick: re-verify the build is green (regression guard), and IF a genuine non-rubric surface with real value appears (not feel-work-without-feedback, not discipline-violating substrate), take it as a BUILD-QUALITY iter; else hold. Do NOT grind filler. When the user writes `playtest`, surface REVIEW-QUEUE (items #1-4, #3 is the ask).
 score: 30/50 absolute · 30/50 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4
 spike_report: loop/breach/iter-001-spike-report.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend} + check-silhouette-gate (14; test-breach aggregate)
-review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #3 PLAYTEST REQUEST (critical path)]
-score: 28/50 absolute · 28/50 effective  # C1=3,C2=3,C3=3,C4=3,C5=2,C6=3,C7=3,C8=2,C9=2,C10=4
-spike_report: loop/breach/iter-001-spike-report.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend} + check-silhouette-gate (14; test-breach aggregate)
-review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb]
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud} + check-silhouette-gate (17 in test-breach aggregate)
+review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #3 PLAYTEST REQUEST (critical path), #4 round-3 + ceiling]
 ```
 
 ---
