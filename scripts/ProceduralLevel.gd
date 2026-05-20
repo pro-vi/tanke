@@ -5,6 +5,7 @@ const DebugBlock: PackedScene = preload("res://scenes/DebugBlock.tscn")
 const LevelConfigT = preload("res://scripts/LevelConfig.gd")
 const BiomeConfigT = preload("res://scripts/BiomeConfig.gd")
 const BreachConfigT = preload("res://scripts/BreachConfig.gd")
+const BreachBandT = preload("res://scripts/BreachBand.gd")
 const DefaultConfig: Resource = preload("res://configs/default.tres")
 @export var debug: bool = false
 @export var level_seed: int = 0  # 0 = random; any other value = deterministic Level DNA
@@ -109,10 +110,27 @@ func _process(_delta: float) -> void:
 
 # Returns the LevelConfig active at the given row — biome-interpolated if biome
 # is set, otherwise the flat config.
+# arc-4: when breach mode is on AND the row falls inside a BreachBand that
+# carries a level_config override, that band config wins. This is what
+# makes each depth band a *specific climb problem* (CONSULT §9 constraint
+# 5). When breach_mode_enabled is false the branch is skipped entirely —
+# hash anchor 23d6a2ec3bf2821f on the flag-off codepath is preserved.
 func _active_config(row: int) -> LevelConfigT:
+	if breach_mode_enabled and breach_config != null:
+		var band: BreachBandT = breach_config.band_for_depth(_rows_climbed_at(row))
+		if band != null and band.level_config != null:
+			return band.level_config
 	if biome != null:
 		return biome.config_at(row)
 	return config
+
+
+# arc-4: map a procedural row index to "rows climbed from start". Row
+# height/grid_size is the start (rows_climbed 0); rows decrease as the
+# player climbs, so rows_climbed grows. Negative rows (deep climb) yield
+# rows_climbed > height/grid_size.
+func _rows_climbed_at(row: int) -> int:
+	return (height / grid_size) - row
 
 
 # populate the next procedural step using verts; merge_probability is sampled
@@ -170,15 +188,38 @@ func _generate_level_perlin() -> void:
 				brickTileMap.set_cell(Vector2i(x, y), 0, Vector2i(0, 0))
 
 
-# arc-4 breach mode entry points. Stubs in iter 2; expanded iter 3+ as
-# BreachConfig, depth bands, depots, shell logistics land. Never called
-# when breach_mode_enabled is false (gating preserves arc-2 baseline +
-# hash anchor 23d6a2ec3bf2821f… on the flag-off codepath).
+# arc-4 breach mode entry points. Never called when breach_mode_enabled
+# is false (gating preserves arc-2 baseline + hash anchor on flag-off).
+
+signal breach_band_changed(band: BreachBandT)
+
+var _current_breach_band: BreachBandT = null
+
+
+# Called once from _ready when breach mode is on. Resolves the starting
+# band so _current_breach_band is populated before the first depth tick.
 func _init_breach_mode() -> void:
-	pass
+	if breach_config == null:
+		return
+	_current_breach_band = breach_config.band_for_depth(_rows_climbed_at_y(player.position.y))
 
 
-func _process_breach_depth(_player_y: float) -> void:
-	pass
+# Called every _process tick when breach mode is on. Tracks which
+# BreachBand the player is currently inside; emits breach_band_changed
+# when they cross a band boundary. Iter 12+ wires HUD + death recap off
+# this signal.
+func _process_breach_depth(player_y: float) -> void:
+	if breach_config == null:
+		return
+	var band: BreachBandT = breach_config.band_for_depth(_rows_climbed_at_y(player_y))
+	if band != _current_breach_band:
+		_current_breach_band = band
+		breach_band_changed.emit(band)
+
+
+# Map a world-space y to "rows climbed from start". The player begins
+# near y = height (bottom) and climbs upward (decreasing y).
+func _rows_climbed_at_y(world_y: float) -> int:
+	return int((float(height) - world_y) / float(grid_size))
 
 

@@ -17,6 +17,60 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 011 — BUILD — depth-band terrain wiring + reachability oracle (C4 anchor 2)
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **13/50 absolute · 13/50 effective** (Δ +1 vs prior — C4 anchor 2)
+  - C4 (Depth bands): 1 → 2 (anchor 2: ≥3 bands, each with a stated
+    dominant pressure in config — code-cited via `make
+    check-breach-config` showing tutorial_choke / brick_maze /
+    bunker_zone, each with a `dominant_pressure` string). **Reachability
+    caveat**: band 1 (tutorial_choke) verified `playable: true` across
+    7 seeds (1/7/13/42/100/333/777); bands 2+3 softened proactively
+    but NOT yet reachability-verified — iter-11's 30-frame harness only
+    generates the band-1 region. iter-12 deep-climb harness verifies
+    bands 2+3. If they fail then, reachability floor retroactively
+    caps C4 → 0 until fixed.
+  - C1=1, C2=2, C3=2, C8=1, C9=2, C10=3 unchanged
+- Constraints respected: 5 (each band's dominant terrain pressure is
+  now ENFORCED at generation — `_active_config` routes per-band
+  LevelConfig into row generation, not just declared in config), 7
+  - Constraints risked: 5's reachability flip-side — surfaced as F001.
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** post substrate
+  write #7. The `_active_config` breach branch is gated on
+  `breach_mode_enabled` — flag-off procedural baseline bit-identical.
+  `make test` exit 0. `make test-all` PASS. `make test-breach` PASS
+  (all 8 arc-4 harnesses including the new reachability oracle).
+- Falsifications: **F001 logged** — breach band terrain density
+  eyeballed, not reachability-verified. The oracle caught
+  tutorial_choke producing `playable: false` (impassable brick walls).
+  Fixed within-iter per PROMPT §HALT CONDITIONS: retuned tutorial_choke
+  (empty 0.20→0.46, brick 0.55→0.32, merge 0.45→0.30) to pass 7/7
+  seeds; proactively softened brick_maze + bunker_zone applying the
+  same lesson.
+- Files: `scripts/ProceduralLevel.gd` (substrate write #7 — filled the
+  iter-2 `_init_breach_mode` / `_process_breach_depth` stubs +
+  `_active_config` breach branch + `_rows_climbed_at` helpers +
+  `breach_band_changed` signal), `configs/breach_default.tres` (3rd
+  band bunker_zone + all 3 band configs retuned for reachability),
+  `loop/breach/test_breach_harness.gd` (NEW — the PROMPT-named breach
+  reachability oracle), `Makefile` (new `check-breach-harness` target;
+  test-breach aggregate now 8 harnesses), `loop/breach/FALSIFICATIONS.md`
+  (F001), `loop/breach/PRE-MORTEMS.md`, `loop/breach/LEDGER.md`,
+  `loop/breach/STATE.md`
+- Finding: **The depth-band experience is live.** `_active_config` now
+  routes per-band `LevelConfig` into procedural row generation when
+  breach mode is on — terrain pressure genuinely shifts per band
+  (tutorial_choke → brick_maze → bunker_zone). `_process_breach_depth`
+  tracks the current band + emits `breach_band_changed`.
+  `_init_breach_mode` resolves the starting band. The breach
+  reachability oracle (`test_breach_harness.gd`) is the PROMPT-mandated
+  §REACHABILITY FLOOR check — it caught F001 immediately. Next iter 12:
+  CAPABILITY — deep-climb harness that forces generation through all 3
+  bands' depth ranges + verifies bands 2+3 reachability (closes the
+  F001 caveat; unlocks C4 anchor 3).
+
 ## iter 010 — BUILD-QUALITY — BreachLevel.tscn integration scene
 
 - Date: 2026-05-19

@@ -11,7 +11,7 @@ NOISE_FILTER    = grep -Ev "RID allocations|resources still in use"
 FRAMES_DIR      = $(PROJECT_DIR)/tools/out
 REFS_DIR        = $(PROJECT_DIR)/tools/refs
 
-.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain check-chain-35 og-band-check check-titlescreen-nav test-all check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level test-breach
+.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain check-chain-35 og-band-check check-titlescreen-nav test-all check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness test-breach
 
 # Parse/load validation — catches bad scripts and missing nodes
 check:
@@ -176,8 +176,16 @@ check-breach-level:
 	@$(HEADLESS) --script res://loop/breach/test_breach_level.gd 2>&1 | grep -E "^(BREACH_LEVEL_OK|FAIL|ERROR|SCRIPT ERROR)" | grep -v "RID alloc"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_level.gd 2>&1 | grep -q "^BREACH_LEVEL_OK"
 
+# Arc-4 breach reachability oracle (PROMPT §REACHABILITY FLOOR). Runs
+# the breach-mode generator at seed 42 and flood-fills from spawn;
+# asserts playable=true. Covers band 1 (the FRAMES_TO_STEP-generatable
+# region); deep multi-band coverage is iter-12 CAPABILITY work.
+check-breach-harness:
+	@$(HEADLESS) --script res://loop/breach/test_breach_harness.gd -- --seed 42 2>&1 | grep -E "^(reachable:|BREACH_HARNESS)"; \
+	$(HEADLESS) --script res://loop/breach/test_breach_harness.gd -- --seed 42 2>&1 | grep -q "^BREACH_HARNESS_OK"
+
 # Arc-4 breach mode: all breach harnesses in one target.
-test-breach: check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level
+test-breach: check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness
 
 # Arc-3 → arc-2 metric handshake: compute per-stage structural metrics
 # across all 35 BC stages and emit loop/originals/og-metrics.json.

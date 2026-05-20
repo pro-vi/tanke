@@ -2,20 +2,22 @@
 
 ```yaml
 phase: loop
-iter: 10
+iter: 11
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_10: 23d6a2ec3bf2821f  # bit-identical through 6 substrate writes
-substrate_writes_this_arc: 6  # ProceduralLevel.gd ×2 + Bullet.gd ×2 + PlayerTank.gd + Level.gd
+hash_anchor_at_iter_11: 23d6a2ec3bf2821f  # bit-identical through 7 substrate writes
+substrate_writes_this_arc: 7  # ProceduralLevel.gd ×3 + Bullet.gd ×2 + PlayerTank.gd + Level.gd
 current_round: 2
-current_round_phase: BUILD  # round 2 — integration milestone reached
+current_round_phase: BUILD  # depth-band experience is live
 consult_001_status: adopted
-build_quality_iters: [10]  # L3/R4 release valve — 1 per 3 BUILDs cap
-next_action: iter 11 — BUILD — wire breach depth-band experience. Implement `_init_breach_mode()` + `_process_breach_depth(player_y)` in ProceduralLevel.gd (substrate write #7 — fills the iter-2 stubs; sanctioned): track rows_climbed from player_y, look up active BreachBand via breach_config.band_for_depth(), and when the band's level_config is non-null, swap the active per-row config so terrain pressure shifts per band. ALSO extend breach_default.tres from 2 → 3+ bands (add bunker_zone). Target: C4 anchor 2 (≥3 bands each with stated dominant pressure — code-cited) + trail toward anchor 3-4. Hash anchor: the stubs only run when breach_mode_enabled=true, so flag-off procedural stays bit-identical — verify post-edit.
-score: 12/50 absolute · 12/50 effective  # C1=1, C2=2, C3=2, C4=1, C8=1, C9=2, C10=3
+build_quality_iters: [10]
+falsifications: [F001]  # breach band density eyeballed; oracle caught it
+reachability_status: band-1 verified 7/7 seeds; bands 2+3 softened but UNVERIFIED (iter-12 gate)
+next_action: iter 12 — CAPABILITY — extend test_breach_harness.gd into a deep-climb harness that forces procedural generation through all 3 bands' depth ranges (e.g. teleport-and-let-generate, or programmatic row gen) and runs per-band reachability flood-fill. Verify bands 2 (brick_maze, depth 30-70) + 3 (bunker_zone, depth 70-120) report playable=true across ≥5 seeds. Closes the F001 caveat. If a band fails, retune within-iter (PROMPT §HALT). Unlocks C4 anchor 3 (5 bands per BANDS.md + reachability passes on all — though BANDS.md wants 5 bands; iter 12 may also add bands 4-5). Target: C4 anchor 3.
+score: 13/50 absolute · 13/50 effective  # C1=1, C2=2, C3=2, C4=2, C8=1, C9=2, C10=3
 spike_report: loop/breach/iter-001-spike-report.md
-new_harness_targets: check-breach-config, check-breach-shells, check-breach-depot, check-breach-he-blast, check-breach-loadout, check-breach-depot-choice, check-breach-level (+ test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness} (8; test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb]
 ```
 

@@ -24,6 +24,45 @@ Format:
 
 ---
 
+## iter 011 — BUILD — wire depth-band terrain selection + 3rd band
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 5 (each band has a dominant terrain
+  pressure — now ENFORCED at generation time, not just declared in
+  config: `_active_config` routes per-band LevelConfig into row
+  generation), 7 (no stats — terrain pressure is a climb problem, not
+  a number)
+- CONSULT constraints risked: 5's reachability flip-side — if a band's
+  LevelConfig is too dense (e.g. bunker_zone steel-heavy), the
+  procedural layout could become impassable. RUBRIC C4 reachability
+  floor caps C4 at 0 if any band fails. Mitigation: keep band configs
+  gentle (empty_weight ≥ 0.12); a formal per-band reachability oracle
+  is a scheduled CAPABILITY iter (12+) — C4 anchor 3 is gated on it.
+- Predicted failure modes:
+  - `_active_config` is called during BOTH `_ready` initial generation
+    AND `_process` climbing generation. The breach branch must not
+    break the flag-off path — when `breach_mode_enabled == false` the
+    branch is skipped entirely → hash anchor `23d6a2ec3bf2821f` stays.
+  - Row→depth mapping: `rows_climbed = (height/grid_size) - row`. If
+    the sign is inverted, bands map backwards (player starts in band 3).
+    Will verify the starting area resolves to band 1.
+  - Breach band lookup per-row is O(bands) — 3 bands, negligible.
+- Falsifiable claim: post-edit, `make test` exit 0 AND `tile_hash` =
+  `23d6a2ec3bf2821f` (procedural baseline flag-off — breach branch
+  skipped) AND `make test-all` PASS AND `make test-breach` PASS (all 7
+  harnesses; check-breach-config now sees 3 bands) AND BreachLevel
+  still instantiates clean over 30 frames.
+- Sentence test: n/a (no upgrade)
+- Substrate touched: `scripts/ProceduralLevel.gd` (substrate write #7 —
+  fills the iter-2 `_init_breach_mode` / `_process_breach_depth` stubs;
+  extends `_active_config` with a breach branch. Sanctioned per PROMPT
+  §SUBSTRATE FREEZE path A. The breach branch is gated on
+  `breach_mode_enabled` — default-on gating template preserved).
+- Hash-anchor verification plan: post-edit, before commit. Mandatory —
+  `_active_config` is on the RNG-feeding generation path; the breach
+  branch MUST be flag-gated so flag-off stays bit-identical.
+
 ## iter 010 — BUILD — BreachLevel.tscn (first end-to-end breach scene)
 
 - Date: 2026-05-19

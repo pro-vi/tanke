@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BreachConfig" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="BreachConfig" load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/BreachConfig.gd" id="1_cfg"]
 [ext_resource type="Script" path="res://scripts/BreachBand.gd" id="2_band"]
@@ -6,12 +6,12 @@
 
 [sub_resource type="Resource" id="lc_choke"]
 script = ExtResource("3_lc")
-merge_probability = 0.45
-empty_weight = 0.20
-brick_weight = 0.55
-steel_weight = 0.05
-grass_weight = 0.10
-water_weight = 0.10
+merge_probability = 0.30
+empty_weight = 0.46
+brick_weight = 0.32
+steel_weight = 0.03
+grass_weight = 0.16
+water_weight = 0.03
 
 [sub_resource type="Resource" id="band_choke"]
 script = ExtResource("2_band")
@@ -24,12 +24,12 @@ level_config = SubResource("lc_choke")
 
 [sub_resource type="Resource" id="lc_maze"]
 script = ExtResource("3_lc")
-merge_probability = 0.55
-empty_weight = 0.10
-brick_weight = 0.70
-steel_weight = 0.05
-grass_weight = 0.10
-water_weight = 0.05
+merge_probability = 0.36
+empty_weight = 0.38
+brick_weight = 0.42
+steel_weight = 0.04
+grass_weight = 0.13
+water_weight = 0.03
 
 [sub_resource type="Resource" id="band_maze"]
 script = ExtResource("2_band")
@@ -40,6 +40,24 @@ dominant_pressure = "dense brick layouts; long detours unless breached"
 canonical_answer = "HE — open vertical lanes; trade shells for time"
 level_config = SubResource("lc_maze")
 
+[sub_resource type="Resource" id="lc_bunker"]
+script = ExtResource("3_lc")
+merge_probability = 0.40
+empty_weight = 0.40
+brick_weight = 0.22
+steel_weight = 0.28
+grass_weight = 0.08
+water_weight = 0.02
+
+[sub_resource type="Resource" id="band_bunker"]
+script = ExtResource("2_band")
+band_name = "bunker_zone"
+depth_min = 70
+depth_max = 120
+dominant_pressure = "steel-armored bunkers; entrenched heavy tanks"
+canonical_answer = "HEAT — anti-armor commitment; AP useless vs bunkers"
+level_config = SubResource("lc_bunker")
+
 [resource]
 script = ExtResource("1_cfg")
-bands = Array[Resource]([SubResource("band_choke"), SubResource("band_maze")])
+bands = Array[Resource]([SubResource("band_choke"), SubResource("band_maze"), SubResource("band_bunker")])
