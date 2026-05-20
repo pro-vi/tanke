@@ -2,25 +2,25 @@
 
 ```yaml
 phase: loop
-iter: 28
+iter: 29
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_28: 23d6a2ec3bf2821f  # bit-identical through 14 substrate writes
+hash_anchor_at_iter_29: 23d6a2ec3bf2821f  # bit-identical through 14 substrate writes
 substrate_writes_this_arc: 14  # ProceduralLevel.gd ×3 + Bullet.gd ×4 + PlayerTank.gd ×5 + Level.gd + Spawner.gd ×2
-current_round: 3
-current_round_phase: BUILD  # round 3 structural work done (C3/4 + C8/3); C5/3 substrate-blocked
+current_round: 4
+current_round_phase: BUILD-QUALITY  # round 4 = pre-playtest legibility (the bridge to the playtest)
 consult_001_status: adopted
 consult_002_status: adopted
-build_quality_iters: [10, 24]
+build_quality_iters: [10, 24, 29]
 falsifications: [F001-resolved, F002-resolved]
 reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%)
 audit_candidates: []
 last_audit: iter 26
 last_consult: iter 21
-structural_ceiling: REACHED at 30/50. C3/4 (iter 27) + C8/3 (iter 28) shipped. C5/3 is substrate-blocked (a real 4th enemy role needs an Enemy.gd behavior branch — not sanctioned; a stat-only variant violates CONSULT constraint 3 — so it is NOT honestly reachable). C10/5 (+1) only at arc close. Everything else (19 pts) is [FEEL]/playtest-gated.
-meta_iter25: PARITY DRIFT — REVIEW-QUEUE #3 is the playtest request (critical path). The loop has now built everything reachable without a human.
-next_action: iter 29 — META — round-3 close + honest structural-ceiling declaration. The loop has reached 30/50, its true structural finish. Round 3 shipped C3/4 + C8/3; C5/3 is substrate-blocked. Remaining 20 pts are playtest-gated. Per PROMPT the loop is non-stop — it does NOT halt — but iter 29 honestly records: no further [STRUCTURE] anchor is reachable without (a) the REVIEW-QUEUE #3 playtest, or (b) a sanctioned-list expansion for Enemy.gd, or (c) arc close (C10/5). iter 29 writes the round-3 close to LEDGER + REVIEW-QUEUE, and either bootstraps a non-rubric exploration surface (PROMPT §RUBRIC IS MEASUREMENT) OR — if genuinely out of honest BUILD work — stretches the loop cadence and holds for the user. Diagnose honestly at iter start; do NOT grind discipline-violating filler.
+structural_ceiling: REACHED at 30/50 (iter 28). Every harness-citable [STRUCTURE] anchor closed; C5/3 substrate-blocked; C10/5 at arc close. Remaining 20 pts are [FEEL]/playtest-gated.
+round_4: pre-playtest legibility — the bridge to REVIEW-QUEUE #3. Makes breach mode legible enough for a meaningful playtest. iter 29 = depot UI panel (DONE).
+next_action: iter 30 — BUILD-QUALITY — round-4 piece 2: a shell HUD on PlayerTank — show current_shell + HE/HEAT reserve counts, finally wiring the iter-17 gen_tile shell icons into a visible on-screen indicator. Without it a playtester can't see which shell is selected or how much breach budget remains — core breach-economy state is currently invisible. PlayerTank already has an arc-2 HUD (DEPTH/HP) to extend; gated on loadout != null so arc-2/3 HUD is bit-identical. After round 4's legibility pieces, breach mode is genuinely playtest-ready → the loop holds for REVIEW-QUEUE #3.
 score: 30/50 absolute · 30/50 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4
 spike_report: loop/breach/iter-001-spike-report.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend} + check-silhouette-gate (14; test-breach aggregate)

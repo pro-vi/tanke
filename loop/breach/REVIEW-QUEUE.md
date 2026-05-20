@@ -34,6 +34,22 @@ Format per item:
     avoid this trap by wiring *behavior*, not more schema. iter-6 fired
     consult 001 to ground-truth this risk read.
 
+#4 — Round 3 + structural ceiling — iters 26-28 — SHA 18828be — open
+  Finding: Round 3 closed the last reachable [STRUCTURE] anchors —
+    C3/4 (shell-swap reload cost — pre-commitment under reload
+    pressure) + C8/3 (depot catalog covers all 5 band pressures via
+    the OVERDRIVE sprint upgrade). C5/3 (a 4th enemy role) is
+    substrate-blocked — a genuine role needs an Enemy.gd behavior
+    branch, which the arc-4 PROMPT does not sanction. The iter-26
+    AUDIT de-bundled the remaining anchors and fixed the ceiling at
+    **30/50** — the honest structural finish.
+  Affordance: every harness-citable anchor is now closed; the loop has
+    built everything reachable without a human.
+  Risk: the remaining 20 points are [FEEL]/playtest-gated. Round 4
+    (iter 29+) builds the *bridge* to the playtest — legibility work
+    (depot UI, shell HUD) so a playtest can actually be meaningful —
+    but the playtest itself (#3) remains the gate.
+
 #3 — ★ PLAYTEST REQUEST (critical path) — round 2 — SHA 3d70133 — OPEN, needs you
   Finding: Round 2 (iters 7-24) is STRUCTURALLY COMPLETE — breach mode
     is a full loop: 5-band climb, finite HE/HEAT reserves spent to

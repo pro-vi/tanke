@@ -24,6 +24,45 @@ Format:
 
 ---
 
+## iter 029 — BUILD-QUALITY — depot UI panel (round-3 close, round-4 open)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE] [QUALITY]
+- DIAGNOSE: round 3's structural anchors are done (C3/4 + C8/3); C5/3
+  is substrate-blocked. The loop is at the 30/50 structural ceiling.
+  Per the parity-drift /meta, the playtest is the gate — but a playtest
+  is only meaningful if breach mode is LEGIBLE. The depot is currently
+  invisible: `Depot.tscn` is an Area2D + a blue marker rect; the
+  3-choice upgrade flow (KEY_1/2/3 → apply_choice) has NO on-screen UI.
+  CONSULT 002 Q2: depots must be "legible in under five seconds" — they
+  aren't legible at all. Round 4 = pre-playtest legibility; iter 29 is
+  piece 1: the depot UI panel. This is the bridge to the playtest, not
+  grinding past the ceiling.
+- Tag rationale: BUILD-QUALITY — a visible depot panel is craft that
+  makes the playtest possible but lifts no [STRUCTURE] anchor (C2
+  anchors 4-5 are playtest-gated). Last BUILD-QUALITY iter 24; iters
+  25-28 were META/AUDIT/BUILD/BUILD — within the 1-per-3 cap.
+- CONSULT constraints respected: 1 (depot UI shows only at the
+  safe-gate, never during combat — the tree is paused), CONSULT 002 Q2
+  (legibility)
+- CONSULT constraints risked: depot dwell <30s — the panel must be
+  fast-readable; iter 29 ships a compact 4-line panel (hint + 3
+  choices). Playtest tunes.
+- Predicted failure modes:
+  - The panel must be a CanvasLayer (screen-space, not world-space) so
+    it renders as HUD regardless of camera. Depot is a world Area2D;
+    the CanvasLayer is a child of Depot, shown/hidden on entry/exit.
+  - process_mode: the panel's CanvasLayer must run while the tree is
+    paused (Depot already has PROCESS_MODE_ALWAYS — children inherit).
+- Falsifiable claim: post-edit, `make test` exit 0, `tile_hash` =
+  `23d6a2ec3bf2821f`, `make test-all` PASS, `make test-breach` PASS,
+  the depot UI panel populates its Labels from choice_a/b/c_label +
+  next_band_hint on entry and hides on pick/exit — verified by
+  extending `check-breach-depot` or a new harness assertion.
+- Sentence test: n/a (UI)
+- Substrate touched: none — Depot.tscn + Depot.gd are arc-4-owned.
+- Hash-anchor verification plan: post-edit; trivially preserved.
+
 ## iter 028 — BUILD — OVERDRIVE sprint upgrade (C8 anchor 3)
 
 - Date: 2026-05-20

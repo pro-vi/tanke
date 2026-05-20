@@ -45,6 +45,21 @@ func _initialize() -> void:
 		push_error("FAIL — player entry did not pause the tree")
 		quit(1); return
 
+	# iter 29: the UI panel shows on entry + populates from the choice
+	# labels (depot legibility — CONSULT 002 Q2).
+	var layer: CanvasLayer = depot.get_node_or_null("UILayer") as CanvasLayer
+	if layer == null:
+		push_error("FAIL — Depot.tscn has no UILayer")
+		quit(1); return
+	if not layer.visible:
+		push_error("FAIL — UI panel not visible after player entry")
+		quit(1); return
+	var choice_a: Label = layer.get_node_or_null("Panel/ChoiceA") as Label
+	if choice_a == null or choice_a.text.find(depot.choice_a_label) == -1:
+		push_error("FAIL — ChoiceA label not populated from choice_a_label")
+		quit(1); return
+	print("  UI panel shown + populated on entry")
+
 	# Non-player exit should NOT resume.
 	depot._on_body_exited(non_player)
 	if not paused:
@@ -57,11 +72,16 @@ func _initialize() -> void:
 		push_error("FAIL — player exit did not resume the tree")
 		quit(1); return
 
+	# iter 29: the UI panel hides on exit.
+	if layer.visible:
+		push_error("FAIL — UI panel still visible after player exit")
+		quit(1); return
+
 	# process_mode contract: depot must run while tree paused so body_exited
 	# can fire.
 	if depot.process_mode != Node.PROCESS_MODE_ALWAYS:
 		push_error("FAIL — depot.process_mode != PROCESS_MODE_ALWAYS (got %d)" % depot.process_mode)
 		quit(1); return
 
-	print("BREACH_DEPOT_OK pause-on-entry contract verified")
+	print("BREACH_DEPOT_OK pause-on-entry + UI panel show/hide verified")
 	quit(0)

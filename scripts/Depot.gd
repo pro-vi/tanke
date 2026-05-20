@@ -66,6 +66,9 @@ func _on_body_entered(body: Node) -> void:
 	# Capture loadout if the body has one. Duck-typed.
 	if body.has_method("get") and "loadout" in body:
 		_player_loadout = body.loadout
+	# iter 29: show the depot UI panel — the safe-gate is the only place
+	# the player reads upgrade choices (CONSULT §9 constraint 1).
+	_show_panel()
 	depot_entered.emit(self)
 
 
@@ -74,7 +77,37 @@ func _on_body_exited(body: Node) -> void:
 		return
 	get_tree().paused = false
 	_player_loadout = null
+	_hide_panel()
 	depot_exited.emit(self)
+
+
+# iter 29: populate the UI panel from the depot's choice labels +
+# next-band hint, then show it. Defensive — the panel is optional
+# (harness-instantiated depots may lack the UILayer).
+func _show_panel() -> void:
+	var layer: CanvasLayer = get_node_or_null("UILayer") as CanvasLayer
+	if layer == null:
+		return
+	_set_panel_label("Panel/NextBand", "next: " + next_band_hint)
+	_set_panel_label("Panel/ChoiceA", "1: " + choice_a_label)
+	_set_panel_label("Panel/ChoiceB", "2: " + choice_b_label)
+	_set_panel_label("Panel/ChoiceC", "3: " + choice_c_label)
+	layer.visible = true
+
+
+func _hide_panel() -> void:
+	var layer: CanvasLayer = get_node_or_null("UILayer") as CanvasLayer
+	if layer != null:
+		layer.visible = false
+
+
+func _set_panel_label(path: String, text: String) -> void:
+	var layer: CanvasLayer = get_node_or_null("UILayer") as CanvasLayer
+	if layer == null:
+		return
+	var lbl: Label = layer.get_node_or_null(path) as Label
+	if lbl != null:
+		lbl.text = text
 
 
 # Iter 9: poll keys 1/2/3 while paused. Depot runs with PROCESS_MODE_ALWAYS
@@ -104,6 +137,9 @@ func apply_choice(idx: int) -> void:
 		_: return
 	apply_upgrade(kind, _player_loadout)
 	_picked = true
+	# iter 29: pick locked — clear the panel so the player reads "done"
+	# and moves on (depot dwell stays short).
+	_hide_panel()
 	depot_picked.emit(self, kind)
 
 

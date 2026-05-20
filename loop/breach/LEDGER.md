@@ -17,6 +17,48 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 029 — BUILD-QUALITY — depot UI panel (round-3 close, round-4 open)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE] [QUALITY]
+- Score: **30/50 absolute · 30/50 effective** (Δ 0 — BUILD-QUALITY;
+  craft work that makes the playtest meaningful, no [STRUCTURE] anchor
+  lift)
+- DIAGNOSE: round 3's structural work is done (30/50 ceiling). The
+  honest next work isn't grinding past the ceiling — it's the *bridge*
+  to the playtest. Breach mode wasn't legible: the depot's 3-choice
+  upgrade flow (KEY_1/2/3) had NO on-screen UI — just a blue marker
+  rect. A playtest of an invisible depot is meaningless. CONSULT 002
+  Q2: depots must be "legible in under five seconds".
+- Constraints respected: 1 (the panel shows only at the safe-gate,
+  tree paused — never during combat), CONSULT 002 Q2 (legibility)
+- Constraints risked: depot dwell <30s — the panel is a compact 4-line
+  layout (hint + 3 choices); playtest tunes.
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** (no substrate
+  — Depot.tscn + Depot.gd arc-4-owned). `make test` exit 0. `make
+  test-all` PASS. `make test-breach` PASS (16 checks).
+- Falsifications: none
+- Files: `scenes/Depot.tscn` (+UILayer CanvasLayer with a Panel + 5
+  Labels), `scripts/Depot.gd` (_show_panel / _hide_panel /
+  _set_panel_label — populates from choice labels + next_band_hint on
+  entry; hides on pick + on exit), `loop/breach/test_breach_depot.gd`
+  (+UI panel show/populate/hide assertions),
+  `loop/breach/REVIEW-QUEUE.md` (#4 — round-3 close),
+  PRE-MORTEMS, LEDGER, STATE
+- Tag rationale: BUILD-QUALITY (L3/R4) — a visible depot panel is
+  craft that makes the playtest possible; C2 anchors 4-5 are
+  playtest-gated so it lifts no [STRUCTURE] anchor. Last BUILD-QUALITY
+  iter 24; iters 25-28 were META/AUDIT/BUILD/BUILD — within cap.
+- Finding: **Round 3 closed; round 4 (pre-playtest legibility) opens.**
+  The depot now has a visible UI panel — entering a depot pauses the
+  game and shows the next-band hint + 3 numbered upgrade choices; it
+  hides on pick or exit. This is the first piece of round 4: making
+  breach mode legible enough that the REVIEW-QUEUE #3 playtest is
+  meaningful. Structural score holds at the honest 30/50 ceiling.
+  Next iter 30: round-4 piece 2 — a shell HUD (current shell +
+  HE/HEAT reserve counts), finally wiring the iter-17 shell icons
+  into a visible indicator.
+
 ## iter 028 — BUILD — OVERDRIVE sprint upgrade (C8 anchor 3)
 
 - Date: 2026-05-20
