@@ -47,15 +47,23 @@ func _initialize() -> void:
 		push_error("FAIL — starter loadout has no HE reserve (got %d)" % player.loadout.he_reserve)
 		quit(1); return
 
-	# 4. At least one Depot child is present (duck-typed by the depot's
-	# apply_choice + _is_player methods — avoids hard-coding the scene).
+	# 4. >=3 Depot children at deterministic band-transition depths
+	# (C2 anchor 3 — "depots placed at deterministic intervals; harness
+	# verifies a full run hits >=3 depots"). Duck-typed by the depot's
+	# apply_choice + _is_player methods.
 	var depot_count: int = 0
+	var depot_ys: Array = []
 	for child in level.get_children():
 		if child.has_method("apply_choice") and child.has_method("_is_player"):
 			depot_count += 1
-	if depot_count < 1:
-		push_error("FAIL — no Depot child found in BreachLevel")
+			if child is Node2D:
+				depot_ys.append(int((child as Node2D).position.y))
+	if depot_count < 3:
+		push_error("FAIL — BreachLevel has %d depots, want >=3 (C2 anchor 3)" % depot_count)
 		quit(1); return
 
-	print("BREACH_LEVEL_OK  bands=%d  he_reserve=%d  depots=%d" % [band_count, player.loadout.he_reserve, depot_count])
+	depot_ys.sort()
+	print("BREACH_LEVEL_OK  bands=%d  he_reserve=%d  depots=%d  depot_y=%s" % [
+		band_count, player.loadout.he_reserve, depot_count, str(depot_ys)
+	])
 	quit(0)

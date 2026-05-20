@@ -17,6 +17,40 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 022 — BUILD — 3 depots at band transitions (C2 anchor 3)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **27/50 absolute · 27/50 effective** (Δ +1 vs prior — C2 anchor 3)
+  - C2 (Field depot system): 2 → 3 (anchor 3: depots placed at
+    deterministic intervals — BreachLevel.tscn now has 3 Depot
+    instances at band-transition depths (y -248/-888/-1688 = band
+    1/2/3 exits, depth 30/70/120); harness verifies ≥3 — code-cited
+    via `make check-breach-level` reporting `depots=3 depot_y=[-1688,
+    -888, -248]`)
+  - C1=3, C3=2, C4=3, C5=2, C6=3, C7=3, C8=2, C9=2, C10=4 unchanged
+- CONSULT 002 still running at iter-22 start (~7 min) — per PROMPT, no
+  AWAIT for design; proceeded with a CONSULT-safe substrate-clean
+  BUILD. iter 23 reads CONSULT 002.
+- Constraints respected: 1 (depot cadence — one safe-gate per band
+  transition), 6 (depots = band-segmentation points)
+- Constraints risked: none
+- Hash anchor: `23d6a2ec3bf2821f` **VERIFIED preserved** (no substrate
+  — BreachLevel.tscn is an arc-4-owned inherited scene; base
+  ProceduralLevel.tscn untouched). `make test` exit 0. `make test-all`
+  PASS. `make test-breach` PASS (12 checks).
+- Falsifications: none
+- Files: `scenes/BreachLevel.tscn` (+Depot2 +Depot3),
+  `loop/breach/test_breach_level.gd` (≥3-depot assertion + depot_y
+  report), PRE-MORTEMS, LEDGER, STATE
+- Finding: **3 depots at deterministic band-transition depths.**
+  Depot1 after band 1 (brick maze ahead), Depot2 after band 2 (steel
+  bunkers ahead), Depot3 after band 3 (open killbox ahead) — each with
+  a next-band hint. A full climb hits ≥3 depots. Next iter 23: read
+  CONSULT 002 (queryId 72ec60ef…) + follow its redirect — the honest
+  gaps named to it (hollow HEAT, restock-menu depots, no playtest)
+  point at C3 anchor 3 (HEAT armor-bypass) but CONSULT decides.
+
 ## iter 021 — AUDIT + CONSULT — re-score (26/50); CONSULT 002 fired
 
 - Date: 2026-05-19

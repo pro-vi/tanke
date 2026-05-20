@@ -17,3 +17,15 @@ position = Vector2(160, -248)
 depot_name = "depot_1"
 band_name_next = "brick_maze"
 next_band_hint = "brick maze ahead"
+
+[node name="Depot2" parent="." index="6" instance=ExtResource("4_depot")]
+position = Vector2(160, -888)
+depot_name = "depot_2"
+band_name_next = "bunker_zone"
+next_band_hint = "steel bunkers ahead"
+
+[node name="Depot3" parent="." index="7" instance=ExtResource("4_depot")]
+position = Vector2(160, -1688)
+depot_name = "depot_3"
+band_name_next = "open_killbox"
+next_band_hint = "open killbox ahead"

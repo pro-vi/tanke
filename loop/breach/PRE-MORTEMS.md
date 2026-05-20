@@ -24,6 +24,39 @@ Format:
 
 ---
 
+## iter 022 — BUILD — 3 depots at band transitions (C2 anchor 3)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- CONSULT 002 still running at iter-22 start (~7 min in). Per PROMPT,
+  no AWAIT for design — proceeding with a CONSULT-safe, substrate-clean
+  BUILD; iter 23 reads the consult.
+- DIAGNOSE: C2 (field depot) at 2/5. Anchor 3: "Depots placed at
+  deterministic intervals (e.g. every band); harness verifies a full
+  run hits ≥3 depots — code-cited". BreachLevel.tscn has 1 depot.
+- CONSULT constraints respected: 1 (depots are the safe-gate cadence —
+  one per band transition), 6 (depots = clean band-segmentation points)
+- CONSULT constraints risked: none — adding depots is CONSULT-endorsed
+  ("field depots at fixed/semi-fixed depth intervals")
+- Predicted failure modes:
+  - BreachLevel.tscn is an inherited scene — adding 2 more Depot child
+    nodes must use unique `index` values + node names. If indices
+    collide, the scene won't load.
+  - Depot world-y placement: depth N → y = 232 - N×16. Band exits at
+    depth 30/70/120 → y -248/-888/-1688. A depot placed beyond the
+    generated/reachable region would be a dead node — acceptable for
+    the structural cite (the harness counts depot children, not
+    in-run reachability of each).
+- Falsifiable claim: post-edit, BreachLevel.tscn loads clean,
+  `make check-breach-level` reports ≥3 depots, `make test` exit 0,
+  `tile_hash` = `23d6a2ec3bf2821f`, `make test-all` PASS, `make
+  test-breach` PASS.
+- Sentence test: n/a (depot placement)
+- Substrate touched: none — BreachLevel.tscn is an arc-4-owned scene;
+  test_breach_level.gd arc-4-owned.
+- Hash-anchor verification plan: post-edit; trivially preserved (the
+  base ProceduralLevel.tscn is untouched).
+
 ## iter 021 — AUDIT + CONSULT — re-score + fire CONSULT 002
 
 - Date: 2026-05-19
