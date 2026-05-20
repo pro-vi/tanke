@@ -34,7 +34,7 @@ spent, not by waves survived or buffs collected.
 |-------|--------|-----|
 | 0 | No build state exists (single fixed loadout) | — |
 | 1 | Loadout struct exists; player has ≥1 build-axis differentiator (shell-reserve mix, module slot, chassis tag) — code-cited | [STRUCTURE] |
-| 2 | ≥3 distinct builds expressible via current systems (e.g. AP-heavy / HE-heavy / mixed) — code-cited via Loadout.gd permutations | [STRUCTURE] |
+| 2 | ≥3 distinct builds expressible via current systems (AP-heavy / HE-heavy / HEAT-heavy / mixed) — code-cited via the Loadout reserve mix + `RunRecap.build_tag()` enumeration (iter-16 AUDIT: rephrased from "via Loadout.gd permutations" — the build-expression mechanism is shell-usage-derived, not Loadout-permutation-derived) | [STRUCTURE] |
 | 3 | Build identity surfaces in run recap (`RunRecap.gd` tags the run with a build name: "bunker cracker," "lane sniper," "rubble plow") — code-cited | [STRUCTURE] |
 | 4 | Playtest: user names their build unprompted at end of run ("I was a [X]") | [FEEL] |
 | 5 | Playtest: user names ≥2 distinct build identities across consecutive runs, cites the shift unprompted | [FEEL] [IDENTITY-PROTECTED] |
@@ -236,3 +236,4 @@ Evidence: LEDGER iter NNN cites results; BANDS.md checkbox flipped.
 | Iter | Change | Reason |
 |------|--------|--------|
 | 0 | Initial arc-4 rubric, 10 criteria, breach-economy framing | CONSULT §9 seven constraints + self-pre-mortem #1-7 anti-patterns. Three-tier ceiling reporting per R3. IDENTITY-PROTECTED tag per R2. |
+| 16 | C1 anchor 2 citation rephrased — "via Loadout.gd permutations" → "via the Loadout reserve mix + RunRecap.build_tag() enumeration" | Mismatch-AUDIT (L6): the build-identity expression mechanism is shell-usage-derived (RunRecap.build_tag enumerates lane sniper / rubble plow / bunker cracker / mixed breacher), not Loadout-permutation-derived. Score unchanged (C1=3); citation made honest. |

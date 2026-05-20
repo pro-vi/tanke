@@ -17,6 +17,65 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 016 — AUDIT — full re-score; C10 anchor 4; C1 anchor-2 wording fixed
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- Score: **20/50 absolute · 20/50 effective** (Δ +1 vs prior — C10 anchor 4 via Surrogate-AUDIT)
+- AUDIT trigger: PROMPT cadence (every 5 iters; 16 since baseline) +
+  Mismatch-AUDIT on C1 anchor 2.
+- Evidence: all 10 breach harnesses GREEN, all 5 arc-3 targets GREEN,
+  hash anchor `23d6a2ec3bf2821f` + `playable: true` confirmed.
+
+### Re-score (all 10 criteria, fresh evidence)
+
+| C# | Name | Score | AUDIT note |
+|----|------|-------|------------|
+| C1 | Breach build identity | 3 | anchors 1-3 hold. Anchor 2 citation rephrased (Mismatch-AUDIT — see below). Anchors 4-5 [FEEL]/[IDENTITY-PROTECTED] — playtest. |
+| C2 | Field depot system | 2 | anchors 1-2 hold (Depot + pause; 3-choice catalog + preview). Anchor 3 needs ≥3 depots/run — BreachLevel has 1. |
+| C3 | Ammo as logistics | 2 | anchors 1-2 hold (3 shells, distinct behavior). Anchor 3 needs HEAT-armor-bypass (only HE-terrain done) — held. |
+| C4 | Depth bands | 3 | anchors 1-3 hold (5 bands, reachability 9/10). Anchor 4 needs shell-mix-per-band harness — held. |
+| C5 | Enemy role vocabulary | 1 | anchor 1 holds (3 roles, band rosters). Anchor 2 needs per-role canonical answer documented — held. |
+| C6 | Death attribution | 2 | anchors 1-2 hold (depth/killer; shells/reserves). Anchor 3 needs band *dominant_pressure* in recap — RunRecap stores band NAME only; a 2-line fix away. Held — flagged for a future iter. |
+| C7 | Silhouette grammar | 0 | untouched — no generated assets yet. Only zero-criterion. |
+| C8 | Sentence test compliance | 1 | anchor 1 holds (3 depot upgrades pass). Anchor 2 needs 5+ upgrades — have 3. Held. |
+| C9 | Identity singularity | 2 | anchors 1-2 hold (new mechanics; build+depot+bands functional). Anchor 3+ [FEEL] — playtest. |
+| C10 | Substrate preservation | **3 → 4** | **anchor 4 NOW HIT** (Surrogate-AUDIT): "Same through iter 15+; ≥3 sanctioned substrate writes with default-on gating, all verified" — we are at iter 16 (15+ ✓), 9 substrate writes all gated + hash-anchor-verified ✓. Anchor 5 = arc-4 close — held. |
+
+**Total: 20/50.** Three-tier ceiling (R3): effective = absolute = 50
+(identity-protected anchors C1/5, C5/5, C7/5, C8/5, C9/5 are inside the
+cognitive band; no auto/cognitive split widens the gap). 20/50 effective.
+
+### AUDIT actions taken
+
+1. **C10 3→4** — Surrogate-AUDIT: crossing iter 15 satisfied anchor 4's
+   iter-count clause; the substrate-write + gating clauses were already
+   true. Legitimate lift, not score-creep — the evidence (9 verified
+   gated writes, hash anchor intact 16 iters) is real.
+2. **C1 anchor 2 rephrased** — Mismatch-AUDIT (L6): RUBRIC.md citation
+   "via Loadout.gd permutations" → "via the Loadout reserve mix +
+   RunRecap.build_tag() enumeration". Score unchanged (C1=3); the
+   anchor text now names where the capability actually lives. Logged
+   in RUBRIC.md revision table (iter 16).
+3. Identity-protected anchors (C1/5, C5/5, C7/5, C8/5, C9/5) NOT
+   inspected for rephrase (R2 — gaming-prevention guardrails).
+
+- Constraints respected: all 7 (process iter)
+- Hash anchor: `23d6a2ec3bf2821f` confirmed (no code touched)
+- Falsifications: none. Pre-mortem prediction (C10 3→4, all others
+  hold, total 20/50) — CONFIRMED exactly.
+- Files: `loop/breach/RUBRIC.md` (C1 anchor 2 rephrase + revision row),
+  `loop/breach/PRE-MORTEMS.md`, `loop/breach/LEDGER.md`,
+  `loop/breach/STATE.md`
+- Finding: **Score is honest at 20/50.** 9/10 criteria non-zero; C7
+  (silhouette grammar) the only untouched axis. The cheapest remaining
+  structural lifts: C6 anchor 3 (2-line RunRecap fix — store band
+  dominant_pressure), C8 anchor 2 (need 5+ depot upgrades — have 3),
+  C2 anchor 3 (≥3 depots per run). Next iter 17: BUILD — C6 anchor 3
+  (RunRecap stores killing band's dominant_pressure) bundled with C2
+  anchor 3 groundwork OR C7 opening (gen_tile.py asset work). Diagnose
+  weakest axis at iter start.
+
 ## iter 015 — BUILD — band-aware enemy roster (C5 anchor 1)
 
 - Date: 2026-05-19

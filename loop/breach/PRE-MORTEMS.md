@@ -24,6 +24,31 @@ Format:
 
 ---
 
+## iter 016 — AUDIT — re-score all 10 criteria + resolve C1-anchor-2 wording
+
+- Date: 2026-05-19
+- Tag: [STRUCTURE]
+- AUDIT trigger: PROMPT cadence "every 5 iters" — 16 iters since the
+  iter-0 baseline, no AUDIT yet. Also a Mismatch-AUDIT trigger (L6):
+  C1 anchor 2's "via Loadout.gd permutations" wording doesn't match
+  the actual mechanism (RunRecap.build_tag).
+- CONSULT constraints respected: all (process iter, no design surface)
+- CONSULT constraints risked: none
+- Predicted finding: the rolling score (19/50) is mostly honest, but
+  C10 anchor 4 ("Same through iter 15+; ≥3 sanctioned substrate writes
+  — all verified") became satisfiable once we crossed iter 15 — a
+  legitimate Surrogate-AUDIT lift. Expect C10 3→4, total → 20/50.
+- Falsifiable claim: the AUDIT re-score, done criterion-by-criterion
+  against the 10 green harnesses + LEDGER evidence, changes at most
+  C10 (3→4); all other criteria hold their iter-15 scores. RUBRIC.md
+  C1 anchor 2 is rephrased (citation clause only — score unchanged).
+  Identity-protected anchors (C1/5, C5/5, C7/5, C8/5, C9/5) are NOT
+  touched (R2).
+- Sentence test: n/a
+- Substrate touched: none. `loop/breach/RUBRIC.md` revision (anchor
+  rephrase + revision-log row).
+- Hash-anchor verification plan: n/a (no code edit).
+
 ## iter 015 — BUILD — band-aware enemy roster (C5 anchor 1)
 
 - Date: 2026-05-19
