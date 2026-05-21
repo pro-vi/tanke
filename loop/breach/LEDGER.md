@@ -17,6 +17,39 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 059 — BUILD — Round 8d: longer shields / defensive pickups
+
+- Date: 2026-05-21
+- Tag: [STRUCTURE]
+- Score: **39/65** (Δ 0 — per the iter-055 blueprint, C14 lands at
+  round close.)
+- Round 8d of the iter-055 blueprint — the last build piece. Playtest-3:
+  "make shields longer or something."
+- The change (scripts/PlayerTank.gd, breach-mode only):
+  - apply_shield: in breach mode (loadout != null) the shield lasts at
+    least BREACH_SHIELD_DURATION (6s) — 3× the old 2s pickup shield.
+    arc-2/3 keeps the passed duration.
+  - A "SHIELD" HUD indicator (breach HUD) — visible only while the
+    shield is active (toggled in _physics_process next to the blue
+    sprite-tint cue).
+  - The shield already drops from Light enemies (Enemy.gd, 10%) — 8d
+    does NOT touch Enemy.gd; it lengthens what apply_shield grants, so
+    the existing drop is simply longer.
+- Hash anchor: `23d6a2ec3bf2821f` verified — both changes gate on
+  loadout != null; an arc-2/3 PlayerTank's apply_shield + HUD are
+  bit-identical. `make test-all` 5/5. `make test-breach` 28/28.
+- Harness: new test_breach_shield.gd + check-breach-shield (test-breach
+  27 → 28). A breach apply_shield(2.0) → 6s + a HUD ShieldLabel shows
+  while shielded; an arc-2/3 apply_shield(2.0) stays 2s + no
+  ShieldLabel.
+- Falsifications: none.
+- Substrate writes this arc: 32 → 33 (PlayerTank.gd ×17).
+- Files: scripts/PlayerTank.gd, test_breach_shield.gd, Makefile,
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **Round 8's build phase (8a-8d) is complete — XP/levels,
+  per-phase picks, ammo drops, longer shields all shipped.** iter 60 =
+  8-close: CONSULT + QUEUE.
+
 ## iter 058 — BUILD — Round 8c: enemy ammo drops
 
 - Date: 2026-05-21

@@ -107,6 +107,9 @@ var _spawner: Node = null
 var _xp_bar_bg: ColorRect = null
 var _xp_bar_fg: ColorRect = null
 var _level_label: Label = null
+# arc-4 iter 59 (Round 8d): shields last longer in breach mode.
+const BREACH_SHIELD_DURATION: float = 6.0
+var _shield_label: Label = null
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
@@ -227,6 +230,9 @@ func _physics_process(delta: float) -> void:
 			sprite.self_modulate = Color(0.7, 0.85, 1.0, 1.0)
 		else:
 			sprite.self_modulate = Color(1, 1, 1, 1)
+	# arc-4 iter 59 (Round 8d): the shield HUD indicator tracks the timer.
+	if _shield_label != null:
+		_shield_label.visible = _shield_timer > 0.0
 
 	if _dead:
 		_handle_restart_input()
@@ -401,7 +407,12 @@ func heal(amount: int) -> void:
 func apply_shield(duration: float) -> void:
 	if _dead:
 		return
-	_shield_timer = max(_shield_timer, duration)  # take the longer of active/new
+	# arc-4 iter 59 (Round 8d): in breach mode the shield lasts longer —
+	# playtest-3 "make shields longer." arc-2/3 keeps the passed value.
+	var effective: float = duration
+	if loadout != null:
+		effective = maxf(duration, BREACH_SHIELD_DURATION)
+	_shield_timer = max(_shield_timer, effective)  # take the longer of active/new
 	_show_pickup_toast("SHIELD", Color(0.9, 0.9, 1.0, 1.0))
 
 
@@ -771,6 +782,18 @@ func _setup_hud() -> void:
 		_xp_bar_fg.size = Vector2(0, 2)
 		_xp_bar_fg.color = Color(1.0, 0.85, 0.3, 1.0)
 		canvas.add_child(_xp_bar_fg)
+		# arc-4 iter 59 (Round 8d): shield indicator — visible only while
+		# a shield is active (toggled in _physics_process).
+		_shield_label = Label.new()
+		_shield_label.name = "ShieldLabel"
+		_shield_label.position = Vector2(44, 24)
+		_shield_label.text = "SHIELD"
+		_shield_label.add_theme_color_override("font_color", Color(0.7, 0.85, 1.0, 1.0))
+		_shield_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		_shield_label.add_theme_constant_override("outline_size", 2)
+		_shield_label.add_theme_font_size_override("font_size", 8)
+		_shield_label.visible = false
+		canvas.add_child(_shield_label)
 	add_child(canvas)
 	hp_changed.connect(_on_hp_changed_hud)
 

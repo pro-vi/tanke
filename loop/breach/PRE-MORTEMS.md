@@ -24,6 +24,39 @@ Format:
 
 ---
 
+## iter 059 — BUILD — Round 8d: longer shields / defensive pickups
+
+- Date: 2026-05-21
+- Tag: [STRUCTURE]
+- Round 8d of the iter-055 blueprint — the last build piece. Playtest-3:
+  "make shields longer or something."
+- The change (scripts/PlayerTank.gd, breach-mode only):
+  - apply_shield: in breach mode (loadout != null) the shield lasts at
+    least BREACH_SHIELD_DURATION (6s) — 3× the old 2s pickup shield.
+    arc-2/3 keeps the passed duration.
+  - A "SHIELD" HUD indicator (breach HUD) — visible only while the
+    shield is active (toggled in _physics_process next to the existing
+    blue-tint cue).
+- The shield already drops from Light enemies (Enemy._spawn_shield_
+  pickup, 10%) — 8d does NOT touch Enemy.gd (unsanctioned); it
+  lengthens what apply_shield grants, so the existing drop is longer.
+- CONSULT constraints: none risked — a defensive-pickup tuning + a HUD
+  cue.
+- Predicted failure modes:
+  - Hash anchor: both changes gate on loadout != null; an arc-2/3
+    PlayerTank's apply_shield + HUD are bit-identical.
+  - apply_shield's only caller passes 2.0; maxf(2.0, 6.0) = 6.0 in
+    breach mode, = 2.0 (the passed value) in arc-2/3.
+- Falsifiable claim: post-edit — test_breach_shield shows a breach
+  PlayerTank's apply_shield(2.0) sets _shield_timer to 6s + a HUD
+  ShieldLabel shows while shielded; an arc-2/3 PlayerTank's
+  apply_shield(2.0) stays 2s + builds no ShieldLabel. Hash anchor
+  23d6a2ec3bf2821f preserved; test-all 5/5; test-breach 28/28.
+- Sentence test: n/a (a defensive pickup tuning).
+- Substrate touched: PlayerTank.gd (apply_shield + HUD — sanctioned,
+  gated on loadout != null).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 058 — BUILD — Round 8c: enemy ammo drops
 
 - Date: 2026-05-21
