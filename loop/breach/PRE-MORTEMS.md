@@ -24,6 +24,29 @@ Format:
 
 ---
 
+## iter 061 — SWEEP — post-Round-8 verification grid
+
+- Date: 2026-05-21
+- Tag: [STRUCTURE-DEFERRED]
+- Round 8 closed at iter 60; the user has not yet playtested. Per the
+  iter-60 next_action, iter 61 is a non-speculative iter — a SWEEP over
+  the post-Round-8 build, NOT a speculative Round 9 (CONSULT 006).
+- The grid: (a) reachability sweep — test_breach_harness --deep across
+  12 seeds (42-53), all 5 bands; (b) test-breach 28/28; (c) test-all
+  5/5; (d) hash anchor seed 42.
+- CONSULT constraints respected: 5 (every band reachability-checked).
+  None risked — verification only.
+- Predicted failure: Round 8 touched PlayerTank ×2 (XP, shield) +
+  Spawner ×1 (ammo drops) — none touch level geometry — so
+  reachability should be unchanged from the iter-54 12/12.
+- Falsifiable claim: post-sweep — all 5 bands reachable on >=80% of
+  the 12 seeds; test-breach 28/28; test-all 5/5; hash anchor
+  23d6a2ec3bf2821f.
+- Sentence test: n/a (verification iter).
+- Substrate touched: none (SWEEP).
+- Hash-anchor verification plan: seed 42 procedural baseline, part of
+  the grid.
+
 ## iter 060 — CONSULT/QUEUE — Round 8-close
 
 - Date: 2026-05-21

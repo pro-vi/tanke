@@ -2,26 +2,26 @@
 
 ```yaml
 phase: running
-iter: 60
+iter: 61
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
 hash_anchor_at_iter_59: 23d6a2ec3bf2821f  # bit-identical through 33 substrate writes
 substrate_writes_this_arc: 33  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×17 + Level.gd + Spawner.gd ×3
 current_round: 8-closed
-current_round_phase: Round 8 CLOSED at iter 60 (CONSULT 006 + RUBRIC +C14 + REVIEW-QUEUE #11); at the playtest-gated ceiling
+current_round_phase: Round 8 CLOSED; iter-61 SWEEP verified the build coherent (12/12 reachability). At the playtest-gated ceiling — idle heartbeat until REVIEW-QUEUE #11 playtest
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
 falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved]
-reachability_status: all 5 bands verified — 12/12-seed sweep (100%, floor ≥80%) — refreshed iter 54 post-Round-7
+reachability_status: all 5 bands verified — 12/12-seed sweep (100%, floor ≥80%) — refreshed iter 61 post-Round-8
 audit_candidates: []
 last_audit: iter 26
 last_consult: iter 60  # CONSULT 006 — written self-pre-mortem, Round 8 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, user redirected to XP/level-ups + ammo drops → Round 8]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: RUNNING — Round 8 closed at iter 60. The iter-55 playtest-3 override is delivered in full (XP/levels + per-phase picks + ammo drops + longer shields); RUBRIC +C14 "in-run progression", 42/70. CONSULT 006: the overhaul is harness-verified to EXIST but its coherence ("one game, not two bolted-on systems") is entirely playtest-gated. REVIEW-QUEUE #11 requests the Round-8 playtest. The loop is at the autonomous ceiling — per CONSULT 006 it must NOT pile a speculative Round 9 ahead of the playtest. Non-stop per PROMPT until the user writes playtest / halt / stop.
-next_action: iter 61 — re-assess at the Round-8 playtest gate. If the user has playtested (REVIEW-QUEUE #11), integrate the findings. If not: the build is at the autonomous ceiling — run a post-Round-8 SWEEP (reachability sweep × test-breach × test-all × hash — verify the build coherent after Round 8's substrate writes), then idle at a long heartbeat. Do NOT open a speculative Round 9 ahead of the playtest (CONSULT 006 — do not pile systems before the user confirms Round 8 cohered).
+loop_state: RUNNING (idle heartbeat) — Round 8 closed at iter 60; iter-61 SWEEP verified the post-Round-8 build coherent (12/12 reachability, 28 breach + 5 arc-3 harnesses, hash anchor intact). The loop is at the playtest-gated autonomous ceiling (CONSULT 006) — Round 8's coherence is entirely playtest-gated, and CONSULT 006 forbids piling a speculative Round 9. With no honest non-speculative work left, the loop slows to a long idle heartbeat (1800s) — still non-stop, resuming on the user's Round-8 playtest or a manual /loop. REVIEW-QUEUE #11 requests the playtest.
+next_action: iter 62 — re-assess at the Round-8 playtest gate. If the user has playtested (REVIEW-QUEUE #11), integrate the findings + plan the next round. If not: the build is verified coherent (iter-61 SWEEP) and there is no non-speculative autonomous work left — re-confirm green, re-surface the #11 playtest ask, hold the idle heartbeat. Do NOT open a speculative Round 9 ahead of the playtest (CONSULT 006).
 score: 42/70 absolute · 42/70 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -121,27 +121,30 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-21 — **iter 60 (CONSULT/QUEUE).** Round 8-close: RUBRIC
-  extended with C14 "in-run progression" (14 criteria, 70-pt ceiling)
-  — C14=3 scores Round 8's harness-verified 8a-8d suite (XP/levels +
-  per-phase picks + ammo drops). CONSULT 006 (written self-pre-mortem):
-  Round 8 delivered the brief in full but its coherence is
-  playtest-gated — Q3's sharp finding is "generic-roguelite furniture
-  vs the breach economy staying meaningful." REVIEW-QUEUE #11 = the
-  Round-8 playtest request. No code touched. Δ +3 (rubric catch-up).
-  **42/70. The loop is at the playtest-gated ceiling.**
+- 2026-05-21 — **iter 61 (SWEEP).** Post-Round-8 verification grid,
+  all green: reachability 12/12 seeds × 5 bands (100%); test-breach
+  28/28; test-all 5/5; hash anchor 23d6a2ec3bf2821f. The post-Round-8
+  build is verified coherent. No code touched. Δ 0. 42/70. With the
+  build verified and no honest non-speculative work left, the loop
+  slows to a 1800s idle heartbeat — still non-stop, awaiting the
+  REVIEW-QUEUE #11 Round-8 playtest.
 
 ## Next action
 
-**Iter 61 — re-assess at the Round-8 playtest gate.**
-Round 8 is closed (CONSULT 006; RUBRIC +C14, 42/70; REVIEW-QUEUE #11
-requests a playtest). If the user has playtested, integrate the
-findings + plan the next round. If not: run a post-Round-8 SWEEP
-(reachability sweep × test-breach × test-all × hash — verify the
-build coherent after Round 8's substrate writes), then idle at a long
-heartbeat. Do NOT open a speculative Round 9 ahead of the playtest
-(CONSULT 006 — do not pile systems before the user confirms Round 8
-cohered).
+**Iter 62 — re-assess at the Round-8 playtest gate.**
+iter-61 SWEEP verified the post-Round-8 build coherent (12/12
+reachability, 28 breach + 5 arc-3 harnesses, hash anchor). The loop
+is at the autonomous ceiling — 42/70, all remaining value [FEEL]-
+gated. If the user has playtested (REVIEW-QUEUE #11), integrate the
+findings + plan the next round. If not: re-confirm green, re-surface
+the #11 playtest ask, hold the idle heartbeat. Do NOT open a
+speculative Round 9 ahead of the playtest (CONSULT 006).
+
+The loop runs non-stop until the user writes `playtest` / `halt` /
+`stop`, or a correctness violation fires (hash anchor break, test-all
+regression, unsanctioned substrate write, unfixed band reachability).
+At the playtest-gated ceiling it idles at a long heartbeat rather
+than spin Δ-0 iters — it has not halted.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all

@@ -17,6 +17,35 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 061 — SWEEP — post-Round-8 verification grid
+
+- Date: 2026-05-21
+- Tag: [STRUCTURE-DEFERRED]
+- Score: **42/70** (Δ 0 — a SWEEP verifies; it does not lift the
+  rubric.)
+- Round 8 closed at iter 60; the user has not yet playtested. Per the
+  iter-60 next_action, iter 61 is a non-speculative SWEEP over the
+  post-Round-8 build.
+- The verification grid, all green:
+  - Reachability: test_breach_harness --deep across 12 seeds (42-53)
+    → 12/12 seeds, all 5 bands reachable (100%, unchanged from the
+    iter-54 sweep).
+  - test-breach: 28/28 green.
+  - test-all: 5/5 green.
+  - Hash anchor: 23d6a2ec3bf2821f, playable: true (seed 42).
+- The iter-61 PRE-MORTEM claim held: Round 8 (PlayerTank ×2 + Spawner
+  ×1 — none touch level geometry) left reachability + the procedural
+  baseline structurally unchanged; the build is coherent.
+- Falsifications: none.
+- Cadence note: the loop is at the playtest-gated autonomous ceiling
+  (CONSULT 006). With the build verified and no honest non-speculative
+  work left, the loop slows to a long idle heartbeat (1800s) — still
+  non-stop, resuming on the user's Round-8 playtest or a manual /loop.
+- Files: PRE-MORTEMS.md, LEDGER.md, STATE.md (no code touched).
+- Finding: **the post-Round-8 build is verified coherent** — 12/12
+  reachability, 28 breach + 5 arc-3 harnesses, hash anchor intact.
+  REVIEW-QUEUE #11's playtest is the gate.
+
 ## iter 060 — CONSULT/QUEUE — Round 8-close
 
 - Date: 2026-05-21
