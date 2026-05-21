@@ -181,3 +181,33 @@ Format per item:
     exist, but they do not COMMUNICATE. Round 7 must make legibility
     LAND, not just exist; the next playtest re-checks all five.
 
+#9 — ★ PLAYTEST REQUEST — Round 7 complete — round 7 — iter 53 — open
+  Finding: Round 7 (iters 48-52) shipped a fix for all 5 of
+    playtest-2's findings — 7a shell-economy retune (starter shells
+    5→15, caps 12/8/10), 7b APCR penetrate-steel redesign, 7c
+    persistent run-route strip, 7d 4-rung meta unlock ladder, 7e HE
+    explosion visual. 39/65, 25 breach harnesses + 5 arc-3 green, hash
+    anchor 23d6a2ec3bf2821f preserved through 30 substrate writes.
+  BUT: 4 of the 5 fixes are [FEEL]/visual/legibility-gated — verified
+    to EXIST, not to LAND. The two legibility fixes (7c, 7d) are F003
+    recurrences — the loop has now answered "the player doesn't
+    understand X" with "draw X on screen" three times (CONSULT 005 Q3).
+  The ask: play `scenes/BreachLevel.tscn` (or `make run` → breach).
+    Re-check the 5 findings — did Round 7 fix them?
+      1. Shells (15 starting; caps 12/8/10) — a managed handful now,
+         not "two shots and done"?
+      2. The run-route strip (bottom of screen) — does it make the
+         band shuffle make sense? Do runs feel different?
+      3. The unlock ladder (4 cells in the run-start codex) — is
+         "what can be unlocked" finally clear?
+      4. APCR vs steel — does drilling a 1-wide tunnel through a steel
+         wall feel right (1 block/hit, penetrates, no radius)?
+      5. HE detonation — does the explosion read?
+  Affordance: a playtest closes Round 7 and unlocks the [FEEL] tier —
+    or tells the loop precisely which fixes missed.
+  Risk: CONSULT 005 Q3 — legibility theater. If findings 2-3 recur a
+    third time, the problem is not communication; it is that
+    band-shuffle / meta-unlocks may not MATTER enough to be worth
+    reading. The fix then is depth, not another HUD surface. To
+    trigger: write `playtest`.
+

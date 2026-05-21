@@ -24,6 +24,33 @@ Format:
 
 ---
 
+## iter 053 — CONSULT/QUEUE — Round 7-close
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE-DEFERRED]
+- Round 7-close — the CONSULT + QUEUE phase of the iter-047 blueprint.
+  Round 7's build phase (7a-7e, iters 48-52) shipped a fix for all 5
+  of playtest-2's findings.
+- This iter: CONSULT 005 (written self-pre-mortem — the established
+  arc-4 mode; cf. CONSULT 003/004) reviewing whether Round 7's 5
+  builds actually address the 5 findings, + the 3 permanent questions;
+  then REVIEW-QUEUE #9 (the Round-7 playtest request).
+- CONSULT constraints respected: n/a (a process iter — no mechanic
+  built, no constraint touched). None risked.
+- Predicted failure: the CONSULT's honest finding is that 4 of 5
+  Round-7 fixes are playtest-gated and F003 is live — so this iter
+  produces no rubric lift and recommends a playtest. The risk is the
+  loop treating "Round 7 shipped" as "Round 7 worked" without the
+  playtest. The CONSULT exists to name that.
+- Falsifiable claim: post-iter — creative-consults.md has CONSULT 005;
+  REVIEW-QUEUE.md has #9 (playtest request). No code touched → hash
+  anchor + harnesses unchanged from iter 52 (23d6a2ec3bf2821f;
+  test-all 5/5; test-breach 25/25). Score Δ 0 (39/65 — a process
+  iter).
+- Sentence test: n/a (no upgrade).
+- Substrate touched: none (docs only).
+- Hash-anchor verification plan: n/a — no code touched this iter.
+
 ## iter 052 — BUILD — Round 7e: HE explosion visual
 
 - Date: 2026-05-20

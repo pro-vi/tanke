@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 52
+iter: 53
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
 hash_anchor_at_iter_52: 23d6a2ec3bf2821f  # bit-identical through 30 substrate writes
 substrate_writes_this_arc: 30  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×15 + Level.gd + Spawner.gd ×2
-current_round: 7-open
-current_round_phase: CONSULT/QUEUE — Round 7-close (build phase 7a-7e done); blueprint iter-047-round7-architect.md
+current_round: 7-closed
+current_round_phase: Round 7 CLOSED at iter 53 (CONSULT 005 + REVIEW-QUEUE #9); at the autonomous ceiling — playtest gate due
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -17,11 +17,11 @@ falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved]
 reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%)
 audit_candidates: []
 last_audit: iter 26
-last_consult: iter 46  # CONSULT 004 — written self-pre-mortem, Round 6 close
+last_consult: iter 53  # CONSULT 005 — written self-pre-mortem, Round 7 close
 playtest_log: [iter 33 — 2026-05-20 — verdict: structurally complete but illegible; F003 logged]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: RUNNING (resumed iter 47). The user playtested after Round 6 (the iter-46 gate) and gave 5 findings; the loop integrated them, opened Round 7 (the fix-round). The non-stop loop continues per PROMPT until the user writes playtest / halt / stop.
-next_action: iter 53 — Round 7-close — CONSULT + QUEUE. Read iter-047-round7-architect.md §7-close. Write a CONSULT (creative-consults.md) — a self-pre-mortem reviewing whether Round 7's 5 builds (7a shell economy, 7b APCR penetrate, 7c run-route, 7d meta ladder, 7e HE explosion) actually address playtest-2's 5 findings; flag the F003 risk (the legibility surfaces 7c/7d are verified to EXIST, not to LAND). Update REVIEW-QUEUE.md. Round 7's build phase (7a-7e) is done — the next playtest gate is due.
+loop_state: RUNNING — Round 7 closed at iter 53. Rounds 5-6-7 (iters 34-52) built every fix the two user playtests asked for; Round 7's 5 builds (7a-7e) address playtest-2's 5 findings. CONSULT 005: the loop is at the autonomous ceiling — 4 of 5 Round-7 fixes are [FEEL]/visual/legibility-gated. REVIEW-QUEUE #9 requests a Round-7 playtest. The non-stop loop continues per PROMPT until the user writes playtest / halt / stop.
+next_action: iter 54 — DIAGNOSE post-Round-7. Round 7 is closed (CONSULT 005, REVIEW-QUEUE #9 — playtest requested). The loop is at the autonomous ceiling: 39/65, the remaining ~26 points are [FEEL]/playtest-gated, and CONSULT 005 Q3 flags that piling speculative new scope ahead of the playtest is anti-pattern ("legibility theater"). Per the PROMPT the loop is non-stop. iter 54: if the user has playtested, integrate it + open Round 8; else diagnose the highest-value NON-speculative iter — a SWEEP (re-verify bands × reachability × shells post-Round-7) or a BUILD-QUALITY craft iter — NOT a speculative new mechanic round.
 score: 39/65 absolute · 39/65 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -29,7 +29,7 @@ round6_blueprint: loop/breach/iter-038-round6-architect.md
 round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route} + check-silhouette-gate (25 in test-breach aggregate)
-review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch]  # #3, #7 CLOSED — playtests delivered
+review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #9 PLAYTEST REQUEST — Round 7 complete]  # #3, #7 CLOSED — playtests delivered
 ```
 
 ---
@@ -108,25 +108,32 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-20 — **iter 52 (BUILD).** Round 7e — HE explosion visual:
-  HE detonation now spawns a two-layer ColorRect blast (warm orange
-  outer bloom sized to the blast radius + a bright pale core) that
-  expands and fades over ~0.28s — the `_spawn_impact_spark` pattern
-  scaled up; algorithmic, no MLX-SD. Playtest finding 5. Hash anchor
-  preserved (HE branch — AP baseline never reached); test-all 5/5,
-  test-breach 25/25. Δ 0. 39/65. **Round 7 build phase (7a-7e) done.**
+- 2026-05-20 — **iter 53 (CONSULT/QUEUE).** Round 7-close: CONSULT 005
+  (written self-pre-mortem) reviewed Round 7's 5 builds finding-by-
+  finding — all 5 of playtest-2's findings have shipped fixes, 4 of 5
+  [FEEL]/visual/legibility-gated. Q3's sharp finding: "legibility
+  theater" — the loop has answered "player doesn't understand X" with
+  "draw X on screen" three times; if findings 2-3 recur, the problem
+  is depth, not communication. REVIEW-QUEUE #9 = the Round-7 playtest
+  request. No code touched. Δ 0. 39/65. **The loop is at the
+  autonomous ceiling — a playtest is the highest-value next action.**
 
 ## Next action
 
-**Iter 53 — Round 7-close — CONSULT + QUEUE.**
-Read `loop/breach/iter-047-round7-architect.md` §7-close. Write a
-CONSULT (`creative-consults.md`) — a self-pre-mortem reviewing whether
-Round 7's 5 builds (7a shell economy, 7b APCR penetrate, 7c run-route,
-7d meta ladder, 7e HE explosion) actually address playtest-2's 5
-findings; flag the F003 risk (the legibility surfaces 7c/7d are
-harness-verified to EXIST, not to LAND). Update `REVIEW-QUEUE.md`.
-Round 7's build phase (7a-7e) is complete — the next playtest gate is
-due.
+**Iter 54 — DIAGNOSE post-Round-7.**
+Round 7 is closed (CONSULT 005; REVIEW-QUEUE #9 requests a playtest).
+The loop is at the autonomous ceiling — 39/65, the remaining ~26
+points are [FEEL]/playtest-gated, and CONSULT 005 Q3 flags that
+piling speculative new scope ahead of the playtest is anti-pattern
+("legibility theater"). Per the PROMPT the loop is non-stop. iter 54:
+if the user has playtested, integrate it + open Round 8; else
+diagnose the highest-value NON-speculative iter — a SWEEP (re-verify
+bands × reachability × shells post-Round-7) or a BUILD-QUALITY craft
+iter — NOT a speculative new mechanic round.
+
+The loop runs non-stop until the user writes `playtest` / `halt` /
+`stop`, or a correctness violation fires (hash anchor break, test-all
+regression, unsanctioned substrate write, unfixed band reachability).
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all

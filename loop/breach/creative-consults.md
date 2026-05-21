@@ -20,6 +20,96 @@ Format:
 
 ---
 
+## Consult 005 — iter 53 — written self-pre-mortem — Round 7 close
+
+- Date: 2026-05-20
+- Tab status: n/a — written self-pre-mortem, in place of an external
+  /agentify call. Rationale: same as CONSULT 004 — iter 53 closes
+  Round 7 and surfaces the next USER PLAYTEST (REVIEW-QUEUE #9).
+  Round 7 was itself a user-directed fix-round; the user's hands-on
+  verdict is THE creative check and it is the very next thing.
+- Three permanent questions answered? YES (+ a finding-by-finding
+  Round-7 review).
+- Key reframe: Round 7 shipped a fix for all 5 of playtest-2's
+  findings, but 4 of the 5 are [FEEL]/visual/legibility-gated —
+  verified to EXIST, not to LAND. F003 is the live risk. The loop is
+  back at the autonomous ceiling; the playtest is the gate.
+- Adopted into: REVIEW-QUEUE #9; the iter-53 Round-7 close.
+
+### Round 7 finding-by-finding review
+
+- **Finding 1 "shells too few" → 7a (iter 48).** Starter reserves
+  5 → 15, caps doubled. The most solidly fixed — a pure quantity
+  change; 15 finite shells across a 5-band climb is defensibly "a
+  managed handful." Residual: the depot's small refills (+2 HE) now
+  read modest against the bigger caps. Confidence: HIGH.
+- **Finding 4 "APCR should penetrate steel" → 7b (iter 49).** A
+  user-SPECIFIED redesign — the user described the exact verb. 7b
+  implements precisely that. Confidence the build matches intent:
+  HIGH; the FEEL of drilling a steel tunnel is playtest-gated.
+- **Finding 2 "band shuffle illegible" → 7c (iter 50).** A persistent
+  route strip + a codex line. F003 RISK — a legibility surface,
+  verified to exist not to land. Mitigant: unlike the iter-42 banner,
+  the strip is PERSISTENT and across runs the order visibly differs.
+  Confidence: MEDIUM.
+- **Finding 3 "what can be unlocked?" → 7d (iter 51).** The unlock
+  ladder went 2 → 4 rungs + a 4-cell codex display. F003 RISK is
+  SHARPEST here — the iter-45 meta line failed in exactly this way
+  once already (it IS finding 3). "Clearer than the thing that failed"
+  is not "confirmed to land." Confidence: MEDIUM-LOW; the finding most
+  likely to recur.
+- **Finding 5 "HE needs an explosion" → 7e (iter 52).** A two-layer
+  blast bloom. The harness confirms the NODES spawn; the LOOK is
+  unverifiable headlessly. Confidence it exists: HIGH; that it looks
+  right: playtest-only.
+
+### Q1 — distinct from BC, or BC with shell colours?
+
+No change from CONSULT 004: structurally distinct; felt-distinctness
+is the playtest's call. Round 7 retuned the economy's QUANTITY (7a)
+and one shell's verb (7b) — it did not touch the core economy's
+DEPTH. CONSULT 003/004's question — "does a player ever AGONISE over
+a shell?" — is still unanswered.
+
+### Q2 — depots earned beats, or menu-grind?
+
+7d re-tiered the pool (5 core + 4 depth-gated). With 7a's bigger caps
+the small refills are now modest top-ups and FULL_RESUPPLY is the
+heavy lever. Structurally richer than ever; "earned beat vs menu" is
+still playtest-gated.
+
+### Q3 — what's seductive-but-hollow about Round 7?
+
+The sharp finding. Round 7 added four new HUD/legibility surfaces —
+the route strip, the unlock-ladder cells, two codex lines, the HE
+blast. The risk: **legibility theater.** The loop has now answered
+"the player doesn't understand X" with "draw X on screen" three times
+(iters 42, 45, then 50/51). If findings 2-3 recur a third time, the
+real problem is not communication — it is that band-shuffle and
+meta-unlocks may not MATTER enough for the player to care to read
+them. A mechanic the player ignores is not illegible; it is
+inconsequential. That is the omission that would look stupid in 6
+months: HUD-painting around features that don't pull their weight.
+
+### Q4 — did Round 7 fix the 5 findings?
+
+Structurally yes — all 5 have shipped builds, harness-verified. Felt,
+unknown for 4 of 5. Round 7 was a user-directed fix-round; the same
+user must now confirm the fixes.
+
+### Verdict
+
+The loop is at the autonomous ceiling — the same place as CONSULT
+004, with Round 7's fixes layered on. 39/65; the remaining ~26 points
+are the [FEEL] tier, playtest-locked by design. The highest-value
+next action is unambiguous: a playtest of Round 7 (REVIEW-QUEUE #9).
+Per the PROMPT the loop is non-stop and does not halt for playtests;
+iter 53 schedules the next wakeup. But there is no structural work
+left that is not either playtest-gated or speculative new scope — and
+the anti-patterns explicitly forbid piling speculative structure
+ahead of a playtest. The honest recommendation: playtest Round 7
+before the loop builds further.
+
 ## Consult 004 — iter 46 — written self-pre-mortem — Round 6 close
 
 - Date: 2026-05-20

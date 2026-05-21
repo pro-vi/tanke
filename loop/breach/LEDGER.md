@@ -17,6 +17,33 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 053 — CONSULT/QUEUE — Round 7-close
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE-DEFERRED]
+- Score: **39/65** (Δ 0 — a process iter: CONSULT + QUEUE, no mechanic
+  built.)
+- Round 7-close. Round 7's build phase (7a-7e, iters 48-52) shipped a
+  fix for all 5 of playtest-2's findings; this iter closes the round.
+- CONSULT 005 (written self-pre-mortem — the arc-4 mode set by CONSULT
+  003/004) → creative-consults.md. Verdict: Round 7 shipped all 5
+  fixes, harness-verified to EXIST; 4 of 5 are [FEEL]/visual/
+  legibility-gated, verified-to-exist not verified-to-land. The sharp
+  finding (Q3): legibility theater — the loop has now answered "the
+  player doesn't understand X" with "draw X on screen" three times
+  (iters 42, 45, 50/51); if findings 2-3 recur, the problem is not
+  communication but that band-shuffle / meta-unlocks may not MATTER
+  enough to be worth reading. The loop is at the autonomous ceiling.
+- REVIEW-QUEUE #9 — the Round-7 playtest request (★, open).
+- Hash anchor: n/a — no code touched (docs only). The iter-52 state
+  stands: 23d6a2ec3bf2821f, test-all 5/5, test-breach 25/25.
+- Falsifications: none. F003 noted as the live risk for findings 2-3.
+- Files: creative-consults.md, REVIEW-QUEUE.md, PRE-MORTEMS.md,
+  LEDGER.md, STATE.md
+- Finding: **Round 7 is closed; all 5 playtest-2 findings have shipped
+  fixes. The highest-value next action is a playtest.** The loop is
+  non-stop (PROMPT) — but at the honest autonomous ceiling.
+
 ## iter 052 — BUILD — Round 7e: HE explosion visual
 
 - Date: 2026-05-20
