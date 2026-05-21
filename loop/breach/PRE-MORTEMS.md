@@ -24,6 +24,39 @@ Format:
 
 ---
 
+## iter 050 — BUILD — Round 7c: run-route legibility
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 7c, piece 3 of the iter-047 blueprint. Fixes playtest finding 2
+  — "no idea what band shuffle means."
+- The change: surface the run's shuffled band sequence.
+  - A persistent HUD route strip (PlayerTank breach-mode HUD): one cell
+    per depth band, named in THIS run's order, the current band's cell
+    highlighted, passed bands tinted 'cleared'. Built deferred (the
+    level's _init_breach_mode shuffles the order in the level's _ready,
+    after this child's _ready). Updated on each band crossing.
+  - A run-route line in the shell codex naming the concept ("5 depth
+    bands; the middle 3 reshuffle each run") so the word lands on run 1.
+- The strip is hidden behind the run-start codex, revealed on dismiss.
+- CONSULT constraints respected: 5 (each band is a specific climb
+  problem — the strip names all 5, making the per-band structure
+  legible). None risked.
+- Predicted failure: build order — PlayerTank._ready runs before the
+  level's _ready, so breach_config is pre-shuffle at _ready time.
+  Mitigated by call_deferred. F003 recurs: a legibility surface is
+  harness-verified to EXIST, not to LAND — the next playtest must
+  confirm finding 2 is fixed.
+- Falsifiable claim: post-edit — test_breach_route shows the strip
+  names the 5 bands in run order, the highlight tracks crossings, the
+  strip hides behind the codex; arc-2/3 PlayerTank builds none. Hash
+  anchor 23d6a2ec3bf2821f preserved (HUD-only; gated on loadout);
+  test-all 5/5; test-breach 25/25 (new check-breach-route).
+- Sentence test: n/a (a legibility surface, not an upgrade).
+- Substrate touched: PlayerTank.gd (HUD only — sanctioned, gated on
+  loadout != null; arc-2/3 builds nothing).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 049 — BUILD — Round 7b: APCR penetrate-steel redesign
 
 - Date: 2026-05-20

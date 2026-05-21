@@ -17,6 +17,43 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 050 — BUILD — Round 7c: run-route legibility
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **39/65** (Δ 0 — a legibility surface; the structural tiers
+  are maxed, the value is [FEEL]-gated for the next playtest.)
+- Round 7c — fixes playtest finding 2, "no idea what band shuffle means."
+- The change (scripts/PlayerTank.gd, HUD only):
+  - A persistent run-route strip: one cell per depth band, named in
+    THIS run's shuffled order (CHOKE/MAZE/BUNKER/KILLBOX/ENDGAME), the
+    current band highlighted, cleared bands tinted. The player SEES the
+    run is a specific sequence — and a different one next run.
+  - Built deferred — _init_breach_mode shuffles the band order in the
+    LEVEL's _ready, which runs after this child's _ready; call_deferred
+    reads breach_config post-shuffle.
+  - Updated on each band crossing (via the existing breach_band_changed
+    signal); hidden behind the run-start codex, revealed on dismiss.
+  - A run-route line added to the shell codex naming the concept —
+    "5 depth bands; the middle 3 reshuffle each run" — so the word
+    lands on run 1.
+- Harness: new test_breach_route.gd + check-breach-route (test-breach
+  24 → 25). Verifies the strip names the 5 bands in run order, the
+  highlight tracks crossings, the strip hides behind the codex; an
+  arc-2/3 PlayerTank builds none.
+- Hash anchor: `23d6a2ec3bf2821f` verified — HUD-only, gated on
+  loadout != null (arc-2/3 build nothing); no procedural-generation
+  path touched. `make test-all` 5/5. `make test-breach` 25/25.
+- Falsifications: none. F003 noted (not re-numbered): a legibility
+  surface is harness-verified to EXIST, not to LAND — the next
+  playtest must confirm finding 2 is fixed.
+- Substrate writes this arc: 27 → 28 (PlayerTank.gd ×14).
+- Files: scripts/PlayerTank.gd, test_breach_route.gd, Makefile,
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **the run's shuffled route is now on-screen, named, and
+  live.** iter 51 = 7d: meta-progression legibility (what's unlocked,
+  what's next — playtest finding 3).
+
 ## iter 049 — BUILD — Round 7b: APCR penetrate-steel redesign
 
 - Date: 2026-05-20

@@ -84,6 +84,12 @@ var _shell_slot_bgs: Array[ColorRect] = []
 var _shell_slot_chips: Array[ColorRect] = []
 var _shell_slot_labels: Array[Label] = []
 var _shell_codex: ColorRect = null  # arc-4 iter 36: run-start shell primer
+# arc-4 iter 50 (Round 7c): persistent run-route strip — one cell per
+# depth band, in this run's shuffled order, the current band highlighted.
+var _route_panel: ColorRect = null
+var _route_cell_bgs: Array[ColorRect] = []
+var _route_cell_labels: Array[Label] = []
+var _route_bands: Array = []
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
@@ -162,6 +168,12 @@ func _ready() -> void:
 	# is breach-mode-only; arc-2/3 never connects.
 	if loadout != null and level != null and level.has_signal("breach_band_changed"):
 		level.breach_band_changed.connect(_on_breach_band_changed)
+	# arc-4 iter 50 (Round 7c): build the run-route strip deferred — the
+	# level's _init_breach_mode shuffles the band order in the level's
+	# _ready, which runs AFTER this child _ready. Deferring reads
+	# breach_config once the shuffle is done.
+	if loadout != null:
+		call_deferred("_build_route_strip")
 	hp_changed.emit(hp, max_hp)
 	_update_run_hud()
 
@@ -833,6 +845,10 @@ func _any_gameplay_input() -> bool:
 func _dismiss_codex() -> void:
 	if _shell_codex != null:
 		_shell_codex.visible = false
+	# arc-4 iter 50: the route strip sits behind the codex — reveal it
+	# when the player dismisses the primer and play begins.
+	if _route_panel != null:
+		_route_panel.visible = true
 
 
 # arc-4 iter 36: a styled Label inside the codex panel.
@@ -879,6 +895,11 @@ func _build_shell_codex(canvas: CanvasLayer) -> void:
 		chip.color = _shell_color(rows[i][0])
 		_shell_codex.add_child(chip)
 		_codex_line(_shell_codex, rows[i][1], Vector2(32, row_y), 9, Color.WHITE)
+	# arc-4 iter 50 (Round 7c): run-route line — teaches that the climb
+	# is a shuffled band sequence (playtest finding 2); pairs with the
+	# persistent route strip.
+	_codex_line(_shell_codex, "ROUTE  5 depth bands; the middle 3 reshuffle each run.",
+		Vector2(12, 150), 8, Color(0.85, 0.88, 0.6, 1.0))
 	# arc-4 iter 45 (Round 6e): meta-progression status line.
 	_codex_line(_shell_codex, _meta_codex_line(), Vector2(12, 166), 8,
 		Color(0.62, 0.82, 1.0, 1.0))
@@ -908,6 +929,7 @@ func _meta_codex_line() -> String:
 func _on_breach_band_changed(band) -> void:
 	if band != null:
 		_show_band_banner(band)
+		_update_route_for_band(band)
 
 
 # arc-4 iter 42 (Round 6d, stakes & escalation): the band-arrival banner.
@@ -939,6 +961,119 @@ func _show_band_banner(band) -> void:
 	tween.tween_interval(1.3)
 	tween.tween_property(banner, "modulate:a", 0.0, 0.9)
 	tween.tween_callback(banner.queue_free)
+
+
+# arc-4 iter 50 (Round 7c): the run's ordered band list, read from the
+# breach level's (post-shuffle) breach_config. Empty when there is no
+# breach level / config — the route strip then never builds.
+func _run_band_route() -> Array:
+	var lvl: Node = get_parent()
+	if lvl == null or not ("breach_config" in lvl):
+		return []
+	var cfg = lvl.breach_config
+	if cfg == null or not ("bands" in cfg):
+		return []
+	return cfg.bands
+
+
+# arc-4 iter 50: a short, legible name for a depth band — the route
+# strip cells are ~63px wide, too narrow for the full two-word names.
+func _band_short_name(band) -> String:
+	if band == null or not ("band_name" in band):
+		return "?"
+	var raw: String = String(band.band_name)
+	var short_names: Dictionary = {
+		"tutorial_choke": "CHOKE",
+		"brick_maze": "MAZE",
+		"bunker_zone": "BUNKER",
+		"open_killbox": "KILLBOX",
+		"endgame_mixed": "ENDGAME",
+	}
+	if short_names.has(raw):
+		return short_names[raw]
+	var parts: PackedStringArray = raw.split("_", false)
+	if parts.size() > 0:
+		return String(parts[parts.size() - 1]).to_upper()
+	return raw.to_upper()
+
+
+# arc-4 iter 50 (Round 7c, playtest finding 2 — "no idea what band
+# shuffle means"): the persistent run-route strip. One cell per depth
+# band, named in THIS run's order, so the player sees the run is a
+# specific shuffled sequence — and a different one next run. Built
+# deferred (see _ready); gated on loadout != null by the caller, so
+# arc-2/3 builds nothing.
+func _build_route_strip() -> void:
+	if loadout == null:
+		return
+	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
+	if canvas == null:
+		return
+	_route_bands = _run_band_route()
+	if _route_bands.is_empty():
+		return
+	_route_panel = ColorRect.new()
+	_route_panel.name = "RoutePanel"
+	_route_panel.position = Vector2(2, 195)
+	_route_panel.size = Vector2(316, 13)
+	_route_panel.color = Color(0.07, 0.07, 0.09, 0.82)
+	canvas.add_child(_route_panel)
+	var n: int = _route_bands.size()
+	var cell_w: float = 316.0 / float(n)
+	for i in n:
+		var bg: ColorRect = ColorRect.new()
+		bg.position = Vector2(float(i) * cell_w + 1.0, 1.0)
+		bg.size = Vector2(cell_w - 2.0, 11.0)
+		bg.color = Color(0, 0, 0, 0)
+		_route_panel.add_child(bg)
+		_route_cell_bgs.append(bg)
+		var lbl: Label = Label.new()
+		lbl.position = Vector2(float(i) * cell_w + 3.0, 0.0)
+		lbl.size = Vector2(cell_w - 6.0, 13.0)
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lbl.text = _band_short_name(_route_bands[i])
+		lbl.add_theme_color_override("font_color", Color.WHITE)
+		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		lbl.add_theme_constant_override("outline_size", 2)
+		lbl.add_theme_font_size_override("font_size", 8)
+		_route_panel.add_child(lbl)
+		_route_cell_labels.append(lbl)
+	# initial highlight — the run starts in the level's current band.
+	var start_idx: int = 0
+	var lvl: Node = get_parent()
+	if lvl != null and "_current_breach_band" in lvl and lvl._current_breach_band != null:
+		var ci: int = _route_bands.find(lvl._current_breach_band)
+		if ci >= 0:
+			start_idx = ci
+	_highlight_route_cell(start_idx)
+	# the strip lives behind the run-start codex; revealed on dismiss.
+	_route_panel.visible = _shell_codex == null or not _shell_codex.visible
+
+
+# arc-4 iter 50: paint the route strip — cleared bands behind `idx`
+# tinted, the current band bright, bands ahead plain.
+func _highlight_route_cell(idx: int) -> void:
+	for i in _route_cell_bgs.size():
+		if i == idx:
+			_route_cell_bgs[i].color = Color(0.95, 0.95, 0.55, 0.5)
+			_route_cell_labels[i].modulate = Color(1, 1, 1, 1)
+		elif i < idx:
+			_route_cell_bgs[i].color = Color(0.32, 0.55, 0.36, 0.4)
+			_route_cell_labels[i].modulate = Color(1, 1, 1, 0.6)
+		else:
+			_route_cell_bgs[i].color = Color(0, 0, 0, 0)
+			_route_cell_labels[i].modulate = Color(1, 1, 1, 0.85)
+
+
+# arc-4 iter 50: move the route-strip highlight when the player crosses
+# into a new band.
+func _update_route_for_band(band) -> void:
+	if _route_panel == null or _route_bands.is_empty():
+		return
+	var idx: int = _route_bands.find(band)
+	if idx >= 0:
+		_highlight_route_cell(idx)
 
 
 func _on_hp_changed_hud(new_hp: int, the_max_hp: int) -> void:

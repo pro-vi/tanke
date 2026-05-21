@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 49
+iter: 50
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_49: 23d6a2ec3bf2821f  # bit-identical through 27 substrate writes
-substrate_writes_this_arc: 27  # ProceduralLevel.gd ×5 + Bullet.gd ×7 + PlayerTank.gd ×13 + Level.gd + Spawner.gd ×2
+hash_anchor_at_iter_50: 23d6a2ec3bf2821f  # bit-identical through 28 substrate writes
+substrate_writes_this_arc: 28  # ProceduralLevel.gd ×5 + Bullet.gd ×7 + PlayerTank.gd ×14 + Level.gd + Spawner.gd ×2
 current_round: 7-open
-current_round_phase: BUILD — Round 7c (run-route legibility); blueprint iter-047-round7-architect.md
+current_round_phase: BUILD — Round 7d (meta-progression legibility); blueprint iter-047-round7-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,14 +21,14 @@ last_consult: iter 46  # CONSULT 004 — written self-pre-mortem, Round 6 close
 playtest_log: [iter 33 — 2026-05-20 — verdict: structurally complete but illegible; F003 logged]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING (resumed iter 47). The user playtested after Round 6 (the iter-46 gate) and gave 5 findings; the loop integrated them, opened Round 7 (the fix-round). The non-stop loop continues per PROMPT until the user writes playtest / halt / stop.
-next_action: iter 50 — BUILD — Round 7c: run-route legibility. Read iter-047-round7-architect.md. Playtest finding 2 — "no idea what band shuffle means." Surface the shuffled band sequence: at run start show the 5-band route in this run's order so the player sees the climb ahead (PlayerTank.gd arc-4 HUD). Hash-anchor verify; test-all + test-breach green.
+next_action: iter 51 — BUILD — Round 7d: meta-progression legibility. Read iter-047-round7-architect.md. Playtest finding 3 — "what can be unlocked?" Make the unlock ladder legible (what's unlocked / what's next / at what depth); add 1-2 more unlock tiers (MetaProgress.gd currently gates only Quick Swap @40 / Steel Salvage @80 — thin). Hash-anchor verify; test-all + test-breach green.
 score: 39/65 absolute · 39/65 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
 round6_blueprint: loop/breach/iter-038-round6-architect.md
 round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta} + check-silhouette-gate (24 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route} + check-silhouette-gate (25 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch]  # #3, #7 CLOSED — playtests delivered
 ```
 
@@ -108,23 +108,22 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-20 — **iter 49 (BUILD).** Round 7b — APCR penetrate-steel
-  redesign: APCR now drills through steel, breaking ONE block per hit
-  (like AP on brick) and NOT stopping — it penetrates, boring a 1-wide
-  tunnel until its lifetime ends. The iter-34 radius cluster-breach is
-  deleted; STEEL_SALVAGE retuned to count blocks drilled. Playtest
-  finding 4. Hash anchor preserved; test-all 5/5, test-breach 24/24.
-  Δ 0. 39/65.
+- 2026-05-20 — **iter 50 (BUILD).** Round 7c — run-route legibility:
+  a persistent HUD route strip names the run's 5 depth bands in their
+  shuffled order (CHOKE/MAZE/BUNKER/KILLBOX/ENDGAME), current band
+  highlighted, cleared bands tinted; built deferred so it reads the
+  post-shuffle order; a codex line teaches the concept. Playtest
+  finding 2. Hash anchor preserved (HUD-only); test-all 5/5,
+  test-breach 25/25 (new check-breach-route). Δ 0. 39/65.
 
 ## Next action
 
-**Iter 50 — BUILD — Round 7c: run-route legibility.**
-Read `loop/breach/iter-047-round7-architect.md`. Playtest finding 2 —
-"no idea what band shuffle means." Surface the shuffled band sequence:
-at run start show the 5-band route in this run's order so the player
-sees the climb ahead (PlayerTank.gd arc-4 HUD; the per-band arrival
-banner `_show_band_banner` already exists — this adds the up-front
-whole-route view). Hash-anchor verify; test-all + test-breach green.
+**Iter 51 — BUILD — Round 7d: meta-progression legibility.**
+Read `loop/breach/iter-047-round7-architect.md`. Playtest finding 3 —
+"what can be unlocked?" Make the unlock ladder legible (what's
+unlocked / what's next / at what depth) and add 1-2 more unlock tiers
+— MetaProgress.gd currently gates only Quick Swap @40 / Steel Salvage
+@80, which is thin. Hash-anchor verify; test-all + test-breach green.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all
