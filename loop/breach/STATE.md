@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 54
+iter: 55
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
 hash_anchor_at_iter_52: 23d6a2ec3bf2821f  # bit-identical through 30 substrate writes
 substrate_writes_this_arc: 30  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×15 + Level.gd + Spawner.gd ×2
-current_round: 7-closed
-current_round_phase: Round 7 CLOSED; iter-54 SWEEP verified the build coherent (12/12 reachability). At the playtest-gated ceiling — idle heartbeat until REVIEW-QUEUE #9 playtest
+current_round: 8-open
+current_round_phase: BUILD — Round 8 (roguelite-progression overhaul, playtest-3 directed); blueprint iter-055-round8-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -18,18 +18,19 @@ reachability_status: all 5 bands verified — 12/12-seed sweep (100%, floor ≥8
 audit_candidates: []
 last_audit: iter 26
 last_consult: iter 53  # CONSULT 005 — written self-pre-mortem, Round 7 close
-playtest_log: [iter 33 — 2026-05-20 — verdict: structurally complete but illegible; F003 logged]
+playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, user redirected to XP/level-ups + ammo drops → Round 8]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: RUNNING (idle heartbeat) — Round 7 closed at iter 53; iter-54 SWEEP verified the post-Round-7 build coherent (12/12 reachability, 25 breach + 5 arc-3 harnesses, hash anchor intact). The loop is at the playtest-gated autonomous ceiling (CONSULT 004/005): all remaining rubric value is [FEEL]-gated, and building more before a playtest is the documented seductive-but-hollow anti-pattern. With no honest non-speculative work left, the loop slows to a long idle heartbeat (1800s) — still non-stop (scheduled, not halted), resuming on the user's playtest or a manual /loop. REVIEW-QUEUE #9 requests the Round-7 playtest.
-next_action: iter 55 — re-assess at the playtest-gated ceiling. If the user has playtested (REVIEW-QUEUE #9), integrate the findings + open Round 8. If not: the build is verified coherent (iter-54 SWEEP) and there is no non-speculative autonomous work left — re-confirm green state, re-surface the #9 playtest ask, and continue the idle heartbeat. Do NOT open a speculative new mechanic round ahead of the playtest (CONSULT 005 Q3 — "legibility theater" / arc-2's "structure since the last human signal").
+loop_state: RUNNING — Round 8 opened at iter 55. The user playtested after Round 7 and the breach-economy concept did not land as roguelite progression ("where is the roguelite element like level ups?"). Via AskUserQuestion (override authority) the user redirected: Round 8 adds a conventional power curve — XP level-ups + per-phase upgrade picks + enemy ammo drops + longer shields. Blueprint iter-055-round8-architect.md. The non-stop loop builds Round 8 (8a-8d) until the user writes playtest / halt / stop.
+next_action: iter 56 — BUILD — Round 8a: XP + level-up core. Read iter-055-round8-architect.md. PlayerTank.gd (sanctioned, gated on loadout != null): earn XP from enemy kills + depth, level up at thresholds, each level-up grants an AUTOMATIC stat boost (HP / reload / shell-capacity, rotated — no mid-combat modal, constraint 1); add a HUD XP bar + LEVEL readout. Hash-anchor verify; test-all + test-breach green; a harness for the XP/level system.
 score: 39/65 absolute · 39/65 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
 round6_blueprint: loop/breach/iter-038-round6-architect.md
 round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
+round8_blueprint: loop/breach/iter-055-round8-architect.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route} + check-silhouette-gate (25 in test-breach aggregate)
-review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #9 PLAYTEST REQUEST — Round 7 complete]  # #3, #7 CLOSED — playtests delivered
+review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch]  # #3, #7, #9 CLOSED — playtests delivered
 ```
 
 ---
@@ -55,6 +56,18 @@ The user has override authority over cadence and direction (PROMPT
   breaking 1 block per hit, like AP on brick; no radius cluster); the
   bullet continues until its lifetime ends. Supersedes the iter-34
   radius-breach design.
+- **2026-05-21, playtest (iter 55):** the user playtested after Round
+  7 and the breach-economy concept did not land as roguelite
+  progression — "where is the roguelite element like level ups?" Via
+  AskUserQuestion the user OVERRODE the arc-4 ANCHOR SENTENCE ("the
+  tank is not becoming numerically stronger"): Round 8 adds a
+  conventional roguelite power curve — XP level-ups with stat growth
+  + a pick-1-of-3 upgrade card after every phase ("Both") — plus enemy
+  ammo drops and longer shields. CONSULT constraint 7 ("verbs not
+  passive stats") is relaxed for Round 8; constraint 1 (no choice in
+  combat) is preserved. The breach economy (finite shells spent to
+  breach) is KEPT as a layer, not removed. This is the Round 8
+  program; blueprint iter-055-round8-architect.md.
 
 ---
 
@@ -108,30 +121,31 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-20 — **iter 54 (SWEEP).** Post-Round-7 verification grid,
-  all green: reachability 12/12 seeds × 5 bands (100%, up from the
-  iter-26 90% baseline); test-breach 25/25; test-all 5/5; hash anchor
-  23d6a2ec3bf2821f. The post-Round-7 build is verified coherent. No
-  code touched. Δ 0. 39/65. With the build verified and no honest
-  non-speculative work left, the loop slows to a 1800s idle heartbeat
-  — still non-stop, awaiting the REVIEW-QUEUE #9 playtest.
+- 2026-05-21 — **iter 55 (PLAYTEST).** The user playtested after Round
+  7: the breach-economy concept did not land as roguelite progression
+  ("where is the roguelite element like level ups?"), the phases still
+  don't read, and they want enemy ammo drops. Via AskUserQuestion the
+  user overrode the arc-4 anchor sentence — Round 8 adds a conventional
+  power curve: XP level-ups + per-phase upgrade picks ("Both") + enemy
+  ammo drops + longer shields. Round 8 opened; blueprint
+  iter-055-round8-architect.md. REVIEW-QUEUE #9 closed, #10 opened. No
+  code touched. 39/65.
 
 ## Next action
 
-**Iter 55 — re-assess at the playtest-gated ceiling.**
-iter-54 SWEEP verified the post-Round-7 build coherent (12/12
-reachability, 25 breach + 5 arc-3 harnesses, hash anchor). The loop
-is at the autonomous ceiling — 39/65, all remaining value [FEEL]-
-gated. If the user has playtested (REVIEW-QUEUE #9), integrate the
-findings + open Round 8. If not: re-confirm green, re-surface the #9
-playtest ask, hold the idle heartbeat. Do NOT open a speculative new
-mechanic round ahead of the playtest (CONSULT 005 Q3).
+**Iter 56 — BUILD — Round 8a: XP + level-up core.**
+Read `loop/breach/iter-055-round8-architect.md`. PlayerTank.gd
+(sanctioned, gated on loadout != null): the tank earns XP from enemy
+kills + depth climbed, levels up at thresholds, and each level-up
+grants an AUTOMATIC stat boost — HP / reload / shell-capacity, rotated
+across a small legible set (automatic = no mid-combat modal, keeping
+constraint 1). Add a HUD XP bar + LEVEL readout — the visible
+progression beat the user is missing. Hash-anchor verify; test-all +
+test-breach green; a new harness for the XP/level system.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all
 regression, unsanctioned substrate write, unfixed band reachability).
-At the playtest-gated ceiling it idles at a long heartbeat rather
-than spin Δ-0 iters — it has not halted.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all

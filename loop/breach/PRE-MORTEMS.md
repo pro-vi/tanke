@@ -24,6 +24,41 @@ Format:
 
 ---
 
+## iter 055 — PLAYTEST — playtest-3 integrated; Round 8 opened
+
+- Date: 2026-05-21
+- Tag: [STRUCTURE-DEFERRED]
+- The user playtested after Round 7 (the iter-53 / REVIEW-QUEUE #9
+  gate) and delivered a direction-changing verdict: the 5 phases still
+  do not read; enemies should drop ammo; "where is the roguelite
+  element like level ups?" — the user does not perceive the breach
+  economy as roguelite progression.
+- Via AskUserQuestion (user override authority — PROMPT §USER-LOOK):
+  progression = BOTH (XP level-ups + per-phase upgrade-card picks);
+  enemy ammo drops = YES; "+ make shields longer."
+- This iter: integrate the playtest, record the override in STATE
+  §Arc-4 amendments, open Round 8 (the roguelite-progression
+  overhaul), write the blueprint iter-055-round8-architect.md, append
+  REVIEW-QUEUE #10.
+- CONSULT constraints: the user's "XP + stats" pick RELAXES constraint
+  7 (verbs not passive stats) for Round 8 — a sanctioned override.
+  Constraint 1 (no choice during combat) is PRESERVED — level-ups are
+  automatic; picks happen at paused safe gates.
+- Predicted failure: Round 8 is a big round (4 sub-rounds) layering a
+  conventional power curve onto the breach economy. The risk is the
+  two progression systems (breach-economy shells + XP/levels) feeling
+  bolted-together rather than one game. The 8-close CONSULT must check
+  coherence, and may need a RUBRIC reframe (the rubric is built around
+  "breach economy" — the override shifts the stone).
+- Falsifiable claim: post-iter — iter-055-round8-architect.md exists
+  with the 8a-8d sequence; STATE §Arc-4 amendments records the
+  playtest-3 override; REVIEW-QUEUE #9 CLOSED, #10 opened. No code
+  touched → hash anchor + harnesses unchanged (23d6a2ec3bf2821f;
+  test-all 5/5; test-breach 25/25).
+- Sentence test: n/a (a planning iter).
+- Substrate touched: none (planning only).
+- Hash-anchor verification plan: n/a — no code this iter.
+
 ## iter 054 — SWEEP — post-Round-7 verification grid
 
 - Date: 2026-05-20

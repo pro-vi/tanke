@@ -181,7 +181,7 @@ Format per item:
     exist, but they do not COMMUNICATE. Round 7 must make legibility
     LAND, not just exist; the next playtest re-checks all five.
 
-#9 — ★ PLAYTEST REQUEST — Round 7 complete — round 7 — iter 53 — open
+#9 — ★ PLAYTEST REQUEST — Round 7 complete — round 7 — iter 53 — CLOSED — playtest delivered 2026-05-21 (see #10)
   Finding: Round 7 (iters 48-52) shipped a fix for all 5 of
     playtest-2's findings — 7a shell-economy retune (starter shells
     5→15, caps 12/8/10), 7b APCR penetrate-steel redesign, 7c
@@ -210,4 +210,25 @@ Format per item:
     band-shuffle / meta-unlocks may not MATTER enough to be worth
     reading. The fix then is depth, not another HUD surface. To
     trigger: write `playtest`.
+
+#10 — Playtest verdict (post-Round-7) + Round 8 launch — round 8 — iter 55 — open (informational)
+  Finding: the user playtested after Round 7 (closes #9). The verdict
+    was direction-changing: (a) the 5 phases still do not read —
+    finding 2/3 recurred a THIRD time, exactly as CONSULT 005 Q3
+    predicted; (b) enemies should drop ammo; (c) "where is the
+    roguelite element like level ups?" — the breach-economy concept
+    did not land as roguelite progression. Via AskUserQuestion the
+    user overrode the arc-4 anchor sentence: Round 8 adds a
+    conventional power curve — XP level-ups + per-phase upgrade-card
+    picks ("Both") + enemy ammo drops + longer shields.
+  Affordance: Round 8 (iters 56+) gives the player the roguelite they
+    asked for — visible XP/level progression, a loud per-phase reward
+    pick, mid-combat ammo loot. Blueprint:
+    loop/breach/iter-055-round8-architect.md.
+  Risk: the breach economy was the game's whole identity; Round 8
+    bolts a conventional power curve on top. The danger is two
+    half-games — a breach economy AND a stat roguelite — that don't
+    cohere. The 8-close CONSULT must check whether it is one game, and
+    whether the "breach economy" rubric still fits. The next playtest
+    asks the plain question: does it feel like a roguelite now?
 

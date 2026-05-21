@@ -17,6 +17,41 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 055 — PLAYTEST — playtest-3 integrated; Round 8 opened
+
+- Date: 2026-05-21
+- Tag: [STRUCTURE-DEFERRED]
+- Score: **39/65** (Δ 0 — a playtest-integration / planning iter.)
+- The user playtested after Round 7 (the iter-53 / REVIEW-QUEUE #9
+  gate). Verdict: the 5 phases still do not read (finding 2/3's THIRD
+  recurrence); enemies should drop ammo; "where is the roguelite
+  element like level ups?" — the breach-economy concept did not land
+  as roguelite progression.
+- Via AskUserQuestion (user override authority): progression = BOTH
+  (XP level-ups with stat growth + a pick-1-of-3 upgrade card after
+  every phase); enemy ammo drops = YES; "+ make shields longer."
+- This is a sanctioned override of the arc-4 ANCHOR SENTENCE ("the
+  tank is not becoming numerically stronger"). Round 8 adds a
+  conventional power curve ON TOP of the breach economy (kept, not
+  removed). Constraint 7 (verbs not stats) relaxed for Round 8;
+  constraint 1 (no choice in combat) preserved. Recorded in STATE
+  §Arc-4 amendments.
+- Round 8 opened — the roguelite-progression overhaul. Blueprint
+  iter-055-round8-architect.md: 8a XP+level core, 8b per-phase
+  upgrade-card pick, 8c enemy ammo drops, 8d longer shields /
+  defensive pickups, 8-close CONSULT+QUEUE.
+- REVIEW-QUEUE: #9 CLOSED (playtest delivered); #10 opened (verdict +
+  Round 8 launch).
+- Hash anchor: n/a — no code touched (planning iter). The iter-54
+  state stands: 23d6a2ec3bf2821f, test-all 5/5, test-breach 25/25.
+- Falsifications: none.
+- Files: iter-055-round8-architect.md (new), PRE-MORTEMS.md, STATE.md,
+  REVIEW-QUEUE.md, LEDGER.md
+- Finding: **after 7 rounds the breach-economy concept did not land —
+  the user redirected to a conventional roguelite (XP/level-ups +
+  per-phase picks + ammo drops). Round 8 builds it.** iter 56 = 8a:
+  XP + level-up core.
+
 ## iter 054 — SWEEP — post-Round-7 verification grid
 
 - Date: 2026-05-20
