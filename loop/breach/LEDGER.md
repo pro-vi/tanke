@@ -17,6 +17,39 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 047 — PLAYTEST — iter-46-gate playtest integrated; Round 7 opened
+
+- Date: 2026-05-20
+- Tag: [FEEL]
+- Score: **39/65** (Δ 0 — the playtest moves the plan, not the number.)
+- The event: the user playtested after Round 6 (the iter-46 gate) and
+  gave 5 findings. 2 were clarified via AskUserQuestion:
+    - "shells too little" → **too few to manage** (the economy is
+      starved — bump reserves/caps).
+    - APCR vs steel → **penetrate + drill 1 block/hit** (like AP on
+      brick; no radius). The iter-34 radius-breach is superseded.
+- The 5 findings → Round 7: (1) shell-economy retune; (2) band-shuffle
+  legibility; (3) meta-unlock legibility; (4) APCR penetrate-drill
+  redesign; (5) HE explosion visual.
+- F003 recurs (noted, not re-numbered): findings 2-3 show iters 42/45
+  built legibility surfaces (band banner, codex meta line) that are
+  harness-verified to EXIST but do not COMMUNICATE to the player. A
+  legibility feature is done when a playtest confirms it lands.
+- Round 7 opened — the fix-round. Blueprint:
+  loop/breach/iter-047-round7-architect.md (7a economy retune / 7b APCR
+  penetrate / 7c run-route legibility / 7d meta legibility / 7e HE
+  explosion). The user's APCR-redesign override is recorded in
+  STATE §Arc-4 amendments.
+- Hash anchor: n/a (no code change — integration iter).
+- Falsifications: none new (F003 recurrence noted).
+- Files: iter-047-round7-architect.md (NEW), REVIEW-QUEUE.md (#7
+  closed, #8 appended), STATE.md, PRE-MORTEMS.md, LEDGER.md
+- Finding: **The playtest re-opened the loop with concrete fixes.**
+  Round 6 built the roguelite scaffolding; the playtest says the core
+  economy is starved, run-variety/meta aren't legible, APCR wants a
+  redesign, HE wants juice. Round 7 fixes all five. iter 48 = 7a
+  (shell-economy retune).
+
 ## iter 046 — CONSULT — Round 6 close (CONSULT 004) + playtest gate / pause
 
 - Date: 2026-05-20

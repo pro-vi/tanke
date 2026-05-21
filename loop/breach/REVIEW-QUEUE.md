@@ -129,7 +129,7 @@ Format per item:
     decision-density, then build roguelite feel. The next playtest must
     ask "did you ever agonise over a shell?" — not "is it legible?".
 
-#7 — ★ PLAYTEST REQUEST — Rounds 5-6 complete — iter 46 — OPEN, needs you
+#7 — ★ PLAYTEST REQUEST — Rounds 5-6 complete — iter 46 — CLOSED — playtest delivered 2026-05-20 (see #8)
   Finding: Rounds 5-6 (iters 34-46) are STRUCTURALLY COMPLETE — they
     built every one of the five iter-33 playtest findings + the full
     roguelite-feel package:
@@ -164,4 +164,20 @@ Format per item:
     since the last human signal; if the core economy doesn't bite, the
     roguelite scaffolding decorates a shallow loop. Only a playtest
     tells. To trigger: write `playtest`.
+
+#8 — Playtest verdict (post-Round-6) + Round 7 launch — round 7 — iter 47 — open (informational)
+  Finding: the user playtested after Round 6 (closes #7). 5 findings:
+    (1) shells too few to manage — the economy is starved;
+    (2) band-shuffle illegible — "no idea what it means";
+    (3) meta unlocks illegible — "what can be unlocked?";
+    (4) APCR should PENETRATE steel — drill 1 block/hit (like AP on
+        brick, no radius) — user-confirmed redesign;
+    (5) HE needs a visible explosion effect.
+  Affordance: Round 7 (iters 48+) fixes all 5 — shell-economy retune,
+    APCR penetrate-drill, run-route legibility, meta legibility, HE
+    explosion. Blueprint: loop/breach/iter-047-round7-architect.md.
+  Risk: findings 2-3 are F003 recurring — the loop BUILT the band
+    banner (iter 42) + a codex meta line (iter 45), harness-verified to
+    exist, but they do not COMMUNICATE. Round 7 must make legibility
+    LAND, not just exist; the next playtest re-checks all five.
 

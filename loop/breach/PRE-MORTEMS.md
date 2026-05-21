@@ -24,6 +24,32 @@ Format:
 
 ---
 
+## iter 047 — PLAYTEST — integrate the iter-46-gate playtest; open Round 7
+
+- Date: 2026-05-20
+- Tag: [FEEL] (the iter's input is a human playtest)
+- The event: the user playtested after Round 6 (the iter-46 playtest
+  gate) and gave 5 findings; 2 clarified via AskUserQuestion. The loop
+  re-engages, opens Round 7 (the fix-round).
+- CONSULT constraints respected: all 7 (integration/planning iter). The
+  Round-7 blueprint is written to respect them — APCR keeps one crisp
+  job (constraint 3), the HE explosion is algorithmic (constraint 4 /
+  no MLX-SD).
+- Prior-design overridden: the iter-34 APCR design (breaches steel via
+  an 18px radius cluster) is superseded by the user's confirmed
+  redesign — APCR penetrates steel, drilling 1 block per hit. Recorded
+  STATE §Arc-4 amendments.
+- Predicted failure: the Round-7 plan under-scopes the legibility
+  findings (2, 3) — building MORE surface that still does not land
+  (F003 recurring). Mitigation: 7c/7d are explicitly "make it
+  communicate," and the next playtest re-checks all 5.
+- Falsifiable claim: this iter commits the Round-7 blueprint +
+  REVIEW-QUEUE (#7 closed, #8 appended) + STATE unpaused to RUNNING.
+  No code change → no hash risk. iter 48 begins Round 7 BUILD (7a).
+- Sentence test: n/a (no upgrade this iter).
+- Substrate touched: none (loop docs only).
+- Hash-anchor verification plan: n/a (no code change).
+
 ## iter 046 — CONSULT — Round 6 close (CONSULT 004) + playtest gate / pause
 
 - Date: 2026-05-20
