@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 50
+iter: 51
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_50: 23d6a2ec3bf2821f  # bit-identical through 28 substrate writes
-substrate_writes_this_arc: 28  # ProceduralLevel.gd ×5 + Bullet.gd ×7 + PlayerTank.gd ×14 + Level.gd + Spawner.gd ×2
+hash_anchor_at_iter_51: 23d6a2ec3bf2821f  # bit-identical through 29 substrate writes
+substrate_writes_this_arc: 29  # ProceduralLevel.gd ×5 + Bullet.gd ×7 + PlayerTank.gd ×15 + Level.gd + Spawner.gd ×2
 current_round: 7-open
-current_round_phase: BUILD — Round 7d (meta-progression legibility); blueprint iter-047-round7-architect.md
+current_round_phase: BUILD — Round 7e (HE explosion visual); blueprint iter-047-round7-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 46  # CONSULT 004 — written self-pre-mortem, Round 6 close
 playtest_log: [iter 33 — 2026-05-20 — verdict: structurally complete but illegible; F003 logged]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING (resumed iter 47). The user playtested after Round 6 (the iter-46 gate) and gave 5 findings; the loop integrated them, opened Round 7 (the fix-round). The non-stop loop continues per PROMPT until the user writes playtest / halt / stop.
-next_action: iter 51 — BUILD — Round 7d: meta-progression legibility. Read iter-047-round7-architect.md. Playtest finding 3 — "what can be unlocked?" Make the unlock ladder legible (what's unlocked / what's next / at what depth); add 1-2 more unlock tiers (MetaProgress.gd currently gates only Quick Swap @40 / Steel Salvage @80 — thin). Hash-anchor verify; test-all + test-breach green.
+next_action: iter 52 — BUILD — Round 7e: HE explosion visual. Read iter-047-round7-architect.md. Playtest finding 5 — "HE should have an explosion effect." HE has a radius blast mechanically (_apply_he_blast) but no visual. Add a visible blast on HE detonation — algorithmic (ColorRect/tween burst, the _spawn_impact_spark pattern scaled up; no MLX-SD). Harness the node spawn; the look is a noted visual-verification caveat. Hash-anchor verify; test-all + test-breach green. This is the last Round-7 build piece — 7-close (CONSULT + QUEUE) follows.
 score: 39/65 absolute · 39/65 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -108,22 +108,25 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-20 — **iter 50 (BUILD).** Round 7c — run-route legibility:
-  a persistent HUD route strip names the run's 5 depth bands in their
-  shuffled order (CHOKE/MAZE/BUNKER/KILLBOX/ENDGAME), current band
-  highlighted, cleared bands tinted; built deferred so it reads the
-  post-shuffle order; a codex line teaches the concept. Playtest
-  finding 2. Hash anchor preserved (HUD-only); test-all 5/5,
-  test-breach 25/25 (new check-breach-route). Δ 0. 39/65.
+- 2026-05-20 — **iter 51 (BUILD).** Round 7d — meta-progression
+  legibility: the unlock ladder goes 2 rungs → 4 (Breach Dividend @20,
+  Overdrive @40, Quick Swap @60, Steel Salvage @80; depot pool widens
+  5→9); the codex's vague iter-45 meta line is replaced by a 4-cell
+  unlock ladder — green = reached, dark = locked — under a best-depth
+  header. Playtest finding 3. Hash anchor preserved (HUD-only);
+  test-all 5/5, test-breach 25/25. Δ 0. 39/65.
 
 ## Next action
 
-**Iter 51 — BUILD — Round 7d: meta-progression legibility.**
-Read `loop/breach/iter-047-round7-architect.md`. Playtest finding 3 —
-"what can be unlocked?" Make the unlock ladder legible (what's
-unlocked / what's next / at what depth) and add 1-2 more unlock tiers
-— MetaProgress.gd currently gates only Quick Swap @40 / Steel Salvage
-@80, which is thin. Hash-anchor verify; test-all + test-breach green.
+**Iter 52 — BUILD — Round 7e: HE explosion visual.**
+Read `loop/breach/iter-047-round7-architect.md`. Playtest finding 5 —
+"HE should have an explosion effect." HE has a radius blast
+mechanically (`_apply_he_blast`) but no visual. Add a visible blast on
+HE detonation — algorithmic (ColorRect/tween burst, the
+`_spawn_impact_spark` pattern scaled up; no MLX-SD). Harness the node
+spawn; the look is a noted visual-verification caveat. Hash-anchor
+verify; test-all + test-breach green. This is the last Round-7 build
+piece — 7-close (CONSULT + QUEUE) follows.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all

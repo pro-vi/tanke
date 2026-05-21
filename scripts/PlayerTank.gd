@@ -900,29 +900,49 @@ func _build_shell_codex(canvas: CanvasLayer) -> void:
 	# persistent route strip.
 	_codex_line(_shell_codex, "ROUTE  5 depth bands; the middle 3 reshuffle each run.",
 		Vector2(12, 150), 8, Color(0.85, 0.88, 0.6, 1.0))
-	# arc-4 iter 45 (Round 6e): meta-progression status line.
-	_codex_line(_shell_codex, _meta_codex_line(), Vector2(12, 166), 8,
-		Color(0.62, 0.82, 1.0, 1.0))
+	# arc-4 iter 51 (Round 7d, playtest finding 3 — "what can be
+	# unlocked?"): the meta-progression unlock ladder.
+	_build_unlock_ladder(MetaProgressT.best_depth())
 	_codex_line(_shell_codex, "TAB swaps shells.  Move or fire to begin.",
-		Vector2(12, 186), 8, Color(0.78, 0.8, 0.86, 1.0))
+		Vector2(12, 190), 8, Color(0.78, 0.8, 0.86, 1.0))
 
 
-# arc-4 iter 45 (Round 6e): the meta-progression line for the codex —
-# best depth + what climbing deeper unlocks.
-func _meta_codex_line() -> String:
-	var best: int = MetaProgressT.best_depth()
-	var qs: bool = MetaProgressT.quick_swap_unlocked(best)
-	var ss: bool = MetaProgressT.steel_salvage_unlocked(best)
-	if qs and ss:
-		return "META  best depth %d  -  all depot upgrades unlocked" % best
-	var locked: String = ""
-	if not qs:
-		locked = "Quick Swap @%d" % MetaProgressT.UNLOCK_QUICK_SWAP_DEPTH
-	if not ss:
-		if locked != "":
-			locked += ", "
-		locked += "Steel Salvage @%d" % MetaProgressT.UNLOCK_STEEL_SALVAGE_DEPTH
-	return "META  best depth %d  -  climb to unlock: %s" % [best, locked]
+# arc-4 iter 51 (Round 7d, playtest finding 3 — "what can be
+# unlocked?"): render the meta-progression unlock ladder into the shell
+# codex — a header naming the player's best depth, then one cell per
+# unlock tier (green = the best depth has reached it, dark = still
+# locked). Replaces the iter-45 single (vague) meta line. Static within
+# a run (best_depth only changes between runs), so it is built once
+# with no update path.
+func _build_unlock_ladder(best: int) -> void:
+	if _shell_codex == null:
+		return
+	_codex_line(_shell_codex,
+		"UNLOCKS  best depth %d  —  climb to earn depot options:" % best,
+		Vector2(12, 161), 8, Color(0.62, 0.82, 1.0, 1.0))
+	var ladder: Array = MetaProgressT.unlock_ladder()
+	var cell_w: float = 60.0
+	for i in ladder.size():
+		var tier: Dictionary = ladder[i]
+		var depth: int = int(tier["depth"])
+		var unlocked: bool = best >= depth
+		var cx: float = 12.0 + float(i) * cell_w
+		var cell: ColorRect = ColorRect.new()
+		cell.position = Vector2(cx, 172)
+		cell.size = Vector2(cell_w - 3.0, 13.0)
+		cell.color = Color(0.24, 0.5, 0.3, 0.92) if unlocked else Color(0.16, 0.16, 0.2, 0.92)
+		_shell_codex.add_child(cell)
+		var lbl: Label = Label.new()
+		lbl.position = Vector2(cx + 3.0, 172.0)
+		lbl.size = Vector2(cell_w - 7.0, 13.0)
+		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lbl.text = "%d %s" % [depth, String(tier["name"])]
+		var fc: Color = Color(0.96, 1.0, 0.92, 1.0) if unlocked else Color(0.58, 0.58, 0.64, 1.0)
+		lbl.add_theme_color_override("font_color", fc)
+		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		lbl.add_theme_constant_override("outline_size", 2)
+		lbl.add_theme_font_size_override("font_size", 7)
+		_shell_codex.add_child(lbl)
 
 
 # arc-4 iter 42 (Round 6d): the breach level reports a band crossing.

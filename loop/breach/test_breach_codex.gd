@@ -42,6 +42,13 @@ func _initialize() -> void:
 			quit(1); return
 	print("  codex names all 4 shells + BRICK/STEEL roles")
 
+	# arc-4 iter 51: the codex also renders the meta unlock ladder.
+	for token in ["UNLOCKS", "DIVIDEND", "OVERDRIVE", "SWAP", "SALVAGE"]:
+		if blob.find(token) == -1:
+			push_error("FAIL — codex never renders unlock-ladder '%s': %s" % [token, blob])
+			quit(1); return
+	print("  codex renders the 4-rung unlock ladder")
+
 	# Dismiss hides it.
 	pt._dismiss_codex()
 	if codex.visible:

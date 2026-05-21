@@ -24,6 +24,42 @@ Format:
 
 ---
 
+## iter 051 — BUILD — Round 7d: meta-progression legibility
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 7d, piece 4 of the iter-047 blueprint. Fixes playtest finding 3
+  — "what can be unlocked?"
+- The change, two parts:
+  - Tiers: the unlock ladder goes from 2 rungs to 4. MetaProgress now
+    gates 4 upgrades — Breach Dividend @20, Overdrive @40, Quick Swap
+    @60, Steel Salvage @80. The 5 core economy upgrades (refills /
+    expands / resupply) stay always-available. Depot's _upgrade_pool
+    widens 5→6→7→8→9 with best-depth (was 7→8→9).
+  - Legibility: the codex's single (vague) iter-45 meta line is
+    replaced by a 4-cell unlock ladder — one cell per tier, green when
+    the player's best depth has reached it, dark when locked — under a
+    "best depth N" header. The player sees the whole ladder + where
+    they stand on it.
+- CONSULT constraints respected: 7 (options, not power — the 5 core
+  economy upgrades cover the baseline; the 4 gated ones are earned
+  OPTIONS). None risked.
+- Predicted failure: F003 recurs — the iter-45 meta line is exactly a
+  legibility surface that existed but did not communicate (→ finding
+  3). A clearer codex ladder is harness-verified to EXIST; only the
+  next playtest confirms it LANDS. Moving Breach Dividend + Overdrive
+  out of the always-on core shrinks the fresh randomized pool (5, was
+  7) — intentional (meta-progression), but test_breach_overdrive /
+  test_breach_meta must stay green.
+- Falsifiable claim: post-edit — test_breach_meta shows a 4-rung
+  ascending ladder + pool sizes 5/6/7/8/9; test_breach_codex shows the
+  codex renders the ladder (UNLOCKS + 4 tier names). Hash anchor
+  23d6a2ec3bf2821f preserved; test-all 5/5; test-breach 25/25.
+- Sentence test: n/a (a meta-progression retier + legibility surface).
+- Substrate touched: PlayerTank.gd (HUD codex only — gated on
+  loadout != null). MetaProgress.gd + Depot.gd are arc-4-owned.
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 050 — BUILD — Round 7c: run-route legibility
 
 - Date: 2026-05-20

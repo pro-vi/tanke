@@ -161,20 +161,26 @@ func _ensure_rolled() -> void:
 	_rolled_kinds = [pool[0], pool[1], pool[2]]
 
 
-# arc-4 iter 45 (Round 6e meta-progression): the depot offer pool. The
-# 7 core upgrade kinds are always available; the 2 advanced
-# rule-changers unlock at best-depth thresholds (MetaProgress) — OPTIONS
-# earned by climbing, not power. `best` defaults to the live best-depth;
-# a caller may pass an explicit value (harnesses).
+# arc-4 iter 45 (Round 6e meta-progression, retiered iter 51 Round 7d):
+# the depot offer pool. The 5 core economy upgrade kinds are always
+# available; the 4 rule-changer / verb upgrades each unlock at a
+# best-depth threshold (MetaProgress) — OPTIONS earned by climbing, not
+# power. `best` defaults to the live best-depth; a caller may pass an
+# explicit value (harnesses).
 func _upgrade_pool(best: int = -1) -> Array[int]:
 	if best < 0:
 		best = MetaProgressT.best_depth()
+	# 5 core economy upgrades — always available.
 	var pool: Array[int] = [
 		UpgradeKind.HE_REFILL_2, UpgradeKind.HEAT_REFILL_1,
 		UpgradeKind.HE_MAX_EXPAND_2, UpgradeKind.HEAT_MAX_EXPAND_2,
-		UpgradeKind.FULL_RESUPPLY, UpgradeKind.BREACH_DIVIDEND,
-		UpgradeKind.OVERDRIVE,
+		UpgradeKind.FULL_RESUPPLY,
 	]
+	# 4 rule-changer / verb upgrades — each unlocks at a depth tier.
+	if MetaProgressT.breach_dividend_unlocked(best):
+		pool.append(UpgradeKind.BREACH_DIVIDEND)
+	if MetaProgressT.overdrive_unlocked(best):
+		pool.append(UpgradeKind.OVERDRIVE)
 	if MetaProgressT.quick_swap_unlocked(best):
 		pool.append(UpgradeKind.QUICK_SWAP)
 	if MetaProgressT.steel_salvage_unlocked(best):

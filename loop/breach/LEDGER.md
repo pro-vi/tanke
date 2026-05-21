@@ -17,6 +17,45 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 051 — BUILD — Round 7d: meta-progression legibility
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **39/65** (Δ 0 — C13's structural anchor 3 is already cited;
+  anchors 4-5 are [FEEL]/playtest-gated. Honest Δ 0 per the Round-7
+  fix-round guardrail.)
+- Round 7d — fixes playtest finding 3, "what can be unlocked?"
+- The change, two parts:
+  - Tiers: the unlock ladder goes 2 rungs → 4. MetaProgress now gates
+    Breach Dividend @20, Overdrive @40, Quick Swap @60, Steel Salvage
+    @80. The 5 core economy upgrades (refills / expands / resupply)
+    stay always-available; Depot's _upgrade_pool widens 5→6→7→8→9 with
+    best-depth (was 7→8→9). MetaProgress.unlock_ladder() exposes the
+    rungs as ordered data.
+  - Legibility: the codex's single (vague) iter-45 meta line is
+    replaced by a 4-cell unlock ladder — one cell per tier, green when
+    the player's best depth has reached it, dark when locked — under a
+    "best depth N" header. The player sees the whole ladder + where
+    they stand.
+- Hash anchor: `23d6a2ec3bf2821f` verified — the only substrate touch
+  is PlayerTank.gd's codex (HUD, gated on loadout != null); MetaProgress
+  + Depot are arc-4-owned. `make test-all` 5/5. `make test-breach`
+  25/25.
+- Harnesses: test_breach_meta rewritten for the 4-rung ladder + pool
+  sizes 5/6/7/8/9; test_breach_codex extended to verify the codex
+  renders the ladder (UNLOCKS + 4 tier names).
+- Falsifications: none. F003 noted: the iter-45 meta line was a
+  legibility surface that existed but did not communicate (→ finding
+  3) — the 4-cell ladder is harness-verified to EXIST; the next
+  playtest must confirm it LANDS.
+- Substrate writes this arc: 28 → 29 (PlayerTank.gd ×15).
+- Files: scripts/MetaProgress.gd, scripts/Depot.gd,
+  scripts/PlayerTank.gd, test_breach_meta.gd, test_breach_codex.gd,
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **meta-progression is a 4-rung ladder now, shown on-screen
+  with the player's position.** iter 52 = 7e: HE explosion visual
+  (playtest finding 5) — the last Round-7 build piece.
+
 ## iter 050 — BUILD — Round 7c: run-route legibility
 
 - Date: 2026-05-20
