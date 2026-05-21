@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 48
+iter: 49
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_45: 23d6a2ec3bf2821f  # bit-identical through 26 substrate writes
-substrate_writes_this_arc: 26  # ProceduralLevel.gd ×5 + Bullet.gd ×6 + PlayerTank.gd ×13 + Level.gd + Spawner.gd ×2
+hash_anchor_at_iter_49: 23d6a2ec3bf2821f  # bit-identical through 27 substrate writes
+substrate_writes_this_arc: 27  # ProceduralLevel.gd ×5 + Bullet.gd ×7 + PlayerTank.gd ×13 + Level.gd + Spawner.gd ×2
 current_round: 7-open
-current_round_phase: BUILD — Round 7b (APCR penetrate-steel); blueprint iter-047-round7-architect.md
+current_round_phase: BUILD — Round 7c (run-route legibility); blueprint iter-047-round7-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 46  # CONSULT 004 — written self-pre-mortem, Round 6 close
 playtest_log: [iter 33 — 2026-05-20 — verdict: structurally complete but illegible; F003 logged]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING (resumed iter 47). The user playtested after Round 6 (the iter-46 gate) and gave 5 findings; the loop integrated them, opened Round 7 (the fix-round). The non-stop loop continues per PROMPT until the user writes playtest / halt / stop.
-next_action: iter 49 — BUILD — Round 7b: APCR penetrate-steel redesign. Read iter-047-round7-architect.md. Bullet.gd: an APCR shell hitting steel breaks that one SteelBlock and does NOT queue_free — it penetrates, drilling a 1-wide tunnel through the wall bounded by the bullet's lifetime. Replace the iter-34 radius `_apply_apcr_breach`; retune STEEL_SALVAGE to count drilled blocks. Hash-anchor verify (Bullet substrate); test-all + test-breach green.
+next_action: iter 50 — BUILD — Round 7c: run-route legibility. Read iter-047-round7-architect.md. Playtest finding 2 — "no idea what band shuffle means." Surface the shuffled band sequence: at run start show the 5-band route in this run's order so the player sees the climb ahead (PlayerTank.gd arc-4 HUD). Hash-anchor verify; test-all + test-breach green.
 score: 39/65 absolute · 39/65 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -108,61 +108,23 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-20 — **iter 48 (BUILD).** Round 7a — shell-economy retune:
-  breach_starter_loadout.tres starter reserves HE 2→6 / HEAT 1→4 /
-  APCR 2→5 (total 5→15), caps 12/8/10. The economy is a managed
-  handful now, not "two shots and done" — playtest finding 1. hash
-  anchor preserved; test-all 5/5, test-breach 24/24. Δ 0. 39/65.
+- 2026-05-20 — **iter 49 (BUILD).** Round 7b — APCR penetrate-steel
+  redesign: APCR now drills through steel, breaking ONE block per hit
+  (like AP on brick) and NOT stopping — it penetrates, boring a 1-wide
+  tunnel until its lifetime ends. The iter-34 radius cluster-breach is
+  deleted; STEEL_SALVAGE retuned to count blocks drilled. Playtest
+  finding 4. Hash anchor preserved; test-all 5/5, test-breach 24/24.
+  Δ 0. 39/65.
 
 ## Next action
 
-**Iter 49 — BUILD — Round 7b: APCR penetrate-steel redesign.**
-Read `loop/breach/iter-047-round7-architect.md`. Bullet.gd: an APCR
-shell hitting steel breaks that one SteelBlock and does NOT queue_free
-— it penetrates, drilling a 1-wide tunnel through the wall bounded by
-the bullet's lifetime. Replaces the iter-34 radius `_apply_apcr_breach`;
-STEEL_SALVAGE retunes to count drilled blocks. Hash-anchor verify
-(Bullet substrate); test-all + test-breach green.
-
-The loop runs non-stop until the user writes `playtest` / `halt` /
-`stop`, or a correctness violation fires (hash anchor break, test-all
-regression, unsanctioned substrate write, unfixed band reachability).
-
-The loop runs non-stop until the user writes `playtest` / `halt` /
-`stop`, or a correctness violation fires (hash anchor break, test-all
-regression, unsanctioned substrate write, unfixed band reachability).
-
-The loop runs non-stop until the user writes `playtest` / `halt` /
-`stop`, or a correctness violation fires (hash anchor break, test-all
-regression, unsanctioned substrate write, unfixed band reachability).
-
-The loop runs non-stop until the user writes `playtest` / `halt` /
-`stop`, or a correctness violation fires (hash anchor break, test-all
-regression, unsanctioned substrate write, unfixed band reachability).
-
-The loop runs non-stop until the user writes `playtest` / `halt` /
-`stop`, or a correctness violation fires (hash anchor break, test-all
-regression, unsanctioned substrate write, unfixed band reachability).
-
-The loop runs non-stop until the user writes `playtest` / `halt` /
-`stop`, or a correctness violation fires (hash anchor break, test-all
-regression, unsanctioned substrate write, unfixed band reachability).
-
-The loop runs non-stop until the user writes `playtest` / `halt` /
-`stop`, or a correctness violation fires (hash anchor break, test-all
-regression, unsanctioned substrate write, unfixed band reachability).
-
-The loop runs non-stop until the user writes `playtest` / `halt` /
-`stop`, or a correctness violation fires (hash anchor break, test-all
-regression, unsanctioned substrate write, unfixed band reachability).
-
-The loop runs non-stop until the user writes `playtest` / `halt` /
-`stop`, or a correctness violation fires (hash anchor break, test-all
-regression, unsanctioned substrate write, unfixed band reachability).
-
-The loop runs non-stop until the user writes `playtest` / `halt` /
-`stop`, or a correctness violation fires (hash anchor break, test-all
-regression, unsanctioned substrate write, unfixed band reachability).
+**Iter 50 — BUILD — Round 7c: run-route legibility.**
+Read `loop/breach/iter-047-round7-architect.md`. Playtest finding 2 —
+"no idea what band shuffle means." Surface the shuffled band sequence:
+at run start show the 5-band route in this run's order so the player
+sees the climb ahead (PlayerTank.gd arc-4 HUD; the per-band arrival
+banner `_show_band_banner` already exists — this adds the up-front
+whole-route view). Hash-anchor verify; test-all + test-breach green.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all

@@ -2,9 +2,9 @@
 # Verifies the two new rule-changer upgrades:
 #   QUICK_SWAP — a real shell swap arms NO reload beat (vs the iter-27
 #     default which arms shell_swap_cost).
-#   STEEL_SALVAGE — an APCR shot that opens a steel cluster of
-#     >=STEEL_SALVAGE_THRESHOLD blocks refunds 1 APCR, only with the
-#     upgrade; the APCR analogue of Breach Dividend.
+#   STEEL_SALVAGE — an APCR shot that DRILLS >=STEEL_SALVAGE_THRESHOLD
+#     steel blocks (one penetrating shot through a wall) refunds 1 APCR,
+#     only with the upgrade; the APCR analogue of Breach Dividend.
 # Plus: depot apply_upgrade sets each flag.
 #
 # Run with:
@@ -61,12 +61,12 @@ func _initialize() -> void:
 	print("  control — swap without QUICK_SWAP arms the beat (%.2fs)" % pt2._swap_cooldown)
 	pt2.queue_free()
 
-	# === STEEL_SALVAGE: cluster breach refunds APCR only with the upgrade.
-	if not await _run_salvage("salvage ON, 4-cluster", true, 3, 0, 1):
+	# === STEEL_SALVAGE: drilling >=3 steel refunds APCR only with the upgrade.
+	if not await _run_salvage("salvage ON, drill 3", true, 3, 0, 1):
 		quit(1); return
-	if not await _run_salvage("salvage OFF, 4-cluster", false, 3, 0, 0):
+	if not await _run_salvage("salvage OFF, drill 3", false, 3, 0, 0):
 		quit(1); return
-	if not await _run_salvage("salvage ON, lone block", true, 0, 0, 0):
+	if not await _run_salvage("salvage ON, drill 2", true, 2, 0, 0):
 		quit(1); return
 
 	# === depot apply_upgrade sets each rule-changer flag.
@@ -86,16 +86,16 @@ func _initialize() -> void:
 	quit(0)
 
 
-# Fire an APCR shot at a steel cluster (primary + `siblings` blocks);
-# verify apcr_reserve after, given the steel_salvage flag. Mirrors the
-# test_breach_dividend.gd stub-Level pattern.
-func _run_salvage(label: String, salvage: bool, siblings: int,
+# Fire one APCR shell + drill it through `drill` steel blocks (sequential
+# _on_body_entered calls — the bullet penetrates), then check apcr_reserve.
+# Mirrors the test_breach_dividend.gd stub-Level pattern.
+func _run_salvage(label: String, salvage: bool, drill: int,
 		start_apcr: int, expect_apcr: int) -> bool:
 	var level := StubLevel.new()
 	var player := StubPlayer.new()
 	var lo := LoadoutT.new()
 	lo.apcr_reserve = start_apcr
-	lo.max_apcr_reserve = 4
+	lo.max_apcr_reserve = 8
 	lo.steel_salvage = salvage
 	player.loadout = lo
 	level.player = player
@@ -109,16 +109,14 @@ func _run_salvage(label: String, salvage: bool, siblings: int,
 
 	var container := Node2D.new()
 	level.add_child(container)
-	var primary: Node2D = SteelBlockScene.instantiate()
-	primary.position = Vector2.ZERO
-	container.add_child(primary)
-	for i in siblings:
+	for i in drill:
 		var s: Node2D = SteelBlockScene.instantiate()
-		s.position = Vector2(4 + i * 3, 0)
+		s.position = Vector2(i * 8, 0)
 		container.add_child(s)
 	await process_frame
-
-	bullet._on_body_entered(primary)
+	# The penetrating shot drills each steel block in turn.
+	for s in container.get_children():
+		bullet._on_body_entered(s)
 	await process_frame
 
 	if lo.apcr_reserve != expect_apcr:

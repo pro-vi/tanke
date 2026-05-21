@@ -90,31 +90,43 @@ func _test_steel_breach() -> bool:
 		container.queue_free()
 		await process_frame
 
-	# APCR breaches the hit steel + a near sibling; a far one survives.
+	# APCR drills steel: it breaks ONLY the block it hits (no radius) and
+	# PENETRATES — the bullet is not freed, so the drill continues to the
+	# next block in its path.
 	var box := Node2D.new()
 	root.add_child(box)
 	var hit: Node2D = SteelBlockScene.instantiate()
 	hit.position = Vector2.ZERO
 	box.add_child(hit)
-	var near: Node2D = SteelBlockScene.instantiate()
-	near.position = Vector2(16, 0)   # within APCR_BREACH_RADIUS_PX (18)
-	box.add_child(near)
-	var far: Node2D = SteelBlockScene.instantiate()
-	far.position = Vector2(40, 0)    # outside the radius
-	box.add_child(far)
+	var other: Node2D = SteelBlockScene.instantiate()
+	other.position = Vector2(16, 0)
+	box.add_child(other)
 	await process_frame
-	await _fire_at(BulletT.SHELL_CLASS_APCR, hit)
+	var bullet: Node = BulletScene.instantiate()
+	root.add_child(bullet)
+	await process_frame
+	bullet.shell_class = BulletT.SHELL_CLASS_APCR
+	bullet._on_body_entered(hit)
+	await process_frame
 	if is_instance_valid(hit):
-		push_error("FAIL — APCR did not breach the hit steel block")
+		push_error("FAIL — APCR did not break the steel block it hit")
 		box.queue_free(); return false
-	if is_instance_valid(near):
-		push_error("FAIL — APCR did not breach the near steel sibling (radius)")
+	if not is_instance_valid(other):
+		push_error("FAIL — APCR broke a non-hit steel block (no radius expected)")
 		box.queue_free(); return false
-	if not is_instance_valid(far):
-		push_error("FAIL — APCR breached a steel block outside its radius")
+	if not is_instance_valid(bullet):
+		push_error("FAIL — APCR did not penetrate (the bullet was freed on steel)")
 		box.queue_free(); return false
-	print("  APCR — breached hit + near; far survived (radius correct)")
+	print("  APCR — drills 1 block, penetrates (bullet survives), no radius")
+	# The penetrating shot drills the next block in its path.
+	bullet._on_body_entered(other)
+	await process_frame
+	if is_instance_valid(other):
+		push_error("FAIL — penetrating APCR did not drill the next block")
+		box.queue_free(); return false
+	print("  APCR — penetrating shot drills the next block")
 	box.queue_free()
+	bullet.queue_free()
 	await process_frame
 	return true
 

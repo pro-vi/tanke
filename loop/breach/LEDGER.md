@@ -17,6 +17,45 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 049 — BUILD — Round 7b: APCR penetrate-steel redesign
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **39/65** (Δ 0 — a shell redesign; C3's structural tier is
+  maxed, the value is [FEEL]-gated for the next playtest.)
+- Round 7b — fixes playtest finding 4, the user-confirmed APCR redesign
+  (STATE §Arc-4 amendments, 2026-05-20 iter 47).
+- The change (scripts/Bullet.gd):
+  - APCR no longer radius-breaches steel (the iter-34 design). It now
+    PENETRATES — hitting a steel block breaks that ONE block (like AP
+    breaks one brick) and the bullet does NOT queue_free; it flies on,
+    drilling a 1-wide tunnel through the wall until its lifetime ends.
+  - `_on_body_entered` handles APCR-vs-steel FIRST + `return`s before
+    the `_spawn_impact_spark; queue_free` tail — that return IS the
+    penetrate. AP/HE/HEAT + APCR-vs-non-steel still fall through + free.
+  - `_apply_apcr_breach` + APCR_BREACH_RADIUS_PX deleted (no shim).
+  - STEEL_SALVAGE retuned: a per-bullet `_steel_drilled` counter;
+    drilling exactly STEEL_SALVAGE_THRESHOLD (3) blocks fires the
+    refund once per shot.
+- Harness updates: test_breach_apcr `_test_steel_breach` rewritten
+  (APCR breaks only the hit block, no radius, the bullet survives =
+  drills on); test_breach_rulechangers `_run_salvage` rewritten for
+  the drill model (N sequential _on_body_entered calls).
+- Hash anchor: `23d6a2ec3bf2821f` verified — APCR-vs-steel is inside
+  `_on_body_entered`'s APCR branch; the seed-42 procedural baseline
+  fires AP only → never reached → bit-identical. `make test-all` 5/5.
+  `make test-breach` 24/24.
+- Falsifications: none. The iter-49 PRE-MORTEM claim held:
+  test_breach_apcr reports "drills 1 block, penetrates ... no radius"
+  + "penetrating shot drills the next block"; test_breach_rulechangers
+  reports salvage fires at drill 3, not drill 2.
+- Substrate writes this arc: 26 → 27 (Bullet.gd ×7).
+- Files: scripts/Bullet.gd, test_breach_apcr.gd,
+  test_breach_rulechangers.gd, PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **APCR is the steel penetrator the user pictured** — drill
+  through, one block per hit, no cluster. iter 50 = 7c: run-route
+  legibility (surface the shuffled band sequence — playtest finding 2).
+
 ## iter 048 — BUILD — Round 7a: shell-economy retune
 
 - Date: 2026-05-20

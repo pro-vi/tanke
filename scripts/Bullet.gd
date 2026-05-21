@@ -22,6 +22,7 @@ const SHELL_CLASS_APCR: int = 3
 @export var shell_class: int = SHELL_CLASS_AP
 
 var velocity: Vector2 = Vector2.ZERO
+var _steel_drilled: int = 0  # arc-4 iter 49: steel blocks this APCR shell has drilled
 
 @onready var _lifetime_timer: Timer = $LifeTimeTimer
 
@@ -82,8 +83,22 @@ func _on_body_entered(body: Node) -> void:
 	#   touches the HE/HEAT/APCR branches; hash anchor 23d6a2ec3bf2821f stays).
 	# HE   = single-hit + radius brick-blast. Sentence-test compliant.
 	# HEAT = 2x damage AND ignores armor — the anti-armor burst.
-	# APCR = the steel breacher: opens SteelBlock terrain AP/HE/HEAT can't,
-	#   and pierces armor at 1x (a cheaper, weaker anti-armor than HEAT).
+	# APCR = penetrates steel — drills through, breaking ONE steel block
+	#   per block it passes (like AP breaks one brick), never stopping;
+	#   also pierces armor at 1x.
+	# arc-4 iter 49: APCR-vs-steel is handled FIRST + returns — the bullet
+	# does NOT queue_free, so the drill continues to the next block.
+	if shell_class == SHELL_CLASS_APCR and body.is_in_group("steel"):
+		if body.has_method("breach"):
+			body.breach()
+		_steel_drilled += 1
+		# Steel Salvage (iter 41, retuned iter 49): drilling
+		# >=STEEL_SALVAGE_THRESHOLD blocks with one shot refunds 1 APCR
+		# — once per shot — if the player owns the upgrade.
+		if _steel_drilled == STEEL_SALVAGE_THRESHOLD:
+			_try_steel_salvage()
+		_spawn_impact_spark()
+		return  # penetrate — the drill flies on until its lifetime ends
 	var deal: int = damage
 	if shell_class == SHELL_CLASS_HEAT:
 		deal = damage * 2
@@ -101,16 +116,6 @@ func _on_body_entered(body: Node) -> void:
 		# 1 (the primary) = total bodies the blast struck.
 		if radius_hits + 1 >= DIVIDEND_THRESHOLD:
 			_try_breach_dividend()
-	# arc-4 iter 34: APCR breaches steel. SteelBlock has no take_damage
-	# (so AP/HE/HEAT are inert against it); APCR opens it + a small
-	# tank-passable cluster via _apply_apcr_breach.
-	if shell_class == SHELL_CLASS_APCR and body.is_in_group("steel"):
-		var steel_hits: int = _apply_apcr_breach(body)
-		# arc-4 iter 41 "Steel Salvage": opening a steel cluster of
-		# >=STEEL_SALVAGE_THRESHOLD blocks refunds 1 APCR if the player
-		# owns the upgrade. steel_hits is siblings; +1 for the primary.
-		if steel_hits + 1 >= STEEL_SALVAGE_THRESHOLD:
-			_try_steel_salvage()
 	_spawn_impact_spark()
 	queue_free()
 
@@ -164,44 +169,10 @@ func _apply_he_blast(primary_body: Node) -> int:
 	return hits
 
 
-# arc-4 iter 34: APCR steel-breach radius. One APCR shell opens the hit
-# SteelBlock plus steel siblings within APCR_BREACH_RADIUS_PX — a
-# tank-passable hole from a single shot: the verb that buys a steel lane.
-const APCR_BREACH_RADIUS_PX: float = 18.0  # ~ tank-width hole
-
-
-# Breach the hit steel block + steel siblings within radius. Only nodes
-# in the "steel" group with a breach() method respond — bricks, enemies
-# and water are untouched (this path is APCR-only and steel-only).
-func _apply_apcr_breach(primary_body: Node) -> int:
-	if primary_body.has_method("breach"):
-		primary_body.breach()
-	var parent: Node = primary_body.get_parent()
-	if parent == null or not (primary_body is Node2D):
-		return 0
-	var origin: Vector2 = (primary_body as Node2D).global_position
-	var hits: int = 0
-	for sibling in parent.get_children():
-		if sibling == primary_body:
-			continue
-		if not sibling.is_in_group("steel"):
-			continue
-		if not sibling.has_method("breach"):
-			continue
-		if not (sibling is Node2D):
-			continue
-		var d: float = (sibling as Node2D).global_position.distance_to(origin)
-		if d <= APCR_BREACH_RADIUS_PX:
-			sibling.breach()
-			hits += 1
-	return hits
-
-
-# arc-4 iter 41 "Steel Salvage": the APCR analogue of Breach Dividend.
-# An APCR shot that opens a steel cluster of >=STEEL_SALVAGE_THRESHOLD
-# blocks refunds 1 APCR — only if the player owns the Steel Salvage
-# depot upgrade. Threshold 3 = a real steel-wall breach, not a stray
-# block.
+# arc-4 iter 41 "Steel Salvage" (retuned iter 49 for the penetrate
+# model): an APCR shot that DRILLS >=STEEL_SALVAGE_THRESHOLD steel
+# blocks — one penetrating shot bored through a thick wall — refunds
+# 1 APCR, only if the player owns the Steel Salvage depot upgrade.
 const STEEL_SALVAGE_THRESHOLD: int = 3
 
 

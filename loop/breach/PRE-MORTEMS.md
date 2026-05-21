@@ -24,6 +24,43 @@ Format:
 
 ---
 
+## iter 049 — BUILD — Round 7b: APCR penetrate-steel redesign
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 7b, piece 2 of the iter-047 blueprint. Fixes playtest finding 4
+  — the user-confirmed APCR redesign.
+- The change: APCR no longer does a radius cluster-breach (iter 34).
+  APCR now PENETRATES steel — on hitting a steel block it breaks that
+  ONE block (like AP breaks one brick) and does NOT queue_free; the
+  bullet flies on, drilling a 1-wide tunnel through the wall until its
+  lifetime ends. `_apply_apcr_breach` + APCR_BREACH_RADIUS_PX deleted;
+  the APCR-steel branch in `_on_body_entered` is handled first + returns.
+  STEEL_SALVAGE retunes — it now counts blocks DRILLED by one shot
+  (`_steel_drilled`); >=3 → refund 1 APCR.
+- CONSULT constraints respected: 3 (APCR keeps one crisp job — the
+  steel penetrator). The iter-34 radius design is superseded per the
+  user (STATE §Arc-4 amendments).
+- Predicted failure modes:
+  - The penetrate must NOT queue_free the bullet on steel — the
+    APCR-steel branch returns before the `_spawn_impact_spark;
+    queue_free` tail. AP/HE/HEAT + APCR-vs-non-steel still fall through
+    + free.
+  - test_breach_apcr (`_test_steel_breach`) expects the radius design;
+    test_breach_rulechangers (`_run_salvage`) expects one-call cluster
+    salvage. Both rewritten for the drill model.
+  - Hash anchor: APCR-steel is inside `_on_body_entered`'s APCR branch;
+    the procedural baseline fires AP → never reached → bit-identical.
+- Falsifiable claim: post-edit — test_breach_apcr shows APCR breaks
+  only the hit steel block (no radius), penetrates (bullet survives),
+  and drills the next block; test_breach_rulechangers shows STEEL_SALVAGE
+  fires after drilling >=3. Hash anchor 23d6a2ec3bf2821f preserved;
+  test-all 5/5; test-breach 24/24.
+- Sentence test: n/a (shell redesign, not an upgrade).
+- Substrate touched: Bullet.gd (`_on_body_entered` + APCR funcs —
+  sanctioned, breach-only path).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 048 — BUILD — Round 7a: shell-economy retune (starter reserves + caps)
 
 - Date: 2026-05-20
