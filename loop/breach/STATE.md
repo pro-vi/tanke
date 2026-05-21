@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 56
+iter: 57
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
 hash_anchor_at_iter_56: 23d6a2ec3bf2821f  # bit-identical through 31 substrate writes
 substrate_writes_this_arc: 31  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×16 + Level.gd + Spawner.gd ×2
 current_round: 8-open
-current_round_phase: BUILD — Round 8b (per-phase upgrade-card pick); blueprint iter-055-round8-architect.md
+current_round_phase: BUILD — Round 8c (enemy ammo drops); blueprint iter-055-round8-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 53  # CONSULT 005 — written self-pre-mortem, Round 7 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, user redirected to XP/level-ups + ammo drops → Round 8]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 8 opened at iter 55. The user playtested after Round 7 and the breach-economy concept did not land as roguelite progression ("where is the roguelite element like level ups?"). Via AskUserQuestion (override authority) the user redirected: Round 8 adds a conventional power curve — XP level-ups + per-phase upgrade picks + enemy ammo drops + longer shields. Blueprint iter-055-round8-architect.md. The non-stop loop builds Round 8 (8a-8d) until the user writes playtest / halt / stop.
-next_action: iter 57 — BUILD — Round 8b: per-phase upgrade-card pick. Read iter-055-round8-architect.md. A pick-1-of-3 upgrade screen at every band boundary (~4-5 picks, up from 3 depots) — the loud reward beat; a "BAND CLEARED: <name>" header makes each phase a named milestone (also the real fix for the phases-don't-read finding). 8b DECISION: extend depot placement to one per boundary vs a band-clear screen off breach_band_changed — either way it pauses (constraint 1). Hash-anchor verify; test-all + test-breach green; a harness.
+next_action: iter 58 — BUILD — Round 8c: enemy ammo drops. Read iter-055-round8-architect.md. On enemy death, spawn an ammo pickup (HE/HEAT/APCR shell) the player collects mid-combat → loadout reserve += . MUST hook via Spawner.gd's existing enemy-death path (sanctioned substrate) — NOT Enemy.gd (unsanctioned; halt-and-investigate if needed). New arc-4 AmmoPickup script/scene; reuse the arc-2 pickup pattern. Hash-anchor verify; test-all + test-breach green; a harness.
 score: 39/65 absolute · 39/65 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -121,26 +121,25 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-21 — **iter 56 (BUILD).** Round 8a — XP + level-up core:
-  the breach tank now earns XP from kills + depth, levels up at scaling
-  thresholds, and each level-up applies an automatic stat boost rotated
-  across max HP / reload / shell capacity; a HUD XP bar + LEVEL
-  readout. The visible roguelite power curve the user asked for.
-  Breach-mode-only (gated on loadout); hash anchor preserved; test-all
-  5/5, test-breach 26/26 (new check-breach-xp). Δ 0 (C14 at round
-  close). 39/65.
+- 2026-05-21 — **iter 57 (BUILD).** Round 8b — per-phase upgrade-card
+  pick: Depot4 added at the open_killbox→endgame boundary, so every
+  one of the 4 completable phases now ends in a pick (was 3 depots);
+  the depot panel reframes as a reward beat — the Title names the band
+  just cleared ("— BRICK MAZE CLEARED —"), choices are a numbered
+  [1]/[2]/[3] pick. No substrate touched (arc-4-owned scenes); hash
+  anchor preserved; test-all 5/5, test-breach 26/26. Δ 0. 39/65.
 
 ## Next action
 
-**Iter 57 — BUILD — Round 8b: per-phase upgrade-card pick.**
-Read `loop/breach/iter-055-round8-architect.md`. A pick-1-of-3
-upgrade screen at every band boundary (~4-5 picks, up from 3 depots)
-— the loud Hades/StS reward beat. A "BAND CLEARED: <name>" header
-makes each phase a named milestone — this is also the real fix for
-the phases-don't-read finding. 8b DECISION: extend depot placement to
-one per boundary vs a band-clear screen hung off breach_band_changed
-— either way it pauses (constraint 1). Hash-anchor verify; test-all +
-test-breach green; a harness.
+**Iter 58 — BUILD — Round 8c: enemy ammo drops.**
+Read `loop/breach/iter-055-round8-architect.md`. On enemy death,
+spawn an ammo pickup (HE/HEAT/APCR shell); the player collects it
+mid-combat → loadout reserve += . Resupply is no longer depot-only.
+MUST hook via Spawner.gd's existing enemy-death path (sanctioned
+substrate) — NOT Enemy.gd (unsanctioned; halt-and-investigate if it
+needs Enemy.gd). New arc-4 AmmoPickup script/scene; reuse the arc-2
+pickup pattern (PlayerTank.heal / apply_shield / _show_pickup_toast).
+Hash-anchor verify; test-all + test-breach green; a harness.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all

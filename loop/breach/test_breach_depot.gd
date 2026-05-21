@@ -60,6 +60,14 @@ func _initialize() -> void:
 		quit(1); return
 	print("  UI panel shown + populated on entry")
 
+	# arc-4 iter 57 (Round 8b): the panel reads as a per-phase reward
+	# beat — the Title is a "...CLEARED" header.
+	var title: Label = layer.get_node_or_null("Panel/Title") as Label
+	if title == null or title.text.find("CLEARED") == -1:
+		push_error("FAIL — depot Title not a phase-clear reward header: '%s'" % (title.text if title != null else "<null>"))
+		quit(1); return
+	print("  panel framed as a phase-clear reward")
+
 	# Non-player exit should NOT resume.
 	depot._on_body_exited(non_player)
 	if not paused:

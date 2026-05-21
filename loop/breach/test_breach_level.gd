@@ -47,10 +47,10 @@ func _initialize() -> void:
 		push_error("FAIL — starter loadout has no HE reserve (got %d)" % player.loadout.he_reserve)
 		quit(1); return
 
-	# 4. >=3 Depot children at deterministic band-transition depths
-	# (C2 anchor 3 — "depots placed at deterministic intervals; harness
-	# verifies a full run hits >=3 depots"). Duck-typed by the depot's
-	# apply_choice + _is_player methods.
+	# 4. >=4 Depot children at deterministic band-transition depths —
+	# arc-4 iter 57 (Round 8b): one pick per completable phase (was >=3;
+	# Depot4 added at the open_killbox→endgame boundary). Duck-typed by
+	# the depot's apply_choice + _is_player methods.
 	var depot_count: int = 0
 	var depot_ys: Array = []
 	for child in level.get_children():
@@ -58,8 +58,8 @@ func _initialize() -> void:
 			depot_count += 1
 			if child is Node2D:
 				depot_ys.append(int((child as Node2D).position.y))
-	if depot_count < 3:
-		push_error("FAIL — BreachLevel has %d depots, want >=3 (C2 anchor 3)" % depot_count)
+	if depot_count < 4:
+		push_error("FAIL — BreachLevel has %d depots, want >=4 (8b: one per phase)" % depot_count)
 		quit(1); return
 
 	depot_ys.sort()

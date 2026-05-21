@@ -17,6 +17,43 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 057 — BUILD — Round 8b: per-phase upgrade-card pick
+
+- Date: 2026-05-21
+- Tag: [STRUCTURE]
+- Score: **39/65** (Δ 0 — per the iter-055 blueprint, C14 lands at
+  round close; iter 57 is a structural BUILD on the in-run-progression
+  surface.)
+- Round 8b of the iter-055 blueprint. 8b DECISION: extend the depot
+  system (Option A) — the depots ALREADY are per-boundary picks;
+  Option B (a new band-clear screen) would duplicate the whole pick
+  machinery.
+- The change:
+  - scenes/BreachLevel.tscn — Depot4 added at depth 180 (the
+    open_killbox→endgame boundary). There is now a pick after every
+    one of the 4 completable phases (was 3); the endgame finale stays
+    depot-less.
+  - scripts/Depot.gd — `_show_panel` reframes the depot as a reward
+    beat: the Title names the band just cleared (new
+    `_resolve_cleared_band_name` — "— BRICK MAZE CLEARED —" etc., so
+    each phase is a named milestone); choices are a numbered
+    "[1]/[2]/[3]" pick.
+  - scenes/Depot.tscn — Title default → "— PHASE CLEARED —".
+- CONSULT constraints: constraint 1 respected — the depot pauses the
+  tree; the pick is at a safe gate.
+- Hash anchor: `23d6a2ec3bf2821f` verified — no substrate touched
+  (BreachLevel.tscn / Depot.tscn / Depot.gd are all arc-4-owned).
+  `make test-all` 5/5. `make test-breach` 26/26.
+- Harnesses: test_breach_level tightened to >=4 depots (reports
+  depots=4); test_breach_depot extended — the panel Title is a
+  "...CLEARED" reward header.
+- Falsifications: none.
+- Files: scenes/BreachLevel.tscn, scenes/Depot.tscn, scripts/Depot.gd,
+  test_breach_level.gd, test_breach_depot.gd, PRE-MORTEMS.md,
+  LEDGER.md, STATE.md
+- Finding: **every phase now ends in a named reward pick.** iter 58 =
+  8c: enemy ammo drops.
+
 ## iter 056 — BUILD — Round 8a: XP + level-up core
 
 - Date: 2026-05-21

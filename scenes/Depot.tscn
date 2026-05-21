@@ -37,7 +37,7 @@ offset_left = 8.0
 offset_top = 6.0
 offset_right = 232.0
 offset_bottom = 22.0
-text = "— FIELD DEPOT —"
+text = "— PHASE CLEARED —"
 
 [node name="NextBand" type="Label" parent="UILayer/Panel"]
 offset_left = 8.0

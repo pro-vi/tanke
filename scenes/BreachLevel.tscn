@@ -32,3 +32,10 @@ depot_name = "depot_3"
 band_name_next = "open_killbox"
 next_band_hint = "open killbox ahead"
 randomize_offers = true
+
+[node name="Depot4" parent="." index="8" instance=ExtResource("4_depot")]
+position = Vector2(160, -2648)
+depot_name = "depot_4"
+band_name_next = "endgame_mixed"
+next_band_hint = "endgame — all pressures"
+randomize_offers = true

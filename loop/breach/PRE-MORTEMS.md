@@ -24,6 +24,43 @@ Format:
 
 ---
 
+## iter 057 — BUILD — Round 8b: per-phase upgrade-card pick
+
+- Date: 2026-05-21
+- Tag: [STRUCTURE]
+- Round 8b of the iter-055 blueprint — "a pick-1-of-3 upgrade screen
+  at every band boundary" + the reward-beat framing.
+- 8b DECISION: extend the depot system (blueprint Option A), not a new
+  band-clear screen (Option B duplicates the depot's whole pick
+  machinery). The depots ALREADY are per-boundary picks — 8b makes
+  them (a) complete and (b) read as rewards.
+- The change:
+  - scenes/BreachLevel.tscn — add Depot4 at depth 180 (the
+    open_killbox→endgame boundary), so there is a pick after every one
+    of the 4 completable phases (was 3 depots / 3 picks). The endgame
+    finale stays depot-less.
+  - scripts/Depot.gd — `_show_panel` reframes the depot as a reward
+    beat: the Title names the band just cleared (`_resolve_cleared_
+    band_name` — a phase becomes a named milestone, the real fix for
+    "phases don't read"); choices are a numbered "[1]/[2]/[3]" pick.
+  - scenes/Depot.tscn — Title default text → "— PHASE CLEARED —".
+- CONSULT constraints: constraint 1 respected — the depot pauses the
+  tree; the pick is at a safe gate, never in combat.
+- Predicted failure modes:
+  - test_breach_level asserts >=3 depots — tightened to >=4 for the
+    per-phase deliverable.
+  - test_breach_depot opens the panel + checks ChoiceA contains
+    choice_a_label — the "[1]  " prefix keeps it a substring match.
+  - No substrate touched (BreachLevel.tscn / Depot.tscn / Depot.gd are
+    all arc-4-owned) — hash anchor trivially preserved.
+- Falsifiable claim: post-edit — test_breach_level reports depots=4;
+  test_breach_depot shows the panel Title reads "...CLEARED". Hash
+  anchor 23d6a2ec3bf2821f preserved; test-all 5/5; test-breach 26/26.
+- Sentence test: n/a (the depot offers the existing catalog; the
+  per-phase cadence + framing is the change).
+- Substrate touched: none (arc-4-owned scenes/scripts).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 056 — BUILD — Round 8a: XP + level-up core
 
 - Date: 2026-05-21

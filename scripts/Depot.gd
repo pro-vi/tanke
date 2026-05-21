@@ -98,10 +98,19 @@ func _show_panel() -> void:
 	var layer: CanvasLayer = get_node_or_null("UILayer") as CanvasLayer
 	if layer == null:
 		return
-	_set_panel_label("Panel/NextBand", "next: " + _resolve_next_band_hint())
-	_set_panel_label("Panel/ChoiceA", "1: " + _choice_label(1))
-	_set_panel_label("Panel/ChoiceB", "2: " + _choice_label(2))
-	_set_panel_label("Panel/ChoiceC", "3: " + _choice_label(3))
+	# arc-4 iter 57 (Round 8b): the depot reads as a per-phase reward
+	# beat — the Title names the band just cleared (each phase becomes a
+	# named milestone, the real fix for "phases don't read"); the
+	# choices are a numbered upgrade pick.
+	var cleared: String = _resolve_cleared_band_name()
+	if cleared != "":
+		_set_panel_label("Panel/Title", "— %s CLEARED —" % cleared.to_upper())
+	else:
+		_set_panel_label("Panel/Title", "— PHASE CLEARED —")
+	_set_panel_label("Panel/NextBand", "→  next: " + _resolve_next_band_hint())
+	_set_panel_label("Panel/ChoiceA", "[1]  " + _choice_label(1))
+	_set_panel_label("Panel/ChoiceB", "[2]  " + _choice_label(2))
+	_set_panel_label("Panel/ChoiceC", "[3]  " + _choice_label(3))
 	layer.visible = true
 
 
@@ -136,6 +145,22 @@ func _resolve_next_band_hint() -> String:
 	if nxt == null or nxt.band_name == "":
 		return next_band_hint
 	return nxt.band_name.replace("_", " ")
+
+
+# arc-4 iter 57 (Round 8b): the band JUST cleared — the band one row
+# below this depot's boundary depth. Names the panel's reward header.
+# Empty when there is no level context (e.g. a harness-bare depot).
+func _resolve_cleared_band_name() -> String:
+	var lvl: Node = get_parent()
+	if lvl == null or not ("breach_config" in lvl) or lvl.breach_config == null:
+		return ""
+	if not lvl.has_method("_rows_climbed_at_y"):
+		return ""
+	var depot_depth: int = lvl._rows_climbed_at_y(global_position.y)
+	var cleared = lvl.breach_config.band_for_depth(depot_depth - 1)
+	if cleared == null or cleared.band_name == "":
+		return ""
+	return cleared.band_name.replace("_", " ")
 
 
 # arc-4 iter 40 (Round 6b): roll this depot's 3 upgrade offers — 3
