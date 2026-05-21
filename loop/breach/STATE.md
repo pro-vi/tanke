@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 51
+iter: 52
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_51: 23d6a2ec3bf2821f  # bit-identical through 29 substrate writes
-substrate_writes_this_arc: 29  # ProceduralLevel.gd ×5 + Bullet.gd ×7 + PlayerTank.gd ×15 + Level.gd + Spawner.gd ×2
+hash_anchor_at_iter_52: 23d6a2ec3bf2821f  # bit-identical through 30 substrate writes
+substrate_writes_this_arc: 30  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×15 + Level.gd + Spawner.gd ×2
 current_round: 7-open
-current_round_phase: BUILD — Round 7e (HE explosion visual); blueprint iter-047-round7-architect.md
+current_round_phase: CONSULT/QUEUE — Round 7-close (build phase 7a-7e done); blueprint iter-047-round7-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 46  # CONSULT 004 — written self-pre-mortem, Round 6 close
 playtest_log: [iter 33 — 2026-05-20 — verdict: structurally complete but illegible; F003 logged]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING (resumed iter 47). The user playtested after Round 6 (the iter-46 gate) and gave 5 findings; the loop integrated them, opened Round 7 (the fix-round). The non-stop loop continues per PROMPT until the user writes playtest / halt / stop.
-next_action: iter 52 — BUILD — Round 7e: HE explosion visual. Read iter-047-round7-architect.md. Playtest finding 5 — "HE should have an explosion effect." HE has a radius blast mechanically (_apply_he_blast) but no visual. Add a visible blast on HE detonation — algorithmic (ColorRect/tween burst, the _spawn_impact_spark pattern scaled up; no MLX-SD). Harness the node spawn; the look is a noted visual-verification caveat. Hash-anchor verify; test-all + test-breach green. This is the last Round-7 build piece — 7-close (CONSULT + QUEUE) follows.
+next_action: iter 53 — Round 7-close — CONSULT + QUEUE. Read iter-047-round7-architect.md §7-close. Write a CONSULT (creative-consults.md) — a self-pre-mortem reviewing whether Round 7's 5 builds (7a shell economy, 7b APCR penetrate, 7c run-route, 7d meta ladder, 7e HE explosion) actually address playtest-2's 5 findings; flag the F003 risk (the legibility surfaces 7c/7d are verified to EXIST, not to LAND). Update REVIEW-QUEUE.md. Round 7's build phase (7a-7e) is done — the next playtest gate is due.
 score: 39/65 absolute · 39/65 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -108,25 +108,25 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-20 — **iter 51 (BUILD).** Round 7d — meta-progression
-  legibility: the unlock ladder goes 2 rungs → 4 (Breach Dividend @20,
-  Overdrive @40, Quick Swap @60, Steel Salvage @80; depot pool widens
-  5→9); the codex's vague iter-45 meta line is replaced by a 4-cell
-  unlock ladder — green = reached, dark = locked — under a best-depth
-  header. Playtest finding 3. Hash anchor preserved (HUD-only);
-  test-all 5/5, test-breach 25/25. Δ 0. 39/65.
+- 2026-05-20 — **iter 52 (BUILD).** Round 7e — HE explosion visual:
+  HE detonation now spawns a two-layer ColorRect blast (warm orange
+  outer bloom sized to the blast radius + a bright pale core) that
+  expands and fades over ~0.28s — the `_spawn_impact_spark` pattern
+  scaled up; algorithmic, no MLX-SD. Playtest finding 5. Hash anchor
+  preserved (HE branch — AP baseline never reached); test-all 5/5,
+  test-breach 25/25. Δ 0. 39/65. **Round 7 build phase (7a-7e) done.**
 
 ## Next action
 
-**Iter 52 — BUILD — Round 7e: HE explosion visual.**
-Read `loop/breach/iter-047-round7-architect.md`. Playtest finding 5 —
-"HE should have an explosion effect." HE has a radius blast
-mechanically (`_apply_he_blast`) but no visual. Add a visible blast on
-HE detonation — algorithmic (ColorRect/tween burst, the
-`_spawn_impact_spark` pattern scaled up; no MLX-SD). Harness the node
-spawn; the look is a noted visual-verification caveat. Hash-anchor
-verify; test-all + test-breach green. This is the last Round-7 build
-piece — 7-close (CONSULT + QUEUE) follows.
+**Iter 53 — Round 7-close — CONSULT + QUEUE.**
+Read `loop/breach/iter-047-round7-architect.md` §7-close. Write a
+CONSULT (`creative-consults.md`) — a self-pre-mortem reviewing whether
+Round 7's 5 builds (7a shell economy, 7b APCR penetrate, 7c run-route,
+7d meta ladder, 7e HE explosion) actually address playtest-2's 5
+findings; flag the F003 risk (the legibility surfaces 7c/7d are
+harness-verified to EXIST, not to LAND). Update `REVIEW-QUEUE.md`.
+Round 7's build phase (7a-7e) is complete — the next playtest gate is
+due.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all

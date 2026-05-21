@@ -17,6 +17,38 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 052 — BUILD — Round 7e: HE explosion visual
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **39/65** (Δ 0 — a visual for an existing mechanic; the look
+  is playtest-gated per the blueprint's visual-verification caveat.)
+- Round 7e, the last build piece of the iter-047 blueprint — fixes
+  playtest finding 5, "HE should have an explosion effect."
+- The change (scripts/Bullet.gd): HE already applies a radius blast
+  mechanically (_apply_he_blast); this gives it a visual. On an HE
+  detonation `_spawn_he_explosion` spawns two ColorRect layers — a warm
+  orange outer bloom sized to the full blast diameter + a bright pale
+  core — that expand from ~1/3 size to full and fade over ~0.28s. The
+  proven `_spawn_impact_spark` pattern, scaled up. Algorithmic, no
+  MLX-SD.
+- Hash anchor: `23d6a2ec3bf2821f` verified — the explosion is inside
+  `_on_body_entered`'s HE branch; the seed-42 procedural baseline fires
+  AP only → never reached → bit-identical. `make test-all` 5/5. `make
+  test-breach` 25/25.
+- Harness: test_breach_he_blast Test 4 — an HE hit spawns >=2 "HEBlast"
+  ColorRect layers, an AP hit spawns 0. (Bug caught + fixed in-iter:
+  two layers sharing the name "HEBlast" were uniquified to a
+  non-readable @-prefixed form → distinct names HEBlastBloom/Core.)
+- Falsifications: none. Visual-verification caveat (cf. F003): the
+  harness confirms the explosion NODES spawn, not that the blast LOOKS
+  right — the look is playtest-gated.
+- Substrate writes this arc: 29 → 30 (Bullet.gd ×8).
+- Files: scripts/Bullet.gd, test_breach_he_blast.gd, PRE-MORTEMS.md,
+  LEDGER.md, STATE.md
+- Finding: **all 5 playtest-2 findings now have builds.** Round 7's
+  build phase is complete (7a-7e). iter 53 = 7-close: CONSULT + QUEUE.
+
 ## iter 051 — BUILD — Round 7d: meta-progression legibility
 
 - Date: 2026-05-20

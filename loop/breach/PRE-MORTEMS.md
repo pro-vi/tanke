@@ -24,6 +24,36 @@ Format:
 
 ---
 
+## iter 052 — BUILD — Round 7e: HE explosion visual
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 7e, the last build piece of the iter-047 blueprint. Fixes
+  playtest finding 5 — "HE should have an explosion effect."
+- The change (scripts/Bullet.gd): HE already applies a radius blast
+  mechanically (_apply_he_blast); this gives it a visual. On an HE
+  detonation `_spawn_he_explosion` spawns two ColorRect layers — a warm
+  outer bloom sized to the full blast diameter + a bright inner core —
+  that expand from small to full and fade over ~0.28s. The proven
+  `_spawn_impact_spark` pattern, scaled up. Algorithmic, no MLX-SD.
+- CONSULT constraints respected: none risked — a visual for an existing
+  mechanic, no economy/identity surface touched.
+- Predicted failure modes:
+  - Hash anchor: the explosion is inside `_on_body_entered`'s HE branch
+    — the seed-42 procedural baseline fires AP only → never reached →
+    bit-identical.
+  - Visual-verification caveat (per the blueprint): the harness can
+    confirm the explosion NODES spawn, not that the blast LOOKS right —
+    the look is playtest-gated (cf. F003).
+- Falsifiable claim: post-edit — test_breach_he_blast Test 4 shows an
+  HE hit spawns >=2 "HEBlast" ColorRect layers and an AP hit spawns 0.
+  Hash anchor 23d6a2ec3bf2821f preserved; test-all 5/5; test-breach
+  25/25.
+- Sentence test: n/a (a visual for an existing mechanic).
+- Substrate touched: Bullet.gd (HE branch of _on_body_entered —
+  sanctioned, flag-off AP path bit-identical).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 051 — BUILD — Round 7d: meta-progression legibility
 
 - Date: 2026-05-20

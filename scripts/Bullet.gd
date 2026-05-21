@@ -110,6 +110,9 @@ func _on_body_entered(body: Node) -> void:
 		body.take_damage(deal)
 	if shell_class == SHELL_CLASS_HE:
 		var radius_hits: int = _apply_he_blast(body)
+		# arc-4 iter 52 (Round 7e): the HE detonation visual — a blast
+		# bloom sized to the _apply_he_blast radius (playtest finding 5).
+		_spawn_he_explosion()
 		# arc-4 iter 24 "Breach Dividend": an HE shot that breaches a
 		# cluster of >=DIVIDEND_THRESHOLD bricks refunds 1 HE — IF the
 		# player picked the Breach Dividend depot upgrade. radius_hits +
@@ -188,6 +191,48 @@ func _try_steel_salvage() -> void:
 		return
 	if p.loadout.steel_salvage:
 		p.loadout.refill_apcr(1)
+
+
+# arc-4 iter 52 (Round 7e, playtest finding 5 — "HE should have an
+# explosion effect"): the HE detonation visual. HE already applies a
+# radius blast mechanically (_apply_he_blast); this is its look — two
+# ColorRect layers (a warm outer bloom sized to the full blast diameter
+# + a bright core) that expand from small to full and fade over ~0.28s.
+# The _spawn_impact_spark pattern, scaled up. Algorithmic, no MLX-SD.
+func _spawn_he_explosion() -> void:
+	var parent_node: Node = get_parent()
+	if parent_node == null or not is_instance_valid(parent_node):
+		return
+	var origin: Vector2 = global_position
+	# outer bloom — warm orange, reaches the full blast diameter.
+	_spawn_blast_layer(parent_node, origin, HE_BLAST_RADIUS_PX * 2.0,
+		Color(1.0, 0.55, 0.15, 0.85), 0.28, 58, "HEBlastBloom")
+	# bright core — pale yellow, smaller + briefer.
+	_spawn_blast_layer(parent_node, origin, HE_BLAST_RADIUS_PX,
+		Color(1.0, 0.95, 0.7, 0.95), 0.18, 59, "HEBlastCore")
+
+
+# arc-4 iter 52: one expand-and-fade ColorRect layer of the HE blast.
+# `full_size` is the px the square reaches at peak; it starts at ~1/3
+# that, scales to full from its centre, and fades alpha to 0 over `dur`.
+# `layer_name` is distinct per layer so the harness can count them (a
+# shared name would be uniquified to a non-readable @-prefixed form).
+func _spawn_blast_layer(parent_node: Node, origin: Vector2, full_size: float,
+		col: Color, dur: float, z: int, layer_name: String) -> void:
+	var rect: ColorRect = ColorRect.new()
+	rect.name = layer_name
+	rect.size = Vector2(full_size, full_size)
+	rect.color = col
+	rect.position = origin - Vector2(full_size, full_size) * 0.5
+	rect.pivot_offset = Vector2(full_size, full_size) * 0.5
+	rect.scale = Vector2(0.35, 0.35)
+	rect.z_index = z
+	parent_node.add_child(rect)
+	var tween: Tween = rect.create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(rect, "scale", Vector2.ONE, dur)
+	tween.tween_property(rect, "modulate:a", 0.0, dur)
+	tween.chain().tween_callback(rect.queue_free)
 
 
 # iter 41: visual juice — small white ColorRect at impact position, scaled +

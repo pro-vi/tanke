@@ -40,7 +40,11 @@ func _initialize() -> void:
 	if not await _fire_at_cluster(BulletT.SHELL_CLASS_HEAT, "HEAT", 2, 0):
 		quit(1); return
 
-	print("BREACH_HE_BLAST_OK 3 shell-class behaviors distinct")
+	# === Test 4: HE detonation spawns the explosion visual; AP does not.
+	if not await _test_he_explosion():
+		quit(1); return
+
+	print("BREACH_HE_BLAST_OK 3 shell-class behaviors distinct; HE detonation visual")
 	quit(0)
 
 
@@ -96,4 +100,40 @@ func _fire_at_cluster(shell: int, label: String, expect_primary: int, expect_min
 	# Crisp cite: HE should hit ALL 3 neighbors (all within 18px); AP/HEAT 0.
 	print("  %s — primary=%d  radius_hits=%d" % [label, bricks[0].damage_taken, hit_count])
 	container.queue_free()
+	return true
+
+
+# arc-4 iter 52 (Round 7e): an HE hit spawns the HE explosion visual —
+# two "HEBlast"-named ColorRect layers parented to the bullet's parent;
+# an AP hit spawns none. Verifies the node spawn, not the look (the
+# blast's appearance is a playtest-gated visual caveat).
+func _test_he_explosion() -> bool:
+	for pair in [[BulletT.SHELL_CLASS_HE, "HE", true],
+			[BulletT.SHELL_CLASS_AP, "AP", false]]:
+		var container := Node2D.new()
+		root.add_child(container)
+		var brick := StubBrick.new()
+		container.add_child(brick)
+		var bullet: Node = BulletScene.instantiate()
+		container.add_child(bullet)
+		await process_frame
+		bullet.shell_class = pair[0]
+		bullet._on_body_entered(brick)
+		await process_frame
+		var blast_layers: int = 0
+		for child in container.get_children():
+			if child is ColorRect and String(child.name).begins_with("HEBlast"):
+				blast_layers += 1
+		var want_blast: bool = pair[2]
+		if want_blast and blast_layers < 2:
+			push_error("FAIL — %s spawned %d HEBlast layers, want >= 2" % [pair[1], blast_layers])
+			container.queue_free()
+			return false
+		if not want_blast and blast_layers != 0:
+			push_error("FAIL — %s spawned %d HEBlast layers, want 0" % [pair[1], blast_layers])
+			container.queue_free()
+			return false
+		print("  %s — HEBlast layers = %d" % [pair[1], blast_layers])
+		container.queue_free()
+		await process_frame
 	return true
