@@ -17,6 +17,37 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 048 — BUILD — Round 7a: shell-economy retune
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Score: **39/65** (Δ 0 — a tuning change; C3's structural tier is
+  maxed, the value is [FEEL]-gated for the next playtest.)
+- Round 7a (the iter-46 playtest fix-round), piece 1 — fixes playtest
+  finding 1, "shells are too few to manage."
+- The retune (configs/breach_starter_loadout.tres):
+  - starter reserves: HE 2→6, HEAT 1→4, APCR 2→5 (total 5 → 15).
+  - caps: max_he 6→12, max_heat 3→8, max_apcr 4→10.
+  The breach economy is now a managed handful — enough to make real
+  spending choices across a 5-band climb — not "two shots and done."
+  Still finite + spendable: scarcity (the breach-economy identity)
+  holds.
+- Note: the depot refill AMOUNTS (HE_REFILL_2 = +2, etc.) are now
+  modest relative to the bigger caps — FULL_RESUPPLY (refill-to-cap)
+  is the heavy refill; the +2/+1 entries are modest top-ups. Coherent,
+  but watch the next playtest — if the small refills read as weak,
+  retune the depot amounts. Loadout.gd's bare default maxes are left
+  as-is (harness-only; the .tres governs the gameplay starter).
+- Hash anchor: `23d6a2ec3bf2821f` verified (regression guard — the
+  breach starter loadout is off the procedural hash path). `make
+  test-all` 5/5. `make test-breach` 24/24 (test_breach_level now
+  reports he_reserve=6).
+- Falsifications: none.
+- Files: configs/breach_starter_loadout.tres, PRE-MORTEMS.md,
+  LEDGER.md, STATE.md
+- Finding: **The breach economy has room to be managed now.** iter 49
+  = 7b — the APCR penetrate-steel redesign.
+
 ## iter 047 — PLAYTEST — iter-46-gate playtest integrated; Round 7 opened
 
 - Date: 2026-05-20

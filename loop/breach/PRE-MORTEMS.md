@@ -24,6 +24,41 @@ Format:
 
 ---
 
+## iter 048 — BUILD — Round 7a: shell-economy retune (starter reserves + caps)
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE]
+- Round 7a (the iter-46 playtest fix-round), piece 1. Blueprint:
+  iter-047-round7-architect.md. Fixes playtest finding 1 — "shells too
+  few to manage."
+- The change: configs/breach_starter_loadout.tres — starter reserves
+  HE 2→6, HEAT 1→4, APCR 2→5; caps max_he 6→12, max_heat 3→8,
+  max_apcr 4→10. The starter total goes 5 → 15 finite shells; the
+  economy becomes a managed handful, not "two shots and done." Still
+  finite + spendable — scarcity (the breach-economy identity) holds.
+- Δ note: a tuning change; C3's structural tier is maxed → Δ 0. The
+  value is [FEEL]-gated (the next playtest re-checks finding 1).
+- CONSULT constraints respected: 7 (reserves are the economy, not a
+  %stat). The retune respects the scarcity identity — finite, spendable.
+- Predicted failure modes:
+  - A harness asserts the .tres's exact reserve values. Checked:
+    test_breach_level only asserts he_reserve > 0 (passes); no other
+    harness reads the .tres values (they build LoadoutT.new() with
+    explicit values). The retune is harness-safe.
+  - Over-correction — too generous → no economy. Mitigation: 3× the
+    starter (5→15) is a managed handful; the next playtest tunes
+    further if needed.
+- Falsifiable claim: post-edit — make test-all 5/5; make test-breach
+  24/24; test_breach_level reports he_reserve=6. Hash anchor
+  23d6a2ec3bf2821f preserved (the .tres is the breach starter, off the
+  procedural baseline).
+- Sentence test: n/a (tuning, no new upgrade).
+- Substrate touched: none — breach_starter_loadout.tres is arc-4-owned.
+  Loadout.gd's bare-Resource default maxes are left as-is (harness-
+  relevant only; the .tres governs the gameplay starter).
+- Hash-anchor verification plan: regression guard — the breach starter
+  loadout is not on the procedural hash path.
+
 ## iter 047 — PLAYTEST — integrate the iter-46-gate playtest; open Round 7
 
 - Date: 2026-05-20
