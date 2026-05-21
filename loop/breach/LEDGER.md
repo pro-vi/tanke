@@ -17,6 +17,40 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 054 — SWEEP — post-Round-7 verification grid
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE-DEFERRED]
+- Score: **39/65** (Δ 0 — a SWEEP verifies; it does not lift the
+  rubric.)
+- Round 7 closed at iter 53; the user has not yet playtested. Per the
+  iter-53 next_action, iter 54 is a non-speculative iter — a SWEEP
+  over the post-Round-7 build (30 substrate writes across 7 rounds).
+- The verification grid, all green:
+  - Reachability: test_breach_harness --deep across 12 seeds (42-53),
+    all 5 bands per seed → **12/12 seeds, all 5 bands reachable**
+    (100% — above the REACHABILITY FLOOR of 80% and above the
+    iter-26-era 9/10 = 90% baseline).
+  - test-breach: 25/25 green.
+  - test-all: 5/5 green (ALL_LOADER_TESTS_PASS, CHAIN_25/35_OK,
+    ARC_COMPLETE_OVERLAY_OK, TITLESCREEN_NAV_OK).
+  - Hash anchor: 23d6a2ec3bf2821f, playable: true (seed 42).
+- The iter-54 PRE-MORTEM claim held: Round 7 (Bullet / PlayerTank /
+  Depot / MetaProgress — none touch level geometry) left reachability
+  structurally unchanged; the build is coherent end-to-end.
+- Falsifications: none.
+- Cadence note: the loop is at the playtest-gated autonomous ceiling
+  (CONSULT 004/005). The SWEEP was the last honest non-speculative
+  iter; with the build verified and no work left that should precede
+  the playtest, the loop slows to a long idle heartbeat (1800s) rather
+  than spin Δ-0 iters. Still non-stop (scheduled, not halted) — it
+  resumes on the user's playtest or a manual /loop.
+- Files: PRE-MORTEMS.md, LEDGER.md, STATE.md (no code touched).
+- Finding: **the post-Round-7 build is verified coherent** — 12/12
+  reachability, 25 breach + 5 arc-3 harnesses, hash anchor intact.
+  The loop is at the autonomous ceiling; REVIEW-QUEUE #9's playtest
+  is the gate.
+
 ## iter 053 — CONSULT/QUEUE — Round 7-close
 
 - Date: 2026-05-20

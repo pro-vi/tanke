@@ -24,6 +24,34 @@ Format:
 
 ---
 
+## iter 054 — SWEEP — post-Round-7 verification grid
+
+- Date: 2026-05-20
+- Tag: [STRUCTURE-DEFERRED]
+- Round 7 closed at iter 53; the user has not yet playtested. Per the
+  iter-53 next_action, iter 54 is a non-speculative iter — a SWEEP
+  verification grid over the post-Round-7 build (30 substrate writes
+  across 7 rounds), NOT a speculative new mechanic round.
+- The grid: (a) reachability sweep — test_breach_harness --deep across
+  12 seeds (42-53), all 5 bands per seed; (b) test-breach 25/25; (c)
+  test-all 5/5; (d) hash anchor seed 42. A holistic "is the build
+  still coherent after Round 7" check.
+- CONSULT constraints respected: 5 (every band reachability-checked).
+  None risked — verification only, no code touched.
+- Predicted failure: Round 7 touched Bullet / PlayerTank / Depot /
+  MetaProgress — none touch level geometry — so reachability should be
+  structurally unchanged from the iter-26-era 9/10 sweep. If a seed
+  blocks a band, that is a pre-existing procedural-generation edge,
+  not a Round-7 regression.
+- Falsifiable claim: post-sweep — all 5 bands reachable on >=80% of
+  the 12 seeds (the REACHABILITY FLOOR); test-breach 25/25; test-all
+  5/5; hash anchor 23d6a2ec3bf2821f. If reachability drops below the
+  iter-26 baseline (9/10 = 90%), that is a finding.
+- Sentence test: n/a (verification iter).
+- Substrate touched: none (SWEEP — no code).
+- Hash-anchor verification plan: seed 42 procedural baseline, part of
+  the grid.
+
 ## iter 053 — CONSULT/QUEUE — Round 7-close
 
 - Date: 2026-05-20

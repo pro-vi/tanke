@@ -2,26 +2,26 @@
 
 ```yaml
 phase: running
-iter: 53
+iter: 54
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
 hash_anchor_at_iter_52: 23d6a2ec3bf2821f  # bit-identical through 30 substrate writes
 substrate_writes_this_arc: 30  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×15 + Level.gd + Spawner.gd ×2
 current_round: 7-closed
-current_round_phase: Round 7 CLOSED at iter 53 (CONSULT 005 + REVIEW-QUEUE #9); at the autonomous ceiling — playtest gate due
+current_round_phase: Round 7 CLOSED; iter-54 SWEEP verified the build coherent (12/12 reachability). At the playtest-gated ceiling — idle heartbeat until REVIEW-QUEUE #9 playtest
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
 falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved]
-reachability_status: all 5 bands verified — 9/10-seed sweep (90%, floor ≥80%)
+reachability_status: all 5 bands verified — 12/12-seed sweep (100%, floor ≥80%) — refreshed iter 54 post-Round-7
 audit_candidates: []
 last_audit: iter 26
 last_consult: iter 53  # CONSULT 005 — written self-pre-mortem, Round 7 close
 playtest_log: [iter 33 — 2026-05-20 — verdict: structurally complete but illegible; F003 logged]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: RUNNING — Round 7 closed at iter 53. Rounds 5-6-7 (iters 34-52) built every fix the two user playtests asked for; Round 7's 5 builds (7a-7e) address playtest-2's 5 findings. CONSULT 005: the loop is at the autonomous ceiling — 4 of 5 Round-7 fixes are [FEEL]/visual/legibility-gated. REVIEW-QUEUE #9 requests a Round-7 playtest. The non-stop loop continues per PROMPT until the user writes playtest / halt / stop.
-next_action: iter 54 — DIAGNOSE post-Round-7. Round 7 is closed (CONSULT 005, REVIEW-QUEUE #9 — playtest requested). The loop is at the autonomous ceiling: 39/65, the remaining ~26 points are [FEEL]/playtest-gated, and CONSULT 005 Q3 flags that piling speculative new scope ahead of the playtest is anti-pattern ("legibility theater"). Per the PROMPT the loop is non-stop. iter 54: if the user has playtested, integrate it + open Round 8; else diagnose the highest-value NON-speculative iter — a SWEEP (re-verify bands × reachability × shells post-Round-7) or a BUILD-QUALITY craft iter — NOT a speculative new mechanic round.
+loop_state: RUNNING (idle heartbeat) — Round 7 closed at iter 53; iter-54 SWEEP verified the post-Round-7 build coherent (12/12 reachability, 25 breach + 5 arc-3 harnesses, hash anchor intact). The loop is at the playtest-gated autonomous ceiling (CONSULT 004/005): all remaining rubric value is [FEEL]-gated, and building more before a playtest is the documented seductive-but-hollow anti-pattern. With no honest non-speculative work left, the loop slows to a long idle heartbeat (1800s) — still non-stop (scheduled, not halted), resuming on the user's playtest or a manual /loop. REVIEW-QUEUE #9 requests the Round-7 playtest.
+next_action: iter 55 — re-assess at the playtest-gated ceiling. If the user has playtested (REVIEW-QUEUE #9), integrate the findings + open Round 8. If not: the build is verified coherent (iter-54 SWEEP) and there is no non-speculative autonomous work left — re-confirm green state, re-surface the #9 playtest ask, and continue the idle heartbeat. Do NOT open a speculative new mechanic round ahead of the playtest (CONSULT 005 Q3 — "legibility theater" / arc-2's "structure since the last human signal").
 score: 39/65 absolute · 39/65 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -108,28 +108,30 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-20 — **iter 53 (CONSULT/QUEUE).** Round 7-close: CONSULT 005
-  (written self-pre-mortem) reviewed Round 7's 5 builds finding-by-
-  finding — all 5 of playtest-2's findings have shipped fixes, 4 of 5
-  [FEEL]/visual/legibility-gated. Q3's sharp finding: "legibility
-  theater" — the loop has answered "player doesn't understand X" with
-  "draw X on screen" three times; if findings 2-3 recur, the problem
-  is depth, not communication. REVIEW-QUEUE #9 = the Round-7 playtest
-  request. No code touched. Δ 0. 39/65. **The loop is at the
-  autonomous ceiling — a playtest is the highest-value next action.**
+- 2026-05-20 — **iter 54 (SWEEP).** Post-Round-7 verification grid,
+  all green: reachability 12/12 seeds × 5 bands (100%, up from the
+  iter-26 90% baseline); test-breach 25/25; test-all 5/5; hash anchor
+  23d6a2ec3bf2821f. The post-Round-7 build is verified coherent. No
+  code touched. Δ 0. 39/65. With the build verified and no honest
+  non-speculative work left, the loop slows to a 1800s idle heartbeat
+  — still non-stop, awaiting the REVIEW-QUEUE #9 playtest.
 
 ## Next action
 
-**Iter 54 — DIAGNOSE post-Round-7.**
-Round 7 is closed (CONSULT 005; REVIEW-QUEUE #9 requests a playtest).
-The loop is at the autonomous ceiling — 39/65, the remaining ~26
-points are [FEEL]/playtest-gated, and CONSULT 005 Q3 flags that
-piling speculative new scope ahead of the playtest is anti-pattern
-("legibility theater"). Per the PROMPT the loop is non-stop. iter 54:
-if the user has playtested, integrate it + open Round 8; else
-diagnose the highest-value NON-speculative iter — a SWEEP (re-verify
-bands × reachability × shells post-Round-7) or a BUILD-QUALITY craft
-iter — NOT a speculative new mechanic round.
+**Iter 55 — re-assess at the playtest-gated ceiling.**
+iter-54 SWEEP verified the post-Round-7 build coherent (12/12
+reachability, 25 breach + 5 arc-3 harnesses, hash anchor). The loop
+is at the autonomous ceiling — 39/65, all remaining value [FEEL]-
+gated. If the user has playtested (REVIEW-QUEUE #9), integrate the
+findings + open Round 8. If not: re-confirm green, re-surface the #9
+playtest ask, hold the idle heartbeat. Do NOT open a speculative new
+mechanic round ahead of the playtest (CONSULT 005 Q3).
+
+The loop runs non-stop until the user writes `playtest` / `halt` /
+`stop`, or a correctness violation fires (hash anchor break, test-all
+regression, unsanctioned substrate write, unfixed band reachability).
+At the playtest-gated ceiling it idles at a long heartbeat rather
+than spin Δ-0 iters — it has not halted.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all
