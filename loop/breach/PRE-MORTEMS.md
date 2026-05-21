@@ -24,6 +24,44 @@ Format:
 
 ---
 
+## iter 056 — BUILD — Round 8a: XP + level-up core
+
+- Date: 2026-05-21
+- Tag: [STRUCTURE]
+- Round 8a, the first build of the iter-055 blueprint — the headline
+  playtest-3 ask, "where is the roguelite element like level ups?"
+- The change (scripts/PlayerTank.gd, breach-mode only — gated on
+  loadout != null): the tank earns XP from enemy kills (via the
+  Spawner's enemies_killed) + depth climbed; at scaling thresholds it
+  levels up; each level-up applies an AUTOMATIC stat boost rotated
+  across max HP / reload speed (GunTimer.wait_time) / shell capacity.
+  A HUD XP bar + LEVEL readout. No mid-combat modal — level-ups are
+  automatic, so CONSULT constraint 1 holds.
+- CONSULT constraints: constraint 7 (verbs not stats) is relaxed for
+  Round 8 by the user override (STATE §Arc-4 amendments); constraint 1
+  (no choice in combat) respected — level-ups are automatic.
+- Predicted failure modes:
+  - Hash anchor: the XP system is fully gated on loadout != null; an
+    arc-2/3 PlayerTank never earns XP, builds no XP HUD — bit-identical.
+  - GunTimer.wait_time: the .tscn leaves it at the 1.0s default
+    (gun_cooldown the @export is unused). The reload boost mutates
+    wait_time directly; floored at RELOAD_MIN.
+  - Score: per the iter-055 blueprint, the rubric criterion for in-run
+    progression (C14) is added at round close — iter 56 is a Δ-0
+    structural BUILD (the surface exists + is harness-cited; C14 lands
+    with the round).
+- Falsifiable claim: post-edit — test_breach_xp shows a breach
+  PlayerTank builds the XP HUD, granting XP crosses level thresholds
+  (_level rises), and the level-up rotation boosts max HP + reload +
+  shell capacity; an arc-2/3 PlayerTank builds none + cannot level.
+  Hash anchor 23d6a2ec3bf2821f preserved; test-all 5/5; test-breach
+  26/26 (new check-breach-xp).
+- Sentence test: n/a — the user override relaxes constraint 7; stat
+  level-ups are now sanctioned.
+- Substrate touched: PlayerTank.gd (XP/level system + HUD —
+  sanctioned, gated on loadout != null; arc-2/3 bit-identical).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 055 — PLAYTEST — playtest-3 integrated; Round 8 opened
 
 - Date: 2026-05-21

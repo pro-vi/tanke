@@ -90,6 +90,23 @@ var _route_panel: ColorRect = null
 var _route_cell_bgs: Array[ColorRect] = []
 var _route_cell_labels: Array[Label] = []
 var _route_bands: Array = []
+# arc-4 iter 56 (Round 8a): XP + level-up — the roguelite power curve
+# (playtest-3). Breach-mode only (gated on loadout != null).
+const XP_PER_KILL: int = 12
+const XP_PER_DEPTH_ROW: int = 3
+const XP_BASE: int = 60       # XP to reach level 2
+const XP_STEP: int = 30       # +XP_STEP to each successive threshold
+const RELOAD_STEP: float = 0.1
+const RELOAD_MIN: float = 0.35
+var _xp: int = 0
+var _level: int = 1
+var _xp_to_next: int = XP_BASE
+var _xp_kills_counted: int = 0
+var _xp_depth_counted: int = 0
+var _spawner: Node = null
+var _xp_bar_bg: ColorRect = null
+var _xp_bar_fg: ColorRect = null
+var _level_label: Label = null
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
@@ -160,6 +177,9 @@ func _ready() -> void:
 	if level != null:
 		_grass_tilemap = level.get_node_or_null("Tiles/Grass") as TileMapLayer
 	_camera = get_parent().get_node_or_null("Camera2D") as Camera2D
+	# arc-4 iter 56 (Round 8a): the Spawner sibling tracks enemies_killed
+	# — polled by _tick_xp for kill XP. Cached here; null in arc-2/3 is fine.
+	_spawner = get_parent().get_node_or_null("Spawner")
 	_setup_hurtbox()
 	_setup_hud()
 	# arc-4 iter 42 (Round 6d): band-arrival banner — connect to the
@@ -728,6 +748,29 @@ func _setup_hud() -> void:
 		_best_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 		_best_label.add_theme_constant_override("outline_size", 2)
 		canvas.add_child(_best_label)
+		# arc-4 iter 56 (Round 8a): XP bar + level readout — the visible
+		# roguelite progression beat (playtest-3). Top strip, right of HP.
+		_level_label = Label.new()
+		_level_label.name = "LevelLabel"
+		_level_label.position = Vector2(44, 2)
+		_level_label.text = "LVL 1"
+		_level_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.4, 1.0))
+		_level_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		_level_label.add_theme_constant_override("outline_size", 2)
+		_level_label.add_theme_font_size_override("font_size", 9)
+		canvas.add_child(_level_label)
+		_xp_bar_bg = ColorRect.new()
+		_xp_bar_bg.name = "XPBarBG"
+		_xp_bar_bg.position = Vector2(44, 14)
+		_xp_bar_bg.size = Vector2(90, 4)
+		_xp_bar_bg.color = Color(0.15, 0.15, 0.18, 0.85)
+		canvas.add_child(_xp_bar_bg)
+		_xp_bar_fg = ColorRect.new()
+		_xp_bar_fg.name = "XPBarFG"
+		_xp_bar_fg.position = Vector2(45, 15)
+		_xp_bar_fg.size = Vector2(0, 2)
+		_xp_bar_fg.color = Color(1.0, 0.85, 0.3, 1.0)
+		canvas.add_child(_xp_bar_fg)
 	add_child(canvas)
 	hp_changed.connect(_on_hp_changed_hud)
 
@@ -1135,6 +1178,76 @@ func _update_run_hud() -> void:
 	# Only when a loadout exists (the panel is null otherwise).
 	if _shell_panel != null and loadout != null:
 		_update_shell_panel()
+	# arc-4 iter 56 (Round 8a): accrue XP from kills + depth.
+	_tick_xp()
+
+
+# arc-4 iter 56 (Round 8a): accrue XP from enemy kills + depth climbed,
+# then grant it. Breach-mode only; called every run-HUD tick.
+func _tick_xp() -> void:
+	if loadout == null:
+		return
+	var gained: int = 0
+	var depth: int = int(maxf(0.0, (_start_y - _min_y_reached) / 16.0))
+	if depth > _xp_depth_counted:
+		gained += (depth - _xp_depth_counted) * XP_PER_DEPTH_ROW
+		_xp_depth_counted = depth
+	if _spawner != null and "enemies_killed" in _spawner:
+		var kills: int = int(_spawner.enemies_killed)
+		if kills > _xp_kills_counted:
+			gained += (kills - _xp_kills_counted) * XP_PER_KILL
+			_xp_kills_counted = kills
+	_grant_xp(gained)
+
+
+# arc-4 iter 56: add XP; each threshold crossing levels up + applies an
+# automatic stat boost. Public so the harness can drive it directly.
+func _grant_xp(amount: int) -> void:
+	if amount <= 0 or loadout == null:
+		return
+	_xp += amount
+	while _xp >= _xp_to_next:
+		_xp -= _xp_to_next
+		_level += 1
+		_xp_to_next = XP_BASE + (_level - 1) * XP_STEP
+		_apply_level_boost(_level)
+	_update_xp_hud()
+
+
+# arc-4 iter 56: the level-up stat boost — AUTOMATIC (no mid-combat
+# modal, so CONSULT constraint 1 holds), rotated across a small legible
+# set: max HP / reload speed / shell capacity.
+func _apply_level_boost(level: int) -> void:
+	var kind: int = (level - 2) % 3  # level 2 is the first level-up
+	var msg: String = ""
+	if kind == 0:
+		max_hp += 1
+		hp += 1
+		hp_changed.emit(hp, max_hp)
+		msg = "+1 MAX HP"
+	elif kind == 1:
+		var gt: Timer = $GunTimer
+		gt.wait_time = maxf(RELOAD_MIN, gt.wait_time - RELOAD_STEP)
+		msg = "FASTER RELOAD"
+	else:
+		if loadout != null:
+			loadout.max_he_reserve += 1
+			loadout.max_heat_reserve += 1
+			loadout.max_apcr_reserve += 1
+			loadout.refill_he(1)
+			loadout.refill_heat(1)
+			loadout.refill_apcr(1)
+		msg = "+SHELL CAP"
+	_show_pickup_toast("LEVEL %d  %s" % [level, msg], Color(1.0, 0.9, 0.35, 1.0))
+
+
+# arc-4 iter 56: refresh the XP bar + level readout.
+func _update_xp_hud() -> void:
+	if _level_label != null:
+		_level_label.text = "LVL %d" % _level
+	if _xp_bar_fg != null and _xp_to_next > 0:
+		var ratio: float = clampf(float(_xp) / float(_xp_to_next), 0.0, 1.0)
+		_xp_bar_fg.size = Vector2(88.0 * ratio, 2.0)
 
 
 # iter 30 (Pro Consult 005 META — "readable upward intent"): when player

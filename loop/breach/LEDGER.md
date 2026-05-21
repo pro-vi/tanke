@@ -17,6 +17,43 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 056 — BUILD — Round 8a: XP + level-up core
+
+- Date: 2026-05-21
+- Tag: [STRUCTURE]
+- Score: **39/65** (Δ 0 — per the iter-055 blueprint, C14 "in-run
+  progression" is added at round close; iter 56 is a Δ-0 structural
+  BUILD — the surface exists + is harness-cited.)
+- Round 8a, the first build of the iter-055 blueprint — the headline
+  playtest-3 ask, "where is the roguelite element like level ups?"
+- The change (scripts/PlayerTank.gd, breach-mode only — gated on
+  loadout != null):
+  - The tank earns XP from enemy kills (polled off the Spawner's
+    enemies_killed) + depth climbed (XP_PER_KILL 12, XP_PER_DEPTH_ROW
+    3); thresholds scale (XP_BASE 60, +XP_STEP 30 per level).
+  - Each level-up applies an AUTOMATIC stat boost rotated across max
+    HP / reload speed (GunTimer.wait_time, floored at RELOAD_MIN) /
+    shell capacity. Automatic = no mid-combat modal → CONSULT
+    constraint 1 holds. A toast names each boost.
+  - HUD: an XP bar + LEVEL readout (top strip, right of HP).
+- Hash anchor: `23d6a2ec3bf2821f` verified — the XP system is fully
+  gated on loadout != null; an arc-2/3 PlayerTank never earns XP,
+  builds no XP HUD — bit-identical. `make test-all` 5/5. `make
+  test-breach` 26/26.
+- Harness: new test_breach_xp.gd + check-breach-xp (test-breach
+  25 → 26). A breach PlayerTank builds the XP HUD; granting XP climbs
+  to LVL 8; the rotation boosts HP + reload + capacity; arc-2/3 builds
+  none + cannot level. (Bug caught + fixed in-iter: the harness
+  checked the pre-duplicate loadout — PlayerTank._ready duplicates it,
+  the F004 fix — corrected to pt.loadout.)
+- Falsifications: none.
+- Substrate writes this arc: 30 → 31 (PlayerTank.gd ×16).
+- Files: scripts/PlayerTank.gd, test_breach_xp.gd, Makefile,
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **the tank now levels up — the visible roguelite power
+  curve the user asked for.** iter 57 = 8b: per-phase upgrade-card
+  pick.
+
 ## iter 055 — PLAYTEST — playtest-3 integrated; Round 8 opened
 
 - Date: 2026-05-21

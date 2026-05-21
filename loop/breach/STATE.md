@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 55
+iter: 56
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_52: 23d6a2ec3bf2821f  # bit-identical through 30 substrate writes
-substrate_writes_this_arc: 30  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×15 + Level.gd + Spawner.gd ×2
+hash_anchor_at_iter_56: 23d6a2ec3bf2821f  # bit-identical through 31 substrate writes
+substrate_writes_this_arc: 31  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×16 + Level.gd + Spawner.gd ×2
 current_round: 8-open
-current_round_phase: BUILD — Round 8 (roguelite-progression overhaul, playtest-3 directed); blueprint iter-055-round8-architect.md
+current_round_phase: BUILD — Round 8b (per-phase upgrade-card pick); blueprint iter-055-round8-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 53  # CONSULT 005 — written self-pre-mortem, Round 7 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, user redirected to XP/level-ups + ammo drops → Round 8]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 8 opened at iter 55. The user playtested after Round 7 and the breach-economy concept did not land as roguelite progression ("where is the roguelite element like level ups?"). Via AskUserQuestion (override authority) the user redirected: Round 8 adds a conventional power curve — XP level-ups + per-phase upgrade picks + enemy ammo drops + longer shields. Blueprint iter-055-round8-architect.md. The non-stop loop builds Round 8 (8a-8d) until the user writes playtest / halt / stop.
-next_action: iter 56 — BUILD — Round 8a: XP + level-up core. Read iter-055-round8-architect.md. PlayerTank.gd (sanctioned, gated on loadout != null): earn XP from enemy kills + depth, level up at thresholds, each level-up grants an AUTOMATIC stat boost (HP / reload / shell-capacity, rotated — no mid-combat modal, constraint 1); add a HUD XP bar + LEVEL readout. Hash-anchor verify; test-all + test-breach green; a harness for the XP/level system.
+next_action: iter 57 — BUILD — Round 8b: per-phase upgrade-card pick. Read iter-055-round8-architect.md. A pick-1-of-3 upgrade screen at every band boundary (~4-5 picks, up from 3 depots) — the loud reward beat; a "BAND CLEARED: <name>" header makes each phase a named milestone (also the real fix for the phases-don't-read finding). 8b DECISION: extend depot placement to one per boundary vs a band-clear screen off breach_band_changed — either way it pauses (constraint 1). Hash-anchor verify; test-all + test-breach green; a harness.
 score: 39/65 absolute · 39/65 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -29,7 +29,7 @@ round6_blueprint: loop/breach/iter-038-round6-architect.md
 round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route} + check-silhouette-gate (25 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp} + check-silhouette-gate (26 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch]  # #3, #7, #9 CLOSED — playtests delivered
 ```
 
@@ -121,27 +121,26 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-21 — **iter 55 (PLAYTEST).** The user playtested after Round
-  7: the breach-economy concept did not land as roguelite progression
-  ("where is the roguelite element like level ups?"), the phases still
-  don't read, and they want enemy ammo drops. Via AskUserQuestion the
-  user overrode the arc-4 anchor sentence — Round 8 adds a conventional
-  power curve: XP level-ups + per-phase upgrade picks ("Both") + enemy
-  ammo drops + longer shields. Round 8 opened; blueprint
-  iter-055-round8-architect.md. REVIEW-QUEUE #9 closed, #10 opened. No
-  code touched. 39/65.
+- 2026-05-21 — **iter 56 (BUILD).** Round 8a — XP + level-up core:
+  the breach tank now earns XP from kills + depth, levels up at scaling
+  thresholds, and each level-up applies an automatic stat boost rotated
+  across max HP / reload / shell capacity; a HUD XP bar + LEVEL
+  readout. The visible roguelite power curve the user asked for.
+  Breach-mode-only (gated on loadout); hash anchor preserved; test-all
+  5/5, test-breach 26/26 (new check-breach-xp). Δ 0 (C14 at round
+  close). 39/65.
 
 ## Next action
 
-**Iter 56 — BUILD — Round 8a: XP + level-up core.**
-Read `loop/breach/iter-055-round8-architect.md`. PlayerTank.gd
-(sanctioned, gated on loadout != null): the tank earns XP from enemy
-kills + depth climbed, levels up at thresholds, and each level-up
-grants an AUTOMATIC stat boost — HP / reload / shell-capacity, rotated
-across a small legible set (automatic = no mid-combat modal, keeping
-constraint 1). Add a HUD XP bar + LEVEL readout — the visible
-progression beat the user is missing. Hash-anchor verify; test-all +
-test-breach green; a new harness for the XP/level system.
+**Iter 57 — BUILD — Round 8b: per-phase upgrade-card pick.**
+Read `loop/breach/iter-055-round8-architect.md`. A pick-1-of-3
+upgrade screen at every band boundary (~4-5 picks, up from 3 depots)
+— the loud Hades/StS reward beat. A "BAND CLEARED: <name>" header
+makes each phase a named milestone — this is also the real fix for
+the phases-don't-read finding. 8b DECISION: extend depot placement to
+one per boundary vs a band-clear screen hung off breach_band_changed
+— either way it pauses (constraint 1). Hash-anchor verify; test-all +
+test-breach green; a harness.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all
