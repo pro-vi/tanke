@@ -17,6 +17,43 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 058 — BUILD — Round 8c: enemy ammo drops
+
+- Date: 2026-05-21
+- Tag: [STRUCTURE]
+- Score: **39/65** (Δ 0 — per the iter-055 blueprint, C14 lands at
+  round close.)
+- Round 8c of the iter-055 blueprint — playtest-3's "does enemy drop
+  ammo?"
+- Investigation: the pickup-drop pattern already lives in Enemy.gd
+  (`_spawn_hp_pickup` / `_spawn_shield_pickup`). Enemy.gd is NOT
+  sanctioned substrate — so 8c hooks via Spawner.gd (sanctioned),
+  which already connects to each enemy's `killed` signal.
+- The change:
+  - New scripts/AmmoPickup.gd + scenes/AmmoPickup.tscn (arc-4-owned):
+    an Area2D that on `_ready` picks a random droppable shell
+    (HE/HEAT/APCR — never AP), tints a chip; on the player driving
+    over it, +1 to that shell's loadout reserve + a toast; despawns
+    after 8s.
+  - scripts/Spawner.gd — `enemy.killed.connect(_on_enemy_killed.bind(
+    enemy))` passes the dying enemy; `_try_ammo_drop` spawns an
+    AmmoPickup at its position with a 40% chance. The breach-mode gate
+    is checked BEFORE randf() — arc-2/3 consumes zero RNG.
+- Hash anchor: `23d6a2ec3bf2821f` verified — Spawner.gd is substrate;
+  `_try_ammo_drop` returns at the breach-mode gate before any randf()
+  in arc-2/3, so the seed-42 procedural baseline is bit-identical.
+  `make test-all` 5/5. `make test-breach` 27/27.
+- Harness: new test_breach_ammo.gd + check-breach-ammo (test-breach
+  26 → 27). An AmmoPickup picks a droppable shell + the player
+  collects it to the reserve + a no-loadout body does not collect.
+- Falsifications: none.
+- Substrate writes this arc: 31 → 32 (Spawner.gd ×3).
+- Files: scripts/AmmoPickup.gd, scenes/AmmoPickup.tscn,
+  scripts/Spawner.gd, test_breach_ammo.gd, Makefile, PRE-MORTEMS.md,
+  LEDGER.md, STATE.md
+- Finding: **enemies now drop ammo — resupply happens mid-combat, not
+  just at depots.** iter 59 = 8d: longer shields / defensive pickups.
+
 ## iter 057 — BUILD — Round 8b: per-phase upgrade-card pick
 
 - Date: 2026-05-21

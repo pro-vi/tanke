@@ -24,6 +24,45 @@ Format:
 
 ---
 
+## iter 058 — BUILD — Round 8c: enemy ammo drops
+
+- Date: 2026-05-21
+- Tag: [STRUCTURE]
+- Round 8c of the iter-055 blueprint — playtest-3's "does enemy drop
+  ammo?"
+- Investigation finding: the pickup-drop pattern already lives in
+  Enemy.gd (`_spawn_hp_pickup` / `_spawn_shield_pickup`, arc-2 iters
+  78/82). Enemy.gd is NOT sanctioned substrate. Per the blueprint, 8c
+  hooks via Spawner.gd instead (sanctioned) — the Spawner already
+  connects to each enemy's `killed` signal for kill-counting.
+- The change:
+  - New scripts/AmmoPickup.gd + scenes/AmmoPickup.tscn (arc-4-owned):
+    an Area2D that on `_ready` picks a random droppable shell
+    (HE/HEAT/APCR — never AP, which is unlimited) + tints a chip; on
+    the player driving over it, +AMOUNT to that shell's loadout
+    reserve + a toast; despawns after LIFETIME (8s).
+  - scripts/Spawner.gd (sanctioned): `enemy.killed.connect(
+    _on_enemy_killed.bind(enemy))` passes the dying enemy;
+    `_try_ammo_drop` spawns an AmmoPickup at its position with
+    AMMO_DROP_CHANCE. The breach-mode gate (player has a Loadout) is
+    checked BEFORE randf() — an arc-2/3 run consumes zero RNG here.
+- CONSULT constraints: constraint 1 respected (a pickup is collected
+  by driving, not a modal).
+- Predicted failure modes:
+  - Hash anchor: Spawner.gd is substrate. `_try_ammo_drop` returns at
+    the breach-mode gate before any randf() in arc-2/3 mode → no RNG
+    consumed → the seed-42 procedural baseline is bit-identical.
+  - The pickup is a no-op against a body with no loadout (arc-2/3
+    player) — defensive duck-typing.
+- Falsifiable claim: post-edit — test_breach_ammo shows an AmmoPickup
+  picks a droppable shell + on collection adds AMOUNT to that shell's
+  reserve + frees; a no-loadout body does not collect. Hash anchor
+  23d6a2ec3bf2821f preserved; test-all 5/5; test-breach 27/27.
+- Sentence test: n/a (a resupply pickup, not a depot upgrade).
+- Substrate touched: Spawner.gd (the kill-signal hook — sanctioned;
+  arc-2/3 bit-identical via the pre-randf breach gate).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 057 — BUILD — Round 8b: per-phase upgrade-card pick
 
 - Date: 2026-05-21

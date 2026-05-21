@@ -1,6 +1,11 @@
 extends Node2D
 
 const RosterT = preload("res://scripts/Roster.gd")
+# arc-4 iter 58 (Round 8c): enemy ammo drops. A killed enemy has
+# AMMO_DROP_CHANCE to drop an AmmoPickup at its death position. Gated on
+# breach mode (the player carries a Loadout); arc-2/3 drops nothing.
+const AmmoPickupScene = preload("res://scenes/AmmoPickup.tscn")
+const AMMO_DROP_CHANCE: float = 0.4
 
 @export var enemy_scene: PackedScene
 @export var spawn_interval: float = 2.0
@@ -471,7 +476,9 @@ func _telegraph_then_spawn(plan: Dictionary) -> void:
 	# decrement (correct for any exit cause).
 	enemy.tree_exited.connect(_on_enemy_freed)
 	if enemy.has_signal("killed"):
-		enemy.killed.connect(_on_enemy_killed)
+		# arc-4 iter 58: bind the enemy so _on_enemy_killed can drop ammo
+		# at its death position.
+		enemy.killed.connect(_on_enemy_killed.bind(enemy))
 	if enemy.has_signal("aim_canceled"):
 		enemy.aim_canceled.connect(_on_enemy_aim_canceled)
 	parent_node.add_child(enemy)
@@ -590,8 +597,29 @@ func _on_enemy_freed() -> void:
 		stage_cleared.emit()
 
 
-func _on_enemy_killed() -> void:
+func _on_enemy_killed(enemy: Node) -> void:
 	enemies_killed += 1
+	_try_ammo_drop(enemy)
+
+
+# arc-4 iter 58 (Round 8c): a killed enemy may drop an ammo pickup at
+# its death position (playtest-3 — "does enemy drop ammo?"). The
+# breach-mode gate is checked BEFORE randf(), so an arc-2/3 run consumes
+# zero RNG here — the seed-42 procedural baseline stays bit-identical.
+func _try_ammo_drop(enemy: Node) -> void:
+	if not (enemy is Node2D):
+		return
+	var lvl: Node = get_parent()
+	if lvl == null:
+		return
+	var player: Node = lvl.get_node_or_null("PlayerTank")
+	if player == null or not ("loadout" in player) or player.loadout == null:
+		return
+	if randf() >= AMMO_DROP_CHANCE:
+		return
+	var pickup: Area2D = AmmoPickupScene.instantiate()
+	pickup.global_position = (enemy as Node2D).global_position
+	lvl.add_child(pickup)
 
 
 func _on_enemy_aim_canceled() -> void:
