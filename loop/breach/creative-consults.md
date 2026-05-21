@@ -20,6 +20,88 @@ Format:
 
 ---
 
+## Consult 006 — iter 60 — written self-pre-mortem — Round 8 close
+
+- Date: 2026-05-21
+- Tab status: n/a — written self-pre-mortem (the established arc-4 mode;
+  cf. CONSULT 003/004/005). Round 8 was a user-directed overhaul; the
+  user's hands-on verdict is the creative check and the next gate.
+- Three permanent questions answered? YES (+ the Round-8 coherence
+  question + the rubric question).
+- Key reframe: Round 8 gave the user the conventional roguelite they
+  asked for (XP/levels + per-phase picks + ammo drops + longer
+  shields). The open risk — flagged at iter 55 — is whether it is ONE
+  game or two bolted-on progression systems. Harness-verified to
+  EXIST; the playtest decides if it COHERES + FEELS right.
+- Adopted into: RUBRIC.md +C14 "in-run progression"; REVIEW-QUEUE #11;
+  the iter-60 Round-8 close.
+
+### Round 8 review — did the overhaul land structurally?
+
+Round 8 shipped all four pieces of the iter-55 override: 8a XP +
+level-ups (rotated stat boosts, a HUD XP bar); 8b a pick-1-of-3 at
+every one of the 4 completable phases (Depot4 added; the panel names
+the cleared band); 8c enemy ammo drops (40%, collected mid-combat);
+8d longer shields (6s in breach mode + a HUD indicator). All
+harness-cited (28 breach harnesses). C14 added to the rubric at 3 —
+the structural ceiling.
+
+### Q1 — distinct from BC, or BC with shell colours?
+
+Round 8 changes this answer's SHAPE. Through Round 7 the game was
+distinct via the breach economy (shells spent to breach). Round 8
+adds a conventional roguelite layer — and conventional is, by
+definition, less distinctive. The game is now "a breach roguelite
+WITH a standard power curve." Its distinctiveness now rests on the
+breach economy staying legible UNDER the new XP/level/loot layer. If
+the XP curve dominates the player's attention, the breach economy —
+the thing that made it its own game — could recede.
+
+### Q2 — depots earned beats, or menu-grind?
+
+Round 8b made depots MORE frequent (4, one per phase) and reframed
+them as "PHASE CLEARED" reward beats. More frequent = more reward
+cadence — but also closer to menu-grind if each pick is rote. 4 depot
+stops + per-level stat boosts + ammo pickups is a LOT of progression
+interaction; it could read as generous, or as busy. Playtest-gated.
+
+### Q3 — what's seductive-but-hollow about Round 8?
+
+The sharp finding. Round 8 was the loop doing what the user asked —
+correctly. But the user asked because the breach economy "didn't feel
+like a roguelite." The seductive-but-hollow risk: Round 8 bolts the
+FAMILIAR roguelite vocabulary (XP, levels, loot) onto the game, and
+that will probably "feel like a roguelite" because it literally is the
+genre's furniture — but it may not have made the BREACH ECONOMY any
+better. Two outcomes the next playtest must separate: (a) "a
+satisfying roguelite AND the breach economy still bites" — the win;
+(b) "a generic roguelite, the breach economy is wallpaper" — hollow.
+The omission that would look stupid in 6 months: shipping a competent
+generic roguelite and quietly losing the one idea — breach economy —
+that was ever distinctive.
+
+### Q4 — one game, or two bolted-on progression systems?
+
+Structurally there are now TWO progression axes: the breach economy
+(spend finite shells to open lanes) and the power curve (XP/levels +
+picks). They COEXIST but are not INTEGRATED — a level-up grants +HP
+regardless of how you breach; a depot pick is mostly the old catalog.
+Nothing yet makes the power curve EXPRESS the breach economy (e.g.
+level-ups that change how you SPEND shells). If the playtest wants the
+loop to continue, a Round 9 should look at fusing the two — or the
+user may be content with two parallel systems.
+
+### Verdict
+
+Round 8 delivered the user's brief in full, harness-verified — 42/70
+(RUBRIC +C14). The loop is at the autonomous ceiling again: whether
+the overhaul makes the game FEEL like a coherent roguelite is entirely
+playtest-gated. REVIEW-QUEUE #11 carries the ask. Per the PROMPT the
+loop does not halt for a playtest — but Round 8 is a natural, large
+user-look gate, and CONSULT 005's "legibility theater" caution applies
+doubly here: do not pile a Round 9 of systems before the user
+confirms Round 8 cohered.
+
 ## Consult 005 — iter 53 — written self-pre-mortem — Round 7 close
 
 - Date: 2026-05-20

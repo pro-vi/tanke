@@ -17,6 +17,43 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 060 — CONSULT/QUEUE — Round 8-close
+
+- Date: 2026-05-21
+- Tag: [STRUCTURE]
+- Score: **42/70** (Δ +3 — RUBRIC extended with C14 "in-run
+  progression"; C14=3 scores Round 8's harness-verified 8a-8d suite.
+  Denominator 65→70; the +3 is the rubric catching up to the build
+  phase, surfaced at round close per the iter-39 incremental pattern.)
+- Round 8-close — the CONSULT + QUEUE + RUBRIC phase of the iter-055
+  blueprint. Round 8's build phase (8a-8d, iters 56-59) shipped the
+  iter-55 playtest-3 override in full.
+- RUBRIC.md +C14 "in-run progression" (14 criteria, 70-pt ceiling):
+  the conventional power curve Round 8 added. C14=3 — anchor 3 ("the
+  full in-run suite — XP/levels + a pick-1-of-3 at every phase +
+  mid-combat resupply — all harness-cited") is met by 8a-8d
+  (test_breach_xp / level / depot / ammo). Anchors 4-5 are [FEEL] /
+  playtest-gated. Constraint 7 ("verbs not stats") relaxed for C14 per
+  the user override.
+- CONSULT 006 (written self-pre-mortem) → creative-consults.md.
+  Verdict: Round 8 delivered the brief in full, harness-verified, but
+  whether it COHERES is playtest-gated. The sharp finding (Q3): Round 8
+  bolts the familiar roguelite vocabulary (XP/levels/loot) on — which
+  will probably "feel like a roguelite" because it IS the genre's
+  furniture — but may not have made the breach economy better. The win
+  is "roguelite AND breach economy"; the hollow outcome is "generic
+  roguelite, breach economy as wallpaper." Q4: the two progression
+  axes COEXIST but are not INTEGRATED.
+- REVIEW-QUEUE #11 — the Round-8 playtest request (★, open).
+- Hash anchor: n/a — no code touched (docs only). The iter-59 state
+  stands: 23d6a2ec3bf2821f, test-all 5/5, test-breach 28/28.
+- Falsifications: none.
+- Files: RUBRIC.md, creative-consults.md, REVIEW-QUEUE.md,
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **Round 8 is closed — the roguelite overhaul shipped,
+  42/70. The highest-value next action is a playtest: does it cohere
+  into one game?**
+
 ## iter 059 — BUILD — Round 8d: longer shields / defensive pickups
 
 - Date: 2026-05-21

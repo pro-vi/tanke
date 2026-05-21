@@ -1,6 +1,6 @@
 # tanke — Breach Loop Rubric (arc 4, v1)
 
-**13 criteria**, 0–5 scale. **65-point absolute ceiling.** Score above 2 on any
+**14 criteria**, 0–5 scale. **70-point absolute ceiling.** Score above 2 on any
 upgrade-related anchor requires the upgrade to pass the sentence test:
 *"This upgrade helps me climb through ___ by changing how I use ___."*
 
@@ -247,18 +247,38 @@ between-run hook of a roguelite.
 
 ---
 
+## 14. In-run progression (0–5) — *structural+feel*
+
+The conventional roguelite power curve, added Round 8 by the iter-55
+playtest-3 override: the tank grows stronger DURING a run — XP/levels,
+a per-phase upgrade pick, mid-combat resupply. This layers ON TOP of
+the breach economy; it does not replace it. (Constraint 7 — "verbs not
+passive stats" — is relaxed for this criterion per the user override,
+STATE §Arc-4 amendments.)
+
+| Score | Anchor | Tag |
+|-------|--------|-----|
+| 0 | No in-run progression — the tank's power is fixed across a run | — |
+| 1 | An in-run progression mechanic exists (XP, or a per-phase pick) — code-cited | [STRUCTURE] |
+| 2 | XP + level-ups implemented — kills/depth earn XP, level-ups apply automatic stat growth; harness-cited | [STRUCTURE] |
+| 3 | The full in-run suite — XP/levels + a pick-1-of-3 at every phase + mid-combat resupply (enemy ammo drops) — all harness-cited | [STRUCTURE] |
+| 4 | Playtest: the player feels they grow stronger across a run — cites a level-up or a pick unprompted | [FEEL] |
+| 5 | Playtest: the in-run power curve and the breach economy read as ONE game — the player describes a run as both spending shells AND building power, not two bolted-on systems | [FEEL] [IDENTITY-PROTECTED] |
+
+---
+
 ## Effective ceiling math (per R3)
 
 | Bucket | Criteria | Max | Notes |
 |--------|----------|-----|-------|
-| Auto-citable (structural) | C2-anchor-3, C3-anchor-4, C4-anchor-4, C6-anchor-3, C7-anchor-3, C8-anchor-3, C10 (all), C11-anchor-3, C12-anchor-3, C13-anchor-3 | ~39 | Reachable without playtest |
-| Cognitive (feel-only) | C1-anchor-4-5, C2-anchor-4-5, C3-anchor-5, C4-anchor-5, C5-anchor-4-5, C6-anchor-4-5, C7-anchor-4-5, C8-anchor-4-5, C9-anchor-3-5, C11-anchor-4-5, C12-anchor-4-5, C13-anchor-4-5 | ~26 | Requires 1-2 playtests |
-| Identity-protected (NEVER AUDIT-rephrased) | C1-anchor-5, C5-anchor-5, C7-anchor-5, C8-anchor-5, C9-anchor-5, C11-anchor-5, C12-anchor-5, C13-anchor-5 | ~7 | Gaming-prevention; playtest-only by design |
+| Auto-citable (structural) | C2-anchor-3, C3-anchor-4, C4-anchor-4, C6-anchor-3, C7-anchor-3, C8-anchor-3, C10 (all), C11-anchor-3, C12-anchor-3, C13-anchor-3, C14-anchor-3 | ~42 | Reachable without playtest |
+| Cognitive (feel-only) | C1-anchor-4-5, C2-anchor-4-5, C3-anchor-5, C4-anchor-5, C5-anchor-4-5, C6-anchor-4-5, C7-anchor-4-5, C8-anchor-4-5, C9-anchor-3-5, C11-anchor-4-5, C12-anchor-4-5, C13-anchor-4-5, C14-anchor-4-5 | ~28 | Requires 1-2 playtests |
+| Identity-protected (NEVER AUDIT-rephrased) | C1-anchor-5, C5-anchor-5, C7-anchor-5, C8-anchor-5, C9-anchor-5, C11-anchor-5, C12-anchor-5, C13-anchor-5, C14-anchor-5 | ~8 | Gaming-prevention; playtest-only by design |
 
-**Effective ceiling (auto + cognitive): ~65/65.** Same as absolute since
-identity-protected anchors are inside cognitive. Reports use "X/65" with
-breakdown. (Round 6 complete — the roguelite axes C11/C12/C13 are all
-rubric-covered.)
+**Effective ceiling (auto + cognitive): ~70/70.** Same as absolute since
+identity-protected anchors are inside cognitive. Reports use "X/70" with
+breakdown. (Round 8 adds C14 "in-run progression" — the iter-55
+playtest-3 roguelite-overhaul surface.)
 
 ---
 
@@ -297,3 +317,4 @@ Evidence: LEDGER iter NNN cites results; BANDS.md checkbox flipped.
 | 39 | +C11 "Run-to-run variety" — 11 criteria, 55-pt absolute ceiling | Round 6 (roguelite feel) adds surface the breach-economy rubric never covered (PROMPT §RUBRIC IS MEASUREMENT — "extend RUBRIC.md to cover it"). The iter-38 blueprint proposed +3 (C11/C12/C13); revised to incremental — each roguelite criterion is added when its sub-round opens, so the rubric tracks built work, not speculative surface. C12 (stakes & escalation) lands with sub-round 6d; C13 (meta-progression) with 6e. |
 | 42 | +C12 "Stakes & escalation" — 12 criteria, 60-pt absolute ceiling | Round 6d (stakes & escalation) — surfaces the single-life depth chase (band-arrival banner + live best-depth). Per the iter-39 incremental plan, each roguelite criterion lands when its sub-round opens; C13 (meta-progression) lands with sub-round 6e. |
 | 45 | +C13 "Meta-progression" — 13 criteria, 65-pt absolute ceiling | Round 6e (meta-progression) — depth-gated depot-pool widening. Completes the iter-39 incremental plan: Round 6's three roguelite axes (C11 variety, C12 stakes, C13 meta) are now all rubric-covered. |
+| 60 | +C14 "In-run progression" — 14 criteria, 70-pt absolute ceiling | Round 8 (the iter-55 playtest-3 override) adds a conventional roguelite power curve — XP/levels, per-phase upgrade picks, enemy ammo drops, longer shields — a surface the breach-economy rubric never covered. Per the iter-39 incremental pattern, the criterion is added when its round closes. C14=3 (anchor 3 — the full in-run suite, harness-cited via test_breach_xp / level / depot / ammo); anchors 4-5 playtest-gated. Constraint 7 ("verbs not stats") is relaxed for C14 per the user override (STATE §Arc-4 amendments). |

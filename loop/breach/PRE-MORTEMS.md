@@ -24,6 +24,32 @@ Format:
 
 ---
 
+## iter 060 — CONSULT/QUEUE — Round 8-close
+
+- Date: 2026-05-21
+- Tag: [STRUCTURE]
+- Round 8-close — the CONSULT + QUEUE + RUBRIC phase of the iter-055
+  blueprint. Round 8's build phase (8a-8d, iters 56-59) shipped the
+  iter-55 playtest-3 override in full.
+- This iter: CONSULT 006 (written self-pre-mortem) on whether the
+  roguelite overhaul cohered; RUBRIC.md +C14 "in-run progression" (per
+  the blueprint — the iter-39 incremental pattern); REVIEW-QUEUE #11
+  (the Round-8 playtest request).
+- CONSULT constraints: n/a (a process iter). The C14 addition records
+  that constraint 7 (verbs not stats) is relaxed for Round 8's surface
+  per the user override.
+- Predicted failure: the honest CONSULT finding is that Round 8 is
+  harness-verified to EXIST but its coherence ("one game, not two
+  bolted systems") is entirely playtest-gated — so C14 scores 3 (the
+  structural ceiling), anchors 4-5 playtest-locked.
+- Falsifiable claim: post-iter — RUBRIC.md has C14 (14 criteria, 70-pt
+  ceiling), score 42/70; creative-consults.md has CONSULT 006;
+  REVIEW-QUEUE.md has #11. No code touched → hash anchor + harnesses
+  unchanged (23d6a2ec3bf2821f; test-all 5/5; test-breach 28/28).
+- Sentence test: n/a.
+- Substrate touched: none (docs only).
+- Hash-anchor verification plan: n/a — no code this iter.
+
 ## iter 059 — BUILD — Round 8d: longer shields / defensive pickups
 
 - Date: 2026-05-21

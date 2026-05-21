@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 59
+iter: 60
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
 hash_anchor_at_iter_59: 23d6a2ec3bf2821f  # bit-identical through 33 substrate writes
 substrate_writes_this_arc: 33  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×17 + Level.gd + Spawner.gd ×3
-current_round: 8-open
-current_round_phase: CONSULT/QUEUE — Round 8-close (build phase 8a-8d done); blueprint iter-055-round8-architect.md
+current_round: 8-closed
+current_round_phase: Round 8 CLOSED at iter 60 (CONSULT 006 + RUBRIC +C14 + REVIEW-QUEUE #11); at the playtest-gated ceiling
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -17,12 +17,12 @@ falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved]
 reachability_status: all 5 bands verified — 12/12-seed sweep (100%, floor ≥80%) — refreshed iter 54 post-Round-7
 audit_candidates: []
 last_audit: iter 26
-last_consult: iter 53  # CONSULT 005 — written self-pre-mortem, Round 7 close
+last_consult: iter 60  # CONSULT 006 — written self-pre-mortem, Round 8 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, user redirected to XP/level-ups + ammo drops → Round 8]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: RUNNING — Round 8 opened at iter 55. The user playtested after Round 7 and the breach-economy concept did not land as roguelite progression ("where is the roguelite element like level ups?"). Via AskUserQuestion (override authority) the user redirected: Round 8 adds a conventional power curve — XP level-ups + per-phase upgrade picks + enemy ammo drops + longer shields. Blueprint iter-055-round8-architect.md. The non-stop loop builds Round 8 (8a-8d) until the user writes playtest / halt / stop.
-next_action: iter 60 — Round 8-close — CONSULT + QUEUE + RUBRIC. Read iter-055-round8-architect.md §8-close. Write CONSULT 006 (creative-consults.md) — did the roguelite overhaul (XP/levels + per-phase picks + ammo drops + longer shields) make it FEEL like a roguelite; is it one game or two bolted-on progression systems; + the 3 permanent questions. Extend RUBRIC.md with C14 "in-run progression" (per the blueprint — the iter-39 incremental pattern). Update REVIEW-QUEUE.md (#11 — Round-8 playtest request). Round 8's build phase (8a-8d) is done.
-score: 39/65 absolute · 39/65 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3
+loop_state: RUNNING — Round 8 closed at iter 60. The iter-55 playtest-3 override is delivered in full (XP/levels + per-phase picks + ammo drops + longer shields); RUBRIC +C14 "in-run progression", 42/70. CONSULT 006: the overhaul is harness-verified to EXIST but its coherence ("one game, not two bolted-on systems") is entirely playtest-gated. REVIEW-QUEUE #11 requests the Round-8 playtest. The loop is at the autonomous ceiling — per CONSULT 006 it must NOT pile a speculative Round 9 ahead of the playtest. Non-stop per PROMPT until the user writes playtest / halt / stop.
+next_action: iter 61 — re-assess at the Round-8 playtest gate. If the user has playtested (REVIEW-QUEUE #11), integrate the findings. If not: the build is at the autonomous ceiling — run a post-Round-8 SWEEP (reachability sweep × test-breach × test-all × hash — verify the build coherent after Round 8's substrate writes), then idle at a long heartbeat. Do NOT open a speculative Round 9 ahead of the playtest (CONSULT 006 — do not pile systems before the user confirms Round 8 cohered).
+score: 42/70 absolute · 42/70 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
 round6_blueprint: loop/breach/iter-038-round6-architect.md
@@ -30,7 +30,7 @@ round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield} + check-silhouette-gate (28 in test-breach aggregate)
-review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch]  # #3, #7, #9 CLOSED — playtests delivered
+review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #11 PLAYTEST REQUEST — Round 8 complete]  # #3, #7, #9 CLOSED — playtests delivered
 ```
 
 ---
@@ -121,25 +121,27 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-21 — **iter 59 (BUILD).** Round 8d — longer shields: in
-  breach mode apply_shield extends to BREACH_SHIELD_DURATION (6s, 3×
-  the old 2s pickup) + a "SHIELD" HUD indicator shows while shielded;
-  arc-2/3 keeps the 2s default. PlayerTank.gd substrate write, gated
-  on loadout; hash anchor preserved; test-all 5/5, test-breach 28/28
-  (new check-breach-shield). Δ 0. 39/65. **Round 8 build phase
-  (8a-8d) done.**
+- 2026-05-21 — **iter 60 (CONSULT/QUEUE).** Round 8-close: RUBRIC
+  extended with C14 "in-run progression" (14 criteria, 70-pt ceiling)
+  — C14=3 scores Round 8's harness-verified 8a-8d suite (XP/levels +
+  per-phase picks + ammo drops). CONSULT 006 (written self-pre-mortem):
+  Round 8 delivered the brief in full but its coherence is
+  playtest-gated — Q3's sharp finding is "generic-roguelite furniture
+  vs the breach economy staying meaningful." REVIEW-QUEUE #11 = the
+  Round-8 playtest request. No code touched. Δ +3 (rubric catch-up).
+  **42/70. The loop is at the playtest-gated ceiling.**
 
 ## Next action
 
-**Iter 60 — Round 8-close — CONSULT + QUEUE + RUBRIC.**
-Read `loop/breach/iter-055-round8-architect.md` §8-close. Write
-CONSULT 006 (`creative-consults.md`) — did the roguelite overhaul
-(XP/levels + per-phase picks + ammo drops + longer shields) make it
-FEEL like a roguelite; is it one game or two bolted-on progression
-systems; + the 3 permanent questions. Extend `RUBRIC.md` with C14
-"in-run progression" (per the blueprint — the iter-39 incremental
-pattern). Update `REVIEW-QUEUE.md` (#11 — the Round-8 playtest
-request). Round 8's build phase (8a-8d) is complete.
+**Iter 61 — re-assess at the Round-8 playtest gate.**
+Round 8 is closed (CONSULT 006; RUBRIC +C14, 42/70; REVIEW-QUEUE #11
+requests a playtest). If the user has playtested, integrate the
+findings + plan the next round. If not: run a post-Round-8 SWEEP
+(reachability sweep × test-breach × test-all × hash — verify the
+build coherent after Round 8's substrate writes), then idle at a long
+heartbeat. Do NOT open a speculative Round 9 ahead of the playtest
+(CONSULT 006 — do not pile systems before the user confirms Round 8
+cohered).
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all

@@ -232,3 +232,31 @@ Format per item:
     whether the "breach economy" rubric still fits. The next playtest
     asks the plain question: does it feel like a roguelite now?
 
+#11 — ★ PLAYTEST REQUEST — Round 8 complete — round 8 — iter 60 — open
+  Finding: Round 8 (iters 56-59) shipped the iter-55 playtest-3
+    override in full — a conventional roguelite progression layer on
+    top of the breach economy: 8a XP + level-ups (rotated stat boosts,
+    a HUD XP bar); 8b a pick-1-of-3 at every phase (Depot4 added; the
+    depot panel reframed "— <BAND> CLEARED —"); 8c enemy ammo drops
+    (40%, collected mid-combat); 8d longer shields (6s + a HUD
+    indicator). 42/70 (RUBRIC +C14 "in-run progression"). 28 breach
+    harnesses + 5 arc-3 green; hash anchor 23d6a2ec3bf2821f preserved
+    through 33 substrate writes.
+  The ask: play `scenes/BreachLevel.tscn` (or `make run` → breach).
+    The questions that matter (CONSULT 006):
+      1. Does it feel like a roguelite NOW — do you feel yourself
+         getting stronger across a run (levels, picks, loot)?
+      2. Is it ONE game, or two bolted-on systems — do you still
+         think about spending shells, or only about levelling?
+      3. Do the phases read now — does "— BUNKER ZONE CLEARED —" at
+         each depot make the bands concrete?
+      4. Do the ammo drops + 6s shields make combat feel better
+         supplied?
+  Affordance: a playtest closes Round 8 + tells the loop whether the
+    overhaul cohered or just added genre furniture.
+  Risk: CONSULT 006 Q3 — the breach economy may now be wallpaper under
+    a generic roguelite layer. The win is "roguelite AND breach
+    economy"; the hollow outcome is "generic roguelite, breach economy
+    lost." Only a playtest separates them. To trigger: write
+    `playtest`.
+
