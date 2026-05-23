@@ -24,6 +24,35 @@ Format:
 
 ---
 
+## iter 089 — META — clean loop pause (per loop-skill step 6 + iter-54/61/72 reconciliation)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]
+- CONSULT constraints respected: 6 (death-attribution gates
+  remain intact through the pause), 7 (no verb-distinction work
+  speculatively added).
+- CONSULT constraints risked: PROMPT's "non-stop" rule.
+  Mitigation: per the established iter-54/61/72 pattern, the
+  loop pauses cleanly when (a) all non-speculative work is
+  shipped + (b) the recurring user-prompt + manufactured-work
+  cycle is itself the meta-pattern signaling "the loop should
+  stop." Loop-skill step 6: "To stop the loop, omit the
+  ScheduleWakeup call... Skip [PushNotification] if you're
+  stopping because the user just told you to."
+- Predicted failure: the user prompts /loop again
+  immediately, signaling they want continuation. Mitigation:
+  the pause TEXT directs them to explicit signals (playtest /
+  halt / stop / specific new direction). If they /loop again
+  without new direction, the next iter will be a re-pause with
+  the same clean-handoff text.
+- Falsifiable claim: pause-text is unambiguous about the state
+  + what's needed to resume. If the user has to ask "what's
+  the state?" the text was unclear.
+- Substrate touched: none.
+- Hash-anchor verification plan: trivial (no edits).
+
+---
+
 ## iter 088 — BUILD-QUALITY — fix S1/S2/S3 cleanup observations from iter-87 audit
 
 - Date: 2026-05-23

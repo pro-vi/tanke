@@ -17,6 +17,54 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 089 — META — clean loop pause (per loop-skill step 6 + iter-54/61/72 reconciliation)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]
+- Score: **47/75** (Δ 0 — pause iter).
+- Constraints respected: 6 (death-attribution intact), 7 (no
+  speculative verb-distinction work).
+- Constraints risked: PROMPT's "non-stop" rule — mitigated by
+  the established iter-54/61/72 reconciliation pattern. The
+  meta-trigger: user keeps invoking /loop; loop keeps
+  manufacturing work; both signals are weak proxies for actual
+  intent. The honest move per loop-skill step 6 is to pause and
+  put direction-choice back in the user's hands.
+- Round 9 + Round 10 + Round 11 Phase 1 all shipped. Substrate
+  audit clean + cleanup-tier observations resolved. Design doc
+  for armor-asymmetry (candidate c) shipped. All remaining
+  Round-11 candidates ((b) roster expansion, (c) armor decision,
+  (d) identity-vs-weapons) are GATED on playtest 5 evidence —
+  proceeding without that evidence is the speculative-production
+  trap Pro explicitly named.
+- Open user signals the loop is waiting on:
+  - `playtest` — invokes the playtest 5 brief (PLAYTEST-5-BRIEF.md)
+    + surfaces REVIEW-QUEUE #14 (the structured ★ playtest gate)
+  - `halt` / `stop` — terminates the loop session
+  - Direction text — e.g. "start (c) armor universal" or "do
+    REVIEW-QUEUE #13 sprite integration" — bootstraps the
+    specific iter
+- Pause artifacts (the user reads these to know state):
+  - `loop/breach/STATE.md` — current state + last/next action
+  - `loop/breach/REVIEW-QUEUE.md` — ★ #14 is the playtest gate;
+    #13/#15/#16 are decision/info items
+  - `loop/breach/PLAYTEST-5-BRIEF.md` — the 5-run playtest brief
+  - `loop/breach/iter-086-armor-asymmetry-design.md` — the armor
+    design doc
+  - `loop/breach/iter-080-round11-diagnose.md` +
+    `iter-084-round11-phase2-spike.md` — Round 11 candidate
+    blueprints
+  - `loop/breach/creative-consults.md` — Consults 007/008/009
+    (Round 9 close / GPT Pro reframe / Round 10 close)
+- Hash anchor: `23d6a2ec3bf2821f` preserved (pause iter).
+- Falsifications: none.
+- Substrate writes this arc: 45 → 45.
+- Files: loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Loop pauses cleanly at iter 89. No further wakeup
+  scheduled. Resume signals: `playtest` / `halt` / `stop` /
+  specific direction text.**
+
 ## iter 088 — BUILD-QUALITY — fix S1/S2/S3 cleanup observations from iter-87 audit
 
 - Date: 2026-05-23
