@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 78
+iter: 79
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_78: 23d6a2ec3bf2821f  # bit-identical through 42 substrate writes
+hash_anchor_at_iter_79: 23d6a2ec3bf2821f  # bit-identical through 42 substrate writes
 substrate_writes_this_arc: 42  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×24 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
-current_round: 10-open — Phase 3 COMPLETE (iter 78); Round 10 close at iter 79
-current_round_phase: ROUND-CLOSE — Round 10-close (CONSULT 009 + REVIEW-QUEUE #14 playtest-gate upgrade + RUBRIC reflection)
+current_round: 10-CLOSED
+current_round_phase: BETWEEN-ROUNDS — Round 10 closed; Round 11 META diagnose pending; playtest gate at ★ REVIEW-QUEUE #14
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -17,11 +17,11 @@ falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved]
 reachability_status: all 5 bands verified — 12/12-seed sweep (100%, floor ≥80%) — refreshed iter 61 post-Round-8
 audit_candidates: []
 last_audit: iter 26
-last_consult: iter 73  # CONSULT 008 — GPT Pro extended thinking via /second-opinion, Round 10 rethesis
+last_consult: iter 79  # CONSULT 009 — written self-pre-mortem, Round 10 close (band-shape blind spot named)
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 79 — ROUND-CLOSE — Round 10-close. Three artifacts: (1) CONSULT 009 — written self-pre-mortem on the Round 10 phases (1: distinctness audit / 2: PRESSURES.md + probes / 3: instrumentation) + the three permanent questions. Capture to creative-consults.md. (2) REVIEW-QUEUE #14 upgrade — re-edit the ★ PLAYTEST REQUEST item to point at PLAYTEST-5-BRIEF.md as the structured brief; note the on-death prompt overlay; note the new question axes (identities-vs-weapons, armor asymmetry, distinctness verdict). (3) RUBRIC reflection — Round 10 lifted C5 2→3 (PRESSURES.md anchor 2 documentation). No new criterion added (Round 10 was instrumentation, not new mechanics). Update LEDGER score line for round close. Hash-anchor verify; test-all + test-breach green.
+next_action: iter 80 — META — diagnose Round 11 OR idle heartbeat awaiting playtest 5. Read STATE.md + REVIEW-QUEUE.md + the CONSULT 009 verdict. Round 10 closed at iter 79 with three open user-direction questions: (a) REVIEW-QUEUE #15 archetypes-as-identities-vs-weapons; (b) PRESSURES.md armor asymmetry; (c) CONSULT 009 band-shape blind spot. Plus 4 roster gaps (SWARM / SNIPER / heavier-armor / suppression-target). Per the iter-54/61 + iter-72 idle-heartbeat reconciliation pattern: write iter-080-round11-diagnose.md (compaction-safe blueprint) naming the candidates + recommending defer-to-playtest. Idle heartbeat 1800s. If no user signal by iter 81: extend cadence to 3600s. If still no signal by iter 82: proceed with default — band-shape recorder (addresses CONSULT 009 blind spot, non-speculative pre-playtest work).
 score: 47/75 absolute · 47/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4 (iter 76 lifts C5 2→3 via PRESSURES.md canonical-answer doc)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -140,6 +140,18 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-23 — **iter 79 (META).** Round 10-close. Three artifacts:
+  (1) CONSULT 009 — written self-pre-mortem; key reframe is that
+  Round 10's instrumentation is single-moment-strong but
+  multi-band-blind — every artifact tests one moment, not a
+  run-shape across 5 bands. The PLAYTEST-5-BRIEF mitigates
+  cognitively; no harness measures run-shape distinctness yet.
+  (2) REVIEW-QUEUE #14 upgrade — re-headed the ★ PLAYTEST REQUEST
+  with pointers to PLAYTEST-5-BRIEF, the on-death overlay, and
+  the open #15 / armor-asymmetry / band-shape-blind-spot
+  questions. (3) RUBRIC reflection — no new criterion; C5 lift
+  scored at iter 76. Round 10 carried 1 rubric anchor (46/75 →
+  47/75). No substrate; hash preserved. Δ 0 at close. 47/75.
 - 2026-05-23 — **iter 78 (BUILD).** Round 10 Phase 3: playtest
   instrumentation. Two artifacts: (1) on-death structured prompt
   — new `_breach_prompt_panel`/`_breach_prompt_label` in
@@ -260,28 +272,39 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 79 — ROUND-CLOSE — Round 10-close.**
+**Iter 80 — META — diagnose Round 11 OR idle heartbeat awaiting playtest 5.**
 
-Read `loop/breach/iter-073-round10-rethesis.md` (Round-10 close
-section). Three close artifacts:
+Round 10 closed at iter 79 with three open user-direction questions
+and 4 roster gaps:
 
-  1. **CONSULT 009** — written self-pre-mortem on the three Round-10
-     phases (1 distinctness audit / 2 PRESSURES.md + probes /
-     3 instrumentation) + the three permanent questions. Capture to
-     `loop/breach/creative-consults.md`.
+  Open questions (need user direction):
+    - REVIEW-QUEUE #15 — archetypes-as-identities vs -as-weapons
+    - PRESSURES.md — armor asymmetry (universal vs per-archetype-
+      bypass-as-verb)
+    - CONSULT 009 — Round-10 instrumentation's band-shape blind spot
 
-  2. **REVIEW-QUEUE #14 upgrade** — re-edit the ★ PLAYTEST REQUEST
-     item to point at `PLAYTEST-5-BRIEF.md` as the structured
-     brief; note the on-death prompt overlay; note the new question
-     axes (identities-vs-weapons, armor asymmetry, distinctness
-     verdict).
+  Roster gaps (PRESSURES.md):
+    - SWARM (no current spawn cluster)
+    - SNIPER (long-LoS to punish PRISM exposure)
+    - heavier armor (beyond Heavy's 3hp)
+    - suppression-target (no enemy currently rewards PRISM
+      suppression style)
 
-  3. **RUBRIC reflection** — Round 10 lifted C5 2→3 (PRESSURES.md
-     anchor 2 documentation). No new criterion (Round 10 was
-     instrumentation, not new mechanics). Update LEDGER score line
-     for the close.
+Per the iter-54/61 + iter-72 reconciliation pattern:
 
-Hash-anchor verify (no substrate); test-all + test-breach green.
+  1. Write `loop/breach/iter-080-round11-diagnose.md` —
+     compaction-safe blueprint naming the candidates + recommending
+     defer-to-playtest (the historical arc-4 pattern: every Round
+     5/6/7/8/9/10 was direction-set by user playtest).
+  2. Idle heartbeat 1800s.
+  3. If no user signal by iter 81: extend cadence to 3600s.
+  4. If still no signal by iter 82: proceed with default — the
+     band-shape recorder (addresses CONSULT 009's blind spot;
+     non-speculative pre-playtest work analogous to iter-74's
+     distinctness audit).
+
+The loop runs non-stop until the user writes `playtest` / `halt` /
+`stop`, or a correctness violation fires.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.

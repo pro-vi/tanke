@@ -20,6 +20,140 @@ Format:
 
 ---
 
+## Consult 009 — iter 79 — written self-pre-mortem — Round 10 close
+
+- Date: 2026-05-23
+- Tab status: n/a — written self-pre-mortem (the established arc-4
+  default mode for round-close consults; cf. CONSULT 003/004/005/
+  006/007). Round 10 was a structural-instrumentation round driven
+  by CONSULT 008's reframe; this close iter reflects on what the
+  instrumentation can + can't tell us.
+- Three permanent questions answered? YES (+ a Round-10 question
+  about instrumentation blind spots).
+- Key reframe: the Round-10 deliverables (distinctness audit,
+  PRESSURES matrix, pressure-probe harness, on-death prompt,
+  PLAYTEST-5-BRIEF) are the CORRECT pre-playtest work, but they
+  systematically fail on one axis: **the BAND PROGRESSION axis.**
+  Every Phase-1-2-3 artifact tests a single moment (one fire event /
+  one archetype-vs-armor probe / one death screen), not a multi-band
+  run-shape. The instrumentation can't surface whether the SECOND
+  band feels distinct from the first across archetypes, only whether
+  the archetypes differ at any single moment.
+- Adopted into: REVIEW-QUEUE #14 upgrade (point at PLAYTEST-5-BRIEF);
+  the iter-79 Round-10 close; LEDGER score line.
+
+### Round 10 review — did the instrumentation strategy land?
+
+Round 10 shipped four artifacts across three phases:
+- **Phase 1 (iters 74-75)** — distinctness-audit harness with 10
+  axes (6 structural + 4 play-relevant derived). Pairwise ≥5/10
+  passes with min 9/10 + CALIBRATION WARNING (too easy).
+- **Phase 2 iter 76** — PRESSURES.md per-archetype × per-pressure
+  matrix; 10 rows × 4 archetypes; surfaced 4 roster gaps for
+  Round 11 (swarm / sniper / heavier armor / suppression-target) +
+  the armor-asymmetry design question.
+- **Phase 2 iter 77** — pressure-probe harness empirically
+  confirming the armor-bypass asymmetry (DEFAULT respects via
+  shell class; PRISM/MORTAR/RAM bypass by mechanism).
+- **Phase 3 iter 78** — on-death structured prompt (PlayerTank.gd
+  substrate ×24, gated) + PLAYTEST-5-BRIEF.md.
+
+All harness-cited; substrate write ×24 (PlayerTank.gd HUD only);
+hash 23d6a2ec3bf2821f intact across all 4 phases. C5 lifted 2→3
+(anchor 2 documented canonical answer via PRESSURES.md).
+
+### Q1 — distinct from BC, or BC with extra steps?
+
+Round 10 didn't change the game; it added verification + the
+playtest brief. The Q1 answer doesn't shift from CONSULT 008:
+**structurally distinct via the breach economy + 4-archetype slate
++ Round 8 progression**. The cognitive question is still playtest-
+gated, and the on-death prompt explicitly asks it.
+
+### Q2 — depots earned beats, or menu-grind?
+
+No structural change in Round 10. The SWITCH_TO_* depot picks from
+Round 9 are the most consequential class of depot choice ever
+shipped — the playtest will tell us whether the user uses them.
+
+### Q3 — what's seductive-but-hollow about Round 10?
+
+The sharp finding for Round 10 close — **the instrumentation's
+systematic blind spot: the BAND PROGRESSION axis.**
+
+Every Phase-1-2-3 artifact tests a single MOMENT:
+- The distinctness audit compares archetype constants — one frame.
+- The PRESSURES matrix lists per-pressure answers — one cell each.
+- The pressure-probe harness fires one shot per archetype.
+- The on-death prompt is post-mortem reflection on one run.
+
+But the actual breach-economy concern from Round 8 onwards has been
+about RUN-SHAPE: do bands feel like distinct climb problems? Does
+the player adapt across bands? The Round-10 instrumentation can
+verify "PRISM beam works on this enemy" but not "PRISM playthrough
+across 5 bands feels different from DEFAULT playthrough." Per
+CONSULT 008's first-principles section, the strongest player quote
+might be "I should have switched to Ram before the swarm band" —
+which is INHERENTLY about band-shape variation across a run, not
+about a single moment.
+
+The omission that would look stupid in 6 months: shipping a
+beautifully-instrumented set of single-moment verifications while
+the playtest reveals that the archetypes feel identical across
+the 5-BAND ARC of a run, because the instrumentation never looked
+at run-shape distinctness.
+
+Mitigation in Round 10 (partial): the PLAYTEST-5-BRIEF explicitly
+asks the user to play 1 normal run per archetype + 1 switch run,
+which IS multi-band by construction. The brief asks "did the
+archetypes feel distinct?" with attention to characteristic
+mistakes per archetype. That's the cognitive backstop. But the
+loop's STRUCTURAL backstop is weak — no harness measures
+run-shape distinctness yet.
+
+### Round-10 question — did the instrumentation strategy land?
+
+Yes for what it covered (single-moment structural distinctness);
+no for what it didn't (multi-band run-shape distinctness). That's
+the honest read. Round 11 has a clear structural-work backlog if
+playtest 5 reveals the band-shape gap: a per-archetype run
+recorder that captures the SHAPE of damage delivery + path +
+depot picks across a full run, comparable across seeds.
+
+### Rubric question
+
+Round 10 was instrumentation, not new mechanics — no new criterion
+added. C5 lifted 2→3 (PRESSURES.md anchor 2). Score 46/75 → 47/75.
+
+The C15 anchor-5 question Pro raised in CONSULT 008 ("user
+describes runs by archetype + verb, OR switched archetypes in
+response to pressure") is held pending playtest — premature edits
+to identity-protected anchors violate R2. The on-death prompt and
+PLAYTEST-5-BRIEF give the user the framing to settle it.
+
+### Verdict
+
+Round 10 was a structurally-correct response to CONSULT 008's
+reframe — instrumentation before content, deferral with rigor.
+But the blind spot (band-progression axis) is real, and the loop
+should be honest about it: Round 10 set up the BEST POSSIBLE
+playtest 5, but playtest 5 might reveal a structural gap (run-
+shape distinctness) that Round 10 didn't address. If so, Round 11
+opens on band-shape instrumentation OR roster expansion (the
+PRESSURES.md gaps) per playtest direction.
+
+The recommended order on Round 11 entry, given current data:
+1. The playtest verdict is the dominant signal (per Pro's H5).
+2. If the user surfaces a band-shape concern → run-shape recorder
+   first; then the 4 roster gaps.
+3. If the user surfaces only roster-shape concerns → start with
+   the SWARM addition (the cleanest gap; tests AoE archetypes).
+4. If the user is satisfied with archetype distinctness as-is →
+   shift to a different surface entirely (maybe the C9 identity
+   ceiling, or a Round-11-named-by-the-user surface).
+
+---
+
 ## Consult 008 — iter 73 — /second-opinion (GPT Pro extended thinking) — ADOPTED → Round 10 rethesis
 
 - Date: 2026-05-23

@@ -324,7 +324,29 @@ Format per item:
   Default if no answer: (b) — algorithmic tint+overlay via
     gen_tile.py preserves BC grammar and is the most loop-native path.
 
-#14 — ★ PLAYTEST REQUEST — Round 9 complete — round 9 — iter 71 — open (playtest gate)
+#14 — ★ PLAYTEST REQUEST — Round 9 + Round 10 complete — round 9-10 — iter 71+79 — open (playtest gate, UPGRADED iter 79)
+  ⇒ Read loop/breach/PLAYTEST-5-BRIEF.md for the 5-run brief
+     (one normal run per archetype + 1 mid-run switch run).
+  ⇒ On-death overlay (breach mode) now shows three diagnostic
+     questions: which moment did you regret? right archetype?
+     would switching help?
+  ⇒ Open question REVIEW-QUEUE #15 (archetypes-as-identities vs
+     -as-weapons): the SHAPE of your regret-quote settles it.
+     "I overcommitted as Prism" = identities; "I should have
+     switched to Ram before the swarm band" = weapons.
+  ⇒ Open question PRESSURES.md "Armor bypass gaps": DEFAULT
+     respects armor via shell class (must pick HEAT/APCR);
+     PRISM/MORTAR/RAM bypass armor by mechanism (no armor check
+     in their damage paths). Confirmed empirically iter 77. Is the
+     asymmetry right (every archetype "buys passage differently"),
+     or should armor apply universally?
+  ⇒ CONSULT 009 (iter 79) flagged Round 10's structural blind
+     spot: the instrumentation tested single MOMENTS, not multi-band
+     RUN-SHAPE. Playtest 5 may surface a run-shape distinctness
+     gap that Round-11 instrumentation could close. Pay attention
+     to whether the archetypes feel different ACROSS BANDS, not
+     just within a single fight.
+
   Finding: Round 9 closes. Eight sub-rounds shipped — 9a enemy HP
     primitive + HP bars; 9b TankArchetype enum framework; 9c PRISM
     (stop-and-fire continuous beam with per-tick raycast); 9d MORTAR

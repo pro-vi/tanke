@@ -17,6 +17,56 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 079 — META — Round 10-close (CONSULT 009 + ★REVIEW-QUEUE #14 upgrade + RUBRIC reflection)
+
+- Date: 2026-05-23
+- Tag: [MIXED]
+- Score: **47/75** (Δ 0 — META closure; the C5 anchor-2 lift was
+  scored at iter 76; no new criterion added in Round 10).
+- Constraints respected: 5 (the round-close cites PRESSURES.md
+  as the documented canonical-answer artifact), 6 (the on-death
+  prompt extends death-attribution into archetype-reflection),
+  7 (matrix language stays verb-and-affordance).
+- Constraints risked: none.
+- Round 10-close — three artifacts:
+  - **CONSULT 009** — written self-pre-mortem. Key reframe:
+    Round 10's instrumentation correctly addresses the
+    single-moment distinctness question (Phase 1 audit + Phase
+    2 matrix + Phase 2 probes + Phase 3 prompt) BUT has a
+    systematic blind spot — **the BAND PROGRESSION axis**. Every
+    artifact tests a moment, not a multi-band run-shape. The
+    PLAYTEST-5-BRIEF mitigates cognitively (asks the user to
+    play one full run per archetype) but no harness measures
+    run-shape distinctness. Captured to creative-consults.md.
+  - **REVIEW-QUEUE #14 upgrade** — re-headed the ★ PLAYTEST
+    REQUEST item to point at PLAYTEST-5-BRIEF.md as the
+    structured brief; surfaced the on-death overlay; surfaced
+    the open questions (REVIEW-QUEUE #15 identities-vs-weapons;
+    PRESSURES "armor asymmetry"; CONSULT 009 band-shape blind
+    spot).
+  - **RUBRIC reflection** — Round 10 was instrumentation, not
+    new mechanics → no new criterion added. C5 lifted 2→3 at
+    iter 76 (anchor 2 PRESSURES.md). Score 46/75 → 47/75. No
+    additional anchors land at close.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (META + docs only).
+  test-all + test-breach not re-run.
+- Falsifications: none. CONSULT 009 was non-lazy — surfaced the
+  band-shape blind spot as the iter-79 PRE-MORTEM falsifiable
+  claim required.
+- Substrate writes this arc: 42 → 42.
+- Files: loop/breach/creative-consults.md (Consult 009),
+  loop/breach/REVIEW-QUEUE.md (#14 upgrade),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Round 10 closed. C5 lifted 2→3 (47/75); 4 roster
+  gaps + 1 armor question + 1 band-shape blind spot identified.
+  Per PROMPT §EXPLORATION ROUND CADENCE the loop now bootstraps
+  Round 11 — but the playtest gate at REVIEW-QUEUE #14 is the
+  honest next signal, and Pro's H5 ("deferral ≠ passivity") +
+  the iter-54/61 idle-heartbeat reconciliation pattern apply.
+  Iter 80 = META: re-diagnose Round 11 with the band-shape +
+  roster-gap candidates, then idle heartbeat awaiting playtest 5.**
+
 ## iter 078 — BUILD — Round 10 Phase 3: playtest instrumentation (on-death prompt + PLAYTEST-5-BRIEF)
 
 - Date: 2026-05-23

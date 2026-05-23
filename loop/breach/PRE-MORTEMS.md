@@ -24,6 +24,33 @@ Format:
 
 ---
 
+## iter 079 — META — Round 10-close (CONSULT 009 + ★REVIEW-QUEUE #14 upgrade + RUBRIC reflection)
+
+- Date: 2026-05-23
+- Tag: [MIXED]
+- CONSULT constraints respected: 5 (round-close cites the PRESSURES
+  matrix as the documented canonical-answer artifact), 6 (the
+  on-death prompt extends death-attribution from resource/build/
+  route into archetype-reflection), 7 (the matrix language is
+  verb-and-affordance, no stat-bundles).
+- CONSULT constraints risked: none — META closure work.
+- Predicted failure: the written self-pre-mortem keeps repeating
+  CONSULT 008's reframings rather than asking SHARP NEW questions
+  about Round 10. Mitigation: write CONSULT 009 specifically about
+  what Round 10's INSTRUMENTATION strategy can MISS — what risks
+  the distinctness audit / pressure matrix / on-death prompt
+  CAN'T catch. That's the honest sharpest question, not "did the
+  archetypes feel distinct" (which playtest 5 will answer).
+- Falsifiable claim: CONSULT 009 names ≥1 RISK the Round-10
+  instrumentation can't address that ISN'T just "experiential
+  distinctness needs a playtest." If the consult is just "same as
+  CONSULT 008 + nothing new," the close was lazy.
+- Substrate touched: none — META + docs only.
+- Hash-anchor verification plan: trivial (no substrate); cheap
+  spot-check.
+
+---
+
 ## iter 078 — BUILD — Round 10 Phase 3: playtest instrumentation (on-death prompt + PLAYTEST-5-BRIEF)
 
 - Date: 2026-05-23
