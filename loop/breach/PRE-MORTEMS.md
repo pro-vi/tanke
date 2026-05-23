@@ -24,6 +24,49 @@ Format:
 
 ---
 
+## iter 065 — BUILD — Round 9c: PRISM Tank
+
+- Date: 2026-05-22
+- Tag: [STRUCTURE]
+- Round 9c — the first real archetype (the user's worked example).
+  archetype=PRISM: continuous beam while fire-held; damages a line up
+  to the first body hit; burns brick fast; movement disabled while
+  firing (stop-and-fire — the player risk that makes the archetype
+  tense; enemies get time to shoot back).
+- The change (scripts/PlayerTank.gd, sanctioned substrate):
+  - A BeamLine (Line2D) node, built in `_ready` when archetype=PRISM,
+    hidden until firing.
+  - `_physics_process`: when archetype=PRISM and fire-held, zero
+    input_vector (stop-and-fire) + tick the beam (raycast from muzzle
+    forward, find first body, apply damage, update line visual);
+    release fire → hide beam.
+  - Beam damage rule (`_apply_beam_to_body`, pure-data for harness):
+    enemies take 1 damage per BEAM_DAMAGE_COOLDOWN (0.25s — a 3-HP
+    Heavy dies in ~0.75s, leaving time to shoot back); bricks burn
+    every tick (1 dmg/frame); steel/other-non-damageable blocks the
+    beam without damage.
+  - PRISM does NOT call `_fire()` — no discrete bullets, no shell
+    consumption. The breach economy is DEFAULT's mechanic; PRISM has
+    its own.
+- CONSULT constraints respected: none risked. The beam composes with
+  9a's HP primitive — enemies' HP bars visibly drain.
+- Predicted failure modes:
+  - Hash anchor: all PRISM behavior gates on archetype=PRISM; DEFAULT
+    (the only value in actual gameplay until 9f) is unchanged →
+    bit-identical.
+  - The reflect-upgrade variant (blueprint mentioned) is deferred —
+    implement after the base beam validates.
+- Falsifiable claim: post-edit — test_breach_prism shows: a PRISM
+  PlayerTank builds the BeamLine (hidden initially); DEFAULT doesn't;
+  `_apply_beam_to_body` damages a brick stub every tick + an enemy
+  stub on the cooldown cadence + leaves a steel-stub untouched. Hash
+  anchor 23d6a2ec3bf2821f preserved; test-all 5/5; test-breach 31/31.
+- Sentence test: n/a (a new weapon primitive on an archetype, not a
+  depot upgrade).
+- Substrate touched: PlayerTank.gd (beam logic + visuals — sanctioned,
+  gated on archetype=PRISM).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 064 — BUILD — Round 9b: archetype framework
 
 - Date: 2026-05-22

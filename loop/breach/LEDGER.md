@@ -17,6 +17,48 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 065 — BUILD — Round 9c: PRISM Tank
+
+- Date: 2026-05-22
+- Tag: [STRUCTURE]
+- Score: **42/70** (Δ 0 — per the iter-062 blueprint, C15 lands at
+  round close.)
+- Round 9c — the first real archetype (the user's worked example).
+  archetype=PRISM: continuous beam while fire-held; damages a line up
+  to the first body hit; burns brick fast; stop-and-fire (movement
+  disabled while firing).
+- The change (scripts/PlayerTank.gd):
+  - A BeamLine (Line2D) child node, built in _ready when
+    archetype=PRISM, hidden until firing.
+  - _physics_process: when archetype=PRISM and fire-held, zero
+    input_vector (stop-and-fire) + tick the beam (raycast from muzzle
+    forward, find first body, apply damage, update line visual);
+    release fire → hide beam.
+  - Beam damage rule (_apply_beam_to_body, pure-data for harness):
+    enemies take 1 damage per BEAM_DAMAGE_COOLDOWN (0.25s — a 3-HP
+    Heavy dies in ~0.75s, leaving time to shoot back); bricks burn
+    every tick (1 dmg/frame); steel/other-non-damageable bodies block
+    the beam without damage.
+  - PRISM does NOT call _fire() — no discrete bullets, no shell
+    consumption. The breach economy is DEFAULT's mechanic; PRISM has
+    its own.
+- Hash anchor: `23d6a2ec3bf2821f` verified — all PRISM behavior gates
+  on archetype=PRISM; DEFAULT (the only value in actual gameplay
+  until 9f) is unchanged → bit-identical. `make test-all` 5/5.
+  `make test-breach` 31/31.
+- Harness: new test_breach_prism.gd + check-breach-prism (test-breach
+  30 → 31). BeamLine built on PRISM, none on DEFAULT; brick stub
+  damaged 2× in 2 ticks (burn-through); enemy stub 1→1→2 across 3
+  ticks (cooldown gate); steel stub blocks without crash.
+- Falsifications: none.
+- Substrate writes this arc: 36 → 37 (PlayerTank.gd ×19).
+- Files: scripts/PlayerTank.gd, test_breach_prism.gd, Makefile,
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **the first archetype is real — PRISM holds-fire-to-beam
+  with per-body-type damage; the HP primitive from 9a gives it teeth
+  (Heavy 3HP × 0.25s cooldown = 0.75s exposed-while-firing).** iter
+  66 = 9d: MORTAR Tank.
+
 ## iter 064 — BUILD — Round 9b: archetype framework
 
 - Date: 2026-05-22

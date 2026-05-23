@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 64
+iter: 65
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_64: 23d6a2ec3bf2821f  # bit-identical through 36 substrate writes
-substrate_writes_this_arc: 36  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×18 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
+hash_anchor_at_iter_65: 23d6a2ec3bf2821f  # bit-identical through 37 substrate writes
+substrate_writes_this_arc: 37  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×19 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
 current_round: 9-open
-current_round_phase: BUILD — Round 9c (PRISM Tank — beam, stop-and-fire); blueprint iter-062-round9-architect.md
+current_round_phase: BUILD — Round 9d (MORTAR Tank — lobbed AoE); blueprint iter-062-round9-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 60  # CONSULT 006 — written self-pre-mortem, Round 8 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 65 — BUILD — Round 9c: PRISM Tank. Read iter-062-round9-architect.md. archetype=PRISM: continuous beam while fire-held (damages a line of bodies + burns brick, stops at the first body hit); movement disabled while firing (stop-and-fire). PlayerTank.gd (sanctioned) + a new arc-4 BeamWeapon helper. Hash-anchor verify; test-all + test-breach green; a harness for the beam mechanics (line-damage, stop-at-first-body, brick-burn).
+next_action: iter 66 — BUILD — Round 9d: MORTAR Tank. Read iter-062-round9-architect.md. archetype=MORTAR: lobbed parabolic projectile, AoE on impact (~tank-radius); fires over walls (no LoS); slow rate of fire — the terrain-bypass archetype. PlayerTank.gd (sanctioned) + a new arc-4 MortarShell scene/script (parabolic motion via a parameterized arc, on-impact AoE damages all bodies in a small radius). Hash-anchor verify; test-all + test-breach green; a harness for the lob + AoE.
 score: 42/70 absolute · 42/70 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -30,7 +30,7 @@ round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 round9_blueprint: loop/breach/iter-062-round9-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype} + check-silhouette-gate (30 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism} + check-silhouette-gate (31 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch]  # #3, #7, #9, #11 CLOSED — playtests delivered
 ```
 
@@ -140,26 +140,26 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-22 — **iter 64 (BUILD).** Round 9b — archetype framework
-  scaffolding: a `TankArchetype` enum (DEFAULT/PRISM/MORTAR/RAM) +
-  an `@export var archetype` on PlayerTank.gd. No per-archetype code
-  paths yet (those land in 9c/9d/9e); DEFAULT preserves the existing
-  breach behavior bit-identically. Hash anchor preserved; test-all
-  5/5, test-breach 30/30 (new check-breach-archetype). Δ 0 (C15 at
-  round close). 42/70.
+- 2026-05-22 — **iter 65 (BUILD).** Round 9c — PRISM Tank: the first
+  real archetype. archetype=PRISM = continuous beam while fire-held
+  (Line2D visual; raycast from muzzle finds first body); damages
+  enemies on a 0.25s cooldown (3-HP Heavy dies in ~0.75s) + burns
+  brick every tick + steel blocks safely; movement disabled while
+  firing (stop-and-fire). PlayerTank.gd substrate write; DEFAULT
+  bit-identical (all gates on archetype=PRISM). Hash anchor preserved;
+  test-all 5/5, test-breach 31/31 (new check-breach-prism). Δ 0 (C15
+  at round close). 42/70.
 
 ## Next action
 
-**Iter 65 — BUILD — Round 9c: PRISM Tank.**
-Read `loop/breach/iter-062-round9-architect.md`. archetype=PRISM:
-the player holds fire and a continuous beam casts from the muzzle —
-per physics tick the beam damages every body in its line UP TO the
-first body hit (the user's "stops at the first enemy"), and burns
-brick in the line. Movement is disabled while firing (stop-and-fire
-— the player risk that makes the archetype tense). PlayerTank.gd
-(sanctioned) + a new arc-4 BeamWeapon helper. Hash-anchor verify;
-test-all + test-breach green; a harness for the beam mechanics
-(line-damage, stop-at-first-body, brick-burn).
+**Iter 66 — BUILD — Round 9d: MORTAR Tank.**
+Read `loop/breach/iter-062-round9-architect.md`. archetype=MORTAR:
+lobbed parabolic projectile with AoE on impact (~tank-radius), fires
+over walls (no LoS check), slow rate of fire — the terrain-bypass
+archetype. PlayerTank.gd (sanctioned) + a new arc-4 MortarShell
+scene/script (parabolic motion via a parameterized arc, on-impact
+AoE damages all bodies in a small radius). Hash-anchor verify;
+test-all + test-breach green; a harness for the lob + AoE.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.

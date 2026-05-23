@@ -121,6 +121,12 @@ var _level_label: Label = null
 # arc-4 iter 59 (Round 8d): shields last longer in breach mode.
 const BREACH_SHIELD_DURATION: float = 6.0
 var _shield_label: Label = null
+# arc-4 iter 65 (Round 9c): PRISM Tank beam — continuous line-cast,
+# damages first body, stop-and-fire. Built only when archetype=PRISM.
+const BEAM_RANGE: float = 160.0
+const BEAM_DAMAGE_COOLDOWN: float = 0.25
+var _beam_line: Line2D = null
+var _beam_dmg_timer: float = 0.0
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
@@ -210,6 +216,10 @@ func _ready() -> void:
 		call_deferred("_build_route_strip")
 	hp_changed.emit(hp, max_hp)
 	_update_run_hud()
+	# arc-4 iter 65 (Round 9c): build the PRISM beam visual when this
+	# tank is a Prism archetype. Hidden until fire is held.
+	if archetype == TankArchetype.PRISM:
+		_build_beam_line()
 
 
 func _physics_process(delta: float) -> void:
@@ -285,6 +295,10 @@ func _physics_process(delta: float) -> void:
 		sprite.play()
 	else:
 		sprite.stop()
+	# arc-4 iter 65 (Round 9c): PRISM stop-and-fire — no movement while
+	# the beam is firing. The player commits, gets exposed in exchange.
+	if archetype == TankArchetype.PRISM and Input.is_action_pressed("ui_accept"):
+		input_vector = Vector2.ZERO
 
 	# arc-4 iter 28: OVERDRIVE sprint — KEY_SHIFT triggers a speed burst
 	# when the depot upgrade is owned. Gated on loadout.has_overdrive, so
@@ -306,7 +320,14 @@ func _physics_process(delta: float) -> void:
 		velocity = velocity.slide(collision.get_normal())
 	sprite.colliding = collision != null
 
-	if Input.is_action_pressed("ui_accept"):
+	# arc-4 iter 65 (Round 9c): PRISM fires a continuous beam (no
+	# discrete shells); DEFAULT keeps the existing _fire shell path.
+	if archetype == TankArchetype.PRISM:
+		if Input.is_action_pressed("ui_accept"):
+			_tick_beam(delta)
+		else:
+			_stop_beam()
+	elif Input.is_action_pressed("ui_accept"):
 		_fire()
 
 	# arc-4: shell cycle via KEY_TAB (just-pressed edge). No InputMap
@@ -381,6 +402,72 @@ func _cycle_shell() -> void:
 
 func _on_GunTimer_timeout() -> void:
 	can_shoot = true
+
+
+# arc-4 iter 65 (Round 9c): build the PRISM beam visual — a Line2D
+# from the muzzle along the tank's facing. Hidden until firing.
+func _build_beam_line() -> void:
+	_beam_line = Line2D.new()
+	_beam_line.name = "BeamLine"
+	_beam_line.points = [Vector2(8, 0), Vector2(BEAM_RANGE, 0)]
+	_beam_line.width = 2.0
+	_beam_line.default_color = Color(0.4, 0.95, 1.0, 0.9)
+	_beam_line.z_index = 30
+	_beam_line.visible = false
+	add_child(_beam_line)
+
+
+# arc-4 iter 65 (Round 9c): per-frame beam tick — raycast from the
+# muzzle in the tank's facing direction, find the first body hit, apply
+# damage via _apply_beam_to_body, update the visual length.
+func _tick_beam(delta: float) -> void:
+	if _beam_line == null:
+		return
+	var muzzle: Node2D = $Muzzle
+	var origin: Vector2 = muzzle.global_position
+	var dir: Vector2 = Vector2(1.0, 0.0).rotated(rotation)
+	var end_pos: Vector2 = origin + dir * BEAM_RANGE
+	var ss := get_world_2d().direct_space_state
+	var q := PhysicsRayQueryParameters2D.create(origin, end_pos)
+	q.exclude = [self]
+	var hit: Dictionary = ss.intersect_ray(q)
+	var hit_body: Node = null
+	var beam_dist: float = BEAM_RANGE
+	if not hit.is_empty():
+		hit_body = hit.collider
+		beam_dist = origin.distance_to(hit.position)
+	# Line points are local to PlayerTank — muzzle.position + along +X
+	# (the tank's transform rotates the line visually).
+	_beam_line.points = [muzzle.position, muzzle.position + Vector2(beam_dist, 0.0)]
+	_beam_line.visible = true
+	_apply_beam_to_body(delta, hit_body)
+
+
+# arc-4 iter 65 (Round 9c): apply the beam's damage rule to whatever
+# body the raycast hit. Enemies take 1 damage every BEAM_DAMAGE_COOLDOWN
+# (HP-bar drain stays visible; the enemy has time to shoot back);
+# bricks (or other non-enemy damageable bodies) burn fast — 1 damage
+# every tick; steel-style bodies (no take_damage) block the beam
+# without taking damage. Pure-data — the harness drives this with
+# mock bodies.
+func _apply_beam_to_body(delta: float, hit_body: Node) -> void:
+	_beam_dmg_timer -= delta
+	if hit_body == null:
+		return
+	if hit_body.is_in_group("enemy"):
+		if _beam_dmg_timer <= 0.0 and hit_body.has_method("take_damage"):
+			hit_body.take_damage(1)
+			_beam_dmg_timer = BEAM_DAMAGE_COOLDOWN
+	elif hit_body.has_method("take_damage"):
+		hit_body.take_damage(1)
+
+
+# arc-4 iter 65 (Round 9c): hide the beam visual + reset the damage
+# cooldown. Called when fire is released (PRISM only).
+func _stop_beam() -> void:
+	if _beam_line != null:
+		_beam_line.visible = false
+	_beam_dmg_timer = 0.0
 
 
 func take_damage(amount: int) -> void:
