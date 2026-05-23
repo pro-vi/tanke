@@ -17,6 +17,44 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 066 — BUILD — Round 9d: MORTAR Tank
+
+- Date: 2026-05-22
+- Tag: [STRUCTURE]
+- Score: **42/70** (Δ 0 — per the iter-062 blueprint, C15 lands at
+  round close.)
+- Round 9d — the second archetype. archetype=MORTAR: lobbed parabolic
+  shell, AoE on impact, fires over walls (no LoS), slow rate of fire
+  — the terrain-bypass archetype.
+- The change:
+  - New scripts/MortarShell.gd + scenes/MortarShell.tscn (arc-4-
+    owned): a Node2D projectile that lerps from start to target over
+    TRAVEL_TIME (0.6s) with a parabolic Y arc (sin(πt)·ARC_HEIGHT),
+    then explodes — AoE damages every Node2D sibling within
+    AOE_RADIUS (18px) that has take_damage, deals AOE_DAMAGE (2).
+    `_explode()` is public so the harness drives it without waiting
+    travel-time frames.
+  - scripts/PlayerTank.gd — `_fire()` gates on archetype: MORTAR
+    branches to `_fire_mortar` (spawns a MortarShell into the parent,
+    targeting MORTAR_RANGE in the facing direction) before the
+    existing shell-consume + shoot.emit path. `_ready` for MORTAR
+    bumps `$GunTimer.wait_time` to MORTAR_GUN_COOLDOWN (1.5s — slow
+    fire rate).
+- Hash anchor: `23d6a2ec3bf2821f` verified — all MORTAR behavior gates
+  on archetype=MORTAR; DEFAULT bit-identical. `make test-all` 5/5.
+  `make test-breach` 32/32.
+- Harness: new test_breach_mortar.gd + check-breach-mortar (test-
+  breach 31 → 32). MORTAR GunTimer slowed to 1.5s; _fire_mortar
+  spawned 1 MortarShell; the shell's _explode() dealt +2 to an
+  in-radius stub and 0 to a far stub.
+- Falsifications: none.
+- Substrate writes this arc: 37 → 38 (PlayerTank.gd ×20).
+- Files: scripts/MortarShell.gd, scenes/MortarShell.tscn,
+  scripts/PlayerTank.gd, test_breach_mortar.gd, Makefile,
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **MORTAR ships — indirect-fire AoE tank, terrain-bypass
+  via parabolic arc.** iter 67 = 9e: RAM Tank.
+
 ## iter 065 — BUILD — Round 9c: PRISM Tank
 
 - Date: 2026-05-22

@@ -24,6 +24,42 @@ Format:
 
 ---
 
+## iter 066 — BUILD — Round 9d: MORTAR Tank
+
+- Date: 2026-05-22
+- Tag: [STRUCTURE]
+- Round 9d — the second archetype. archetype=MORTAR: lobbed parabolic
+  projectile, AoE on impact (~tank-width radius); fires over walls (no
+  LoS); slow rate of fire — the terrain-bypass archetype.
+- The change:
+  - New scripts/MortarShell.gd + scenes/MortarShell.tscn
+    (arc-4-owned): a Node2D projectile that travels from launch point
+    to target over TRAVEL_TIME (0.6s) with a parabolic Y arc, then
+    explodes (AoE damages siblings within AOE_RADIUS via take_damage).
+  - scripts/PlayerTank.gd (sanctioned): _fire() gates on archetype:
+    MORTAR → _fire_mortar (spawns a MortarShell into the level
+    targeting MORTAR_RANGE in the facing direction); DEFAULT → the
+    existing shoot.emit path; PRISM continues via _tick_beam in
+    _physics_process (iter 65). _ready when archetype=MORTAR slows
+    GunTimer.wait_time to MORTAR_GUN_COOLDOWN (1.5s).
+- CONSULT constraints respected: 1 (no choice in combat — firing is
+  the existing accept-key, no new modal). MORTAR composes with 9a's
+  HP primitive — AoE damage drains enemy HP visibly.
+- Predicted failure modes:
+  - Hash anchor: all MORTAR behavior gates on archetype=MORTAR;
+    DEFAULT bit-identical.
+  - The shell uses sibling-distance for AoE (matches Bullet's
+    _apply_he_blast pattern) — bodies must be siblings of the shell
+    (i.e. in the level) to take damage.
+- Falsifiable claim: post-edit — test_breach_mortar shows: archetype=
+  MORTAR slows GunTimer to MORTAR_GUN_COOLDOWN; _fire_mortar spawns a
+  MortarShell into the parent; the shell's _explode() damages
+  in-radius siblings with take_damage and spares out-of-radius. Hash
+  anchor 23d6a2ec3bf2821f preserved; test-all 5/5; test-breach 32/32.
+- Sentence test: n/a (archetype weapon primitive).
+- Substrate touched: PlayerTank.gd (MORTAR branch — sanctioned).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 065 — BUILD — Round 9c: PRISM Tank
 
 - Date: 2026-05-22

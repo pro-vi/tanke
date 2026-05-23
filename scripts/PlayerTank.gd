@@ -127,6 +127,12 @@ const BEAM_RANGE: float = 160.0
 const BEAM_DAMAGE_COOLDOWN: float = 0.25
 var _beam_line: Line2D = null
 var _beam_dmg_timer: float = 0.0
+# arc-4 iter 66 (Round 9d): MORTAR Tank — lobbed AoE shell, fires over
+# walls, slow rate of fire. The shell handles arc + AoE; PlayerTank
+# just spawns it on _fire when archetype=MORTAR.
+const MortarShellScene = preload("res://scenes/MortarShell.tscn")
+const MORTAR_RANGE: float = 96.0
+const MORTAR_GUN_COOLDOWN: float = 1.5
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
@@ -220,6 +226,9 @@ func _ready() -> void:
 	# tank is a Prism archetype. Hidden until fire is held.
 	if archetype == TankArchetype.PRISM:
 		_build_beam_line()
+	# arc-4 iter 66 (Round 9d): MORTAR fires slow — bump GunTimer wait_time.
+	if archetype == TankArchetype.MORTAR:
+		$GunTimer.wait_time = MORTAR_GUN_COOLDOWN
 
 
 func _physics_process(delta: float) -> void:
@@ -355,6 +364,13 @@ func _fire() -> void:
 	# it elapses. The pre-commitment cost of choosing a shell.
 	if _swap_cooldown > 0.0:
 		return
+	# arc-4 iter 66 (Round 9d): MORTAR fires a lobbed shell, not a
+	# discrete bullet — branch before the shell-consume + shoot.emit path.
+	if archetype == TankArchetype.MORTAR:
+		_fire_mortar()
+		$GunTimer.start()
+		can_shoot = false
+		return
 	# arc-4: determine the actual shell to fire. With no loadout, we
 	# always fire AP (arc-2/3 baseline). With a loadout, we attempt the
 	# current_shell — consume() falls back to AP if the chosen reserve
@@ -468,6 +484,22 @@ func _stop_beam() -> void:
 	if _beam_line != null:
 		_beam_line.visible = false
 	_beam_dmg_timer = 0.0
+
+
+# arc-4 iter 66 (Round 9d): MORTAR fires a lobbed shell into the parent
+# level — target is MORTAR_RANGE in the tank's facing direction; the
+# shell handles the arc + impact AoE.
+func _fire_mortar() -> void:
+	var muzzle: Node2D = $Muzzle
+	var lvl: Node = get_parent()
+	if lvl == null:
+		return
+	var origin: Vector2 = muzzle.global_position
+	var dir: Vector2 = Vector2(1.0, 0.0).rotated(rotation)
+	var target: Vector2 = origin + dir * MORTAR_RANGE
+	var shell = MortarShellScene.instantiate()
+	lvl.add_child(shell)
+	shell.launch(origin, target)
 
 
 func take_damage(amount: int) -> void:
