@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 71
+iter: 72
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_71: 23d6a2ec3bf2821f  # bit-identical through 41 substrate writes (iters 70-71 asset/doc-only)
+hash_anchor_at_iter_72: 23d6a2ec3bf2821f  # bit-identical through 41 substrate writes (iters 70-72 asset/doc-only)
 substrate_writes_this_arc: 41  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×23 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
-current_round: 9-CLOSED
-current_round_phase: BETWEEN-ROUNDS — Round 9 closed at iter 71; next-round META bootstrap pending
+current_round: BETWEEN-ROUNDS — 9 closed, 10 diagnosed, awaiting playtest #14 or heartbeat-budget exhaustion
+current_round_phase: IDLE-HEARTBEAT — diagnose written (iter-072-round10-diagnose.md); awaiting ★ REVIEW-QUEUE #14 playtest or 1800s heartbeat
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 71  # CONSULT 007 — written self-pre-mortem, Round 9 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 72 — META — diagnose next exploration round. Round 9 closed at iter 71 (CONSULT 007 + ★REVIEW-QUEUE #14 + RUBRIC +C15; score 42/70 → 46/75 at the structural ceiling). Per PROMPT §EXPLORATION ROUND CADENCE the loop bootstraps the next round without waiting for the playtest verdict — REVIEW-QUEUE #14 is a user-look gate, not a halt. Read STATE.md + the last 30 LEDGER entries + REVIEW-QUEUE.md and decide: what's the weakest axis NOW, given C15=4 is the ceiling for tank archetypes? Candidates: (a) C5 enemy-role-vocabulary at 2/5 — only 3 roles (Light/Heavy/Fast) and HP-bar HUD shipped; the silhouette gate and the canonical-answer documentation are open; the new archetypes EXPOSE roster weakness (PRISM/RAM are most interesting against varied enemies). (b) C4 depth-bands at 3/5 — 5 bands exist but band-4 ("avg shell-mix differs per band") is playtest-gated and pre-archetype. (c) C9 identity at 2/5 — the cognitive distinctness anchors are all playtest-gated; not a SPIKE candidate. Recommended Round 10 SPIKE: ENEMY ROSTER EXPANSION (C5 axis) — propose 2-3 new enemy roles whose tactical answer DEMANDS a specific archetype (e.g. a sniper that punishes PRISM exposure; a swarm that rewards MORTAR AoE; an armored hulk that rewards RAM collision). Each role exists to make the archetype distinctness MATTER. SPIKE: 2 parallel investigations (roster-expansion VS arc-3-OG-roster-import). Cadence 360s. Hash-anchor verify; test-all + test-breach green.
+next_action: iter 73 — IDLE-HEARTBEAT awaiting REVIEW-QUEUE #14 playtest gate. If the user playtested (input present in conversation): read their verdict + iter-072-round10-diagnose.md, choose Round 10 axis per their direction, write iter-073-round10-architect.md, bootstrap Round 10. If no user signal: log a brief heartbeat entry, extend cadence to 3600s for iter 74 (per the iter-54/61 arc-4 reconciliation pattern). If still no signal by iter 75: proceed with default — REVIEW-QUEUE #13 default-b (algorithmic tint+overlay via gen_tile.py) THEN Round 10 default-a (enemy roster expansion against the new archetypes). Hash-anchor verify; no substrate work.
 score: 46/75 absolute · 46/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -140,6 +140,16 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-23 — **iter 72 (META).** Round 10 diagnose. Named 3
+  candidates: (a) enemy roster expansion against the new archetypes
+  (lifts C5 from 2 → 4; 4-7 BUILD iters); (b) arc-3 OG roster
+  import (lifts C5 from 2 → 3; cheaper, 2-4 SPIKE + 3-5 BUILD); (c)
+  defer to playtest verdict. Recommendation: (c) — every prior round
+  (5/6/7/8/9) was direction-set by a user playtest; building speculative
+  SPIKE work before #14 closes is high-variance. Written
+  loop/breach/iter-072-round10-diagnose.md (L2 compaction-safe).
+  Loop enters idle heartbeat at 1800s per iter-54/61 reconciliation.
+  No substrate; hash anchor preserved. Δ 0. 46/75.
 - 2026-05-23 — **iter 71 (META).** Round 9-close. Three artifacts:
   (1) CONSULT 007 — written self-pre-mortem on the 3 permanent
   questions + Round-9 distinctness + rubric, captured to
@@ -175,37 +185,27 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 72 — META — diagnose next exploration round.**
-Round 9 closed at iter 71. Per PROMPT §EXPLORATION ROUND CADENCE
-the loop bootstraps the next round without waiting for the playtest
-verdict — REVIEW-QUEUE #14 is a user-look gate, not a halt.
+**Iter 73 — IDLE-HEARTBEAT awaiting REVIEW-QUEUE #14 playtest gate.**
 
-Read STATE.md + the last 30 LEDGER entries + REVIEW-QUEUE.md and
-decide: what's the weakest axis NOW, given C15=4 is the ceiling for
-tank archetypes?
+Round 9 closed at iter 71; Round 10 was diagnosed at iter 72 with
+three candidates and a recommendation to defer (see
+`loop/breach/iter-072-round10-diagnose.md`).
 
-Recommended candidates (loop chooses):
-  - **(a) Round 10 SPIKE — Enemy roster expansion (C5 at 2/5).** The
-    new archetypes EXPOSE roster weakness — PRISM/MORTAR/RAM are
-    most interesting against varied enemy roles, but only 3 roles
-    exist (Light/Heavy/Fast). Propose 2-3 new roles whose tactical
-    answer DEMANDS a specific archetype: a sniper that punishes
-    PRISM exposure; a swarm that rewards MORTAR AoE; an armored
-    hulk that rewards RAM collision. Each role exists to make the
-    archetype distinctness MATTER (not just exist).
-  - **(b) Round 10 SPIKE — Roster import from arc-3 OG.** A
-    cheaper path: lift enemy variants already shipped in arc-3
-    OG mode (per Roster.gd) into the breach config; SPIKE
-    measures effort-to-fit.
-  - **(c) Defer to playtest verdict.** If you'd rather have the
-    user steer Round 10 — log an idle heartbeat and await `playtest`.
-    Default scope is too easy to mis-pick when 4 mechanics just
-    landed.
+If the user playtested (input present in conversation):
+  - Read their verdict + the iter-072 diagnose blueprint.
+  - Choose the Round 10 axis per their direction.
+  - Write `loop/breach/iter-073-round10-architect.md`.
+  - Bootstrap Round 10 — fire the SPIKE that the axis warrants.
 
-Default if no diagnosis emerges: SPIKE between (a) and (b) — 2
-parallel investigations, 360s cadence.
+If no user signal:
+  - Log a brief heartbeat entry to LEDGER.
+  - Extend cadence to 3600s for iter 74 (iter-54/61 reconciliation).
+  - If still no signal by iter 75: proceed with the default chain —
+    REVIEW-QUEUE #13 default-b (algorithmic tint+overlay via
+    extended `tools/gen_tile.py`) THEN Round 10 default-a (enemy
+    roster expansion against the new archetypes).
 
-Hash-anchor verify; test-all + test-breach green.
+Hash-anchor verify; no substrate work.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.

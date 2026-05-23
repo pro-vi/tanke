@@ -17,6 +17,44 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 072 — META — diagnose Round 10 + idle-heartbeat awaiting playtest
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]
+- Score: **46/75** (Δ 0 — META iter; no rubric lift).
+- Constraints respected: 5 (the recommended Round 10 candidate
+  directly addresses C5 the weakest structural axis), 6 (playtest-
+  driven direction-setting is the established arc-4 pattern).
+- Constraints risked: none — META doc only.
+- Round 10 diagnose. The honest read: C5 (Enemy role vocabulary)
+  at 2/5 is the weakest structural axis; the new archetypes
+  EXPOSE the roster weakness. But the historical pattern (every
+  Round 5-9 redirected by a user playtest) says picking Round 10's
+  axis blind is high-variance. Recommendation: write the diagnose
+  blueprint (compaction-safe), idle 1800s for the ★ REVIEW-QUEUE
+  #14 playtest gate, proceed on default if no signal arrives
+  within the established arc-4 heartbeat budget (1800s → 3600s →
+  pause per iter 54/61 reconciliation).
+- The blueprint names 3 candidates: (a) enemy roster expansion
+  against new archetypes — 4-7 BUILD iters, lifts C5 to 4; (b)
+  arc-3 OG roster import — 2-4 SPIKE + 3-5 BUILD, lifts C5 to 3,
+  cheaper; (c) defer to playtest verdict (this iter's choice).
+  Recommendation if no user signal by iter 75: default to (b) for
+  REVIEW-QUEUE #13 sprites + (a) for Round 10 axis.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (META doc only).
+  test-all + test-breach not re-run (no code; iter-71 verification
+  stands).
+- Falsifications: none.
+- Substrate writes this arc: 41 → 41.
+- Files: loop/breach/iter-072-round10-diagnose.md (NEW),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Round 10 candidates named + recommended path is
+  defer-to-playtest. The loop enters idle-heartbeat at 1800s
+  awaiting REVIEW-QUEUE #14 playtest gate. Diagnose blueprint
+  iter-072-round10-diagnose.md is the readable artifact for the
+  returning user.**
+
 ## iter 071 — META — Round 9-close (CONSULT 007 + ★REVIEW-QUEUE #14 + RUBRIC +C15)
 
 - Date: 2026-05-23

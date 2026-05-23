@@ -24,6 +24,39 @@ Format:
 
 ---
 
+## iter 072 — META — diagnose Round 10 + write blueprint; idle-heartbeat awaiting playtest
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]  # META analysis written; the SPIKE work
+  itself is deferred until either the user playtests REVIEW-QUEUE #14
+  or the idle heartbeat exhausts its budget.
+- CONSULT constraints respected: 6 (death recap inferred from
+  playtest — playtest-driven direction-setting is the established
+  arc-4 pattern), 5 (each band's pressure tied to roster — Round 10's
+  candidate (a) directly addresses C5 the weakest structural axis).
+- CONSULT constraints risked: none — META work cannot risk a
+  gameplay constraint by definition.
+- Predicted failure: the loop "bootstraps next round" PROMPT
+  discipline pulls toward firing the SPIKE this iter; the
+  iter-54/61 idle-heartbeat reconciliation pulls toward holding
+  for playtest. The risk is that the loop EITHER fires speculative
+  SPIKE work that gets discarded by playtest 5's verdict, OR sits
+  idle so long that user momentum dies. Mitigation: write the
+  diagnose blueprint NOW (compaction-safe, immediately useful when
+  the user returns) and idle at 1800s (the iter-54/61 budget).
+- Falsifiable claim: the diagnose blueprint correctly names ≥2 of
+  the 3 plausible Round-10 axes the user will care about. If the
+  user playtests + asks for something I haven't named (e.g.
+  "make the camera scroll better" or "I want music"), the META
+  analysis was too narrow on rubric-axes and missed a feel-axis
+  the playtest surfaced.
+- Substrate touched: none — META work only (new
+  loop/breach/iter-072-round10-diagnose.md + LEDGER + STATE).
+- Hash-anchor verification plan: trivial (no substrate; cheap
+  spot-check post-iter).
+
+---
+
 ## iter 071 — META — Round 9-close (CONSULT 007 + ★REVIEW-QUEUE #14 + RUBRIC +C15)
 
 - Date: 2026-05-23
