@@ -24,6 +24,32 @@ Format:
 
 ---
 
+## iter 086 — META — Round 11 candidate (c): armor-asymmetry resolution design doc
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]
+- CONSULT constraints respected: 7 (the doc evaluates two readings
+  through the verb-and-affordance lens — "armor as universal
+  shell-economy puzzle" vs "armor-bypass as per-archetype verb"),
+  3 (cross-references shell-class with archetype damage paths).
+- CONSULT constraints risked: H5 (speculative work pre-playtest).
+  Mitigation: this iter writes a DESIGN DOC only, not code.
+  Analysis + recommendation lives in markdown for the user to
+  evaluate alongside the playtest verdict. No substrate.
+- Predicted failure: doc bias toward the (b) "asymmetry as verb"
+  reading because it aligns with Pro's first-principles framing.
+  Mitigation: the doc must present BOTH readings fairly with
+  concrete worked examples + name the tradeoffs of each before
+  recommending.
+- Falsifiable claim: the doc names ≥3 concrete consequences for
+  each reading that distinguish them in observable gameplay. If
+  the doc is just abstract argument without specific
+  player-experience predictions, it's failing as a design tool.
+- Substrate touched: none — META doc only.
+- Hash-anchor verification plan: trivial (no substrate).
+
+---
+
 ## iter 085 — SPIKE — Round 11 Phase 2: SWARM α/β/γ hierarchy comparison harness
 
 - Date: 2026-05-23

@@ -17,6 +17,50 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 086 — META — Round 11 candidate (c): armor-asymmetry resolution design doc
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]
+- Score: **47/75** (Δ 0 — META doc).
+- Constraints respected: 7 (evaluates both readings through the
+  verb/affordance lens), 3 (cross-references shell-class
+  behavior).
+- Constraints risked: H5 — mitigated by keeping iter strictly to
+  design doc (no code, no PRESSURES.md / RUBRIC edits). User can
+  evaluate when ready.
+- User continues actively prompting; switched to non-code
+  speculative design work (candidate (c) from iter-080) to use
+  the engagement without breaching Pro's H5 "don't pile
+  speculative content."
+- Wrote `loop/breach/iter-086-armor-asymmetry-design.md`.
+  Names the two readings (universal armor vs armor-bypass-as-
+  verb), gives concrete consequences for each (5 numbered
+  consequences per reading), tradeoff lists, and a worked-
+  example test (2-Heavy encounter under both readings).
+- Key finding: **the armor question is DOWNSTREAM of REVIEW-QUEUE
+  #15 (identities vs weapons).** They are LINKED: (a) universal
+  armor ≈ archetypes-as-weapons (per-archetype upgrade economy);
+  (b) armor-bypass-as-verb ≈ archetypes-as-run-identities
+  (asymmetry is the design). Solving #15 implies the armor
+  answer.
+- Recommendation: pause armor decision until playtest 5 settles
+  #15. Premature commit to either side is exactly Pro's H5
+  speculative-production trap.
+- Implementation paths sketched for both (a) and (b) post-
+  playtest, ~3-5 iters each.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (doc only).
+  test-all + test-breach not re-run.
+- Falsifications: none.
+- Substrate writes this arc: 44 → 44.
+- Files: loop/breach/iter-086-armor-asymmetry-design.md (NEW),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Armor-asymmetry design doc shipped — both readings
+  laid out fairly, decision linked to REVIEW-QUEUE #15. The loop
+  has now exhausted non-speculative AND non-code-speculative
+  work that doesn't depend on the playtest. Iter 87+ = pure idle
+  heartbeats until playtest 5 arrives.**
+
 ## iter 085 — SPIKE — Round 11 Phase 2: SWARM α/β/γ hierarchy comparison — F005 falsified iter-84 blueprint
 
 - Date: 2026-05-23
