@@ -156,6 +156,14 @@ var _hp_bar_fg: ColorRect = null
 var _death_label: Label
 var _death_panel: ColorRect = null  # iter 71: dark backing panel behind death label
 var _restart_hint_label: Label = null  # iter 76: pulsing [R] RESTART hint
+
+# arc-4 iter 78 (Round 10 Phase 3): breach-mode playtest prompt
+# overlay shown on death only. Per Consult 008's H5 ("deferral !=
+# passivity") — improves playtest verdict quality without changing
+# design surface. Built + shown only when loadout != null (breach
+# mode); arc-2/3 codepath unchanged.
+var _breach_prompt_panel: ColorRect = null
+var _breach_prompt_label: Label = null
 var _restart_hint_tween: Tween = null
 # Roguelike ascender state (iter 11 — Pro Consult 003 reframe)
 var _start_y: float = 0.0
@@ -918,6 +926,14 @@ func _die() -> void:
 		_restart_hint_tween = create_tween().set_loops()
 		_restart_hint_tween.tween_property(_restart_hint_label, "modulate:a", 0.35, 0.6)
 		_restart_hint_tween.tween_property(_restart_hint_label, "modulate:a", 1.0, 0.6)
+	# arc-4 iter 78 (Round 10 Phase 3): breach-mode playtest prompt
+	# visible only when both dead and breach mode (loadout != null,
+	# which is implied by the prompt nodes being non-null since they
+	# are only built under that gate in _setup_hud).
+	if _breach_prompt_panel != null:
+		_breach_prompt_panel.visible = true
+	if _breach_prompt_label != null:
+		_breach_prompt_label.visible = true
 	died.emit()
 
 
@@ -1073,6 +1089,32 @@ func _setup_hud() -> void:
 	_restart_hint_label.add_theme_constant_override("outline_size", 2)
 	_restart_hint_label.visible = false
 	canvas.add_child(_restart_hint_label)
+	# arc-4 iter 78 (Round 10 Phase 3): breach-mode playtest prompt
+	# panel — gated on loadout != null (the established breach-mode
+	# gate). Arc-2/3 unaffected. Three structured questions focus
+	# the user on the open C15 anchor 5 / identity-vs-weapons axis
+	# per Consult 008.
+	if loadout != null:
+		_breach_prompt_panel = ColorRect.new()
+		_breach_prompt_panel.name = "BreachPromptPanel"
+		_breach_prompt_panel.position = Vector2(24, 192)
+		_breach_prompt_panel.size = Vector2(272, 44)
+		_breach_prompt_panel.color = Color(0.0, 0.0, 0.0, 0.65)
+		_breach_prompt_panel.visible = false
+		canvas.add_child(_breach_prompt_panel)
+		_breach_prompt_label = Label.new()
+		_breach_prompt_label.name = "BreachPromptLabel"
+		_breach_prompt_label.position = Vector2(32, 196)
+		_breach_prompt_label.size = Vector2(256, 36)
+		_breach_prompt_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_breach_prompt_label.text = "— playtest prompt —\nwhich moment did you regret?  right archetype?  would switching help?"
+		_breach_prompt_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_breach_prompt_label.add_theme_color_override("font_color", Color(0.85, 0.95, 1.0))
+		_breach_prompt_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		_breach_prompt_label.add_theme_constant_override("outline_size", 2)
+		_breach_prompt_label.add_theme_font_size_override("font_size", 8)
+		_breach_prompt_label.visible = false
+		canvas.add_child(_breach_prompt_label)
 	# Roguelike ascender HUD (iter 11) — top-right.
 	# iter 019 (F003 fix): gated on show_ascender_hud. When false (OG mode),
 	# _depth_label / _time_label stay null; _update_run_hud already null-checks,

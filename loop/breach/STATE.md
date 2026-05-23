@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 77
+iter: 78
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_77: 23d6a2ec3bf2821f  # bit-identical through 41 substrate writes (iters 70-77 asset/doc/harness-only)
-substrate_writes_this_arc: 41  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×23 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
-current_round: 10-open — Phase 2 COMPLETE (iter 76 matrix + iter 77 probes); Phase 3 starting iter 78
-current_round_phase: BUILD — Round 10 Phase 3 (playtest instrumentation — on-death prompts + PLAYTEST-5-BRIEF); iter-073-round10-rethesis.md is the blueprint
+hash_anchor_at_iter_78: 23d6a2ec3bf2821f  # bit-identical through 42 substrate writes
+substrate_writes_this_arc: 42  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×24 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
+current_round: 10-open — Phase 3 COMPLETE (iter 78); Round 10 close at iter 79
+current_round_phase: ROUND-CLOSE — Round 10-close (CONSULT 009 + REVIEW-QUEUE #14 playtest-gate upgrade + RUBRIC reflection)
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 73  # CONSULT 008 — GPT Pro extended thinking via /second-o
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 78 — BUILD — Round 10 Phase 3: playtest instrumentation. Read iter-073-round10-rethesis.md (Phase 3 section). Per Consult 008's H5 "deferral ≠ passivity" point, improve playtest verdict quality WITHOUT adding design surface. Two artifacts: (1) a short structured prompt the user sees on death — "Which moment do you regret most? / Was your starting archetype the right pick? / Would switching archetypes have helped?" — implemented as a 3-line panel on the death/recap screen (RunRecap or equivalent); (2) write loop/breach/PLAYTEST-5-BRIEF.md — a one-page playtest brief asking the user to do: 1 normal run per archetype + 1 mid-run switch run, recording reactions to the four characteristic-mistake temptations (PRISM overcommit / MORTAR lazy safety / RAM reckless pathing / Default shell waste). Substrate: PlayerTank.gd or RunRecap.gd (gated on `breach_mode_enabled`); the brief is a doc. Hash-anchor verify; test-all + test-breach green.
+next_action: iter 79 — ROUND-CLOSE — Round 10-close. Three artifacts: (1) CONSULT 009 — written self-pre-mortem on the Round 10 phases (1: distinctness audit / 2: PRESSURES.md + probes / 3: instrumentation) + the three permanent questions. Capture to creative-consults.md. (2) REVIEW-QUEUE #14 upgrade — re-edit the ★ PLAYTEST REQUEST item to point at PLAYTEST-5-BRIEF.md as the structured brief; note the on-death prompt overlay; note the new question axes (identities-vs-weapons, armor asymmetry, distinctness verdict). (3) RUBRIC reflection — Round 10 lifted C5 2→3 (PRESSURES.md anchor 2 documentation). No new criterion added (Round 10 was instrumentation, not new mechanics). Update LEDGER score line for round close. Hash-anchor verify; test-all + test-breach green.
 score: 47/75 absolute · 47/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4 (iter 76 lifts C5 2→3 via PRESSURES.md canonical-answer doc)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -140,6 +140,19 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-23 — **iter 78 (BUILD).** Round 10 Phase 3: playtest
+  instrumentation. Two artifacts: (1) on-death structured prompt
+  — new `_breach_prompt_panel`/`_breach_prompt_label` in
+  PlayerTank.gd, gated on `loadout != null`, shown in `_die()`
+  flow; text: "which moment did you regret? right archetype?
+  would switching help?" — the three questions focus on the open
+  C15 anchor 5 / identity-vs-weapons axis. (2) PLAYTEST-5-BRIEF.md
+  — one-page brief covering the four characteristic-mistake
+  temptations (PRISM overcommit / MORTAR lazy safety / RAM
+  reckless pathing / Default shell waste), 5-run playtest spec,
+  6 specific things to learn. Substrate write #24 on PlayerTank.gd;
+  hash preserved; test-all 5/5; test-breach 37/37. Phase 3 COMPLETE
+  — iter 79 = Round-10 close. Δ 0. 47/75.
 - 2026-05-23 — **iter 77 (BUILD).** Round 10 Phase 2 continuation:
   pressure-probe harness. 5 focused probes vs an armored Heavy
   stub confirmed the PRESSURES.md armor-bypass asymmetry:
@@ -247,36 +260,28 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 78 — BUILD — Round 10 Phase 3: playtest instrumentation.**
+**Iter 79 — ROUND-CLOSE — Round 10-close.**
 
-Read `loop/breach/iter-073-round10-rethesis.md` (Phase 3 section).
+Read `loop/breach/iter-073-round10-rethesis.md` (Round-10 close
+section). Three close artifacts:
 
-Per Consult 008's H5 "deferral ≠ passivity" point, improve playtest
-verdict quality WITHOUT adding design surface. Two artifacts:
+  1. **CONSULT 009** — written self-pre-mortem on the three Round-10
+     phases (1 distinctness audit / 2 PRESSURES.md + probes /
+     3 instrumentation) + the three permanent questions. Capture to
+     `loop/breach/creative-consults.md`.
 
-  1. **On-death structured prompt** — a 3-line panel the user sees
-     on the death/recap screen:
-       - "Which moment do you regret most?"
-       - "Was your starting archetype the right pick?"
-       - "Would switching archetypes have helped?"
-     Implementation: RunRecap.gd or PlayerTank.gd death overlay;
-     gated on `breach_mode_enabled` so arc-2/3 stay bit-identical.
+  2. **REVIEW-QUEUE #14 upgrade** — re-edit the ★ PLAYTEST REQUEST
+     item to point at `PLAYTEST-5-BRIEF.md` as the structured
+     brief; note the on-death prompt overlay; note the new question
+     axes (identities-vs-weapons, armor asymmetry, distinctness
+     verdict).
 
-  2. **PLAYTEST-5-BRIEF.md** — a one-page playtest brief asking
-     the user to do:
-       - 1 normal run per archetype (4 runs)
-       - 1 mid-run switch run
-     and to note reactions to the four characteristic-mistake
-     temptations:
-       - PRISM overcommit
-       - MORTAR lazy safety / bad prediction
-       - RAM reckless pathing
-       - Default shell waste
+  3. **RUBRIC reflection** — Round 10 lifted C5 2→3 (PRESSURES.md
+     anchor 2 documentation). No new criterion (Round 10 was
+     instrumentation, not new mechanics). Update LEDGER score line
+     for the close.
 
-Substrate: PlayerTank.gd or RunRecap.gd (gated). The brief is a doc.
-
-Hash-anchor verify (substrate write — must preserve flag-off
-codepath); test-all + test-breach green.
+Hash-anchor verify (no substrate); test-all + test-breach green.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.

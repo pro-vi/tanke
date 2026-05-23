@@ -24,6 +24,36 @@ Format:
 
 ---
 
+## iter 078 — BUILD — Round 10 Phase 3: playtest instrumentation (on-death prompt + PLAYTEST-5-BRIEF)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (death recap framing — the
+  structured prompt extends the existing death recap with
+  archetype-aware reflection questions; resource/build/route
+  attribution stays the spine), 1 (no choices during combat — the
+  prompt appears on the death screen, post-combat).
+- CONSULT constraints risked: none — purely additive HUD on the
+  existing death overlay.
+- Predicted failure: substrate-write fragility. PlayerTank.gd ×23
+  is high; adding another node to the canvas requires precise
+  gating on `loadout != null` (the established breach-mode gate)
+  so arc-2/3 stay bit-identical. The risk is wiring the new label
+  into `_setup_hud()` outside the gate. Mitigation: build the
+  label inside the existing `loadout != null` HUD section AND
+  toggle visibility inside the existing `loadout != null` branch
+  of `_die()`.
+- Falsifiable claim: hash anchor 23d6a2ec3bf2821f stays preserved
+  post-edit; test-all 5/5 (arc-2 + arc-3 unchanged); test-breach
+  37/37; the new label appears on breach-mode death only.
+- Substrate touched: scripts/PlayerTank.gd (Layer 2, sanctioned
+  write ×24). HUD-only; flag-off (no loadout) codepath unchanged.
+- Hash-anchor verification plan: `TANKE_SEED=42 godot --headless
+  --path . --script loop/test_runner.gd` post-edit; must report
+  tile_hash: 23d6a2ec3bf2821f.
+
+---
+
 ## iter 077 — BUILD — Round 10 Phase 2 continuation: pressure-probe harness (armor-bypass scope)
 
 - Date: 2026-05-23

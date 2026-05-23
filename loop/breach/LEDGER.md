@@ -17,6 +17,50 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 078 — BUILD — Round 10 Phase 3: playtest instrumentation (on-death prompt + PLAYTEST-5-BRIEF)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0 — instrumentation, no rubric anchor lift;
+  the verdict-quality improvement is the actual deliverable.)
+- Constraints respected: 6 (extends the death recap with
+  archetype-aware reflection questions; resource/build/route
+  attribution stays the spine), 1 (no choice during combat — the
+  prompt is post-death).
+- Constraints risked: none — purely additive HUD.
+- Round 10 Phase 3 (iter 1 of 1). Two artifacts shipped:
+  - **On-death structured prompt** — a new `_breach_prompt_panel`
+    + `_breach_prompt_label` built in `_setup_hud()` gated on
+    `loadout != null` (the established breach-mode gate); shown
+    in the `_die()` flow alongside the existing death overlay.
+    Text: "— playtest prompt — / which moment did you regret?
+    right archetype? would switching help?" — three questions
+    that focus the user on the open C15 anchor 5 /
+    identity-vs-weapons axis Pro surfaced.
+  - **PLAYTEST-5-BRIEF.md** — one-page brief: what we built
+    Round 9, what the loop is uncertain about (the experiential
+    distinctness question Pro flagged), the four
+    characteristic-mistake temptations (PRISM overcommit /
+    MORTAR lazy safety / RAM reckless pathing / Default shell
+    waste), the 5-run playtest spec, the three on-death
+    questions, and 6 specific things to learn from the playtest.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (substrate write ×24
+  on PlayerTank.gd; HUD-only; gated on `loadout != null`; flag-off
+  codepath bit-identical). test-all 5/5; test-breach 37/37.
+- Falsifications: none.
+- Substrate writes this arc: 41 → 42 (PlayerTank.gd ×24).
+- Files: scripts/PlayerTank.gd (substrate write),
+  loop/breach/PLAYTEST-5-BRIEF.md (NEW),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Round 10 Phase 3 COMPLETE. The death-screen prompt
+  + the PLAYTEST-5-BRIEF give the user a structured frame for
+  playtest 5 without changing any game mechanic. Round 10 close
+  (iter 79) consists of: CONSULT 009 (Round-10 self-pre-mortem),
+  REVIEW-QUEUE #14 upgrade (★ playtest gate layered with the new
+  instrumentation + the C5 lift from PRESSURES.md), and
+  RUBRIC reflection.**
+
 ## iter 077 — BUILD — Round 10 Phase 2 continuation: pressure-probe harness (armor-bypass scope)
 
 - Date: 2026-05-23
