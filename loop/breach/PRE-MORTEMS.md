@@ -24,6 +24,32 @@ Format:
 
 ---
 
+## iter 087 — SWEEP — Round 9-10-11 substrate audit (per-archetype state correctness)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (substrate audit ensures death-
+  attribution stays accurate), 7 (verifies the verb-distinction
+  doesn't leak across switches).
+- CONSULT constraints risked: none — verification work.
+- Predicted failure: the per-archetype switch logic (iter 69
+  `switch_archetype` + `_revert_archetype`) is the most state-
+  fragile surface. A bug in `_revert_archetype` could leave
+  per-archetype state (BeamLine visibility, GunTimer wait_time,
+  RAM speed bonus) leaked across switches — the multi-switch
+  harness (test_breach_archetype_switch) covered speed-bonus
+  cleanup, but other surfaces (beam line node persistence under
+  re-enter, _ram_swing_timer staying primed) may not have been
+  tested. The audit looks for these.
+- Falsifiable claim: the audit finds ≥1 concern worth either
+  fixing or filing as a follow-up. If the audit returns "all
+  clean, nothing to note," the audit was too superficial.
+- Substrate touched: none in the audit itself — read-only iter.
+  Any fixes uncovered are a SEPARATE iter.
+- Hash-anchor verification plan: trivial (no edits).
+
+---
+
 ## iter 086 — META — Round 11 candidate (c): armor-asymmetry resolution design doc
 
 - Date: 2026-05-23

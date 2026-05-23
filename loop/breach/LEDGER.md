@@ -17,6 +17,69 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 087 — SWEEP — Round 9-10-11 substrate audit (per-archetype state correctness)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0 — verification audit).
+- Constraints respected: 6 (audit verifies death-attribution
+  state correctness), 7 (verifies verb-distinction doesn't leak
+  across switches).
+- Constraints risked: none.
+- Read-only audit of the per-archetype state machine
+  (PlayerTank.gd lines 491-605): `_build_beam_line` /
+  `_tick_beam` / `_apply_beam_to_body` / `_revert_archetype` /
+  `switch_archetype` / `_init_archetype` / `_ram_swing`.
+- **Findings — 2 minor state-hygiene observations, 0 correctness
+  bugs:**
+  - **S1: `_ram_swing_timer` not reverted in
+    `_revert_archetype`.** If a player swings as RAM (setting
+    timer = RAM_SWING_COOLDOWN = 0.5) then switches to DEFAULT
+    mid-cooldown, the timer continues ticking down toward 0
+    via `_physics_process`. Harmless — RAM-specific branch
+    doesn't fire when archetype != RAM, so the timer change
+    has no observable effect. State hygiene only.
+  - **S2: `_beam_dmg_timer` not reverted in
+    `_revert_archetype`.** Same pattern: if PRISM was actively
+    firing when switched away, `_beam_dmg_timer` carries the
+    previous value. Harmless — only `_apply_beam_to_body`
+    decrements it, and that's only called when archetype ==
+    PRISM. State hygiene only.
+  - **S3: GunTimer running with stale wait_time.** When
+    switched FROM MORTAR mid-cooldown, _revert_archetype sets
+    `wait_time = 1.0` but the timer was started with 1.5s
+    remaining — the timeout fires per the original interval.
+    Self-corrects on next fire. One-shot timing anomaly; no
+    observable issue.
+- **No correctness bugs found.** The iter-69 multi-switch
+  harness (test_breach_archetype_switch) covered the primary
+  state risk (speed bonus accumulation). The 3 observations
+  above are cleanup-tier — a future iter could extend
+  `_revert_archetype` to reset `_ram_swing_timer = 0.0`,
+  `_beam_dmg_timer = 0.0`, and stop GunTimer before resetting
+  wait_time. Not urgent; not playtest-blocking.
+- **Other surfaces audited as clean:**
+  - `_build_beam_line` idempotent guard (line 476) works across
+    repeated DEFAULT↔PRISM cycles
+  - `_tick_beam` re-shows BeamLine via `.visible = true` per tick
+    (line 518) — _revert_archetype's `.visible = false` is benign
+  - `_init_archetype` `_archetype_initialized` flag correctly
+    flipped to false in switch_archetype before re-init (line 586)
+  - GunTimer wait_time correctly resets to 1.0 on revert from
+    MORTAR (line 572)
+- Hash anchor: `23d6a2ec3bf2821f` preserved (read-only audit).
+- Falsifications: **none.** The 3 observations are filed as
+  "follow-up cleanup" tags, not falsifications — they don't
+  contradict any prediction, just identify cleanup opportunities.
+- Substrate writes this arc: 44 → 44.
+- Files: loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Round 9-10-11 substrate is correctness-clean for
+  playtest 5. 3 state-hygiene observations filed for a future
+  cleanup iter (none playtest-blocking). The audit was honest
+  per the iter-87 PRE-MORTEM's falsifiable claim: ≥1 concern
+  found (3 found), audit was not superficial.**
+
 ## iter 086 — META — Round 11 candidate (c): armor-asymmetry resolution design doc
 
 - Date: 2026-05-23
