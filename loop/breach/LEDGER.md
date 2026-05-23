@@ -17,6 +17,53 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 074 — BUILD — Round 10 Phase 1: distinctness-audit harness (structural-signal scaffold)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Score: **46/75** (Δ 0 — verification harness, no rubric anchor lift
+  yet; the C5 anchor 2 lift lands at Phase 2 close once the
+  PRESSURES.md matrix documents canonical answers per role).
+- Constraints respected: 4 (extends silhouette grammar from
+  "asset readable" to "mechanic readable"), 7 (verifies verb
+  differentiation structurally).
+- Constraints risked: none.
+- Round 10 Phase 1 (iter 1 of 2). Per Consult 008's H4 reframe —
+  "experientially homogeneous despite mechanically distinct" is
+  structurally detectable — the new harness compares per-archetype
+  6-axis structural signal vectors and asserts pairwise distance
+  ≥3 of 6.
+- Signal vector axes: weapon_kind / movement_blocked_during_fire /
+  range_class / cadence_class / damage_source / live-scene
+  fingerprint. The fingerprint axis reads the per-archetype init
+  artifact (PRISM=BeamLine node / MORTAR=GunTimer@1.5 / RAM=speed
+  bonus / DEFAULT=none).
+- Results (this iter's baseline): min pairwise distance 5/6;
+  DEFAULT↔PRISM, PRISM↔MORTAR, PRISM↔RAM all 6/6 (maximum
+  distinctness — PRISM is the most structurally distinct). The
+  three pairs at 5/6 (DEFAULT↔MORTAR, DEFAULT↔RAM, MORTAR↔RAM)
+  share `move_blocked: no` — only PRISM stops to fire. Honest
+  signal; 2-buffer over threshold.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (asset/doc-only iter;
+  no substrate). test-all 5/5; test-breach 35 → 36 (new
+  check-breach-distinctness-audit).
+- Falsifications: none. The harness will likely fail when Phase 1
+  continuation (iter 75) adds PLAY-SIM signals — kill distance,
+  time stationary, depot picks — because the play-sim signals may
+  converge across archetypes in ways the structural signals don't.
+  That's the WHOLE POINT — Phase 1 is the early-warning system
+  for the H4 risk.
+- Substrate writes this arc: 41 → 41.
+- Files: loop/breach/test_breach_distinctness_audit.gd (NEW),
+  Makefile (new target + .PHONY + test-breach aggregate),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Phase 1 structural distinctness baseline established
+  — 4 archetypes pass the pairwise-≥3-of-6 gate. The signal that
+  matters is which axes ARE shared — only `move_blocked` collapses,
+  which is honest (PRISM is the stop-and-fire outlier). Phase 1
+  continuation (iter 75) adds play-sim signals.**
+
 ## iter 073 — META — Consult 008 (GPT Pro extended thinking) captured + Round 10 rethesis
 
 - Date: 2026-05-23

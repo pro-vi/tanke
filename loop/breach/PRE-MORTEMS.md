@@ -24,6 +24,38 @@ Format:
 
 ---
 
+## iter 074 — BUILD — Round 10 Phase 1: distinctness-audit harness (structural-signal scaffold)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 4 (extends silhouette-grammar logic
+  from "asset readable" to "mechanic readable" — a structural
+  pairwise-distinctness assertion), 7 (verifies each archetype is a
+  distinct verb-set not a stat-tweak).
+- CONSULT constraints risked: none — pure verification harness.
+- Predicted failure: the structural signals are EASY to make
+  distinct (the archetypes were explicitly designed for it). The
+  audit may pass trivially this iter, giving a false confidence
+  that all is well. Mitigation: this is Phase-1 scaffolding only;
+  the actually-uncertain signals (kill distance, time stationary,
+  death reason distribution) need play-sim — Phase-1 continuation
+  iter 75. State this explicitly in the harness output so the loop
+  doesn't claim "distinctness verified" prematurely.
+- Falsifiable claim: with the existing 4 archetypes, the 6-element
+  signal vector produces ≥3 pairwise differences for ALL
+  archetype pairs. If a pair differs in fewer than 3 of 6 signals,
+  the audit FAILS and the harness emits the "feels-same risk"
+  warning per Consult 008's structural-correlate logic. Trivially
+  PRISM vs MORTAR should differ in most signals; the closest pair
+  is probably DEFAULT vs MORTAR (both projectile-spawning with
+  slow vs fast cadence — let's see).
+- Substrate touched: none — new harness file + Makefile target
+  only. No scripts/ writes.
+- Hash-anchor verification plan: trivially verify (no substrate),
+  test-all + test-breach green.
+
+---
+
 ## iter 073 — META — Consult 008 captured + Round 10 rethesis
 
 - Date: 2026-05-23

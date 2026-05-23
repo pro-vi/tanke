@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 73
+iter: 74
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_73: 23d6a2ec3bf2821f  # bit-identical through 41 substrate writes (iters 70-73 asset/doc-only)
+hash_anchor_at_iter_74: 23d6a2ec3bf2821f  # bit-identical through 41 substrate writes (iters 70-74 asset/doc/harness-only)
 substrate_writes_this_arc: 41  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×23 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
-current_round: 10-open — rethesis adopted (iter-073-round10-rethesis.md); Phase 1 BUILD starting iter 74
-current_round_phase: BUILD — Round 10 Phase 1 (distinctness-audit instrumentation); iter-073-round10-rethesis.md is the blueprint
+current_round: 10-open — Phase 1 distinctness-audit (iter 74 structural baseline shipped); iter-073-round10-rethesis.md is the blueprint
+current_round_phase: BUILD — Round 10 Phase 1 continuation iter 75 (play-sim metrics on top of iter-74's structural signal vector)
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 73  # CONSULT 008 — GPT Pro extended thinking via /second-o
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 74 — BUILD — Round 10 Phase 1: distinctness-audit harness. Read iter-073-round10-rethesis.md. Build `loop/breach/test_breach_distinctness_audit.gd` — a play-sim harness that runs N seeded auto-play sessions per archetype on the same seeds; emits a per-archetype metric vector (median kill distance, % time stationary in combat, wall interaction mode histogram, death reason distribution, preferred depot pick histogram, average exposure during fire); asserts pairwise vector distance > tolerance (FAILS with warning that the playtest will likely report "feels same" if convergence is detected). Non-speculative pre-playtest work — addresses the H4 "experientially homogeneous" risk Pro flagged. Add `check-breach-distinctness-audit` to Makefile + test-breach aggregate. Hash-anchor verify; test-all + test-breach green.
+next_action: iter 75 — BUILD — Round 10 Phase 1 continuation: play-sim metrics for the distinctness audit. Read iter-073-round10-rethesis.md. The iter-74 structural-signal scaffold passes (min pairwise distance 5/6; DEFAULT/MORTAR/RAM share only `move_blocked: no`). Iter 75 extends test_breach_distinctness_audit.gd with PLAY-SIM signals: spawn a fixed test scene (player + N enemies + walls), drive each archetype's fire input for K physics ticks on the SAME seed, capture per-archetype: median kill distance (raycast at moment-of-kill), % time stationary in combat (frames with zero position delta during fire-held), wall interaction mode (HE-blast / beam-burn / collide / over-the-wall — count per type), damage source histogram (projectile / per-tick raycast / aoe-impact / collision+swing). Append play-sim signals to the existing structural signals as additional vector axes; re-assert pairwise distance ≥ N (tune the threshold for the new axis count). Hash-anchor verify; test-all + test-breach green.
 score: 46/75 absolute · 46/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -30,7 +30,7 @@ round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 round9_blueprint: loop/breach/iter-062-round9-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch} + check-silhouette-gate (35 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit} + check-silhouette-gate (36 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch, #13 archetype-sprite integration path (decision-needed), #14 ★ PLAYTEST REQUEST Round 9 complete (playtest gate), #15 archetypes-as-identities vs archetypes-as-weapons (design-direction question), #16 pressure matrix + distinctness audit (Round 10 internal)]  # #3, #7, #9, #11 CLOSED — playtests delivered
 ```
 
@@ -140,6 +140,19 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-23 — **iter 74 (BUILD).** Round 10 Phase 1: distinctness-
+  audit harness scaffold. Per Consult 008's H4 reframe, built
+  loop/breach/test_breach_distinctness_audit.gd — compares per-
+  archetype 6-axis STRUCTURAL signal vectors (weapon_kind /
+  move_blocked / range_class / cadence_class / damage_source / live
+  fingerprint); asserts pairwise distance ≥3 of 6. Min pairwise
+  5/6 — DEFAULT↔PRISM and PRISM↔MORTAR and PRISM↔RAM all 6/6
+  (PRISM is the most distinct); DEFAULT/MORTAR/RAM share only the
+  `move_blocked: no` signal. Honest baseline; 2-buffer above
+  threshold. Phase-1 continuation iter 75 adds play-sim signals
+  (kill distance / time stationary / wall interaction). No
+  substrate; hash anchor preserved. test-all 5/5; test-breach
+  35 → 36. Δ 0 (C5 lifts at Phase 2 close). 46/75.
 - 2026-05-23 — **iter 73 (META).** Consult 008 captured + Round 10
   rethesis. User-initiated /second-opinion fired iter 72; GPT Pro
   extended thinking (~6 min) returned a sharp reframe: **"Round 9
@@ -201,33 +214,35 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 74 — BUILD — Round 10 Phase 1: distinctness-audit harness.**
+**Iter 75 — BUILD — Round 10 Phase 1 continuation: play-sim metrics.**
 
-Read `loop/breach/iter-073-round10-rethesis.md`.
+Read `loop/breach/iter-073-round10-rethesis.md`. Iter 74's
+structural-signal scaffold passes (min 5/6 pairwise distance) —
+this iter extends the audit with PLAY-SIM signals so the audit
+fires on the dimensions a playtester actually experiences.
 
-Build `loop/breach/test_breach_distinctness_audit.gd` — a play-sim
-harness that runs N seeded auto-play sessions per archetype on the
-same seeds; emits a per-archetype metric vector:
+Extend `loop/breach/test_breach_distinctness_audit.gd`:
 
-| Metric                          | Why                                       |
-|---------------------------------|-------------------------------------------|
-| Median kill distance            | Beam ≠ collide ≠ lob ≠ direct             |
-| % time stationary in combat     | PRISM should be much higher than RAM      |
-| Wall interaction mode histogram | HE-blast vs beam-burn vs collide vs over  |
-| Death reason distribution       | Different archetypes should die different |
-| Preferred depot pick histogram  | The "this archetype wants X" signal       |
-| Average exposure during fire    | PRISM should be much higher; MORTAR low   |
+- Spawn a fixed test scene (player at known origin + 3-5 enemies +
+  a brick wall + an open lane) — same scene + same seed for all 4
+  archetypes.
+- Drive each archetype's fire input for K physics ticks
+  (K~200 ≈ 3-4s game time; use `_physics_process(0.05)` driven
+  manually).
+- Capture per archetype:
+  - median kill distance (record `pt.global_position.distance_to(enemy.global_position)` at moment-of-kill — i.e. when `enemy.hp` drops to 0)
+  - `% time stationary in combat` (frames where `pt.position` delta ≈ 0 while fire-held)
+  - wall interaction mode counter (`HE-blast / beam-burn / collide / over-the-wall` — increment per event)
+  - damage source histogram (`projectile / per-tick-raycast / aoe-impact / collision+swing`)
+- Append these as 4 NEW axes to the existing 6-axis vector → 10
+  axes total. Tune the threshold proportionally (≥5 of 10? — TBD
+  on results).
 
-The harness asserts pairwise vector distance > tolerance. FAILS
-with a warning that the playtest will likely report "feels same"
-if convergence is detected. Add `check-breach-distinctness-audit`
-to Makefile + test-breach aggregate.
+If pairwise distance drops below threshold on a play-sim axis pair,
+the harness emits the convergence warning per Consult 008's
+structural-correlate logic.
 
-Non-speculative pre-playtest work — addresses the H4
-"experientially homogeneous" risk Pro flagged in Consult 008.
-
-Hash-anchor verify (no substrate; new harness + Makefile only);
-test-all + test-breach green.
+Hash-anchor verify (no substrate); test-all + test-breach green.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.
