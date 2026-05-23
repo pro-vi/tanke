@@ -24,6 +24,44 @@ Format:
 
 ---
 
+## iter 062 — PLAYTEST — playtest-4 integrated; Round 9 opened
+
+- Date: 2026-05-22
+- Tag: [STRUCTURE-DEFERRED]
+- The user playtested Round 8 (2026-05-22). Verdict: positive — the
+  roguelite overhaul reached "an interesting spot" — but the
+  underlying primitive ("tank that shoots discrete bullets") is the
+  bottleneck. The loop's autonomous ceiling (CONSULT 006) is
+  RECONFIRMED — only a human could name the next-deepest surface:
+  archetype primitives.
+- New direction: TANK ARCHETYPES (Red Alert / Into the Breach
+  references). User-named: Prism Tank (stop-and-fire beam, burns brick,
+  damages in line; upgrade reflects → AoE). Prerequisite: enemy HP > 1
+  + HP bars. Assets via /agentify image_gen.
+- Via AskUserQuestion (user override authority): scope = "Full
+  archetype program" — 4 archetypes + BOTH selection paths (start-pick
+  + event-unlock mid-run switching) + visuals before the next playtest.
+- This iter: integrate the playtest, record the overrides in STATE
+  §Arc-4 amendments, open Round 9, write the blueprint
+  iter-062-round9-architect.md, append REVIEW-QUEUE #12.
+- CONSULT constraints: the user override sanctions (a) Enemy.gd HUD
+  writes for the HP-bar primitive; (b) /agentify image_gen for asset
+  visuals (overriding the MLX-SD-style NO-GO). Constraint 1 (no choice
+  in combat) preserved. Constraint 4 (silhouette grammar) still gates
+  generated assets.
+- Predicted failure: Round 9 is the biggest round yet (8 sub-rounds, 4
+  archetypes, asset gen). The risk: archetypes that don't FEEL distinct
+  (just "default + stat tweak"). Mitigation: the blueprint's
+  "mechanically different" guardrail — if an archetype reduces to a
+  stat, cut it.
+- Falsifiable claim: post-iter — iter-062-round9-architect.md exists
+  with the 8 sub-rounds; STATE §Arc-4 amendments records the
+  playtest-4 overrides; REVIEW-QUEUE #11 CLOSED, #12 opened. No code
+  touched → hash anchor + harnesses unchanged.
+- Sentence test: n/a (planning iter).
+- Substrate touched: none (planning only).
+- Hash-anchor verification plan: n/a — no code this iter.
+
 ## iter 061 — SWEEP — post-Round-8 verification grid
 
 - Date: 2026-05-21

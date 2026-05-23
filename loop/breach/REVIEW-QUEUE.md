@@ -232,7 +232,7 @@ Format per item:
     whether the "breach economy" rubric still fits. The next playtest
     asks the plain question: does it feel like a roguelite now?
 
-#11 — ★ PLAYTEST REQUEST — Round 8 complete — round 8 — iter 60 — open
+#11 — ★ PLAYTEST REQUEST — Round 8 complete — round 8 — iter 60 — CLOSED — playtest delivered 2026-05-22 (see #12)
   Finding: Round 8 (iters 56-59) shipped the iter-55 playtest-3
     override in full — a conventional roguelite progression layer on
     top of the breach economy: 8a XP + level-ups (rotated stat boosts,
@@ -259,4 +259,29 @@ Format per item:
     economy"; the hollow outcome is "generic roguelite, breach economy
     lost." Only a playtest separates them. To trigger: write
     `playtest`.
+
+#12 — Playtest verdict (post-Round-8) + Round 9 launch — round 9 — iter 62 — open (informational)
+  Finding: the user playtested Round 8 (closes #11). Positive verdict
+    — "it's getting to an interesting spot where I want to be able to
+    switch ammo and do different things" — Round 8's systems work.
+    BUT: the underlying primitive ("tank that shoots discrete
+    bullets") is too thin for the variety the user wants. New
+    direction (Red Alert / Into the Breach inspired): introduce TANK
+    ARCHETYPES with distinct personalities. Worked example: Prism Tank
+    — stop-and-fire continuous beam, burns brick, damages a line of
+    enemies but stops at the first hit, upgrade reflects → AoE.
+    Prerequisite: enemy HP > 1 + visible HP bars (so damage modeling
+    matters).
+  Affordance: Round 9 (iters 63+) builds the tank archetype program —
+    4 archetypes (Default + Prism + Mortar + Ram, each mechanically
+    distinct), enemy HP primitive + HP bars, BOTH selection paths
+    (start-pick + event-unlock mid-run switching), asset visuals via
+    /agentify image_gen. Blueprint: loop/breach/iter-062-round9-
+    architect.md.
+  Risk: 4 archetypes is the biggest round yet (~12-15 iters). The
+    danger: archetypes that don't FEEL distinct — "just a default
+    tank with a stat tweak." The blueprint's hard guardrail: if an
+    archetype reduces to a stat, cut it. The next playtest re-checks
+    the plain question: do the 4 archetypes feel like different ways
+    to play, or just skins?
 

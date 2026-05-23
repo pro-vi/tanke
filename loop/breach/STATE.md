@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 61
+iter: 62
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
 hash_anchor_at_iter_59: 23d6a2ec3bf2821f  # bit-identical through 33 substrate writes
 substrate_writes_this_arc: 33  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×17 + Level.gd + Spawner.gd ×3
-current_round: 8-closed
-current_round_phase: Round 8 CLOSED; iter-61 SWEEP verified the build coherent (12/12 reachability). At the playtest-gated ceiling — idle heartbeat until REVIEW-QUEUE #11 playtest
+current_round: 9-open
+current_round_phase: BUILD — Round 9 (tank archetype program, playtest-4 directed); blueprint iter-062-round9-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -18,10 +18,10 @@ reachability_status: all 5 bands verified — 12/12-seed sweep (100%, floor ≥8
 audit_candidates: []
 last_audit: iter 26
 last_consult: iter 60  # CONSULT 006 — written self-pre-mortem, Round 8 close
-playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, user redirected to XP/level-ups + ammo drops → Round 8]
+playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: PAUSED at the Round-8 playtest gate. Round 8 closed (iter 60); iter-61 SWEEP verified the build coherent — 42/70, 28 breach + 5 arc-3 harnesses green, hash anchor 23d6a2ec3bf2821f intact. The loop completed all autonomous work — 8 rounds, every playtest finding including the iter-55 roguelite redirect; CONSULT 006: the only honest next step is the user's Round-8 playtest, and building a speculative Round 9 first is the documented anti-pattern. After 3 idle-heartbeat cycles with no user response the loop stopped self-pinging (per the /loop skill — infinite no-op wakeups serve nothing). FULLY RESUMABLE: the user writes `playtest` (→ integrate the verdict + plan the next round) or re-fires `/loop` (→ resume from this STATE). REVIEW-QUEUE #11 holds the playtest ask. The loop did NOT hit a correctness violation — it reached the honest end of autonomous work.
-next_action: iter 62 — re-assess at the Round-8 playtest gate. If the user has playtested (REVIEW-QUEUE #11), integrate the findings + plan the next round. If not: the build is verified coherent (iter-61 SWEEP) and there is no non-speculative autonomous work left — re-confirm green, re-surface the #11 playtest ask, hold the idle heartbeat. Do NOT open a speculative Round 9 ahead of the playtest (CONSULT 006).
+loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
+next_action: iter 63 — BUILD — Round 9a: enemy HP primitive + HP bars. Read iter-062-round9-architect.md. Tune Enemy.max_hp > 1 per role (Heavy 3-4, Light 1-2, Fast 2); add a small HP-bar HUD above damaged enemies (Enemy.gd substrate write — sanctioned per the Round-9 amendment, HUD-only; hash bit-identical). Bullet.damage stays — the HE/HEAT/APCR variants now MATTER beyond single-hit. Hash-anchor verify; test-all + test-breach green; a harness.
 score: 42/70 absolute · 42/70 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -29,8 +29,9 @@ round6_blueprint: loop/breach/iter-038-round6-architect.md
 round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
+round9_blueprint: loop/breach/iter-062-round9-architect.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield} + check-silhouette-gate (28 in test-breach aggregate)
-review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #11 PLAYTEST REQUEST — Round 8 complete]  # #3, #7, #9 CLOSED — playtests delivered
+review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch]  # #3, #7, #9, #11 CLOSED — playtests delivered
 ```
 
 ---
@@ -68,6 +69,24 @@ The user has override authority over cadence and direction (PROMPT
   combat) is preserved. The breach economy (finite shells spent to
   breach) is KEPT as a layer, not removed. This is the Round 8
   program; blueprint iter-055-round8-architect.md.
+- **2026-05-22, playtest (iter 62):** the user playtested Round 8 —
+  positive verdict ("getting to an interesting spot"); the bottleneck
+  is the "tank that shoots discrete bullets" primitive, too thin for
+  the variety they want. Via AskUserQuestion the user redirected:
+  Round 9 builds a TANK ARCHETYPE PROGRAM — 4 archetypes (Default +
+  Prism + Mortar + Ram, each mechanically distinct per Into the
+  Breach) + enemy HP primitive + HP bars + start-pick + event-unlock
+  mid-run switching + visuals via /agentify image_gen. Two PROMPT
+  overrides recorded: (a) Enemy.gd HUD writes are SANCTIONED for the
+  HP-bar primitive (the Layer-2 substrate freeze relaxed for this
+  HUD-only addition; hash trivially preserved); (b) /agentify
+  image_gen for asset visuals is SANCTIONED, overriding the
+  MLX-SD-style NO-GO (the PROMPT's intent was avoiding arc-1
+  MLX-phantom-deps; /agentify is a different MCP channel under user
+  control). Constraint 1 (no choice in combat) preserved; constraint
+  4 (silhouette grammar) still gates generated assets. The breach
+  economy + Round 8 systems STAY universal across archetypes. This
+  is the Round 9 program; blueprint iter-062-round9-architect.md.
 
 ---
 
@@ -121,30 +140,30 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-21 — **iter 61 (SWEEP).** Post-Round-8 verification grid,
-  all green: reachability 12/12 seeds × 5 bands (100%); test-breach
-  28/28; test-all 5/5; hash anchor 23d6a2ec3bf2821f. The post-Round-8
-  build is verified coherent. No code touched. Δ 0. 42/70. With the
-  build verified and no honest non-speculative work left, the loop
-  slows to a 1800s idle heartbeat — still non-stop, awaiting the
-  REVIEW-QUEUE #11 Round-8 playtest.
+- 2026-05-22 — **iter 62 (PLAYTEST).** The user playtested Round 8:
+  positive verdict ("getting to an interesting spot") + the bottleneck
+  is the "tank that shoots discrete bullets" primitive, too thin for
+  the variety they want. Via AskUserQuestion the user picked the "Full
+  archetype program" scope — Round 9 builds 4 mechanically-distinct
+  tanks (Default + Prism + Mortar + Ram) + enemy HP primitive + HP
+  bars + BOTH selection paths + visuals via /agentify image_gen. Two
+  PROMPT overrides sanctioned (Enemy.gd HUD for HP-bar; /agentify for
+  assets). Round 9 opened; blueprint iter-062-round9-architect.md.
+  REVIEW-QUEUE #11 closed, #12 opened. No code touched. 42/70.
 
 ## Next action
 
-**Iter 62 — re-assess at the Round-8 playtest gate.**
-iter-61 SWEEP verified the post-Round-8 build coherent (12/12
-reachability, 28 breach + 5 arc-3 harnesses, hash anchor). The loop
-is at the autonomous ceiling — 42/70, all remaining value [FEEL]-
-gated. If the user has playtested (REVIEW-QUEUE #11), integrate the
-findings + plan the next round. If not: re-confirm green, re-surface
-the #11 playtest ask, hold the idle heartbeat. Do NOT open a
-speculative Round 9 ahead of the playtest (CONSULT 006).
+**Iter 63 — BUILD — Round 9a: enemy HP primitive + HP bars.**
+Read `loop/breach/iter-062-round9-architect.md`. Tune
+Enemy.max_hp > 1 per role (Heavy 3-4, Light 1-2, Fast 2); add a small
+HP-bar HUD above damaged enemies (Enemy.gd substrate write —
+sanctioned per the Round-9 amendment, HUD-only; hash bit-identical).
+Bullet.damage stays — HE/HEAT/APCR variants now MATTER beyond
+single-hit. Hash-anchor verify; test-all + test-breach green; a
+harness.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
-`stop`, or a correctness violation fires (hash anchor break, test-all
-regression, unsanctioned substrate write, unfixed band reachability).
-At the playtest-gated ceiling it idles at a long heartbeat rather
-than spin Δ-0 iters — it has not halted.
+`stop`, or a correctness violation fires.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires (hash anchor break, test-all

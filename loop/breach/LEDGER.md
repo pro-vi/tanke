@@ -17,6 +17,54 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 062 — PLAYTEST — playtest-4 integrated; Round 9 opened
+
+- Date: 2026-05-22
+- Tag: [STRUCTURE-DEFERRED]
+- Score: **42/70** (Δ 0 — a playtest-integration / planning iter; no
+  rubric work.)
+- The user playtested Round 8 (2026-05-22). Verdict: positive — the
+  roguelite overhaul reached "an interesting spot" — but the primitive
+  ("tank that shoots discrete bullets") is the bottleneck. The loop's
+  autonomous ceiling (CONSULT 006) is RECONFIRMED — only a human could
+  name this next-deepest surface.
+- New direction: TANK ARCHETYPES with distinct personalities (Red
+  Alert / Into the Breach references). Worked example: Prism Tank
+  (stop-and-fire beam, burns brick, damages in line, stops at first
+  enemy; upgrade reflects → AoE). Prerequisite: enemy HP > 1 + HP
+  bars. Assets via /agentify image_gen.
+- Via AskUserQuestion: scope = "Full archetype program" — 4
+  archetypes (Default + Prism + Mortar + Ram) + BOTH selection paths
+  (start-pick AND event-unlock mid-run switching) + visuals via
+  /agentify, before the next playtest.
+- Two sanctioned PROMPT overrides recorded in STATE §Arc-4
+  amendments: (a) Enemy.gd is sanctioned for the HP-bar HUD overlay
+  (Layer-2 substrate-freeze relaxed for HUD-only; hash trivially
+  preserved); (b) /agentify image_gen for asset visuals is sanctioned,
+  overriding the MLX-SD-style NO-GO (the PROMPT's intent was avoiding
+  arc-1 MLX-phantom-deps; /agentify is a different MCP channel under
+  user control). The breach economy + Round 8 systems STAY universal
+  across archetypes — Round 9 adds archetype-differentiated gameplay
+  ON TOP.
+- Round 9 opened — the tank archetype program. Blueprint
+  iter-062-round9-architect.md: 9a enemy HP primitive + HP bars; 9b
+  archetype framework; 9c Prism Tank (beam, stop-and-fire, brick-burn,
+  reflect upgrade); 9d Mortar Tank (lobbed AoE, no LoS); 9e Ram Tank
+  (collision + melee swing + sprint); 9f start-pick selection screen;
+  9g event-unlock mid-run switching; 9h visual assets via /agentify;
+  9-close CONSULT 007 + QUEUE + RUBRIC +C15.
+- REVIEW-QUEUE: #11 CLOSED (playtest delivered); #12 opened (verdict +
+  Round 9 launch).
+- Hash anchor: n/a — no code touched (planning iter). The iter-61
+  state stands: 23d6a2ec3bf2821f, test-all 5/5, test-breach 28/28.
+- Falsifications: none.
+- Files: iter-062-round9-architect.md (new), PRE-MORTEMS.md, STATE.md,
+  REVIEW-QUEUE.md, LEDGER.md
+- Finding: **the user wants archetype VARIETY, not just deeper systems
+  on one tank — Round 9 builds 4 mechanically-distinct tanks (Into-
+  the-Breach standard) + an enemy HP primitive + generated visuals.**
+  iter 63 = 9a: enemy HP primitive + HP bars.
+
 ## iter 061 — SWEEP — post-Round-8 verification grid
 
 - Date: 2026-05-21
