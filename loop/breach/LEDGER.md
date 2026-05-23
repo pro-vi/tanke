@@ -17,6 +17,46 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 080 — META — diagnose Round 11 + idle-heartbeat awaiting playtest 5
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]
+- Score: **47/75** (Δ 0 — META iter; no rubric anchor lift).
+- Constraints respected: 6 (the candidates name how each would
+  feed death-attribution quality), 7 (verb-and-affordance shaped).
+- Constraints risked: none.
+- Round 11 diagnose. 5 candidates named with effort/risk/rubric
+  estimates:
+  - (a) **band-shape recorder** — NEW DEFAULT. Addresses CONSULT
+    009's band-shape blind spot; 3-5 iters; analog of iter-74
+    distinctness audit at the RUN scale.
+  - (b) **enemy roster expansion** — fills 1+ of 4 PRESSURES
+    gaps (SWARM / SNIPER / heavier armor / suppression); 4-7
+    iters per role.
+  - (c) **armor-asymmetry resolution** — design call (universal
+    vs per-archetype-bypass-as-verb).
+  - (d) **identity-vs-weapons clarification** — REVIEW-QUEUE
+    #15 settles via playtest-quote shape.
+  - (e) **defer to playtest 5** — this iter's choice.
+- Recommendation: (e) — same as iter 72, but with a CORRECTED
+  default. iter-72 named (a) enemy roster as fallback; iter 80
+  names **(a) band-shape recorder** instead, per CONSULT 009.
+  The iter-072 diagnose is preserved as historical record; this
+  blueprint supersedes its recommendation only.
+- Loop enters idle heartbeat 1800s per the iter-54/61/72 pattern.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (META doc only).
+  test-all + test-breach not re-run.
+- Falsifications: none.
+- Substrate writes this arc: 42 → 42.
+- Files: loop/breach/iter-080-round11-diagnose.md (NEW),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Round 11 candidates named (5) with revised default
+  (band-shape recorder, NOT enemy roster — the CONSULT-009
+  correction). Loop enters idle heartbeat 1800s awaiting playtest
+  5. Diagnose blueprint iter-080-round11-diagnose.md is the
+  readable artifact for the returning user.**
+
 ## iter 079 — META — Round 10-close (CONSULT 009 + ★REVIEW-QUEUE #14 upgrade + RUBRIC reflection)
 
 - Date: 2026-05-23

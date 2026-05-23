@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 79
+iter: 80
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_79: 23d6a2ec3bf2821f  # bit-identical through 42 substrate writes
+hash_anchor_at_iter_80: 23d6a2ec3bf2821f  # bit-identical through 42 substrate writes
 substrate_writes_this_arc: 42  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×24 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
-current_round: 10-CLOSED
-current_round_phase: BETWEEN-ROUNDS — Round 10 closed; Round 11 META diagnose pending; playtest gate at ★ REVIEW-QUEUE #14
+current_round: BETWEEN-ROUNDS — 10 closed, 11 diagnosed (iter-080-round11-diagnose.md), awaiting playtest 5 (★ REVIEW-QUEUE #14) or heartbeat budget
+current_round_phase: IDLE-HEARTBEAT — Round 11 default (per iter-80 + CONSULT 009): band-shape recorder, NOT enemy roster (iter-72 default superseded)
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 79  # CONSULT 009 — written self-pre-mortem, Round 10 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 80 — META — diagnose Round 11 OR idle heartbeat awaiting playtest 5. Read STATE.md + REVIEW-QUEUE.md + the CONSULT 009 verdict. Round 10 closed at iter 79 with three open user-direction questions: (a) REVIEW-QUEUE #15 archetypes-as-identities-vs-weapons; (b) PRESSURES.md armor asymmetry; (c) CONSULT 009 band-shape blind spot. Plus 4 roster gaps (SWARM / SNIPER / heavier-armor / suppression-target). Per the iter-54/61 + iter-72 idle-heartbeat reconciliation pattern: write iter-080-round11-diagnose.md (compaction-safe blueprint) naming the candidates + recommending defer-to-playtest. Idle heartbeat 1800s. If no user signal by iter 81: extend cadence to 3600s. If still no signal by iter 82: proceed with default — band-shape recorder (addresses CONSULT 009 blind spot, non-speculative pre-playtest work).
+next_action: iter 81 — IDLE-HEARTBEAT awaiting ★ REVIEW-QUEUE #14 playtest 5. If the user playtested (input present in conversation): read their verdict + iter-080-round11-diagnose.md, choose Round 11 axis per their direction (a/b/c/d/e), write iter-081-round11-architect.md, bootstrap Round 11. If no user signal: log a brief heartbeat entry, extend cadence to 3600s for iter 82 (per the iter-54/61/72 arc-4 reconciliation pattern). If still no signal by iter 83: proceed with default — (a) BAND-SHAPE RECORDER per iter-80 + CONSULT 009 (NOT iter-72's enemy-roster default, which CONSULT 009 superseded). Hash-anchor verify; no substrate work.
 score: 47/75 absolute · 47/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4 (iter 76 lifts C5 2→3 via PRESSURES.md canonical-answer doc)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -140,6 +140,17 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-23 — **iter 80 (META).** Round 11 diagnose. Named 5
+  candidates: (a) **band-shape recorder** (NEW DEFAULT —
+  addresses CONSULT 009 blind spot; 3-5 iters), (b) enemy roster
+  expansion (4 PRESSURES gaps), (c) armor-asymmetry resolution
+  (design call), (d) identity-vs-weapons clarification (REVIEW-
+  QUEUE #15 settles via playtest), (e) defer to playtest 5 (this
+  iter's choice). Recommendation: (e). Loop enters idle heartbeat
+  1800s. The iter-072 diagnose's "enemy roster" default is
+  SUPERSEDED by (a) — CONSULT 009's correction. iter-080-round11-
+  diagnose.md is the readable artifact. No substrate; hash
+  preserved. Δ 0. 47/75.
 - 2026-05-23 — **iter 79 (META).** Round 10-close. Three artifacts:
   (1) CONSULT 009 — written self-pre-mortem; key reframe is that
   Round 10's instrumentation is single-moment-strong but
@@ -272,36 +283,27 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 80 — META — diagnose Round 11 OR idle heartbeat awaiting playtest 5.**
+**Iter 81 — IDLE-HEARTBEAT awaiting ★ REVIEW-QUEUE #14 playtest 5.**
 
-Round 10 closed at iter 79 with three open user-direction questions
-and 4 roster gaps:
+Round 11 was diagnosed at iter 80 with 5 candidates and a
+recommendation to defer (see
+`loop/breach/iter-080-round11-diagnose.md`).
 
-  Open questions (need user direction):
-    - REVIEW-QUEUE #15 — archetypes-as-identities vs -as-weapons
-    - PRESSURES.md — armor asymmetry (universal vs per-archetype-
-      bypass-as-verb)
-    - CONSULT 009 — Round-10 instrumentation's band-shape blind spot
+If the user playtested (input present in conversation):
+  - Read their verdict + the iter-080 diagnose blueprint.
+  - Choose the Round 11 axis (a/b/c/d/e) per their direction.
+  - Write `loop/breach/iter-081-round11-architect.md`.
+  - Bootstrap Round 11.
 
-  Roster gaps (PRESSURES.md):
-    - SWARM (no current spawn cluster)
-    - SNIPER (long-LoS to punish PRISM exposure)
-    - heavier armor (beyond Heavy's 3hp)
-    - suppression-target (no enemy currently rewards PRISM
-      suppression style)
+If no user signal:
+  - Log a brief heartbeat entry to LEDGER.
+  - Extend cadence to 3600s for iter 82 (iter-54/61/72
+    reconciliation pattern).
+  - If still no signal by iter 83: proceed with default —
+    **(a) BAND-SHAPE RECORDER** per iter 80 + CONSULT 009
+    (NOT iter-72's enemy-roster default).
 
-Per the iter-54/61 + iter-72 reconciliation pattern:
-
-  1. Write `loop/breach/iter-080-round11-diagnose.md` —
-     compaction-safe blueprint naming the candidates + recommending
-     defer-to-playtest (the historical arc-4 pattern: every Round
-     5/6/7/8/9/10 was direction-set by user playtest).
-  2. Idle heartbeat 1800s.
-  3. If no user signal by iter 81: extend cadence to 3600s.
-  4. If still no signal by iter 82: proceed with default — the
-     band-shape recorder (addresses CONSULT 009's blind spot;
-     non-speculative pre-playtest work analogous to iter-74's
-     distinctness audit).
+Hash-anchor verify; no substrate work.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.

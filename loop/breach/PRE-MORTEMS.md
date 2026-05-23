@@ -24,6 +24,32 @@ Format:
 
 ---
 
+## iter 080 — META — diagnose Round 11 + write blueprint; idle-heartbeat awaiting playtest 5
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]
+- CONSULT constraints respected: 6 (the diagnose names which
+  Round-11 axes best surface death-attribution distinctness), 7
+  (the candidates are verb-and-affordance-shaped, not stat).
+- CONSULT constraints risked: none — META work.
+- Predicted failure: same as iter 72 — the loop's "non-stop" rule
+  pulls toward firing the SPIKE this iter; the historical playtest-
+  redirected pattern pulls toward holding. The risk is doubling-up
+  the iter-72 blueprint without learning from CONSULT 009's
+  band-shape blind spot — the diagnose must explicitly name
+  band-shape recorder as the lead default if no playtest arrives,
+  not enemy roster (which was iter-72's default before the
+  CONSULT-008 rethesis).
+- Falsifiable claim: the diagnose names band-shape recorder as
+  the default action IF no playtest signal arrives, AND it
+  preserves the play-test-deferral recommendation as primary. If
+  the diagnose just echoes iter-72 ("default is enemy roster")
+  it would be ignoring the CONSULT-009 finding.
+- Substrate touched: none — META + new compaction-safe blueprint.
+- Hash-anchor verification plan: trivial (no substrate).
+
+---
+
 ## iter 079 — META — Round 10-close (CONSULT 009 + ★REVIEW-QUEUE #14 upgrade + RUBRIC reflection)
 
 - Date: 2026-05-23
