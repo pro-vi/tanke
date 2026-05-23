@@ -470,7 +470,11 @@ func _on_GunTimer_timeout() -> void:
 
 # arc-4 iter 65 (Round 9c): build the PRISM beam visual — a Line2D
 # from the muzzle along the tank's facing. Hidden until firing.
+# iter 69 (Round 9g): idempotent — no-op when already built, so a
+# DEFAULT→PRISM→DEFAULT→PRISM switch cycle doesn't stack Line2D nodes.
 func _build_beam_line() -> void:
+	if _beam_line != null:
+		return
 	_beam_line = Line2D.new()
 	_beam_line.name = "BeamLine"
 	_beam_line.points = [Vector2(8, 0), Vector2(BEAM_RANGE, 0)]
@@ -548,6 +552,31 @@ func _fire_mortar() -> void:
 	var shell = MortarShellScene.instantiate()
 	lvl.add_child(shell)
 	shell.launch(origin, target)
+
+
+# arc-4 iter 69 (Round 9g): undo the current archetype's per-init mods
+# before switching to a new one. Keeps speed / GunTimer / beam-line
+# clean across multiple switches.
+func _revert_archetype() -> void:
+	if archetype == TankArchetype.PRISM and _beam_line != null:
+		_beam_line.visible = false
+	elif archetype == TankArchetype.MORTAR and has_node("GunTimer"):
+		($GunTimer as Timer).wait_time = 1.0
+	elif archetype == TankArchetype.RAM:
+		speed -= RAM_SPEED_BONUS
+
+
+# arc-4 iter 69 (Round 9g): mid-run archetype switch — called by the
+# new Depot SWITCH_TO_* upgrades. Reverts current state, sets the new
+# value, re-runs init. Public so Depot.apply_upgrade drives it; idempotent
+# on same-value.
+func switch_archetype(value: int) -> void:
+	if value == archetype:
+		return
+	_revert_archetype()
+	archetype = value
+	_archetype_initialized = false
+	_init_archetype()
 
 
 # arc-4 iter 68 (Round 9f): per-archetype init — extracted from _ready

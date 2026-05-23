@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 68
+iter: 69
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_68: 23d6a2ec3bf2821f  # bit-identical through 40 substrate writes
-substrate_writes_this_arc: 40  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×22 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
+hash_anchor_at_iter_69: 23d6a2ec3bf2821f  # bit-identical through 41 substrate writes
+substrate_writes_this_arc: 41  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×23 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
 current_round: 9-open
-current_round_phase: BUILD — Round 9g (event-unlock mid-run archetype switching); blueprint iter-062-round9-architect.md
+current_round_phase: BUILD — Round 9h (visual assets via /agentify); blueprint iter-062-round9-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 60  # CONSULT 006 — written self-pre-mortem, Round 8 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 69 — BUILD — Round 9g: event-unlock mid-run archetype switching. Read iter-062-round9-architect.md. A new Depot UpgradeKind ("Switch to <Archetype>") drawn from the depot pool, gated by the same MetaProgress tiers as the start-pick screen; picking the upgrade calls PlayerTank._pick_archetype to switch the player's archetype mid-run — "almost like switching a weapon" per the iter-55 user direction. Depot.gd (arc-4-owned). Hash-anchor verify; test-all + test-breach green; a harness for the depot offer + the switch.
+next_action: iter 70 — BUILD — Round 9h: visual assets via /agentify image_gen. Read iter-062-round9-architect.md. Generate sprites for Prism/Mortar/Ram via mcp__agentify-desktop__agentify_image_gen — pixel-art consistent with the existing Default tank (warm earth-tones, sharp pixel edges); each archetype's silhouette reflects its mechanic (PRISM=cool cyan beam-lens; MORTAR=earth-tone angled barrel; RAM=warm red blade/blunt front). Drop into res://assets/. Per CONSULT constraint 4 (silhouette grammar), each must pass the silhouette-readability gate before commit. Hash-anchor verify (asset-only, no substrate); test-all + test-breach green.
 score: 42/70 absolute · 42/70 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -30,7 +30,7 @@ round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 round9_blueprint: loop/breach/iter-062-round9-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select} + check-silhouette-gate (34 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch} + check-silhouette-gate (35 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch]  # #3, #7, #9, #11 CLOSED — playtests delivered
 ```
 
@@ -140,28 +140,29 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-23 — **iter 68 (BUILD).** Round 9f — start-pick selection
-  screen: MetaProgress unlock tiers (PRISM@20/MORTAR@40/RAM@60); a
-  HUD ArchetypePanel + KEY_1-4 picker; per-archetype `_ready` init
-  refactored into `_init_archetype()` so post-pick re-init works;
-  gated by `@export var force_archetype_select` (default false) so
-  existing harnesses see no selection-screen leak; BreachLevel.tscn
-  opts in. PlayerTank.gd substrate write; DEFAULT (no force flag)
-  bit-identical. Hash anchor preserved; test-all 5/5, test-breach
-  34/34 (new check-breach-archetype-select). Δ 0 (C15 at round close).
-  42/70.
+- 2026-05-23 — **iter 69 (BUILD).** Round 9g — event-unlock mid-run
+  archetype switching: new Depot.UpgradeKind SWITCH_TO_PRISM/MORTAR/RAM
+  (gated by MetaProgress tiers @20/40/60); apply_upgrade calls the
+  player's new `switch_archetype` (reverts current archetype mods via
+  `_revert_archetype` then re-inits, so speed/GunTimer/beam-line stay
+  clean across multiple switches); `_build_beam_line` made
+  idempotent. test_breach_meta + test_breach_overdrive updated for
+  the wider catalog. Hash anchor preserved (only PlayerTank substrate
+  write, gated); test-all 5/5, test-breach 35/35 (new
+  check-breach-archetype-switch). Δ 0 (C15 at round close). 42/70.
 
 ## Next action
 
-**Iter 69 — BUILD — Round 9g: event-unlock mid-run archetype switching.**
-Read `loop/breach/iter-062-round9-architect.md`. A new Depot
-UpgradeKind ("Switch to <Archetype>") drawn from the depot pool,
-gated by the same MetaProgress tiers as the start-pick screen;
-picking the upgrade calls `PlayerTank._pick_archetype` to switch the
-player's archetype mid-run — "almost like switching a weapon" per
-the iter-55 user direction. Depot.gd (arc-4-owned). Hash-anchor
-verify; test-all + test-breach green; a harness for the depot offer
-+ the switch.
+**Iter 70 — BUILD — Round 9h: visual assets via /agentify image_gen.**
+Read `loop/breach/iter-062-round9-architect.md`. Generate sprites
+for Prism/Mortar/Ram via `mcp__agentify-desktop__agentify_image_gen`
+— pixel-art consistent with the existing Default tank (warm
+earth-tones, sharp pixel edges); each archetype's silhouette
+reflects its mechanic (PRISM=cool cyan beam-lens; MORTAR=earth-tone
+angled barrel; RAM=warm red blade/blunt front). Drop into
+res://assets/. Per CONSULT constraint 4 (silhouette grammar), each
+must pass the silhouette-readability gate before commit. Hash-anchor
+verify (asset-only, no substrate); test-all + test-breach green.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.

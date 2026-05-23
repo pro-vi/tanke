@@ -27,6 +27,12 @@ enum UpgradeKind {
 	OVERDRIVE,          # positioning verb: grants the sprint-burst ability
 	QUICK_SWAP,         # rule-changer: shell swaps cost no reload beat
 	STEEL_SALVAGE,      # rule-changer: APCR steel-cluster breach refunds APCR
+	# arc-4 iter 69 (Round 9g): mid-run archetype switching. Calls
+	# PlayerTank.switch_archetype(value) — value matches the
+	# TankArchetype enum (PRISM=1, MORTAR=2, RAM=3).
+	SWITCH_TO_PRISM,    # archetype swap: become PRISM (beam, stop-and-fire)
+	SWITCH_TO_MORTAR,   # archetype swap: become MORTAR (lobbed AoE)
+	SWITCH_TO_RAM,      # archetype swap: become RAM (collision + swing + sprint)
 }
 
 signal depot_entered(depot: Node)
@@ -57,6 +63,9 @@ signal depot_picked(depot: Node, kind: int)
 # Cleared on exit. Avoids the depot needing to know about PlayerTank.gd
 # directly (Layer-2 substrate stays untouched).
 var _player_loadout: LoadoutT = null
+# arc-4 iter 69 (Round 9g): player ref captured on entry — used by the
+# SWITCH_TO_* upgrades to call switch_archetype on the player. Duck-typed.
+var _player: Node = null
 var _picked: bool = false
 var _rolled_kinds: Array[int] = []  # arc-4 iter 40: drawn offers (lazy)
 
@@ -76,6 +85,9 @@ func _on_body_entered(body: Node) -> void:
 	# Capture loadout if the body has one. Duck-typed.
 	if body.has_method("get") and "loadout" in body:
 		_player_loadout = body.loadout
+	# arc-4 iter 69 (Round 9g): capture the player node itself for the
+	# SWITCH_TO_* upgrades (which call switch_archetype on it).
+	_player = body
 	# iter 29: show the depot UI panel — the safe-gate is the only place
 	# the player reads upgrade choices (CONSULT §9 constraint 1).
 	_show_panel()
@@ -87,6 +99,7 @@ func _on_body_exited(body: Node) -> void:
 		return
 	get_tree().paused = false
 	_player_loadout = null
+	_player = null
 	_hide_panel()
 	depot_exited.emit(self)
 
@@ -210,6 +223,15 @@ func _upgrade_pool(best: int = -1) -> Array[int]:
 		pool.append(UpgradeKind.QUICK_SWAP)
 	if MetaProgressT.steel_salvage_unlocked(best):
 		pool.append(UpgradeKind.STEEL_SALVAGE)
+	# arc-4 iter 69 (Round 9g): archetype-switch entries — gated on the
+	# same MetaProgress tiers as the start-pick screen (PRISM@20,
+	# MORTAR@40, RAM@60).
+	if MetaProgressT.prism_unlocked(best):
+		pool.append(UpgradeKind.SWITCH_TO_PRISM)
+	if MetaProgressT.mortar_unlocked(best):
+		pool.append(UpgradeKind.SWITCH_TO_MORTAR)
+	if MetaProgressT.ram_unlocked(best):
+		pool.append(UpgradeKind.SWITCH_TO_RAM)
 	return pool
 
 
@@ -251,6 +273,9 @@ func _label_for_kind(kind: int) -> String:
 		UpgradeKind.OVERDRIVE: return "Overdrive  (sprint-burst verb)"
 		UpgradeKind.QUICK_SWAP: return "Quick Swap  (free shell swaps)"
 		UpgradeKind.STEEL_SALVAGE: return "Steel Salvage  (APCR clusters refund)"
+		UpgradeKind.SWITCH_TO_PRISM: return "Switch to PRISM  (continuous beam)"
+		UpgradeKind.SWITCH_TO_MORTAR: return "Switch to MORTAR  (lobbed AoE)"
+		UpgradeKind.SWITCH_TO_RAM: return "Switch to RAM  (collision + sprint)"
 	return "upgrade"
 
 
@@ -314,6 +339,18 @@ func apply_upgrade(kind: int, loadout) -> void:
 			loadout.quick_swap = true
 		UpgradeKind.STEEL_SALVAGE:
 			loadout.steel_salvage = true
+		# arc-4 iter 69 (Round 9g): SWITCH_TO_* upgrades flip the player's
+		# archetype mid-run. value 1=PRISM, 2=MORTAR, 3=RAM (matches
+		# PlayerTank.TankArchetype enum).
+		UpgradeKind.SWITCH_TO_PRISM:
+			if _player != null and _player.has_method("switch_archetype"):
+				_player.switch_archetype(1)
+		UpgradeKind.SWITCH_TO_MORTAR:
+			if _player != null and _player.has_method("switch_archetype"):
+				_player.switch_archetype(2)
+		UpgradeKind.SWITCH_TO_RAM:
+			if _player != null and _player.has_method("switch_archetype"):
+				_player.switch_archetype(3)
 
 
 func _is_player(body: Node) -> bool:

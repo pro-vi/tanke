@@ -17,6 +17,49 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 069 — BUILD — Round 9g: event-unlock mid-run archetype switching
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Score: **42/70** (Δ 0 — per the iter-062 blueprint, C15 lands at
+  round close.)
+- Round 9g — the user's "almost like switching a weapon" path. A new
+  Depot upgrade kind ("Switch to <Archetype>") drawn from the depot
+  pool, gated by the same MetaProgress tiers as iter-68's start-pick
+  screen (PRISM@20, MORTAR@40, RAM@60).
+- The change:
+  - scripts/PlayerTank.gd — new `switch_archetype(value)` (public:
+    reverts current archetype mods, sets new value, re-runs init);
+    `_revert_archetype()` undoes per-archetype state (hides beam line
+    / resets GunTimer / subtracts RAM speed bonus); `_build_beam_line`
+    made idempotent.
+  - scripts/Depot.gd — 3 new UpgradeKind values (SWITCH_TO_PRISM,
+    SWITCH_TO_MORTAR, SWITCH_TO_RAM); `_upgrade_pool` widens with the
+    gated switches; `apply_upgrade` branches call
+    `_player.switch_archetype(value)`; `_on_body_entered` captures
+    `_player = body`; `_label_for_kind` provides labels.
+  - test_breach_meta updated for new pool sizes (5/7/9/11/12 across
+    depth tiers); test_breach_overdrive updated for 12-entry catalog
+    (was 9).
+- Hash anchor: `23d6a2ec3bf2821f` verified — only PlayerTank.gd is
+  substrate; Depot/MetaProgress arc-4-owned. switch_archetype only
+  callable via depot picks; arc-2/3 bit-identical. `make test-all`
+  5/5. `make test-breach` 35/35.
+- Harness: new test_breach_archetype_switch.gd +
+  check-breach-archetype-switch (test-breach 34 → 35). 3 distinct
+  SWITCH_TO_* UpgradeKinds; pool gates 0/1/2/3 across @0/20/40/60;
+  apply_upgrade(SWITCH_TO_PRISM, lo) flips archetype + builds
+  BeamLine; multi-switch (PRISM→RAM→MORTAR→RAM) keeps speed clean
+  (no accumulation — _revert_archetype works).
+- Falsifications: none.
+- Substrate writes this arc: 40 → 41 (PlayerTank.gd ×23).
+- Files: scripts/PlayerTank.gd, scripts/Depot.gd, test_breach_meta.gd,
+  test_breach_overdrive.gd, test_breach_archetype_switch.gd, Makefile,
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **mid-run archetype switching is live — the player can pick
+  a different tank from a depot.** iter 70 = 9h: visual assets via
+  /agentify image_gen.
+
 ## iter 068 — BUILD — Round 9f: start-pick selection screen
 
 - Date: 2026-05-23

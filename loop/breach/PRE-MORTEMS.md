@@ -24,6 +24,58 @@ Format:
 
 ---
 
+## iter 069 — BUILD — Round 9g: event-unlock mid-run archetype switching
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Round 9g — the "almost like switching a weapon" path the user
+  named in iter 55. A new Depot upgrade kind ("Switch to <Archetype>")
+  drawn from the depot pool, gated by the same MetaProgress tiers as
+  the start-pick screen (iter 68).
+- The change:
+  - scripts/PlayerTank.gd (sanctioned substrate):
+    - New public `switch_archetype(value)`: reverts the current
+      archetype's mods (via `_revert_archetype`), sets the new value,
+      re-runs `_init_archetype`. Idempotent on same-value.
+    - `_revert_archetype()` undoes per-archetype state — hides beam
+      line for PRISM, resets GunTimer for MORTAR, subtracts RAM
+      speed bonus.
+    - `_build_beam_line` made idempotent (no-op when `_beam_line` is
+      already built) so switching back to PRISM reuses the node.
+  - scripts/Depot.gd (arc-4-owned):
+    - 3 new UpgradeKind values: SWITCH_TO_PRISM, SWITCH_TO_MORTAR,
+      SWITCH_TO_RAM (total kinds 9 → 12).
+    - `_upgrade_pool` gates each switch entry on the matching
+      MetaProgress predicate (PRISM@20, MORTAR@40, RAM@60).
+    - `apply_upgrade` for the switch kinds calls
+      `_player.switch_archetype(value)`.
+    - `_on_body_entered` captures `_player = body` (in addition to
+      the existing `_player_loadout`).
+    - `_label_for_kind` provides labels for the new kinds.
+  - test_breach_meta updated for the new pool sizes (was 5/6/7/8/9;
+    now 5/7/9/11/12 across the same depth tiers).
+- CONSULT constraints respected: 1 (the switch happens at a depot,
+  not in combat); 7 (relaxed by the iter-55 user override — the new
+  upgrade is a structural class swap, not a stat).
+- Predicted failure modes:
+  - Hash anchor: only PlayerTank.gd is substrate; Depot/MetaProgress
+    are arc-4-owned. switch_archetype is only callable when a depot
+    pick invokes it; arc-2/3 bit-identical.
+  - Multi-switch correctness: _revert_archetype undoes the OUTGOING
+    archetype's mods before _init_archetype applies the new one — so
+    speed bonus / GunTimer / beam-line stay clean across switches.
+- Falsifiable claim: post-edit — test_breach_archetype_switch shows:
+  3 new SWITCH_TO_* UpgradeKinds; _upgrade_pool widens to include
+  switches at their depth tiers; apply_upgrade with a stub player
+  calls switch_archetype; multi-switch keeps speed clean (no
+  accumulation). Hash anchor 23d6a2ec3bf2821f preserved; test-all
+  5/5; test-breach 35/35.
+- Sentence test: n/a — these are tank-class swaps (structural verbs),
+  not stat upgrades.
+- Substrate touched: PlayerTank.gd (switch_archetype + revert helper
+  — sanctioned).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 068 — BUILD — Round 9f: start-pick selection screen
 
 - Date: 2026-05-23

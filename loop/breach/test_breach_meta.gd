@@ -46,7 +46,9 @@ func _initialize() -> void:
 	var depot: Area2D = DepotScene.instantiate()
 	root.add_child(depot)
 	await process_frame
-	var sizes: Dictionary = {0: 5, 20: 6, 40: 7, 60: 8, 80: 9, 999: 9}
+	# Pool sizes after iter 69 (Round 9g) added 3 archetype-SWITCH kinds
+	# gated on the same tiers as the start-pick screen.
+	var sizes: Dictionary = {0: 5, 20: 7, 40: 9, 60: 11, 80: 12, 999: 12}
 	for best in sizes:
 		var got: int = depot._upgrade_pool(best).size()
 		if got != sizes[best]:
@@ -58,7 +60,7 @@ func _initialize() -> void:
 		for j in range(i + 1, deep.size()):
 			if deep[i] == deep[j]:
 				push_error("FAIL — duplicate kind in the upgrade pool"); quit(1); return
-	print("  depot pool widens: 5 (fresh) -> 6/7/8 -> 9 (all 4 tiers)")
+	print("  depot pool widens: 5 (fresh) -> 7/9/11 -> 12 (all tiers; incl. archetype switches)")
 	depot.queue_free()
 
 	print("BREACH_META_OK 4-rung unlock ladder; depth-gated pool widens 5->9 (options, not power)")

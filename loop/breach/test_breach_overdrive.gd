@@ -27,11 +27,12 @@ func _initialize() -> void:
 		push_error("FAIL — OVERDRIVE upgrade did not set has_overdrive"); quit(1); return
 
 	# === Test 2: catalog covers all 5 band-pressure categories.
-	# 9 UpgradeKind entries; the catalog maps to {HE-economy, HEAT-economy,
-	# positioning, recovery, rule-changers} — spanning all 5 bands.
+	# iter 69 (Round 9g): 12 entries total — 9 original (refills /
+	# expands / resupply / 4 rule-changers) + 3 SWITCH_TO_* archetype
+	# kinds.
 	var UK = depot.UpgradeKind
-	if UK.size() != 9:
-		push_error("FAIL — catalog has %d entries, want 9" % UK.size()); quit(1); return
+	if UK.size() != 12:
+		push_error("FAIL — catalog has %d entries, want 12" % UK.size()); quit(1); return
 	# Each category has a representative; OVERDRIVE = positioning, the
 	# previously-uncovered open_killbox pressure.
 	for kind in [UK.HE_REFILL_2, UK.HEAT_REFILL_1, UK.OVERDRIVE, UK.FULL_RESUPPLY]:
@@ -39,7 +40,7 @@ func _initialize() -> void:
 		probe.he_reserve = 0
 		probe.heat_reserve = 0
 		depot.apply_upgrade(kind, probe)  # must not crash; effect applied
-	print("  catalog: 9 upgrades — refills + 4 rule-changers, all 5 bands covered")
+	print("  catalog: 12 upgrades — refills + 4 rule-changers + 3 archetype-switches, all 5 bands covered")
 	depot.queue_free()
 
 	# === Test 3: a breach PlayerTank with OVERDRIVE sprints; speed
@@ -79,5 +80,5 @@ func _initialize() -> void:
 		push_error("FAIL — arc-2/3 PlayerTank engaged overdrive (regression)"); quit(1); return
 	pt_arc2.queue_free()
 
-	print("BREACH_OVERDRIVE_OK sprint verb + 9-upgrade catalog covers 5 band pressures")
+	print("BREACH_OVERDRIVE_OK sprint verb + 12-upgrade catalog covers 5 band pressures")
 	quit(0)
