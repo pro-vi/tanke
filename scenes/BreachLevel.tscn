@@ -11,6 +11,7 @@ breach_config = ExtResource("2_breach")
 
 [node name="PlayerTank" parent="." index="1"]
 loadout = ExtResource("3_loadout")
+force_archetype_select = true
 
 [node name="Depot1" parent="." index="5" instance=ExtResource("4_depot")]
 position = Vector2(160, -248)

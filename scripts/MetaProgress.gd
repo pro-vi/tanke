@@ -59,3 +59,44 @@ static func unlock_ladder() -> Array:
 		{"depth": UNLOCK_QUICK_SWAP_DEPTH, "name": "SWAP"},
 		{"depth": UNLOCK_STEEL_SALVAGE_DEPTH, "name": "SALVAGE"},
 	]
+
+
+# arc-4 iter 68 (Round 9f): tank archetype unlocks. DEFAULT (value 0)
+# is always unlocked; PRISM/MORTAR/RAM unlock at depth tiers (mirroring
+# the iter-51 4-tier upgrade ladder). The int values match the
+# PlayerTank.TankArchetype enum (DEFAULT=0/PRISM=1/MORTAR=2/RAM=3) —
+# defined here as ints to avoid a circular preload with PlayerTank.gd.
+const UNLOCK_PRISM_DEPTH: int = 20
+const UNLOCK_MORTAR_DEPTH: int = 40
+const UNLOCK_RAM_DEPTH: int = 60
+const _ARCHETYPE_DEFAULT: int = 0
+const _ARCHETYPE_PRISM: int = 1
+const _ARCHETYPE_MORTAR: int = 2
+const _ARCHETYPE_RAM: int = 3
+
+
+static func prism_unlocked(best: int) -> bool:
+	return best >= UNLOCK_PRISM_DEPTH
+
+
+static func mortar_unlocked(best: int) -> bool:
+	return best >= UNLOCK_MORTAR_DEPTH
+
+
+static func ram_unlocked(best: int) -> bool:
+	return best >= UNLOCK_RAM_DEPTH
+
+
+# Ordered list of unlocked TankArchetype values (ints) for a given
+# best-depth — DEFAULT (always) followed by tier-unlocked archetypes.
+# PlayerTank's start-pick screen indexes into this list (key 1 → first
+# unlocked, etc.).
+static func unlocked_archetypes(best: int) -> Array:
+	var out: Array = [_ARCHETYPE_DEFAULT]
+	if prism_unlocked(best):
+		out.append(_ARCHETYPE_PRISM)
+	if mortar_unlocked(best):
+		out.append(_ARCHETYPE_MORTAR)
+	if ram_unlocked(best):
+		out.append(_ARCHETYPE_RAM)
+	return out

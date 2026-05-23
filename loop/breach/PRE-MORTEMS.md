@@ -24,6 +24,55 @@ Format:
 
 ---
 
+## iter 068 — BUILD — Round 9f: start-pick selection screen
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Round 9f — the selection UI for the user's "pick at the beginning"
+  archetype path. At run start a HUD screen lists the 4 archetypes
+  (DEFAULT always unlocked; PRISM/MORTAR/RAM gated by MetaProgress
+  best-depth tiers, mirroring the iter-51 4-tier ladder); the player
+  picks via keys 1-4.
+- The change:
+  - scripts/MetaProgress.gd (arc-4-owned): UNLOCK_PRISM_DEPTH=20,
+    UNLOCK_MORTAR_DEPTH=40, UNLOCK_RAM_DEPTH=60; predicate static
+    methods + `unlocked_archetypes(best)` returning the ordered list
+    of unlocked TankArchetype values (ints).
+  - scripts/PlayerTank.gd (sanctioned substrate):
+    - Refactor the per-archetype `_ready` init into `_init_archetype()`
+      (guarded by `_archetype_initialized`) — also called after a user
+      pick so the picked archetype's behavior fires.
+    - Selection screen UI (ArchetypePanel under HUD) + `_show_/_hide_/
+      _refresh_archetype_panel()`.
+    - `_pick_archetype(value)` (sets state + inits + hides panel) and
+      `_pick_archetype_by_index(idx)` (input handler).
+    - `_physics_process` early-returns when `_archetype_selecting`,
+      polling only KEY_1-4.
+    - `@export var force_archetype_select: bool = false` gates the
+      auto-show in `_ready`. Default false → existing harnesses
+      unaffected (no selection screen leaks into non-game tests). The
+      live BreachLevel.tscn sets it true.
+  - scenes/BreachLevel.tscn: PlayerTank instance gets
+    `force_archetype_select = true`.
+- CONSULT constraints respected: 1 (no choice in active combat —
+  selection happens before any movement/firing).
+- Predicted failure modes:
+  - Hash anchor: all selection behavior gates on breach mode +
+    force_archetype_select; arc-2/3 bit-identical.
+  - The auto-trigger reads MetaProgress.best_depth() (file). Harness
+    doesn't depend on file state — drives _show_archetype_select +
+    _pick_archetype directly.
+- Falsifiable claim: post-edit — test_breach_archetype_select shows:
+  MetaProgress predicates correct at 19/20/39/40/59/60;
+  unlocked_archetypes returns 1/2/3/4 across tiers; _show builds the
+  panel + sets the flag; _pick_archetype(PRISM) sets archetype +
+  clears flag + builds the beam line. Hash anchor 23d6a2ec3bf2821f
+  preserved; test-all 5/5; test-breach 34/34.
+- Sentence test: n/a (selection UI).
+- Substrate touched: PlayerTank.gd (selection screen + refactor —
+  sanctioned, HUD only).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 067 — BUILD — Round 9e: RAM Tank
 
 - Date: 2026-05-22

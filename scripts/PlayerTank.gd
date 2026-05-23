@@ -143,6 +143,14 @@ const RAM_SWING_COOLDOWN: float = 0.5
 const RAM_SPEED_BONUS: int = 6
 var _ram_collision_timer: float = 0.0
 var _ram_swing_timer: float = 0.0
+# arc-4 iter 68 (Round 9f): start-pick selection screen. The auto-show
+# in _ready is gated on this @export (default false → harnesses are
+# unaffected); the live BreachLevel.tscn overrides to true.
+@export var force_archetype_select: bool = false
+var _archetype_initialized: bool = false
+var _archetype_selecting: bool = false
+var _archetype_panel: ColorRect = null
+var _archetype_choice_labels: Array[Label] = []
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
@@ -232,19 +240,29 @@ func _ready() -> void:
 		call_deferred("_build_route_strip")
 	hp_changed.emit(hp, max_hp)
 	_update_run_hud()
-	# arc-4 iter 65 (Round 9c): build the PRISM beam visual when this
-	# tank is a Prism archetype. Hidden until fire is held.
-	if archetype == TankArchetype.PRISM:
-		_build_beam_line()
-	# arc-4 iter 66 (Round 9d): MORTAR fires slow — bump GunTimer wait_time.
-	if archetype == TankArchetype.MORTAR:
-		$GunTimer.wait_time = MORTAR_GUN_COOLDOWN
-	# arc-4 iter 67 (Round 9e): RAM moves faster — built-in speed bonus.
-	if archetype == TankArchetype.RAM:
-		speed += RAM_SPEED_BONUS
+	# arc-4 iter 68 (Round 9f): per-archetype init is extracted into a
+	# single function — also called after _pick_archetype (post-_ready)
+	# when the user picks a non-DEFAULT archetype from the start-pick
+	# screen. Guarded by _archetype_initialized so it fires at most once
+	# per archetype change.
+	_init_archetype()
+	# arc-4 iter 68 (Round 9f): start-pick selection — when breach mode
+	# + archetype is still the unset DEFAULT + the .tscn has opted in +
+	# more than one archetype is unlocked.
+	if loadout != null and archetype == TankArchetype.DEFAULT and force_archetype_select:
+		var best: int = MetaProgressT.best_depth()
+		var unlocked: Array = MetaProgressT.unlocked_archetypes(best)
+		if unlocked.size() > 1:
+			_show_archetype_select()
 
 
 func _physics_process(delta: float) -> void:
+	# arc-4 iter 68 (Round 9f): while the archetype-select screen is up,
+	# everything else pauses — only the picker polls input. Released on
+	# _pick_archetype.
+	if _archetype_selecting:
+		_poll_archetype_select_input()
+		return
 	# arc-4 iter 36: the shell codex is dismissed by the first gameplay
 	# input — the player reads the breach-economy primer, then plays.
 	if _shell_codex != null and _shell_codex.visible and _any_gameplay_input():
@@ -530,6 +548,125 @@ func _fire_mortar() -> void:
 	var shell = MortarShellScene.instantiate()
 	lvl.add_child(shell)
 	shell.launch(origin, target)
+
+
+# arc-4 iter 68 (Round 9f): per-archetype init — extracted from _ready
+# so post-_ready selection can re-init when the user picks. Guarded by
+# _archetype_initialized so re-calls without an archetype change are no-ops.
+func _init_archetype() -> void:
+	if _archetype_initialized:
+		return
+	_archetype_initialized = true
+	if archetype == TankArchetype.PRISM:
+		_build_beam_line()
+	elif archetype == TankArchetype.MORTAR:
+		$GunTimer.wait_time = MORTAR_GUN_COOLDOWN
+	elif archetype == TankArchetype.RAM:
+		speed += RAM_SPEED_BONUS
+	# DEFAULT — no per-archetype init.
+
+
+# arc-4 iter 68 (Round 9f): build the start-pick panel. Shown by
+# _show_archetype_select; hidden after _pick_archetype.
+func _build_archetype_panel(canvas: CanvasLayer) -> void:
+	_archetype_panel = ColorRect.new()
+	_archetype_panel.name = "ArchetypePanel"
+	_archetype_panel.position = Vector2(28, 26)
+	_archetype_panel.size = Vector2(264, 188)
+	_archetype_panel.color = Color(0.05, 0.05, 0.08, 0.96)
+	_archetype_panel.visible = false
+	canvas.add_child(_archetype_panel)
+	_codex_line(_archetype_panel, "— PICK YOUR TANK —", Vector2(40, 12), 13,
+		Color(1.0, 0.95, 0.6, 1.0))
+	for i in 4:
+		var lbl: Label = Label.new()
+		lbl.name = "ArchetypeRow%d" % i
+		lbl.position = Vector2(18, 48 + i * 22)
+		lbl.add_theme_color_override("font_color", Color.WHITE)
+		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		lbl.add_theme_constant_override("outline_size", 2)
+		lbl.add_theme_font_size_override("font_size", 10)
+		_archetype_panel.add_child(lbl)
+		_archetype_choice_labels.append(lbl)
+	_codex_line(_archetype_panel, "Press 1-4 to pick.", Vector2(18, 158), 9,
+		Color(0.78, 0.8, 0.86, 1.0))
+
+
+# arc-4 iter 68 (Round 9f): show the start-pick panel + arm the
+# selecting gate (which makes _physics_process poll only for KEY_1-4).
+func _show_archetype_select() -> void:
+	_archetype_selecting = true
+	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
+	if canvas == null:
+		return
+	if _archetype_panel == null:
+		_build_archetype_panel(canvas)
+	_refresh_archetype_panel()
+	_archetype_panel.visible = true
+
+
+# arc-4 iter 68 (Round 9f): populate the panel's 4 rows from the
+# current unlock state — unlocked rows show "[N]  NAME"; locked rows
+# are dimmed + name the depth tier.
+func _refresh_archetype_panel() -> void:
+	var best: int = MetaProgressT.best_depth()
+	var unlocked: Array = MetaProgressT.unlocked_archetypes(best)
+	var arche_info: Array = [
+		[TankArchetype.DEFAULT, "DEFAULT  (multi-shell)", 0],
+		[TankArchetype.PRISM, "PRISM  (continuous beam)", MetaProgressT.UNLOCK_PRISM_DEPTH],
+		[TankArchetype.MORTAR, "MORTAR  (lobbed AoE)", MetaProgressT.UNLOCK_MORTAR_DEPTH],
+		[TankArchetype.RAM, "RAM  (collision + sprint)", MetaProgressT.UNLOCK_RAM_DEPTH],
+	]
+	for i in arche_info.size():
+		if i >= _archetype_choice_labels.size():
+			break
+		var info: Array = arche_info[i]
+		var arch_val: int = int(info[0])
+		var nm: String = String(info[1])
+		var lock_depth: int = int(info[2])
+		var lbl: Label = _archetype_choice_labels[i]
+		var idx_in_unlocked: int = unlocked.find(arch_val)
+		if idx_in_unlocked >= 0:
+			lbl.text = "[%d]  %s" % [idx_in_unlocked + 1, nm]
+			lbl.modulate = Color(1, 1, 1, 1)
+		else:
+			lbl.text = "     %s  -  unlock at depth %d" % [nm, lock_depth]
+			lbl.modulate = Color(0.5, 0.5, 0.55, 1)
+
+
+# arc-4 iter 68 (Round 9f): apply a picked archetype + re-init +
+# release the selecting gate. Public so the harness drives it without
+# needing to fake input.
+func _pick_archetype(value: int) -> void:
+	if not _archetype_selecting:
+		return
+	archetype = value
+	_archetype_initialized = false
+	_init_archetype()
+	if _archetype_panel != null:
+		_archetype_panel.visible = false
+	_archetype_selecting = false
+
+
+# arc-4 iter 68 (Round 9f): KEY_1-4 = the Nth unlocked archetype.
+func _pick_archetype_by_index(idx: int) -> void:
+	var unlocked: Array = MetaProgressT.unlocked_archetypes(MetaProgressT.best_depth())
+	if idx < 0 or idx >= unlocked.size():
+		return
+	_pick_archetype(int(unlocked[idx]))
+
+
+# arc-4 iter 68 (Round 9f): KEY_1-4 input poll — used by
+# _physics_process while _archetype_selecting.
+func _poll_archetype_select_input() -> void:
+	if Input.is_physical_key_pressed(KEY_1):
+		_pick_archetype_by_index(0)
+	elif Input.is_physical_key_pressed(KEY_2):
+		_pick_archetype_by_index(1)
+	elif Input.is_physical_key_pressed(KEY_3):
+		_pick_archetype_by_index(2)
+	elif Input.is_physical_key_pressed(KEY_4):
+		_pick_archetype_by_index(3)
 
 
 # arc-4 iter 67 (Round 9e): RAM melee swing — damage every Node2D

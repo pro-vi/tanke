@@ -17,6 +17,58 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 068 — BUILD — Round 9f: start-pick selection screen
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Score: **42/70** (Δ 0 — per the iter-062 blueprint, C15 lands at
+  round close.)
+- Round 9f — the UI for the user's "pick at the beginning" archetype
+  path. At run start a HUD screen lists the 4 archetypes; the player
+  picks via keys 1-4; DEFAULT always unlocked; PRISM/MORTAR/RAM gated
+  by MetaProgress best-depth tiers (20/40/60, mirroring the iter-51
+  4-tier upgrade ladder).
+- The change:
+  - scripts/MetaProgress.gd — UNLOCK_PRISM_DEPTH=20,
+    UNLOCK_MORTAR_DEPTH=40, UNLOCK_RAM_DEPTH=60; predicate static
+    methods + `unlocked_archetypes(best)` returning the ordered int
+    list (matches PlayerTank.TankArchetype enum values without a
+    circular preload).
+  - scripts/PlayerTank.gd:
+    - Per-archetype `_ready` init refactored into `_init_archetype()`
+      (guarded by `_archetype_initialized`) — also fires after
+      `_pick_archetype` so a post-_ready picked archetype gets its
+      behavior (beam line / GunTimer / speed bonus).
+    - Selection-screen UI (ArchetypePanel + 4 row labels under HUD) +
+      `_show_/_refresh_archetype_panel`; `_pick_archetype(value)` and
+      `_pick_archetype_by_index(idx)` for input handling.
+    - `_physics_process` early-returns when `_archetype_selecting`,
+      polling only KEY_1-4.
+    - `@export var force_archetype_select: bool = false` gates the
+      auto-show in `_ready`. Default false → existing harnesses see
+      no selection screen.
+  - scenes/BreachLevel.tscn — PlayerTank instance now sets
+    `force_archetype_select = true`.
+- Hash anchor: `23d6a2ec3bf2821f` verified — all selection behavior
+  gates on breach mode + the force flag; arc-2/3 bit-identical.
+  `make test-all` 5/5. `make test-breach` 34/34.
+- Harness: new test_breach_archetype_select.gd +
+  check-breach-archetype-select (test-breach 33 → 34). MetaProgress
+  predicates correct at 19/20/39/40/59/60; unlocked_archetypes 1/2/3/4
+  across tiers; `_show` builds the panel + arms the flag;
+  `_pick_archetype(PRISM)` sets state + clears flag + fires PRISM init
+  (BeamLine built); force-flag default false → no auto-show in
+  existing harnesses.
+- Falsifications: none.
+- Substrate writes this arc: 39 → 40 (PlayerTank.gd ×22).
+- Files: scripts/MetaProgress.gd, scripts/PlayerTank.gd,
+  scenes/BreachLevel.tscn, test_breach_archetype_select.gd, Makefile,
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **the player picks their tank at the start of a breach
+  run** (when more than DEFAULT is unlocked). iter 69 = 9g:
+  event-unlock mid-run switching (a depot upgrade swaps archetype
+  during a run).
+
 ## iter 067 — BUILD — Round 9e: RAM Tank
 
 - Date: 2026-05-22
