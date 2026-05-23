@@ -1410,6 +1410,12 @@ func _on_breach_band_changed(band) -> void:
 	if band != null:
 		_show_band_banner(band)
 		_update_route_for_band(band)
+		# arc-4 iter 82 (Round 11 Phase 1): record the band crossing
+		# into the run recap's per-band visit log for CONSULT-009
+		# band-shape analysis.
+		if run_recap != null and "band_name" in band:
+			run_recap.enter_band(String(band.band_name))
+			run_recap.archetype = archetype
 
 
 # arc-4 iter 42 (Round 6d, stakes & escalation): the band-arrival banner.

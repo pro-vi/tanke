@@ -17,6 +17,54 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 082 — BUILD — Round 11 Phase 1 start: band-shape recorder (RunRecap extension)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0 — instrumentation work; rubric lift lands
+  once playtest 5 data validates per-archetype run-shape
+  distinctness, plausibly +C16 at Round 11 close.)
+- Constraints respected: 5 (per-band telemetry feeds C5 evidence),
+  6 (extends death recap with band-shape data; resource/build/route
+  attribution stays the spine).
+- Constraints risked: none.
+- Collapsed iter 81's planned heartbeat-#2 into the iter-80 default
+  BUILD path — user actively prompting, not idle. The
+  band-shape-recorder default per CONSULT 009 (NOT iter-72's
+  enemy-roster default).
+- RunRecap.gd extended:
+  - New fields: `archetype: int` + `band_visit_log: Array`
+  - New methods: `enter_band(band_name)` (idempotent on same-band
+    repeats — only transitions log), `band_signature() -> Dict`
+    (compact run-shape signature for cross-archetype comparison)
+  - `format()` extended to print the band-visits sequence when
+    visits exist
+- PlayerTank.gd `_on_breach_band_changed` wired to call
+  `run_recap.enter_band(band.band_name)` + populate
+  `run_recap.archetype` at each crossing. Inside the existing
+  `if run_recap != null` gate — no new gating surface; HUD-adjacent
+  arc-4-owned write. Substrate write ×25.
+- Harness: new test_breach_band_shape.gd verifies the schema
+  defaults, enter_band idempotency, sequence preservation across
+  4-band runs, band_signature schema, and format() integration.
+  All 8 in-harness checks pass.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (PlayerTank substrate
+  write inside the loadout-gated codepath; flag-off bit-identical).
+  test-all 5/5; test-breach 37 → 38 (new check-breach-band-shape).
+- Falsifications: none.
+- Substrate writes this arc: 42 → 43 (PlayerTank.gd ×25).
+- Files: scripts/RunRecap.gd, scripts/PlayerTank.gd,
+  loop/breach/test_breach_band_shape.gd (NEW), Makefile,
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Band-shape recorder shipped. Per-archetype
+  band-sequence + entry-timing now captured during a real
+  playthrough; the signature is post-hoc comparable across
+  archetypes/seeds. When playtest 5 happens, the data is
+  captured. iter 83 = Phase 1 continuation: band-shape ANALYZER
+  (cross-signature distance + cross-archetype comparison), and/or
+  display in the death recap.**
+
 ## iter 081 — META — idle heartbeat #1 (no playtest signal at 1800s)
 
 - Date: 2026-05-23

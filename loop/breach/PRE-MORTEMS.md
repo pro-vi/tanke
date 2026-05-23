@@ -24,6 +24,38 @@ Format:
 
 ---
 
+## iter 082 — BUILD — Round 11 Phase 1 start: band-shape recorder (RunRecap extension)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- User actively prompting (not idle); collapse iter 82's planned
+  heartbeat-#2 into the iter-80 default BUILD path. Addresses
+  CONSULT 009's band-shape blind spot per the revised Round 11
+  default. No second heartbeat needed — user is here.
+- CONSULT constraints respected: 5 (per-band telemetry feeds C5
+  anchor 4 evidence + supports the PRESSURES.md matrix), 6 (extends
+  death recap with band-shape data; resource/build/route attribution
+  stays the spine).
+- CONSULT constraints risked: none — pure instrumentation.
+- Predicted failure: substrate-write fragility on PlayerTank.gd
+  ×25. Mitigation: the new call to `run_recap.enter_band()` lives
+  INSIDE the existing `if run_recap != null` block in
+  `_on_breach_band_changed` — there is no new gate; the existing
+  loadout-gated codepath just gets an additional method call. Hash
+  bit-identical on flag-off.
+- Falsifiable claim: the harness verifies that after a sequence
+  of band-entry calls, `band_visit_log` reflects the sequence in
+  order. If the harness shows out-of-order or missing entries,
+  the recorder logic has a bug.
+- Substrate touched: scripts/PlayerTank.gd (Layer 2, sanctioned
+  write ×25, HUD-adjacent + run_recap is arc-4-owned) +
+  scripts/RunRecap.gd (arc-4-owned, not substrate). New harness.
+- Hash-anchor verification plan: post-edit `TANKE_SEED=42 godot
+  --headless --path . --script loop/test_runner.gd`; must report
+  tile_hash: 23d6a2ec3bf2821f.
+
+---
+
 ## iter 081 — META — idle heartbeat #1 (no playtest signal at 1800s)
 
 - Date: 2026-05-23

@@ -21,6 +21,15 @@ var he_reserve_at_death: int = 0
 var heat_reserve_at_death: int = 0
 var captured: bool = false
 
+# arc-4 iter 82 (Round 11 Phase 1 — band-shape recorder per CONSULT
+# 009's blind-spot finding): per-run band-shape telemetry. Each entry
+# is { "band": String, "entered_ms": int } — the sequence of band
+# crossings during this run. Cross-archetype comparison of these
+# sequences (post-hoc) surfaces RUN-SHAPE distinctness that the
+# iter-74 single-moment distinctness audit can't see.
+var archetype: int = 0  # PlayerTank.TankArchetype value at run start
+var band_visit_log: Array = []
+
 # Ticked during the run:
 var shells_fired: Dictionary = {
 	Bullet.SHELL_CLASS_AP: 0,
@@ -35,6 +44,39 @@ func record_shot(shell_class: int) -> void:
 		shells_fired[shell_class] += 1
 	else:
 		shells_fired[shell_class] = 1
+
+
+# arc-4 iter 82: called when the player crosses into a new breach
+# band (signal from ProceduralLevel). Appends to band_visit_log; the
+# sequence + entry timing is the per-archetype run-shape signature.
+# Idempotent on same-band repeats — only logs when band_name changes.
+func enter_band(band_name: String) -> void:
+	if band_visit_log.size() > 0 and band_visit_log[-1]["band"] == band_name:
+		return  # same band — already logged
+	band_visit_log.append({
+		"band": band_name,
+		"entered_ms": Time.get_ticks_msec(),
+	})
+
+
+# arc-4 iter 82: derive a compact per-archetype run-shape signature
+# for cross-archetype distinctness analysis. Returns a Dictionary
+# the analyzer can compare across runs / archetypes / seeds.
+func band_signature() -> Dictionary:
+	var visit_count: int = band_visit_log.size()
+	var first_ms: int = band_visit_log[0]["entered_ms"] if visit_count > 0 else 0
+	var last_ms: int = band_visit_log[-1]["entered_ms"] if visit_count > 0 else 0
+	var sequence: Array = []
+	for v in band_visit_log:
+		sequence.append(v["band"])
+	return {
+		"archetype": archetype,
+		"visit_count": visit_count,
+		"total_run_ms": last_ms - first_ms,
+		"band_sequence": sequence,
+		"shells_fired_total": total_shells_fired(),
+		"depth_reached": depth_reached,
+	}
 
 
 # Snapshot run state at death. `band` is a BreachBand (or null if the
@@ -83,6 +125,15 @@ func format() -> String:
 	var ap: int = shells_fired.get(Bullet.SHELL_CLASS_AP, 0)
 	var he: int = shells_fired.get(Bullet.SHELL_CLASS_HE, 0)
 	var heat: int = shells_fired.get(Bullet.SHELL_CLASS_HEAT, 0)
+	# arc-4 iter 82: render band-visit summary if any band crossings
+	# were logged. Reads as the player's actual run-shape (which bands
+	# in what order) for CONSULT-009 band-shape verdict.
+	var band_line: String = ""
+	if band_visit_log.size() > 0:
+		var names: Array = []
+		for v in band_visit_log:
+			names.append(v["band"])
+		band_line = "\n  band visits   : %s" % " > ".join(names)
 	return "\n".join([
 		"RUN RECAP",
 		"  depth reached : %d  (%s band)" % [depth_reached, killing_band],
@@ -91,4 +142,4 @@ func format() -> String:
 		"  killed by     : %s" % killer,
 		"  shells fired  : AP %d / HE %d / HEAT %d" % [ap, he, heat],
 		"  reserve left  : HE %d / HEAT %d" % [he_reserve_at_death, heat_reserve_at_death],
-	])
+	]) + band_line

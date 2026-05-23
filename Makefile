@@ -11,7 +11,7 @@ NOISE_FILTER    = grep -Ev "RID allocations|resources still in use"
 FRAMES_DIR      = $(PROJECT_DIR)/tools/out
 REFS_DIR        = $(PROJECT_DIR)/tools/refs
 
-.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain check-chain-35 og-band-check check-titlescreen-nav test-all check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness check-breach-recap check-breach-enemies check-breach-assets check-silhouette-gate check-breach-armor check-breach-dividend check-breach-swap check-breach-overdrive check-breach-hud check-breach-apcr check-breach-codex check-breach-shuffle check-breach-depot-roll check-breach-rulechangers check-breach-stakes check-breach-meta check-breach-route check-breach-xp check-breach-ammo check-breach-shield check-breach-hp check-breach-archetype check-breach-prism check-breach-mortar check-breach-ram check-breach-archetype-select check-breach-archetype-switch check-breach-distinctness-audit check-breach-pressure-probes test-breach
+.PHONY: check test screenshot analyze run diff screenshot-og png-diff-og og-metrics check-loader check-chain check-chain-35 og-band-check check-titlescreen-nav test-all check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness check-breach-recap check-breach-enemies check-breach-assets check-silhouette-gate check-breach-armor check-breach-dividend check-breach-swap check-breach-overdrive check-breach-hud check-breach-apcr check-breach-codex check-breach-shuffle check-breach-depot-roll check-breach-rulechangers check-breach-stakes check-breach-meta check-breach-route check-breach-xp check-breach-ammo check-breach-shield check-breach-hp check-breach-archetype check-breach-prism check-breach-mortar check-breach-ram check-breach-archetype-select check-breach-archetype-switch check-breach-distinctness-audit check-breach-pressure-probes check-breach-band-shape test-breach
 
 # Parse/load validation — catches bad scripts and missing nodes
 check:
@@ -394,8 +394,15 @@ check-breach-pressure-probes:
 	@$(HEADLESS) --script res://loop/breach/test_breach_pressure_probes.gd 2>&1 | grep -E "^(  (DEFAULT|PRISM|MORTAR|RAM)|BREACH_PRESSURE_PROBES_OK|FAIL|ERROR|SCRIPT ERROR)"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_pressure_probes.gd 2>&1 | grep -q "^BREACH_PRESSURE_PROBES_OK"
 
+# Arc-4 breach mode: Round-11 Phase-1 band-shape recorder verifier
+# (iter 82). Verifies the RunRecap extension that captures per-band
+# visit telemetry for CONSULT-009 band-shape post-hoc analysis.
+check-breach-band-shape:
+	@$(HEADLESS) --script res://loop/breach/test_breach_band_shape.gd 2>&1 | grep -E "^(  (schema|enter_band|4-band|re-entry|band_signature|format|empty-log)|BREACH_BAND_SHAPE_OK|FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/breach/test_breach_band_shape.gd 2>&1 | grep -q "^BREACH_BAND_SHAPE_OK"
+
 # Arc-4 breach mode: all breach harnesses in one target.
-test-breach: check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness check-breach-recap check-breach-enemies check-breach-assets check-silhouette-gate check-breach-armor check-breach-dividend check-breach-swap check-breach-overdrive check-breach-hud check-breach-apcr check-breach-codex check-breach-shuffle check-breach-depot-roll check-breach-rulechangers check-breach-stakes check-breach-meta check-breach-route check-breach-xp check-breach-ammo check-breach-shield check-breach-hp check-breach-archetype check-breach-prism check-breach-mortar check-breach-ram check-breach-archetype-select check-breach-archetype-switch check-breach-distinctness-audit check-breach-pressure-probes
+test-breach: check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness check-breach-recap check-breach-enemies check-breach-assets check-silhouette-gate check-breach-armor check-breach-dividend check-breach-swap check-breach-overdrive check-breach-hud check-breach-apcr check-breach-codex check-breach-shuffle check-breach-depot-roll check-breach-rulechangers check-breach-stakes check-breach-meta check-breach-route check-breach-xp check-breach-ammo check-breach-shield check-breach-hp check-breach-archetype check-breach-prism check-breach-mortar check-breach-ram check-breach-archetype-select check-breach-archetype-switch check-breach-distinctness-audit check-breach-pressure-probes check-breach-band-shape
 
 # Arc-3 → arc-2 metric handshake: compute per-stage structural metrics
 # across all 35 BC stages and emit loop/originals/og-metrics.json.
