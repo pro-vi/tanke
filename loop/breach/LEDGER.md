@@ -17,6 +17,56 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 077 — BUILD — Round 10 Phase 2 continuation: pressure-probe harness (armor-bypass scope)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0 — verification harness for matrix entries;
+  no new rubric anchor advance.)
+- Constraints respected: 5 (probes back the C5 canonical answers
+  with empirical assertions), 3 (cross-references shell-class
+  behavior with per-archetype damage paths), 7 (the asymmetry IS
+  a verb-difference — different ways of "buying passage").
+- Constraints risked: none.
+- Round 10 Phase 2 (iter 2 of 2). Scoped the probe harness to the
+  matrix's MOST UNCERTAIN claim from iter 76: per-archetype
+  armor-bypass behavior. 5 probes — DEFAULT+AP, DEFAULT+HEAT,
+  PRISM beam, MORTAR AoE, RAM swing — each vs an armored Heavy
+  stub.
+- Results: ALL confirm matrix predictions:
+  - DEFAULT+AP vs armored: **0 damage** (BLOCKED by Bullet.gd's
+    armor mitigation: deal = damage - ARMOR_MITIGATION = 0)
+  - DEFAULT+HEAT vs armored: **2 damage** (BYPASS + 2× multiplier)
+  - PRISM beam vs armored: **1 damage** (BYPASS — no armor check
+    in `_apply_beam_to_body`)
+  - MORTAR AoE vs armored: **2 damage** (BYPASS — no armor check
+    in `_explode`; AOE_DAMAGE=2)
+  - RAM swing vs armored: **2 damage** (BYPASS — no armor check
+    in `_ram_swing`; RAM_SWING_DAMAGE=2)
+- The probes confirm the iter-76 PRESSURES.md "Armor bypass gaps"
+  section: **only DEFAULT respects armor (through shell class —
+  the breach economy itself); PRISM/MORTAR/RAM bypass armor by
+  MECHANISM.** This is the empirical restatement of Pro's iter-73
+  spine — "every archetype must buy passage differently."
+- Round 10 Phase 2 COMPLETE. Phase 3 (iter 78) = playtest
+  instrumentation per the iter-073 rethesis.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (harness-only iter).
+  test-all 5/5; test-breach 36 → 37 (new
+  check-breach-pressure-probes).
+- Falsifications: none.
+- Substrate writes this arc: 41 → 41.
+- Files: loop/breach/test_breach_pressure_probes.gd (NEW),
+  Makefile (new target + .PHONY + test-breach aggregate),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Pressure-probe harness empirically confirms the
+  PRESSURES.md armor-bypass asymmetry. DEFAULT pays in shell
+  economy; PRISM/MORTAR/RAM each pay in their own currency
+  (exposure / positioning / HP). This validates the iter-73
+  spine — "every archetype must buy passage differently."
+  Iter 78 = Phase 3 instrumentation (on-death prompts +
+  PLAYTEST-5-BRIEF).**
+
 ## iter 076 — BUILD — Round 10 Phase 2: PRESSURES.md per-archetype × per-pressure matrix
 
 - Date: 2026-05-23

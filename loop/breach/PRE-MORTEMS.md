@@ -24,6 +24,33 @@ Format:
 
 ---
 
+## iter 077 — BUILD — Round 10 Phase 2 continuation: pressure-probe harness (armor-bypass scope)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 5 (probes back up the C5
+  documented canonical answers with empirical assertions), 3
+  (cross-references shell-class behavior with per-archetype
+  damage paths).
+- CONSULT constraints risked: none.
+- Predicted failure: scope-too-broad. PRESSURES.md has 40 cells —
+  one probe per cell is too much for one iter. Mitigation: focus
+  the probe harness on the MATRIX'S MOST UNCERTAIN CLAIM
+  identified at iter 76 — the per-archetype armor-bypass
+  behavior. 6 probes (DEFAULT+AP, DEFAULT+HEAT, PRISM, MORTAR,
+  RAM swing, RAM collision) — sharp scope, single iter, surfaces
+  the asymmetry empirically.
+- Falsifiable claim: the probes confirm the matrix's armor-bypass
+  claim — DEFAULT+AP deals 0-mitigated damage to armored Heavy;
+  DEFAULT+HEAT deals 2; PRISM/MORTAR/RAM all bypass and deal their
+  nominal damage. If a probe contradicts the matrix (e.g. PRISM
+  somehow respects armor), update PRESSURES.md.
+- Substrate touched: none — new harness only.
+- Hash-anchor verification plan: trivially verify (no substrate);
+  test-all + test-breach green.
+
+---
+
 ## iter 076 — BUILD — Round 10 Phase 2: PRESSURES.md per-archetype × per-pressure matrix
 
 - Date: 2026-05-23
