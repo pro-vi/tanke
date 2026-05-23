@@ -17,6 +17,48 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 084 — META — Round 11 Phase 2 SPIKE architect blueprint (SWARM enemy candidate)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]
+- Score: **47/75** (Δ 0 — META blueprint).
+- Constraints respected: 5 (SWARM addresses C5 anchor 4 gap), 3
+  (matrix cross-references shell+archetype answers), 7 (variants
+  are pure verb-differentiation).
+- Constraints risked: H2 from CONSULT 008 (rubric-chasing risk if
+  SWARM doesn't produce cross-archetype hierarchy). Mitigation:
+  blueprint forbids "demands-one-archetype" variants; SPIKE
+  criteria require hierarchy verification.
+- Phase 2 SPIKE blueprint written
+  (iter-084-round11-phase2-spike.md). Names 3 SWARM variants:
+  - **α swarmlet** — 4-5 Light-clone chevron pack. Predicted
+    hierarchy: DEFAULT≠PRISM≠MORTAR=RAM (3 distinct outcomes).
+    Strongest candidate.
+  - **β Fast-rusher pack** — 3 Fast emit + spread. Predicted
+    DEFAULT=PRISM (both bad) — VIOLATES hierarchy rule;
+    predicted reject.
+  - **γ Heavy-pair "spinet"** — 2 synchronized Heavies. Different
+    pressure (paired armored). 4 distinct outcomes. Round 12
+    candidate, not Round 11.
+- SPIKE iter 85 runs all 3 in a headless harness; emits
+  recommendation. Default expectation per blueprint: ship α; defer
+  γ; reject β.
+- Loop discipline note: Phase 2 = CONTENT (enemy roster),
+  speculative per Pro's H5. Iter 84 is META ONLY. SPIKE iter 85
+  proceeds only if user engagement continues; otherwise abort to
+  idle-heartbeat (playtest 5 still gates downstream).
+- Hash anchor: `23d6a2ec3bf2821f` preserved (META doc only).
+  test-all + test-breach not re-run.
+- Falsifications: none.
+- Substrate writes this arc: 44 → 44.
+- Files: loop/breach/iter-084-round11-phase2-spike.md (NEW),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Phase 2 SPIKE blueprint ready (3 SWARM variants,
+  hierarchy criterion explicit, α favored). Iter 85 = SPIKE
+  harness comparing α/β/γ if user engagement continues; else
+  idle heartbeat per CONSULT 008 H5 / iter-54/61/72 pattern.**
+
 ## iter 083 — BUILD — Round 11 Phase 1 continuation: band-shape analyzer + death-recap surfacing
 
 - Date: 2026-05-23

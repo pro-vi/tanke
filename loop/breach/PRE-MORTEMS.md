@@ -24,6 +24,40 @@ Format:
 
 ---
 
+## iter 084 — META — Round 11 Phase 2 SPIKE architect blueprint (SWARM enemy candidate)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]  # META blueprint; the SPIKE iters
+  start at iter 85+ if engagement continues.
+- CONSULT constraints respected: 5 (Phase 2's SWARM target
+  directly addresses C5 anchor 4 — additional role with distinct
+  silhouette + tactical answer), 3 (the matrix's SWARM cell
+  expects DEFAULT-costly / PRISM-weak / MORTAR-best / RAM-best —
+  cross-shell-archetype answer), 7 (the variants under SPIKE
+  consideration are pure verb-differentiation per archetype).
+- CONSULT constraints risked: H2 from CONSULT 008 — "this enemy
+  demands one archetype" is the wrong shape. SWARM must produce
+  best/costly-backup/bad answer ACROSS archetypes, not pick a
+  winner. Mitigation: the blueprint explicitly forbids
+  "demands-one-archetype" variants; the SPIKE criteria require
+  cross-archetype hierarchy verification.
+- Predicted failure: speculative production trap per Pro's H5.
+  Round 10 + Round 11 Phase 1 was correct instrumentation work;
+  pivoting to CONTENT (SWARM enemy) before playtest 5 is the
+  speculative-production risk Pro explicitly warned about.
+  Mitigation: iter 84 is META ONLY — writes the SPIKE blueprint,
+  does NOT add the enemy. The SPIKE itself (iter 85+) is GATED
+  on continued user engagement.
+- Falsifiable claim: the blueprint names ≥3 SWARM design
+  variants worth SPIKE-comparing (e.g. "swarmlet" cluster of
+  Light-clones / single fast-multispawn Fast / formation
+  "spinet"). If the blueprint can only name 1 variant, the SPIKE
+  is unjustified and iter 85 should NOT proceed.
+- Substrate touched: none — META blueprint only.
+- Hash-anchor verification plan: trivial (no substrate).
+
+---
+
 ## iter 083 — BUILD — Round 11 Phase 1 continuation: band-shape analyzer + death-recap surfacing
 
 - Date: 2026-05-23

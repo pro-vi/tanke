@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 83
+iter: 84
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_83: 23d6a2ec3bf2821f  # bit-identical through 44 substrate writes
+hash_anchor_at_iter_84: 23d6a2ec3bf2821f  # bit-identical through 44 substrate writes
 substrate_writes_this_arc: 44  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×26 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
-current_round: 11-open — Phase 1 COMPLETE (recorder iter 82 + analyzer iter 83 + death-screen surface iter 83); awaiting playtest 5 OR pivot to Phase 2
-current_round_phase: BUILD — Round 11 Phase 1 COMPLETE; iter 84 = idle-heartbeat OR Phase 2 SPIKE on next-candidate from iter-080 list
+current_round: 11-open — Phase 1 COMPLETE; Phase 2 SPIKE blueprint written iter 84 (iter-084-round11-phase2-spike.md); SPIKE candidates α/β/γ
+current_round_phase: SPIKE — Round 11 Phase 2 (iter 85 fires SPIKE α/β/γ if user engagement continues; else idle heartbeat)
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 79  # CONSULT 009 — written self-pre-mortem, Round 10 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 84 — IDLE-HEARTBEAT OR Phase 2 SPIKE pivot. Round 11 Phase 1 complete (recorder + analyzer + death-screen surface). Per iter-080-round11-diagnose.md, the remaining candidates are (b) enemy roster expansion / (c) armor-asymmetry resolution / (d) identity-vs-weapons clarification — all gated on playtest-5 evidence. Two paths: (α) idle heartbeat 1800s (the user-actively-engaged proxy was disengaged on this cycle, default if user paused) — recommended; (β) if user prompts /loop again immediately, write iter-084-round11-phase2-spike.md naming Phase-2 candidate ordering + start the candidate (most likely (b) SWARM if user signals no playtest yet). Hash-anchor verify; no substrate work this iter.
+next_action: iter 85 — SPIKE — Round 11 Phase 2: run SWARM SPIKE harness comparing α/β/γ variants per iter-084-round11-phase2-spike.md. Build loop/breach/test_breach_swarm_spike.gd: for each variant configuration, spawn the swarm in a test scene; for each archetype, drive the appropriate fire path for K ticks; measure damage outcomes per archetype-variant pair; emit hierarchy verdicts; recommend the winning variant. Blueprint expected: α (swarmlet) ships; γ (Heavy-pair) deferred; β (Fast-rusher) rejected. SPIKE cadence 360s. If user pauses (no /loop within ~600s), abort SPIKE iter and revert to idle-heartbeat per CONSULT 008 H5. Hash-anchor verify; no substrate work in SPIKE iter (harness only).
 score: 47/75 absolute · 47/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4 (iter 76 lifts C5 2→3 via PRESSURES.md canonical-answer doc)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -140,6 +140,16 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-23 — **iter 84 (META).** Round 11 Phase 2 SPIKE
+  architect blueprint. Wrote iter-084-round11-phase2-spike.md
+  naming 3 SWARM variants: α swarmlet (4-5 Light chevron pack —
+  predicted 3 distinct outcomes; favored), β Fast-rusher pack
+  (DEFAULT=PRISM both bad — violates hierarchy rule; reject), γ
+  Heavy-pair "spinet" (different pressure — Round 12 candidate).
+  iter 85 SPIKE harness compares variants. Loop-discipline note:
+  Phase 2 is CONTENT (speculative per Pro's H5); iter 84 META
+  only, iter 85 SPIKE only if engagement continues. No substrate;
+  hash preserved. Δ 0. 47/75.
 - 2026-05-23 — **iter 83 (BUILD).** Round 11 Phase 1 continuation:
   band-shape analyzer + death-screen surface. New
   scripts/RunRecapAnalyzer.gd (arc-4-owned) with static
@@ -311,27 +321,31 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 84 — IDLE-HEARTBEAT OR Phase 2 SPIKE pivot.**
+**Iter 85 — SPIKE — Round 11 Phase 2: SWARM α/β/γ comparison.**
 
-Round 11 Phase 1 is complete (recorder + analyzer + death-screen
-surface).
+Read `loop/breach/iter-084-round11-phase2-spike.md`.
 
-If user prompted /loop again immediately (user actively engaged):
-  - Skip the heartbeat; write
-    `loop/breach/iter-084-round11-phase2-spike.md` naming the
-    Phase-2 candidate ordering from iter-080 list (b/c/d).
-  - Default Phase-2 candidate: (b) SWARM enemy — fills the
-    cleanest PRESSURES.md gap; tests AoE/cone archetypes.
-  - Start the candidate per SPIKE protocol.
+Build `loop/breach/test_breach_swarm_spike.gd`:
 
-If user paused (no immediate /loop signal):
-  - Idle heartbeat 1800s.
-  - Subsequent iters per the iter-54/61/72 reconciliation pattern.
+  For each of the 3 SWARM variants:
+    - Spawn the variant's enemy cluster in a test scene
+    - For each of 4 archetypes:
+      - Position the player + drive the archetype's fire path
+        for K physics ticks
+      - Measure: variant-members-killed / time-to-clear / damage
+        taken by player
+    - Build the per-archetype outcome vector for the variant
+  Compute hierarchy verdict per variant (best/costly/bad
+  distribution; flag VIOLATES when 2+ archetypes share the worst
+  outcome).
+  Emit recommendation: ship the variant with the cleanest hierarchy.
 
-Hash-anchor verify; no substrate work this transitional iter.
+Default per blueprint: ship α swarmlet, defer γ, reject β.
 
-The loop runs non-stop until the user writes `playtest` / `halt` /
-`stop`, or a correctness violation fires.
+If user pauses engagement during iter 85 work, abort the SPIKE
+and idle-heartbeat — playtest 5 gates everything downstream.
+
+Hash-anchor verify; no substrate work in SPIKE iter (harness only).
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.
