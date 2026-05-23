@@ -24,6 +24,37 @@ Format:
 
 ---
 
+## iter 085 — SPIKE — Round 11 Phase 2: SWARM α/β/γ hierarchy comparison harness
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 5 (validates hierarchy across
+  archetypes empirically per Pro's H2), 7 (each variant's
+  characterization is verb-shaped not stat).
+- CONSULT constraints risked: H2 (rubric-chasing). Mitigation:
+  the harness EMPIRICALLY measures whether each variant produces
+  a hierarchy where ≤1 archetype shares the worst outcome —
+  EXACTLY Pro's "best/costly/bad answer across multiple
+  archetypes" criterion.
+- Predicted failure: the iter-77 stub approach scales poorly to
+  cluster formations — placing 5 stubs in chevron formation +
+  measuring MORTAR AoE across them needs careful position math.
+  Mitigation: keep formations TIGHT (~12px spacing) so MORTAR's
+  full AOE_RADIUS (24px) catches multiple stubs reliably; verify
+  with sanity assertions.
+- Falsifiable claim: per iter-84 blueprint prediction:
+  - α: 3 distinct archetype outcomes (MORTAR=BEST, RAM=BEST,
+    DEFAULT=COSTLY, PRISM=WEAK) — PASS
+  - β: 2 distinct outcomes (DEFAULT=BAD, PRISM=BAD) — VIOLATES
+  - γ: 4 distinct outcomes — PASS
+  If the empirical harness contradicts (e.g. MORTAR misses
+  α-cluster spread), the blueprint's variant analysis was wrong
+  and the SPIKE catches it.
+- Substrate touched: none — new harness only.
+- Hash-anchor verification plan: trivial (no substrate).
+
+---
+
 ## iter 084 — META — Round 11 Phase 2 SPIKE architect blueprint (SWARM enemy candidate)
 
 - Date: 2026-05-23

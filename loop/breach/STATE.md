@@ -2,18 +2,18 @@
 
 ```yaml
 phase: running
-iter: 84
+iter: 85
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_84: 23d6a2ec3bf2821f  # bit-identical through 44 substrate writes
+hash_anchor_at_iter_85: 23d6a2ec3bf2821f  # bit-identical through 44 substrate writes
 substrate_writes_this_arc: 44  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×26 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
-current_round: 11-open — Phase 1 COMPLETE; Phase 2 SPIKE blueprint written iter 84 (iter-084-round11-phase2-spike.md); SPIKE candidates α/β/γ
-current_round_phase: SPIKE — Round 11 Phase 2 (iter 85 fires SPIKE α/β/γ if user engagement continues; else idle heartbeat)
+current_round: 11-open — Phase 2 SPIKE FALSIFIED iter-84 blueprint (F005); SWARM commit deferred until playtest 5 data
+current_round_phase: IDLE-HEARTBEAT — all pre-playtest non-speculative work shipped; playtest 5 is the legitimate gate (CONSULT 008 H5)
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
-falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved]
+falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved, F005-open]  # F005 (iter 85): single-event stub probes don't scale to sustained-DPS hierarchy verification — need real playtest data via iter-82/83 RunRecap analyzer
 reachability_status: all 5 bands verified — 12/12-seed sweep (100%, floor ≥80%) — refreshed iter 61 post-Round-8
 audit_candidates: []
 last_audit: iter 26
@@ -21,7 +21,7 @@ last_consult: iter 79  # CONSULT 009 — written self-pre-mortem, Round 10 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 85 — SPIKE — Round 11 Phase 2: run SWARM SPIKE harness comparing α/β/γ variants per iter-084-round11-phase2-spike.md. Build loop/breach/test_breach_swarm_spike.gd: for each variant configuration, spawn the swarm in a test scene; for each archetype, drive the appropriate fire path for K ticks; measure damage outcomes per archetype-variant pair; emit hierarchy verdicts; recommend the winning variant. Blueprint expected: α (swarmlet) ships; γ (Heavy-pair) deferred; β (Fast-rusher) rejected. SPIKE cadence 360s. If user pauses (no /loop within ~600s), abort SPIKE iter and revert to idle-heartbeat per CONSULT 008 H5. Hash-anchor verify; no substrate work in SPIKE iter (harness only).
+next_action: iter 86 — IDLE-HEARTBEAT — all pre-playtest non-speculative work shipped. Per F005 (iter 85): single-event stub probes don't scale to sustained-DPS hierarchy verification; SWARM commit is gated on playtest-5 data feeding the iter-83 analyzer. Per Pro's H5: further iters before playtest 5 are speculative production. Idle heartbeat 1800s; iter 87 extends to 3600s; iter 88 pauses cleanly per loop-skill step 6 (with PushNotification of the outcome) unless user signal arrives. The deliverables (Round 9 archetypes + Round 10 distinctness instrumentation + Round 11 Phase 1 band-shape recorder/analyzer + iter-78 PLAYTEST-5-BRIEF + iter-85 F005 finding) are the complete pre-playtest hand-off.
 score: 47/75 absolute · 47/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4 (iter 76 lifts C5 2→3 via PRESSURES.md canonical-answer doc)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -30,7 +30,7 @@ round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 round9_blueprint: loop/breach/iter-062-round9-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer} + check-silhouette-gate (39 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike} + check-silhouette-gate (40 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch, #13 archetype-sprite integration path (decision-needed), #14 ★ PLAYTEST REQUEST Round 9 complete (playtest gate), #15 archetypes-as-identities vs archetypes-as-weapons (design-direction question), #16 pressure matrix + distinctness audit (Round 10 internal)]  # #3, #7, #9, #11 CLOSED — playtests delivered
 ```
 
@@ -140,6 +140,20 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-23 — **iter 85 (SPIKE).** Round 11 Phase 2: SWARM
+  α/β/γ comparison — **F005 falsified the iter-84 blueprint**.
+  All 3 variants VIOLATE the cross-archetype hierarchy rule under
+  the iter-77-style single-event probe (α/β: 3 archetypes tie
+  COSTLY; γ: 4-way tie BAD). Root cause: probe measures kills-
+  per-event (one fire burst) — captures MORTAR's one-shell-AoE
+  pattern but undercounts PRISM continuous-DPS, RAM multi-swing,
+  DEFAULT discrete-over-cooldowns. Iter-77 stub-probe pattern
+  doesn't extend to sustained-DPS hierarchy verification.
+  Codified F005 in FALSIFICATIONS.md. SWARM commit DEFERRED
+  until playtest 5 data feeds the iter-83 analyzer. Loop has
+  built everything it can pre-playtest; iter 86 = idle heartbeat
+  awaiting playtest. test-all 5/5; test-breach 39 → 40. Δ 0.
+  47/75.
 - 2026-05-23 — **iter 84 (META).** Round 11 Phase 2 SPIKE
   architect blueprint. Wrote iter-084-round11-phase2-spike.md
   naming 3 SWARM variants: α swarmlet (4-5 Light chevron pack —
@@ -321,31 +335,35 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 85 — SPIKE — Round 11 Phase 2: SWARM α/β/γ comparison.**
+**Iter 86 — IDLE-HEARTBEAT — pre-playtest work is exhausted.**
 
-Read `loop/breach/iter-084-round11-phase2-spike.md`.
+F005 (iter 85) established that single-event stub probes don't
+scale to sustained-DPS hierarchy verification. SWARM commit is
+GATED on playtest-5 data feeding the iter-83 analyzer.
 
-Build `loop/breach/test_breach_swarm_spike.gd`:
+Per Pro's H5 ("deferral ≠ passivity, but pre-playtest content is
+speculative production"): the loop has now built everything
+non-speculative that's possible. Further iters before playtest 5
+add risk without value.
 
-  For each of the 3 SWARM variants:
-    - Spawn the variant's enemy cluster in a test scene
-    - For each of 4 archetypes:
-      - Position the player + drive the archetype's fire path
-        for K physics ticks
-      - Measure: variant-members-killed / time-to-clear / damage
-        taken by player
-    - Build the per-archetype outcome vector for the variant
-  Compute hierarchy verdict per variant (best/costly/bad
-  distribution; flag VIOLATES when 2+ archetypes share the worst
-  outcome).
-  Emit recommendation: ship the variant with the cleanest hierarchy.
+Plan:
+- Iter 86: idle heartbeat 1800s
+- Iter 87: extend to 3600s
+- Iter 88: pause cleanly per loop-skill step 6 — PushNotification
+  the outcome to the user (they may be away awaiting status)
+  UNLESS user signal arrives first.
 
-Default per blueprint: ship α swarmlet, defer γ, reject β.
+The complete pre-playtest deliverable set:
+- Round 9: 4-archetype tank program (PRISM/MORTAR/RAM + DEFAULT)
+- Round 10: distinctness instrumentation (audit, PRESSURES matrix,
+  pressure-probe harness, on-death prompt overlay,
+  PLAYTEST-5-BRIEF)
+- Round 11 Phase 1: band-shape recorder + analyzer + death-screen
+  surface
+- iter 85: F005 finding (sustained-DPS hierarchy needs real data)
 
-If user pauses engagement during iter 85 work, abort the SPIKE
-and idle-heartbeat — playtest 5 gates everything downstream.
-
-Hash-anchor verify; no substrate work in SPIKE iter (harness only).
+The loop runs non-stop until the user writes `playtest` / `halt` /
+`stop`, or a correctness violation fires.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.

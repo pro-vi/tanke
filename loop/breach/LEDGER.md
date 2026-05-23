@@ -17,6 +17,58 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 085 — SPIKE — Round 11 Phase 2: SWARM α/β/γ hierarchy comparison — F005 falsified iter-84 blueprint
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0 — SPIKE harness work; the falsification
+  is the rubric-relevant finding, not a new anchor).
+- Constraints respected: 5 (the SPIKE attempts cross-archetype
+  hierarchy verification per the matrix design intent), 7
+  (variant configurations are verb-shaped).
+- Constraints risked: H2 from CONSULT 008 — empirically tested.
+- SPIKE harness built (test_breach_swarm_spike.gd) and run. ALL
+  3 variants VIOLATE the cross-archetype hierarchy rule under
+  the iter-77-style single-event probe:
+  - α swarmlet: DEFAULT=COSTLY, PRISM=COSTLY, MORTAR=BEST,
+    RAM=COSTLY → 3 archetypes tie at COSTLY → VIOLATES
+  - β Fast-rusher: same pattern, same violation
+  - γ Heavy-pair: ALL 4 archetypes BAD (0 kills/event vs 3hp
+    armored Heavy) → 4-way tie → VIOLATES
+- **F005 falsified the iter-84 blueprint's α-passes prediction.**
+  Root cause: the probe measures KILLS-PER-EVENT (one fire burst),
+  which captures MORTAR's one-shell-AoE pattern correctly but
+  undercounts PRISM's continuous-DPS pattern, RAM's multi-swing
+  pattern, and DEFAULT's discrete-fire-over-cooldowns pattern.
+  Single-event probes work for binary ARMOR-BYPASS verification
+  (iter-77) but not for SUSTAINED-DPS hierarchy comparison
+  (iter-85). Codified F005 in FALSIFICATIONS.md.
+- Implication: structural hierarchy verification of new content
+  (enemies, variants) requires SUSTAINED-DPS measurement over K
+  ticks/seconds — exactly what the iter-82 RunRecap + iter-83
+  analyzer were built for (per-band telemetry from real
+  playthroughs). The iter-77 stub-probe pattern doesn't extend
+  here.
+- Phase 2 verdict: **defer SWARM commit until playtest 5 data
+  feeds the iter-83 analyzer.** The blueprint's hierarchy
+  prediction is unverifiable structurally; only real playtest
+  data on per-archetype combat will tell us whether
+  α/γ produce the design-intended hierarchy.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (harness-only iter).
+  test-all 5/5; test-breach 39 → 40 (new check-breach-swarm-spike).
+- Falsifications: **F005 added.**
+- Substrate writes this arc: 44 → 44.
+- Files: loop/breach/test_breach_swarm_spike.gd (NEW), Makefile,
+  loop/breach/FALSIFICATIONS.md (F005 added),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **SPIKE caught a real instrumentation limit — F005.
+  SWARM commit is deferred until playtest 5 data feeds the
+  iter-83 analyzer for sustained-DPS hierarchy verification. Iter
+  86 = idle heartbeat awaiting playtest 5 (the legitimate gate).
+  The loop has now built EVERYTHING it can pre-playtest; further
+  iters before playtest 5 are speculative per Pro's H5.**
+
 ## iter 084 — META — Round 11 Phase 2 SPIKE architect blueprint (SWARM enemy candidate)
 
 - Date: 2026-05-23
