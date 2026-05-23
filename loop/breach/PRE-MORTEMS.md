@@ -24,6 +24,35 @@ Format:
 
 ---
 
+## iter 064 — BUILD — Round 9b: archetype framework
+
+- Date: 2026-05-22
+- Tag: [STRUCTURE]
+- Round 9b — the archetype-framework scaffolding for the iter-062
+  blueprint. Just the enum + the @export state field; no
+  per-archetype behavior branches yet (those land in 9c/9d/9e).
+  Minimal by design — adding stubs 9c/d/e would have to replace is
+  wasted work.
+- The change (scripts/PlayerTank.gd, sanctioned substrate):
+  - A `TankArchetype` enum with 4 values: DEFAULT, PRISM, MORTAR, RAM.
+  - An `@export var archetype: int = TankArchetype.DEFAULT`. The
+    field exists; no code branches on it yet, so DEFAULT (the only
+    value any current PlayerTank has) preserves the existing breach
+    behavior bit-identically.
+- CONSULT constraints respected: none risked — pure scaffolding.
+- Predicted failure modes:
+  - Hash anchor: the @export adds a field; no behavior change for
+    DEFAULT; arc-2/3 (no loadout, archetype field exists but unread)
+    bit-identical.
+- Falsifiable claim: post-edit — test_breach_archetype confirms the
+  4-value enum + the default archetype (DEFAULT) + the field is
+  settable; existing breach HUD still builds (regression check). Hash
+  anchor 23d6a2ec3bf2821f preserved; test-all 5/5; test-breach 30/30.
+- Sentence test: n/a (scaffolding).
+- Substrate touched: PlayerTank.gd (a new enum + @export field —
+  sanctioned).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 063 — BUILD — Round 9a: enemy HP primitive + HP bars
 
 - Date: 2026-05-22

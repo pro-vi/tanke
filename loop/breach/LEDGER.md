@@ -17,6 +17,39 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 064 — BUILD — Round 9b: archetype framework
+
+- Date: 2026-05-22
+- Tag: [STRUCTURE]
+- Score: **42/70** (Δ 0 — per the iter-062 blueprint, C15 lands at
+  round close.)
+- Round 9b — archetype-framework scaffolding for the iter-062
+  blueprint. Just the enum + the @export state field; no
+  per-archetype behavior branches yet (those land in 9c/9d/9e).
+- The change (scripts/PlayerTank.gd, sanctioned substrate):
+  - A `TankArchetype` enum with 4 values: DEFAULT (0), PRISM (1),
+    MORTAR (2), RAM (3).
+  - An `@export var archetype: int = TankArchetype.DEFAULT`. No code
+    branches on it yet, so DEFAULT preserves the existing breach
+    behavior bit-identically.
+- Hash anchor: `23d6a2ec3bf2821f` verified — pure scaffolding, no
+  behavior change. `make test-all` 5/5. `make test-breach` 30/30.
+- Harness: new test_breach_archetype.gd + check-breach-archetype
+  (test-breach 29 → 30). 4 distinct enum values, default is DEFAULT,
+  field is settable, existing breach HUD (ShellPanel / LevelLabel /
+  ShellCodex / ShieldLabel) still builds. (Bug caught + fixed
+  in-iter: the harness needed 2 process_frames for the deferred Round
+  7c route-strip build, and the RoutePanel spot-check was dropped —
+  it requires a breach-level parent with breach_config, not the
+  standalone-root parent the harness uses.)
+- Falsifications: none.
+- Substrate writes this arc: 35 → 36 (PlayerTank.gd ×18).
+- Files: scripts/PlayerTank.gd, test_breach_archetype.gd, Makefile,
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **the archetype scaffolding is live — DEFAULT runs the
+  existing breach game; PRISM/MORTAR/RAM are addressable slots
+  waiting for 9c/9d/9e.** iter 65 = 9c: PRISM Tank.
+
 ## iter 063 — BUILD — Round 9a: enemy HP primitive + HP bars
 
 - Date: 2026-05-22

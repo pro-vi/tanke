@@ -11,6 +11,13 @@ const LoadoutT = preload("res://scripts/Loadout.gd")
 const RunRecapT = preload("res://scripts/RunRecap.gd")
 const MetaProgressT = preload("res://scripts/MetaProgress.gd")
 
+# arc-4 iter 64 (Round 9b): tank archetype enum — distinct personalities
+# the user named in playtest-4 (Red Alert / Into the Breach references).
+# Per-archetype behaviour lands in 9c (PRISM beam), 9d (MORTAR lob), 9e
+# (RAM collision + swing). DEFAULT preserves the current breach behavior
+# bit-identically.
+enum TankArchetype { DEFAULT, PRISM, MORTAR, RAM }
+
 # arc-4: shoot signal carries the chosen shell_class. Default in any
 # emit-site that doesn't override = SHELL_CLASS_AP (= 0), preserving
 # arc-2/3 callers bit-identically.
@@ -38,6 +45,10 @@ var _shield_timer: float = 0.0
 # arc-4: optional Loadout. null = arc-2/3 baseline (unlimited AP).
 # When set, current_shell cycles via KEY_TAB and HE/HEAT consume reserves.
 @export var loadout: LoadoutT = null
+# arc-4 iter 64 (Round 9b): chosen tank archetype for this run. DEFAULT
+# = the existing breach behavior (bit-identical). PRISM / MORTAR / RAM
+# gate per-archetype code paths in 9c/9d/9e.
+@export var archetype: int = TankArchetype.DEFAULT
 # arc-4 iter 27 (C3 anchor 4): shell-swap reload cost. After a swap the
 # tank cannot fire for shell_swap_cost seconds — pre-commitment under
 # reload pressure (CONSULT §2 "the interesting WoT idea"). Only ever
