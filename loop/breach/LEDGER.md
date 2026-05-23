@@ -17,6 +17,23 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 081 — META — idle heartbeat #1 (no playtest signal at 1800s)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]
+- Score: **47/75** (Δ 0 — heartbeat iter).
+- No user playtest signal in this turn. Per iter-80 plan, extend
+  cadence to 3600s for iter 82; iter 83 = BUILD band-shape
+  recorder if still no signal (the iter-080-round11-diagnose.md
+  default (a) per CONSULT 009).
+- Hash anchor: n/a (no code change).
+- Substrate writes this arc: 42 → 42.
+- Files: loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Heartbeat #1. Round 11 candidates still queued
+  (iter-080-round11-diagnose.md); ★ REVIEW-QUEUE #14 playtest
+  gate still open. Next wakeup 3600s.**
+
 ## iter 080 — META — diagnose Round 11 + idle-heartbeat awaiting playtest 5
 
 - Date: 2026-05-23

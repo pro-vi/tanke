@@ -24,6 +24,24 @@ Format:
 
 ---
 
+## iter 081 — META — idle heartbeat #1 (no playtest signal at 1800s)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]
+- CONSULT constraints respected: none directly — heartbeat iter.
+- CONSULT constraints risked: none.
+- Predicted failure: extending the heartbeat indefinitely against
+  PROMPT's "non-stop" rule. Mitigation: bounded — iter 82 is the
+  LAST heartbeat (3600s). Iter 83 either responds to user signal
+  or BUILDs the iter-80-named default (band-shape recorder).
+- Falsifiable claim: no test work, no design work this iter.
+  Pure log + reschedule. If anything else is written, the
+  heartbeat was misclassified as a META iter.
+- Substrate touched: none.
+- Hash-anchor verification plan: n/a — no code change.
+
+---
+
 ## iter 080 — META — diagnose Round 11 + write blueprint; idle-heartbeat awaiting playtest 5
 
 - Date: 2026-05-23
