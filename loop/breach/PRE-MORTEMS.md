@@ -24,6 +24,38 @@ Format:
 
 ---
 
+## iter 070 — BUILD — Round 9h: visual assets via /agentify image_gen
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]  # asset generation; integration into
+  the sprite-sheet renderer is a follow-up iter.
+- CONSULT constraints respected: 4 (silhouette grammar gate before any
+  ship), 3 (per-archetype answer is identity-readable from sprite),
+  7 (verbs+affordances — the sprite signals the verb).
+- CONSULT constraints risked: 4 itself, if the generated image is
+  ChatGPT-default illustration instead of pixel-art matching
+  sprites_0.png. The brief mitigates by spec'ing 16×16 top-down
+  pixel-art, palette guidance, and silhouette intent per archetype.
+- Predicted failure: image_gen returns 1024×1024 stylized PNGs that
+  read as "concept art" not "sprite-sheet ready". The iter ships
+  reference images + REVIEW-QUEUE for human direction, NOT an
+  integrated sprite swap.
+- Falsifiable claim: 3 image_gen calls return 3 distinct images with
+  obviously-different silhouettes per archetype (cyan beam-lens /
+  earth-tone angled barrel / red blunt-front). If two images look
+  interchangeable, the brief was under-spec'd.
+- Substrate touched: none — assets only (img/ additions), no scripts
+  or scenes. No hash-anchor concern.
+- Hash-anchor verification plan: n/a (asset-only iter); will still
+  spot-check post-commit since this is a free verification.
+- Iter 70 follow-up plan: REVIEW-QUEUE #13 asks the user (a) keep
+  generated style as canonical art direction, (b) downsample for
+  16×16 sprite-sheet integration, or (c) use as reference for a
+  human-drawn pass. The "integrate into sprites_0.png" iter is
+  gated on that answer.
+
+---
+
 ## iter 069 — BUILD — Round 9g: event-unlock mid-run archetype switching
 
 - Date: 2026-05-23

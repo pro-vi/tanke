@@ -17,6 +17,54 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 070 — BUILD — Round 9h: visual assets via /agentify image_gen
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]
+- Score: **42/70** (Δ 0 — per blueprint, C15 lands at round close;
+  visual assets feed the C5 "asset legibility" axis but integration
+  is deferred to a follow-up iter pending REVIEW-QUEUE #13's path
+  choice.)
+- Round 9h — the last build piece before Round-9 close. The user
+  authorized image generation via /agentify in the iter-62 playtest
+  ("the asset, the visual, is something you are capable to deal with
+  and I trust you for it"); this iter fires that channel.
+- The change:
+  - 3 parallel `mcp__agentify-desktop__agentify_image_gen` calls
+    (tab keys: tanke-prism / tanke-mortar / tanke-ram) returned 3
+    concept sprites at ~300×300 each. ChatGPT was the provider; each
+    image was generated in ~1 min wall-clock.
+  - Concept sprites saved to img/: archetype_prism_concept.png,
+    archetype_mortar_concept.png, archetype_ram_concept.png.
+  - CONSULT constraint 4 (silhouette grammar gate): PASS at concept
+    tier. All 3 silhouettes are mechanically self-evident — cyan
+    beam-aperture / olive angled-barrel / red plow-blade. The verb
+    for each archetype is readable from the sprite alone, no label
+    required.
+  - REVIEW-QUEUE #13 appended — decision-needed item asks the user
+    which integration path: (a) downsample-and-composite to the
+    sprites_0.png 8-direction sheet, (b) algorithmic tint+overlay
+    via extended `tools/gen_tile.py` preserving BC grammar, (c)
+    defer for a human pass. Default if no answer: (b).
+- Hash anchor: `23d6a2ec3bf2821f` preserved (asset-only iter; no
+  substrate, no scripts/scenes changed). test-all + test-breach not
+  re-run (no code changed); the prior iter 69 verification stands.
+- Harness: n/a — asset-only iter. The eventual integration iter
+  will extend silhouette-gate to cover the new archetype sprites.
+- Falsifications: none. The PRE-MORTEM falsifiable claim ("3
+  distinct silhouettes — if 2 look interchangeable, brief was
+  under-spec'd") cleared — each archetype is unmistakable.
+- Substrate writes this arc: 41 → 41 (no substrate touched).
+- Files: img/archetype_prism_concept.png,
+  img/archetype_mortar_concept.png, img/archetype_ram_concept.png,
+  loop/breach/REVIEW-QUEUE.md, loop/breach/PRE-MORTEMS.md,
+  loop/breach/LEDGER.md, loop/breach/STATE.md
+- Finding: **3 archetype concept sprites generated via /agentify
+  image_gen; silhouette grammar gate passes at concept tier;
+  integration path queued for user decision (REVIEW-QUEUE #13).**
+  iter 71 = Round 9-close (CONSULT 007 + REVIEW-QUEUE #14 ★playtest
+  request + RUBRIC +C15 "Tank archetypes" anchor lift).
+
 ## iter 069 — BUILD — Round 9g: event-unlock mid-run archetype switching
 
 - Date: 2026-05-23

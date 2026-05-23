@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 69
+iter: 70
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_69: 23d6a2ec3bf2821f  # bit-identical through 41 substrate writes
+hash_anchor_at_iter_70: 23d6a2ec3bf2821f  # bit-identical through 41 substrate writes (iter 70 asset-only)
 substrate_writes_this_arc: 41  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×23 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
 current_round: 9-open
-current_round_phase: BUILD — Round 9h (visual assets via /agentify); blueprint iter-062-round9-architect.md
+current_round_phase: ROUND-CLOSE — Round 9-close (CONSULT 007 + QUEUE close marker + RUBRIC +C15); blueprint iter-062-round9-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 60  # CONSULT 006 — written self-pre-mortem, Round 8 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 70 — BUILD — Round 9h: visual assets via /agentify image_gen. Read iter-062-round9-architect.md. Generate sprites for Prism/Mortar/Ram via mcp__agentify-desktop__agentify_image_gen — pixel-art consistent with the existing Default tank (warm earth-tones, sharp pixel edges); each archetype's silhouette reflects its mechanic (PRISM=cool cyan beam-lens; MORTAR=earth-tone angled barrel; RAM=warm red blade/blunt front). Drop into res://assets/. Per CONSULT constraint 4 (silhouette grammar), each must pass the silhouette-readability gate before commit. Hash-anchor verify (asset-only, no substrate); test-all + test-breach green.
+next_action: iter 71 — ROUND-CLOSE — Round 9-close. Read iter-062-round9-architect.md (the Round-9-close subsection). Three close artifacts: (1) CONSULT 007 via /agentify with the three permanent questions framed around "Are the 4 archetypes mechanically distinct, or just stat-skinned defaults?" Capture to loop/breach/creative-consults.md regardless of tab status (PROMPT §CONSULT SCHEDULE rule). (2) Append REVIEW-QUEUE #14 — "★ PLAYTEST REQUEST — Round 9 complete" with four-archetype affordance + start-pick + mid-run-switch + visual concept sprites + the open #13 integration-path question; mark playtest gate. (3) RUBRIC.md edit: add C15 "Tank archetypes" anchor (auto-citable: ≥3 archetypes with verb+silhouette; cognitive: each changes WHAT the player does, not just stats; identity-protected). Score advance ladder. Update LEDGER score line for the 65→70-pt ceiling. Hash-anchor verify (no substrate; trivially preserved); test-all + test-breach green.
 score: 42/70 absolute · 42/70 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -140,6 +140,16 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-23 — **iter 70 (BUILD).** Round 9h — visual assets via
+  /agentify image_gen. 3 parallel ChatGPT image_gen calls returned 3
+  concept sprites (~300×300) saved to
+  img/archetype_{prism,mortar,ram}_concept.png. CONSULT constraint 4
+  silhouette gate PASSES at concept tier: cyan beam-aperture / olive
+  angled-barrel / red plow — each archetype's verb is readable from
+  silhouette alone. REVIEW-QUEUE #13 opened with 3 integration paths;
+  default if no answer = algorithmic tint+overlay via extended
+  gen_tile.py. No substrate touched; hash anchor preserved.
+  Δ 0 (C15 at round close). 42/70.
 - 2026-05-23 — **iter 69 (BUILD).** Round 9g — event-unlock mid-run
   archetype switching: new Depot.UpgradeKind SWITCH_TO_PRISM/MORTAR/RAM
   (gated by MetaProgress tiers @20/40/60); apply_upgrade calls the
@@ -153,16 +163,26 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 70 — BUILD — Round 9h: visual assets via /agentify image_gen.**
-Read `loop/breach/iter-062-round9-architect.md`. Generate sprites
-for Prism/Mortar/Ram via `mcp__agentify-desktop__agentify_image_gen`
-— pixel-art consistent with the existing Default tank (warm
-earth-tones, sharp pixel edges); each archetype's silhouette
-reflects its mechanic (PRISM=cool cyan beam-lens; MORTAR=earth-tone
-angled barrel; RAM=warm red blade/blunt front). Drop into
-res://assets/. Per CONSULT constraint 4 (silhouette grammar), each
-must pass the silhouette-readability gate before commit. Hash-anchor
-verify (asset-only, no substrate); test-all + test-breach green.
+**Iter 71 — ROUND-CLOSE — Round 9-close.**
+Read `loop/breach/iter-062-round9-architect.md` (the Round-9-close
+subsection). Three close artifacts:
+  1. CONSULT 007 via `/agentify` with the three permanent questions
+     framed around "Are the 4 archetypes mechanically distinct, or
+     just stat-skinned defaults?" Capture to
+     `loop/breach/creative-consults.md` regardless of tab status
+     (PROMPT §CONSULT SCHEDULE rule).
+  2. Append REVIEW-QUEUE #14 — "★ PLAYTEST REQUEST — Round 9
+     complete" — summarizing the four-archetype affordance + the
+     start-pick + the mid-run switch + the visual concept sprites
+     + the open #13 integration-path question. Mark as playtest
+     gate.
+  3. RUBRIC.md edit: add C15 "Tank archetypes" anchor (auto-citable:
+     ≥3 archetypes with verb+silhouette; cognitive: each changes
+     WHAT the player does, not just stats; identity-protected).
+     Score advance ladder. Update LEDGER score line for the
+     65→70-pt ceiling.
+Hash-anchor verify (no substrate; trivially preserved); test-all +
+test-breach green.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.

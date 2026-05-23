@@ -285,3 +285,41 @@ Format per item:
     the plain question: do the 4 archetypes feel like different ways
     to play, or just skins?
 
+
+#13 — Round 9h: archetype concept sprites generated — round 9 — iter 70 — open (decision-needed)
+  Finding: 3 concept sprites generated via /agentify image_gen
+    (ChatGPT), one per archetype, saved to img/:
+      - img/archetype_prism_concept.png  — cyan body + light cyan
+        wide lens aperture across the front (beam-weapon read)
+      - img/archetype_mortar_concept.png — olive body + chunky brown
+        angled barrel stub (indirect-fire / artillery read)
+      - img/archetype_ram_concept.png    — red body + wide dark
+        V-shaped front plow (ramming / collision read)
+    Each silhouette is mechanically self-evident — passes CONSULT
+    constraint 4 (silhouette grammar gate) at the concept tier.
+  Affordance: gives the user three concrete art-direction reference
+    points to evaluate. The mechanic is decided; the look is now
+    optional.
+  Risk: format mismatch. The existing renderer uses sprites_0.png as
+    an 8-direction sprite sheet (4 dirs × 2 anim frames per row);
+    these are single-frame static reference sprites at ~300×300, not
+    16×16 cells. Integrating them requires a downsample + sprite-sheet
+    composition pass (a separate iter), OR the user picks a different
+    integration strategy.
+  Decision needed: which of the three paths below?
+    (a) Adopt the generated art direction. Loop fires a follow-up iter
+        that downsamples each to 16×16 and composes 8-direction sheets
+        for the renderer; the existing TankSprite swap is gated on
+        archetype.
+    (b) Use these as REFERENCE only. Loop runs an algorithmic
+        tile-gen pass through extended tools/gen_tile.py — tinted +
+        front-feature mod of the existing PlayerTank.png sprite sheet
+        (cyan-tint + lens overlay / olive-tint + barrel-stub overlay /
+        red-tint + plow-overlay). Preserves the BC visual grammar
+        exactly; bypasses the downsample fragility.
+    (c) Hold the art direction for human pass. The loop pivots to
+        the next mechanic surface (Round 9-close consult + next
+        round's SPIKE) and leaves visual integration for you to drive
+        when ready. Round 9 ships at-mechanic; visuals deferred.
+  Default if no answer: (b) — algorithmic tint+overlay via
+    gen_tile.py preserves BC grammar and is the most loop-native path.
