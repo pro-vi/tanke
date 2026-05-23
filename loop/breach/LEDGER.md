@@ -17,6 +17,50 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 088 — BUILD-QUALITY — fix S1/S2/S3 cleanup observations from iter-87 audit
+
+- Date: 2026-05-23
+- Tag: [QUALITY]  # BUILD-QUALITY per L3+R4 — quality/craft work
+  without a rubric anchor lift. (4th QUALITY iter this arc per
+  STATE.build_quality_iters: [10, 24, 29, 30] + 88.)
+- Score: **47/75** (Δ 0 — quality iter, no rubric anchor lift).
+- Constraints respected: 6 (cleaner state machine), 7 (verb-
+  distinction preserved).
+- Constraints risked: none.
+- Extended `_revert_archetype` (PlayerTank.gd) to clear per-
+  archetype timer state, addressing all 3 iter-87 audit findings:
+  - **S1**: `_ram_swing_timer = 0.0` added in RAM branch
+  - **S2**: `_beam_dmg_timer = 0.0` added in PRISM branch
+  - **S3**: `GunTimer.stop()` + `can_shoot = true` added in MORTAR
+    branch (alongside the existing wait_time reset)
+- Side effect documented in code comment + this LEDGER: stopping
+  the GunTimer before resetting wait_time means a SWITCH cancels
+  any pending MORTAR reload — the new archetype's first fire is
+  immediate. Consistent with the iter-69 user direction ("almost
+  like switching a weapon"). Worth confirming in playtest 5 that
+  this feels right; if it doesn't, the fix can be inverted.
+- Harness: extended test_breach_archetype_switch.gd with 3 new
+  in-harness checks (S1/S2/S3 priming + revert + assertion).
+  All pass.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (substrate write ×27
+  inside _revert_archetype body; no new gating; the path only
+  fires on archetype switch which requires breach mode loadout).
+  test-all 5/5; test-breach 40/40 (count unchanged — extended
+  existing harness; new S1/S2/S3 assertions inside the same
+  target).
+- Falsifications: **none.** S1/S2/S3 were filed as cleanup-tier
+  observations, NOT falsifications — they didn't contradict any
+  prediction. Fixing them is hygiene work.
+- Substrate writes this arc: 44 → 45 (PlayerTank.gd ×27).
+- Files: scripts/PlayerTank.gd, loop/breach/test_breach_archetype_switch.gd,
+  Makefile (grep filter widened to surface S1/S2/S3 lines),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **3 state-hygiene observations from iter-87 audit
+  RESOLVED. Substrate is now fully clean (including timer state)
+  on archetype switches. Side effect: SWITCH cancels MORTAR
+  reload — flagged in playtest 5 brief addendum.**
+
 ## iter 087 — SWEEP — Round 9-10-11 substrate audit (per-archetype state correctness)
 
 - Date: 2026-05-23

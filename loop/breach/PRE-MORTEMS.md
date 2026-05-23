@@ -24,6 +24,35 @@ Format:
 
 ---
 
+## iter 088 — BUILD-QUALITY — fix S1/S2/S3 cleanup observations from iter-87 audit
+
+- Date: 2026-05-23
+- Tag: [QUALITY]  # BUILD-QUALITY per L3+R4 — quality/craft work
+  without a rubric anchor lift. State-hygiene fixes for the 3
+  observations iter-87 surfaced.
+- CONSULT constraints respected: 6 (cleaner state machine
+  improves death-attribution consistency), 7 (clean revert
+  preserves the verb-distinction).
+- CONSULT constraints risked: none — purely additive cleanup.
+- Predicted failure: the fix changes the timing semantics of
+  GunTimer on archetype switch — if the player is mid-cooldown
+  and switches FROM MORTAR, stopping the GunTimer before
+  resetting wait_time means the new archetype's first fire is
+  IMMEDIATE (no remaining cooldown). Could be felt as "swap
+  cancels reload" — possibly desirable, possibly surprising.
+  Mitigation: document this side effect explicitly in the LEDGER;
+  the harness verifies the new behavior.
+- Falsifiable claim: the extended test_breach_archetype_switch
+  harness asserts that after a multi-switch cycle, all 3 timers
+  (_ram_swing_timer, _beam_dmg_timer, GunTimer.time_left) are
+  in clean state. If a timer isn't reset, the harness fails.
+- Substrate touched: scripts/PlayerTank.gd (Layer 2, sanctioned
+  write ×27, inside the existing _revert_archetype body — no new
+  gating).
+- Hash-anchor verification plan: post-edit hash verify.
+
+---
+
 ## iter 087 — SWEEP — Round 9-10-11 substrate audit (per-archetype state correctness)
 
 - Date: 2026-05-23

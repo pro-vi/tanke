@@ -373,7 +373,7 @@ check-breach-archetype-select:
 # apply_upgrade calls PlayerTank.switch_archetype; multi-switch keeps
 # speed clean.
 check-breach-archetype-switch:
-	@$(HEADLESS) --script res://loop/breach/test_breach_archetype_switch.gd 2>&1 | grep -E "^(  (UpgradeKind|switch|apply|multi-switch)|BREACH_ARCHETYPE_SWITCH_OK|FAIL|ERROR|SCRIPT ERROR)"; \
+	@$(HEADLESS) --script res://loop/breach/test_breach_archetype_switch.gd 2>&1 | grep -E "^(  (UpgradeKind|switch|apply|multi-switch|S[123])|BREACH_ARCHETYPE_SWITCH_OK|FAIL|ERROR|SCRIPT ERROR)"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_archetype_switch.gd 2>&1 | grep -q "^BREACH_ARCHETYPE_SWITCH_OK"
 
 # Arc-4 breach mode: Round-10 Phase-1 distinctness-audit harness.

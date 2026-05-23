@@ -565,13 +565,24 @@ func _fire_mortar() -> void:
 # arc-4 iter 69 (Round 9g): undo the current archetype's per-init mods
 # before switching to a new one. Keeps speed / GunTimer / beam-line
 # clean across multiple switches.
+# arc-4 iter 88 (BUILD-QUALITY): also clears per-archetype timer state
+# (S1/S2/S3 from iter-87 audit). Side effect: stopping the GunTimer
+# before resetting wait_time means a SWITCH cancels any pending
+# MORTAR reload — the new archetype's first fire is immediate. Read
+# as "swap reloads instantly," consistent with the iter-69 user
+# direction ("almost like switching a weapon").
 func _revert_archetype() -> void:
 	if archetype == TankArchetype.PRISM and _beam_line != null:
 		_beam_line.visible = false
+		_beam_dmg_timer = 0.0  # S2: clear pending beam damage cooldown
 	elif archetype == TankArchetype.MORTAR and has_node("GunTimer"):
-		($GunTimer as Timer).wait_time = 1.0
+		var gt: Timer = $GunTimer
+		gt.stop()  # S3: cancel any pending 1.5s cooldown before reset
+		gt.wait_time = 1.0
+		can_shoot = true  # consistent post-stop state
 	elif archetype == TankArchetype.RAM:
 		speed -= RAM_SPEED_BONUS
+		_ram_swing_timer = 0.0  # S1: clear pending swing cooldown
 
 
 # arc-4 iter 69 (Round 9g): mid-run archetype switch — called by the

@@ -2,17 +2,17 @@
 
 ```yaml
 phase: running
-iter: 87
+iter: 88
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_87: 23d6a2ec3bf2821f  # bit-identical through 44 substrate writes
-substrate_writes_this_arc: 44  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×26 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
-current_round: 11-open — substrate audit clean (iter 87); 3 cleanup-tier observations filed (S1-S3); no correctness bugs
-current_round_phase: IDLE-HEARTBEAT — substrate is playtest-5-ready; remaining work all gated on playtest evidence
+hash_anchor_at_iter_88: 23d6a2ec3bf2821f  # bit-identical through 45 substrate writes
+substrate_writes_this_arc: 45  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×27 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
+current_round: 11-open — substrate audit RESOLVED (iter 88 fixed S1/S2/S3 from iter-87); state machine is fully clean on archetype switches
+current_round_phase: IDLE-HEARTBEAT — substrate is playtest-5-ready, state-hygiene improved; remaining work all gated on playtest evidence
 consult_001_status: adopted
 consult_002_status: adopted
-build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
+build_quality_iters: [10, 24, 29, 30, 88]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER); 88 = state-hygiene fix per iter-87 audit
 falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved, F005-open]  # F005 (iter 85): single-event stub probes don't scale to sustained-DPS hierarchy verification — need real playtest data via iter-82/83 RunRecap analyzer
 reachability_status: all 5 bands verified — 12/12-seed sweep (100%, floor ≥80%) — refreshed iter 61 post-Round-8
 audit_candidates: []
@@ -21,7 +21,7 @@ last_consult: iter 79  # CONSULT 009 — written self-pre-mortem, Round 10 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 88 — IDLE-HEARTBEAT. Iter 87 audit confirmed substrate is correctness-clean for playtest 5; 3 cleanup-tier state-hygiene observations (S1-S3 in iter-87 LEDGER) filed for a future iter (not playtest-blocking). All pre-playtest deliverables shipped (Round 9 + 10 + 11 Phase 1 + iter-86 design doc + iter-87 audit). Per Pro's H5, further code iters before playtest 5 are speculative production. Idle heartbeat 1800s; iter 89 extends to 3600s; iter 90 pauses cleanly per loop-skill step 6 unless user signal.
+next_action: iter 89 — IDLE-HEARTBEAT. iter 88 resolved S1/S2/S3 cleanup observations in _revert_archetype; substrate state-machine is now fully clean across archetype switches. Side effect (SWITCH cancels MORTAR reload — instant-fire on new archetype) documented for playtest feedback. No further non-speculative pre-playtest work remains. Pure idle heartbeat 1800s; iter 90 extends to 3600s; iter 91 pauses cleanly per loop-skill step 6 unless user signal.
 score: 47/75 absolute · 47/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4 (iter 76 lifts C5 2→3 via PRESSURES.md canonical-answer doc)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -140,6 +140,16 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-23 — **iter 88 (BUILD-QUALITY).** Resolved S1/S2/S3
+  cleanup observations from iter-87 audit. Extended
+  `_revert_archetype` to clear `_ram_swing_timer` (S1),
+  `_beam_dmg_timer` (S2), and stop GunTimer + reset can_shoot (S3)
+  on switch. Side effect: SWITCH cancels MORTAR reload (instant
+  fire on switched archetype) — consistent with the iter-69
+  "switching like a weapon" direction; flag for playtest feedback.
+  Extended test_breach_archetype_switch with S1/S2/S3 assertions
+  — all pass. Substrate write ×27. Hash preserved; test-all 5/5;
+  test-breach 40/40. Δ 0 ([QUALITY] tag). 47/75.
 - 2026-05-23 — **iter 87 (SWEEP).** Round 9-10-11 substrate
   audit. Read-only audit of per-archetype state machine
   (PlayerTank.gd 491-605). 3 cleanup-tier state-hygiene
@@ -354,9 +364,10 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 88 — IDLE-HEARTBEAT.**
+**Iter 89 — IDLE-HEARTBEAT.**
 
-iter 87 audit confirmed substrate is correctness-clean for playtest 5.
+iter 88 resolved S1/S2/S3 from the iter-87 audit. Substrate
+state-machine is fully clean across archetype switches.
 
 All pre-playtest deliverables shipped:
 - Round 9: 4-archetype tank program (PRISM/MORTAR/RAM + DEFAULT)
@@ -365,16 +376,17 @@ All pre-playtest deliverables shipped:
   surface
 - iter 85: F005 finding (sustained-DPS hierarchy needs real data)
 - iter 86: armor-asymmetry design doc (linked to #15)
-- iter 87: substrate audit (3 cleanup-tier notes; no bugs)
+- iter 87: substrate audit (3 cleanup-tier observations)
+- iter 88: S1/S2/S3 resolved (state-hygiene fix; SWITCH-cancels-
+  MORTAR-reload side effect flagged for playtest)
 
 Per Pro's H5, further code iters before playtest 5 are speculative
 production. Pure idle is now the correct posture.
 
 Plan:
-- Iter 88: idle heartbeat 1800s
-- Iter 89: extend to 3600s
-- Iter 90: pause cleanly per loop-skill step 6 (with
-  PushNotification on stop) UNLESS user signal arrives first.
+- Iter 89: idle heartbeat 1800s
+- Iter 90: extend to 3600s
+- Iter 91: pause cleanly per loop-skill step 6 unless user signal.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.
