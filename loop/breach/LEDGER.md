@@ -17,6 +17,46 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 063 — BUILD — Round 9a: enemy HP primitive + HP bars
+
+- Date: 2026-05-22
+- Tag: [STRUCTURE]
+- Score: **42/70** (Δ 0 — per the iter-062 blueprint, C15 lands at
+  round close; iter 63 is a structural BUILD on the archetype-prereq
+  surface.)
+- Round 9a, the first build of the iter-062 blueprint — the
+  prerequisite for archetype combat. Enemies need >1 HP + visible HP
+  bars so beam/HEAT/multi-hit gameplay reads.
+- The change:
+  - scripts/Spawner.gd — a BREACH_HP_BONUS dict bumps per-type
+    max_hp ONLY in breach mode (Light 1→2, Heavy 2→3, Fast 1→2).
+    arc-2/3 mode (breach_mode_enabled=false) keeps the original
+    max_hp values bit-identical.
+  - scripts/Enemy.gd — an HP-bar HUD (two ColorRects above the
+    sprite, dark bg + red fg) built in `_ready` IFF the parent level
+    has breach mode enabled AND max_hp > 1. `take_damage` updates the
+    bar on every non-fatal hit (visible while damaged).
+  - Bullet.damage stays — HE / HEAT×2 / APCR penetrate / AP single
+    now MATTER beyond single-hit.
+- Hash anchor: `23d6a2ec3bf2821f` verified — both changes are
+  defensively gated. Spawner's HP bonus checks `breach_mode_enabled`
+  before bumping; arc-2 procedural baseline gets unchanged max_hp
+  values. Enemy's HP-bar build is gated on `breach_mode_enabled AND
+  max_hp > 1`; arc-2 enemies build no bar nodes. `make test-all` 5/5.
+  `make test-breach` 29/29.
+- Harness: new test_breach_hp.gd + check-breach-hp (test-breach
+  28 → 29). A breach-mode enemy at max_hp=3 builds the bar (hidden at
+  full HP, visible after take_damage with width 10.7/16 at hp 2/3); an
+  arc-2 enemy + a max_hp=1 enemy build none.
+- Falsifications: none.
+- Substrate writes this arc: 33 → 35 (Spawner.gd ×4 + Enemy.gd ×1 —
+  Enemy.gd's first sanctioned write, per the iter-062 Round-9
+  amendment).
+- Files: scripts/Spawner.gd, scripts/Enemy.gd, test_breach_hp.gd,
+  Makefile, PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **enemies have meaningful HP now + the player SEES it.**
+  iter 64 = 9b: archetype framework on PlayerTank.
+
 ## iter 062 — PLAYTEST — playtest-4 integrated; Round 9 opened
 
 - Date: 2026-05-22

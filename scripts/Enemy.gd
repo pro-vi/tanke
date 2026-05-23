@@ -78,6 +78,12 @@ var _aim_cancel_timer: float = 0.0  # iter 51: stuns Heavy out of AIM_FIRE after
 @export var lkp_reach_radius: float = 12.0
 @export var lkp_search_duration: float = 2.5
 @onready var _sprite: Sprite2D = $Sprite2D
+# arc-4 iter 63 (Round 9a): breach-mode HP-bar HUD (sanctioned per the
+# iter-062 Round-9 amendment). Built only when the parent level has
+# breach mode enabled AND max_hp > 1; visible only while damaged.
+const HP_BAR_WIDTH: float = 16.0
+var _hp_bar_bg: ColorRect = null
+var _hp_bar_fg: ColorRect = null
 
 
 func _ready() -> void:
@@ -90,6 +96,11 @@ func _ready() -> void:
 	if level != null:
 		_player = level.get_node_or_null("PlayerTank") as Node2D
 		_grass_tilemap = level.get_node_or_null("Tiles/Grass") as TileMapLayer
+		# arc-4 iter 63 (Round 9a): breach-mode HP-bar HUD — built only when
+		# the parent level has breach mode enabled AND max_hp > 1 (no point
+		# in a bar for one-shot enemies).
+		if "breach_mode_enabled" in level and level.breach_mode_enabled and max_hp > 1:
+			_build_hp_bar()
 	_fire_timer = randf() * fire_cooldown  # stagger initial volleys
 	_choose_direction_toward_player()
 	_update_sprite_for_direction()
@@ -455,6 +466,8 @@ func take_damage(amount: int) -> void:
 		_spawn_death_effect()
 		queue_free()
 		return
+	# arc-4 iter 63 (Round 9a): reflect the new HP in the breach-mode bar.
+	_update_hp_bar()
 	# iter 51: Heavy mid-AIM_FIRE → cancel wind-up, brief stun cooldown.
 	# Cancel feedback IS the visual (white stagger flash overrides red telegraph);
 	# regular _flash_hit gets skipped per iter-41 Heavy-AIM_FIRE rule anyway.
@@ -468,6 +481,43 @@ func take_damage(amount: int) -> void:
 			aim_canceled.emit()
 		return
 	_flash_hit()
+
+
+# arc-4 iter 63 (Round 9a): build the breach-mode HP-bar HUD — two
+# small ColorRects (dark bg + red fg) above the sprite. Visible only
+# while damaged (toggled in _update_hp_bar on take_damage).
+func _build_hp_bar() -> void:
+	_hp_bar_bg = ColorRect.new()
+	_hp_bar_bg.name = "HPBarBG"
+	_hp_bar_bg.size = Vector2(HP_BAR_WIDTH, 2)
+	_hp_bar_bg.position = Vector2(-HP_BAR_WIDTH * 0.5, -12)
+	_hp_bar_bg.color = Color(0.08, 0.08, 0.1, 0.85)
+	_hp_bar_bg.visible = false
+	_hp_bar_bg.z_index = 50
+	_hp_bar_bg.mouse_filter = 2
+	add_child(_hp_bar_bg)
+	_hp_bar_fg = ColorRect.new()
+	_hp_bar_fg.name = "HPBarFG"
+	_hp_bar_fg.size = Vector2(HP_BAR_WIDTH, 2)
+	_hp_bar_fg.position = Vector2(-HP_BAR_WIDTH * 0.5, -12)
+	_hp_bar_fg.color = Color(0.95, 0.3, 0.3, 1.0)
+	_hp_bar_fg.visible = false
+	_hp_bar_fg.z_index = 51
+	_hp_bar_fg.mouse_filter = 2
+	add_child(_hp_bar_fg)
+
+
+# arc-4 iter 63: reflect the current hp/max_hp in the HP bar — visible
+# + fg width tracks the damage ratio. Called from take_damage on every
+# non-fatal hit; a no-op if the bar was never built (arc-2/3 or
+# max_hp = 1).
+func _update_hp_bar() -> void:
+	if _hp_bar_bg == null or _hp_bar_fg == null or max_hp <= 0:
+		return
+	_hp_bar_bg.visible = true
+	_hp_bar_fg.visible = true
+	var ratio: float = clampf(float(hp) / float(max_hp), 0.0, 1.0)
+	_hp_bar_fg.size = Vector2(HP_BAR_WIDTH * ratio, 2.0)
 
 
 # iter 51: Heavy hit-cancel during AIM_FIRE. Interrupts wind-up burst,

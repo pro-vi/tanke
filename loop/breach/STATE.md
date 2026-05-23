@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 62
+iter: 63
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_59: 23d6a2ec3bf2821f  # bit-identical through 33 substrate writes
-substrate_writes_this_arc: 33  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×17 + Level.gd + Spawner.gd ×3
+hash_anchor_at_iter_63: 23d6a2ec3bf2821f  # bit-identical through 35 substrate writes
+substrate_writes_this_arc: 35  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×17 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
 current_round: 9-open
-current_round_phase: BUILD — Round 9 (tank archetype program, playtest-4 directed); blueprint iter-062-round9-architect.md
+current_round_phase: BUILD — Round 9b (archetype framework); blueprint iter-062-round9-architect.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 60  # CONSULT 006 — written self-pre-mortem, Round 8 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 63 — BUILD — Round 9a: enemy HP primitive + HP bars. Read iter-062-round9-architect.md. Tune Enemy.max_hp > 1 per role (Heavy 3-4, Light 1-2, Fast 2); add a small HP-bar HUD above damaged enemies (Enemy.gd substrate write — sanctioned per the Round-9 amendment, HUD-only; hash bit-identical). Bullet.damage stays — the HE/HEAT/APCR variants now MATTER beyond single-hit. Hash-anchor verify; test-all + test-breach green; a harness.
+next_action: iter 64 — BUILD — Round 9b: archetype framework. Read iter-062-round9-architect.md. Add a TankArchetype enum (DEFAULT / PRISM / MORTAR / RAM) to PlayerTank.gd (sanctioned substrate); gate per-archetype behavior. `archetype = DEFAULT` preserves the current breach-mode behavior bit-identically (no per-archetype code paths fire on DEFAULT). Hash-anchor verify; test-all + test-breach green; a harness for the archetype state.
 score: 42/70 absolute · 42/70 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -30,7 +30,7 @@ round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 round9_blueprint: loop/breach/iter-062-round9-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield} + check-silhouette-gate (28 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp} + check-silhouette-gate (29 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch]  # #3, #7, #9, #11 CLOSED — playtests delivered
 ```
 
@@ -140,27 +140,28 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
-- 2026-05-22 — **iter 62 (PLAYTEST).** The user playtested Round 8:
-  positive verdict ("getting to an interesting spot") + the bottleneck
-  is the "tank that shoots discrete bullets" primitive, too thin for
-  the variety they want. Via AskUserQuestion the user picked the "Full
-  archetype program" scope — Round 9 builds 4 mechanically-distinct
-  tanks (Default + Prism + Mortar + Ram) + enemy HP primitive + HP
-  bars + BOTH selection paths + visuals via /agentify image_gen. Two
-  PROMPT overrides sanctioned (Enemy.gd HUD for HP-bar; /agentify for
-  assets). Round 9 opened; blueprint iter-062-round9-architect.md.
-  REVIEW-QUEUE #11 closed, #12 opened. No code touched. 42/70.
+- 2026-05-22 — **iter 63 (BUILD).** Round 9a — enemy HP primitive +
+  HP bars: a BREACH_HP_BONUS dict (Spawner.gd) bumps per-type max_hp
+  in breach mode (Light 1→2, Heavy 2→3, Fast 1→2); Enemy.gd builds an
+  HP-bar HUD (dark bg + red fg, above the sprite) gated on
+  breach_mode_enabled AND max_hp > 1 — visible only while damaged.
+  HEAT/HE/APCR variants now MATTER beyond single-hit. arc-2/3
+  bit-identical (gate + the breach-mode max_hp check). Hash anchor
+  preserved; test-all 5/5, test-breach 29/29 (new check-breach-hp).
+  Δ 0 (C15 at round close). 42/70.
 
 ## Next action
 
-**Iter 63 — BUILD — Round 9a: enemy HP primitive + HP bars.**
-Read `loop/breach/iter-062-round9-architect.md`. Tune
-Enemy.max_hp > 1 per role (Heavy 3-4, Light 1-2, Fast 2); add a small
-HP-bar HUD above damaged enemies (Enemy.gd substrate write —
-sanctioned per the Round-9 amendment, HUD-only; hash bit-identical).
-Bullet.damage stays — HE/HEAT/APCR variants now MATTER beyond
-single-hit. Hash-anchor verify; test-all + test-breach green; a
-harness.
+**Iter 64 — BUILD — Round 9b: archetype framework.**
+Read `loop/breach/iter-062-round9-architect.md`. Add a TankArchetype
+enum (DEFAULT / PRISM / MORTAR / RAM) to PlayerTank.gd (sanctioned);
+gate per-archetype behavior. `archetype = DEFAULT` preserves the
+current breach-mode behavior bit-identically — no per-archetype code
+paths fire on DEFAULT, so the existing run-shape is unchanged. The
+framework itself is just an enum + a state field + the gating
+skeleton; the PRISM/MORTAR/RAM behaviors land in 9c/9d/9e.
+Hash-anchor verify; test-all + test-breach green; a harness for the
+archetype state.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.

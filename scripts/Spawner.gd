@@ -6,6 +6,10 @@ const RosterT = preload("res://scripts/Roster.gd")
 # breach mode (the player carries a Loadout); arc-2/3 drops nothing.
 const AmmoPickupScene = preload("res://scenes/AmmoPickup.tscn")
 const AMMO_DROP_CHANCE: float = 0.4
+# arc-4 iter 63 (Round 9a): enemy HP bumped in breach mode so HEAT /
+# beam / multi-hit gameplay reads. arc-2/3 (breach_mode_enabled=false)
+# keeps the original max_hp values bit-identical.
+const BREACH_HP_BONUS: Dictionary = {"Light": 1, "Heavy": 1, "Fast": 1}
 
 @export var enemy_scene: PackedScene
 @export var spawn_interval: float = 2.0
@@ -455,7 +459,12 @@ func _telegraph_then_spawn(plan: Dictionary) -> void:
 	enemy.set("enemy_type", type_data.name)  # iter 24: behavioral switch in Enemy.gd
 	enemy.set("sprite_base_frame", type_data.base_frame)
 	enemy.set("speed", type_data.speed)
-	enemy.set("max_hp", type_data.max_hp)
+	# arc-4 iter 63 (Round 9a): bump max_hp in breach mode for the HP primitive.
+	var mhp: int = type_data.max_hp
+	var lvl: Node = get_parent()
+	if lvl != null and "breach_mode_enabled" in lvl and lvl.breach_mode_enabled:
+		mhp += int(BREACH_HP_BONUS.get(type_data.name, 0))
+	enemy.set("max_hp", mhp)
 	enemy.set("fire_cooldown", type_data.fire_cooldown)
 	enemy.set("direction_commit_time", type_data.direction_commit_time)  # iter 26
 	enemy.set("bullet_damage", type_data.bullet_damage)  # iter 52

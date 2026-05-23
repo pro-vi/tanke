@@ -24,6 +24,45 @@ Format:
 
 ---
 
+## iter 063 — BUILD — Round 9a: enemy HP primitive + HP bars
+
+- Date: 2026-05-22
+- Tag: [STRUCTURE]
+- Round 9a, the first build of the iter-062 blueprint — the
+  prerequisite primitive for archetype combat. Enemies need >1 HP +
+  visible HP bars so beam/HEAT/multi-hit gameplay reads.
+- The change:
+  - scripts/Spawner.gd (sanctioned substrate): a BREACH_HP_BONUS dict
+    bumps per-type max_hp ONLY in breach mode (Light 1→2, Heavy 2→3,
+    Fast 1→2). arc-2/3 mode (breach_mode_enabled=false) keeps the
+    arc-2 values bit-identical.
+  - scripts/Enemy.gd (substrate; sanctioned per the iter-062 Round-9
+    amendment): an HP-bar HUD (two ColorRects above the sprite, dark
+    bg + red fg) built in `_ready` IFF the parent level has breach
+    mode enabled AND max_hp > 1. `take_damage` updates the bar on
+    every non-fatal hit (visible while damaged).
+  - Bullet.damage stays — HE / HEAT×2 / APCR penetrate / AP single
+    now MATTER beyond single-hit.
+- CONSULT constraints respected: 4 (the bar is a small HUD overlay —
+  no silhouette confusion). None risked.
+- Predicted failure modes:
+  - Hash anchor: Spawner's HP bonus is gated on breach_mode_enabled —
+    arc-2 procedural baseline gets the unchanged max_hp values; the
+    seed-42 tile hash is unaffected (HP doesn't enter tile generation).
+    Enemy.gd's HP-bar build is gated on breach_mode_enabled AND
+    max_hp > 1; an arc-2 enemy never builds the bar nodes.
+  - The breach-mode gate is checked via `"breach_mode_enabled" in
+    level` — defensive duck-typing, safe even if a level lacks the
+    flag.
+- Falsifiable claim: post-edit — test_breach_hp shows a breach-mode
+  enemy with max_hp=3 builds HP-bar nodes + the bar shows the damaged
+  ratio after take_damage; an arc-2/3 enemy builds none. Hash anchor
+  23d6a2ec3bf2821f preserved; test-all 5/5; test-breach 29/29.
+- Sentence test: n/a (a substrate primitive, not an upgrade).
+- Substrate touched: Spawner.gd (HP bonus — sanctioned); Enemy.gd
+  (HP-bar HUD — sanctioned per the Round-9 amendment, HUD-only).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 062 — PLAYTEST — playtest-4 integrated; Round 9 opened
 
 - Date: 2026-05-22
