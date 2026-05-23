@@ -24,6 +24,34 @@ Format:
 
 ---
 
+## iter 076 — BUILD — Round 10 Phase 2: PRESSURES.md per-archetype × per-pressure matrix
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 5 (each enemy/role has a specific
+  tactical answer — the matrix EXPLICITLY documents canonical
+  answers per archetype per pressure → directly addresses C5
+  anchor 2 "documented canonical answer in BANDS.md"), 3 (the matrix
+  cross-references shell type with archetype answer per pressure),
+  7 (the matrix forces verb-language not stat-language for cells).
+- CONSULT constraints risked: none — design documentation work.
+- Predicted failure: the matrix may reveal that the current 3-role
+  roster (Light/Heavy/Fast) ONLY expresses 2-3 of the 7 named
+  pressure dimensions. That's the WHOLE POINT — empty cells =
+  Round-11 candidates. The risk is filling cells optimistically
+  to make the matrix look complete; mitigation: explicitly mark
+  empty/weak cells as such with a "—" or "weak coverage" tag.
+- Falsifiable claim: at least 3 of the 7 pressure rows have ≥1
+  empty/weak cell → Round 11 has a clear roster-expansion target
+  list. If ALL cells fill cleanly, then either (a) the current
+  roster is more complete than expected or (b) I'm being too
+  generous in cell filling — the second possibility is the iter-76
+  risk.
+- Substrate touched: none — new doc only.
+- Hash-anchor verification plan: trivially verify (no substrate).
+
+---
+
 ## iter 075 — BUILD — Round 10 Phase 1 continuation: play-relevant axes for the distinctness audit
 
 - Date: 2026-05-23

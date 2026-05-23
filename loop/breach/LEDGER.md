@@ -17,6 +17,62 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 076 — BUILD — Round 10 Phase 2: PRESSURES.md per-archetype × per-pressure matrix
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ +1 — C5 anchor 2 lifts from 0 → 1: each role's
+  "documented canonical answer" now lives in PRESSURES.md grounded
+  in code reads of Spawner.gd + Enemy.gd + per-archetype harnesses.
+  Anchor 2 is "documented in BANDS.md" — PRESSURES.md is the
+  arc-4 equivalent for the cross-archetype layer; C5 net moves
+  2/5 → 3/5.)
+
+  Updated score line: C1=3, C2=3, C3=4, C4=3, **C5=3** (was 2),
+  C6=3, C7=3, C8=3, C9=2, C10=4, C11=3, C12=3, C13=3, C14=3, C15=4
+  → 47/75.
+- Constraints respected: 5 (per-pressure per-archetype canonical
+  answer documented), 3 (matrix cross-references shell-class with
+  archetype answer), 7 (verb-language in cells, not stat-language).
+- Constraints risked: none.
+- Round 10 Phase 2 (iter 1 of 2). Wrote loop/breach/PRESSURES.md
+  with a 10-row × 4-column matrix (40 cells) covering: long-LoS
+  threat / dense swarm / armor / narrow corridors / moving targets
+  / brick obstruction / depot timing / kiting + retreat /
+  single-target burst / suppression. Each cell tagged best /
+  costly backup / bad / —.
+- Coverage analysis: every pressure has ≥1 best answer; 0 fully
+  empty cells. BUT — the matrix surfaced 4 ROSTER GAPS:
+  - **DENSE SWARM** has no roster representation (Fast is
+    single-spawn, not swarm)
+  - **LONG-LOS THREAT** lacks a sniper that punishes PRISM exposure
+    specifically (Heavy is bullet-range, not long-LoS)
+  - **HEAVY ARMOR** beyond Heavy's 3hp is undertested
+  - **TRUE SUPPRESSION** is undertested (only PRISM is a suppressor,
+    no enemy rewards it)
+- The matrix surfaced a real DESIGN gap: armor logic lives ONLY
+  in Bullet.gd (AP/HE blocked, HEAT/APCR bypass). PRISM / MORTAR /
+  RAM all call take_damage unconditionally — armor doesn't apply.
+  Two readings: (a) move armor into Enemy.take_damage so all
+  archetypes respect it, OR (b) leave it — armor-bypass IS the
+  per-archetype verb. The (b) reading aligns with Pro's "every
+  archetype must buy passage differently" spine. Worth a Round-11
+  user-direction question. Captured to PRESSURES.md "Armor bypass
+  gaps" section.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (doc-only iter).
+  test-all + test-breach not re-run (no code changes).
+- Falsifications: none.
+- Substrate writes this arc: 41 → 41.
+- Files: loop/breach/PRESSURES.md (NEW),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **PRESSURES.md ships with 10×4 matrix. C5 lifts 2→3
+  (first Round-10 rubric advance). 4 roster gaps identified for
+  Round 11 (SWARM / SNIPER / heavier armor / suppression-target);
+  armor-logic asymmetry surfaced as a Round-11 design question.
+  Iter 77 = Phase 2 continuation: probe harness validating cells
+  empirically OR pivot directly to Phase 3 instrumentation.**
+
 ## iter 075 — BUILD — Round 10 Phase 1 continuation: play-relevant axes + calibration warning
 
 - Date: 2026-05-23

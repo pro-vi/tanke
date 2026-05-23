@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 75
+iter: 76
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_75: 23d6a2ec3bf2821f  # bit-identical through 41 substrate writes (iters 70-75 asset/doc/harness-only)
+hash_anchor_at_iter_76: 23d6a2ec3bf2821f  # bit-identical through 41 substrate writes (iters 70-76 asset/doc/harness-only)
 substrate_writes_this_arc: 41  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×23 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
-current_round: 10-open — Phase 1 distinctness-audit COMPLETE (iter 74 structural + iter 75 play-relevant); Phase 2 starting iter 76
-current_round_phase: BUILD — Round 10 Phase 2 (PRESSURES.md per-archetype × per-pressure matrix); iter-073-round10-rethesis.md is the blueprint
+current_round: 10-open — Phase 2 PRESSURES.md SHIPPED (iter 76); 4 roster gaps + 1 armor-logic question surfaced for Round 11
+current_round_phase: BUILD — Round 10 Phase 2 continuation iter 77 (probe harness OR pivot to Phase 3 instrumentation)
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,8 +21,8 @@ last_consult: iter 73  # CONSULT 008 — GPT Pro extended thinking via /second-o
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 76 — BUILD — Round 10 Phase 2: PRESSURES.md (per-archetype × per-pressure tactical matrix). Read iter-073-round10-rethesis.md. Per Consult 008's H2 critique, document which pressure dimensions the existing roster already exposes per archetype + which it doesn't. Write loop/breach/PRESSURES.md with a matrix: rows = pressure dimensions (long-LoS threat / dense swarm / armor / narrow corridors / moving targets / brick obstruction / depot timing); columns = 4 archetypes; cells = {best answer, costly backup, bad answer}. Read Spawner.gd + BreachConfig.gd + the per-role harnesses to fill cells. Empty cells = pressures the current game doesn't express → Round-11 candidates (NOT this round — Round 10 is detection + documentation). This is the gate before adding enemies — ensures the next enemy expresses an UNCOVERED pressure rather than "another monster with stats." Hash-anchor verify; no substrate work.
-score: 46/75 absolute · 46/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4
+next_action: iter 77 — BUILD — Round 10 Phase 2 continuation OR Phase 3 pivot. Read iter-073-round10-rethesis.md + PRESSURES.md "Iter 77 handoff" section. Two options: (α) write loop/breach/test_breach_pressure_probes.gd — one micro-scenario per matrix cell (place player + appropriate enemy, drive archetype fire, measure outcome); validates the matrix empirically; +1 test-breach count; recommended. (β) skip to Phase 3 playtest instrumentation (death prompts + PLAYTEST-5-BRIEF). Pick (α) by default — gives the matrix verifiable backing — but if scope balloons, abort to (β) early. Hash-anchor verify; no substrate work.
+score: 47/75 absolute · 47/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4 (iter 76 lifts C5 2→3 via PRESSURES.md canonical-answer doc)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
 round6_blueprint: loop/breach/iter-038-round6-architect.md
@@ -140,6 +140,19 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-23 — **iter 76 (BUILD).** Round 10 Phase 2: PRESSURES.md
+  per-archetype × per-pressure matrix shipped. 10 pressure rows ×
+  4 archetypes; every pressure has ≥1 best answer; 4 ROSTER GAPS
+  identified for Round 11 (DENSE SWARM has no spawn cluster;
+  LONG-LOS lacks a sniper to punish PRISM exposure; HEAVY ARMOR
+  beyond 3hp Heavy is undertested; TRUE SUPPRESSION undertested).
+  Matrix surfaced a real design question: armor logic lives ONLY
+  in Bullet.gd — PRISM/MORTAR/RAM call take_damage
+  unconditionally. Two readings (universal armor vs per-archetype
+  bypass-as-verb) — captured for Round 11 user direction.
+  C5 lifts 2→3 (anchor 2 "documented canonical answer"). No
+  substrate; hash preserved. test-all/test-breach not re-run
+  (doc-only). Δ +1. 47/75.
 - 2026-05-23 — **iter 75 (BUILD).** Round 10 Phase 1 continuation:
   added 4 play-relevant derived axes (damage_rate_hz / magnitude /
   persistence / range_shape) to the distinctness audit. 10-axis
@@ -224,36 +237,30 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 76 — BUILD — Round 10 Phase 2: PRESSURES.md matrix.**
+**Iter 77 — BUILD — Round 10 Phase 2 continuation OR Phase 3 pivot.**
 
-Read `loop/breach/iter-073-round10-rethesis.md` (Phase 2 section).
-Phase 1's audit passed with a CALIBRATION WARNING (audit too easy
-at 9-10/10 pairwise). Phase 2 is where tighter signals come from —
-the per-archetype × per-pressure tactical matrix.
+Read `loop/breach/iter-073-round10-rethesis.md` (Phase 3 section)
+and `loop/breach/PRESSURES.md` "Iter 77 handoff" section.
 
-Write `loop/breach/PRESSURES.md` with the matrix:
+Two paths:
 
-  Rows (pressure dimensions):
-    - long-LoS threat
-    - dense swarm
-    - armor (HEAT/APCR-class)
-    - narrow corridors
-    - moving targets
-    - brick obstruction
-    - depot timing
+  (α) **Probe harness** — write
+      `loop/breach/test_breach_pressure_probes.gd`. One
+      micro-scenario per matrix cell: place player + appropriate
+      enemy in a test scene, drive the archetype's fire input,
+      measure outcome (kill / hit / miss / damage delta).
+      Validates each best/costly-backup/bad cell empirically.
+      Adds +1 to test-breach count.
 
-  Columns: DEFAULT / PRISM / MORTAR / RAM
+  (β) **Skip to Phase 3** — playtest instrumentation. The matrix
+      is a DESIGN doc; the probe harness extends to STRUCTURAL but
+      won't catch experiential issues. Phase 3 (on-death prompts +
+      PLAYTEST-5-BRIEF) is the actual highest-leverage pre-playtest
+      work per Consult 008's H5 "deferral ≠ passivity" point.
 
-  Cells: {best answer, costly backup, bad answer}
-
-Fill cells by reading `scripts/Spawner.gd`, the breach config, and
-the per-archetype harnesses (test_breach_{prism,mortar,ram}). Empty
-cells = pressures the current game doesn't express → Round-11
-candidates (NOT this round).
-
-This is the design-gate before adding enemies — ensures the next
-enemy added expresses an UNCOVERED pressure rather than "another
-monster with stats" (per Consult 008 H2/H3 critique).
+**Default: (α)** — gives the matrix verifiable backing for ~1 iter.
+If iter 77 scope balloons (a probe per cell × 40 cells is a lot),
+abort to (β) early.
 
 Hash-anchor verify (no substrate); test-all + test-breach green.
 
