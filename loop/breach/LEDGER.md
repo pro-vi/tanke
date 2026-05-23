@@ -17,6 +17,59 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 075 — BUILD — Round 10 Phase 1 continuation: play-relevant axes + calibration warning
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Score: **46/75** (Δ 0 — verification harness extension; rubric
+  anchors land at Phase 2 close).
+- Constraints respected: 7 (the new axes derive from per-archetype
+  VERB profile — cadence/magnitude/persistence/range-shape —
+  closer to "what player feels" than iter-74's existence-of-mechanism).
+- Constraints risked: 4-extension (the new axes are play-RELEVANT
+  derived properties, not play-SIM; mitigated by explicit harness
+  output tagging + the new CALIBRATION WARNING that fires when min
+  ratio > 80%).
+- Round 10 Phase 1 (iter 2 of 2). Extended the iter-74 audit with
+  4 new axes:
+  - 7. damage_rate_hz: DEFAULT 1.0Hz / PRISM 4.0Hz / MORTAR 0.67Hz
+       / RAM 2.0Hz — cadence of "doing something"
+  - 8. damage_magnitude: single(1-2) / trickle(1/tick) / aoe / burst
+       — risk-reward shape per commitment
+  - 9. persistence: transient-projectile / continuous-while-held /
+       ballistic+impact / instant-melee — how the threat exists in
+       the world
+  - 10. range_shape: linear-bullet / linear-beam / parabolic /
+        cone-near-body — geometry of where threat lands
+- Threshold scaled proportionally: ≥5 of 10 (was ≥3 of 6).
+- Results: ALL 6 pairs now differ in 9-10 of 10 signals; min 9/10,
+  max 10/10. The play-relevant axes are MORE distinct than the
+  structural axes — the new 4 axes never tie. The single residual
+  tie remains `move_blocked: no` (DEFAULT/MORTAR/RAM share — only
+  PRISM stops to fire).
+- CALIBRATION WARNING fires as designed: min ratio 0.90 > ceiling
+  0.80 — the audit is too EASY to pass, which is the honest
+  signal. Phase 2 (PRESSURES.md + per-band probes) is where
+  tighter signals come from. The warning prevents false
+  confidence per the iter-75 PRE-MORTEM.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (harness-only iter).
+  test-all 5/5; test-breach 36/36 (unchanged count; extended
+  existing harness).
+- Falsifications: none.
+- Substrate writes this arc: 41 → 41.
+- Files: loop/breach/test_breach_distinctness_audit.gd (extended),
+  Makefile (grep filter widened to surface max + CALIBRATION),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Phase 1 complete. 10-axis distinctness vector
+  established; all 4 archetypes pass pairwise ≥5-of-10 with
+  9-10/10 min-max distribution. CALIBRATION WARNING explicitly
+  flags that Phase 1's structural+derived signals are too easy —
+  Phase 2's PRESSURES.md is the next tightening. Iter 76 starts
+  Phase 2: per-archetype × per-pressure (long-LoS / swarm / armor
+  / narrow corridors / moving targets / brick obstruction / depot
+  timing) tactical-answer documentation.**
+
 ## iter 074 — BUILD — Round 10 Phase 1: distinctness-audit harness (structural-signal scaffold)
 
 - Date: 2026-05-23

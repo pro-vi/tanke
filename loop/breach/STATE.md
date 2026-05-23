@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 74
+iter: 75
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_74: 23d6a2ec3bf2821f  # bit-identical through 41 substrate writes (iters 70-74 asset/doc/harness-only)
+hash_anchor_at_iter_75: 23d6a2ec3bf2821f  # bit-identical through 41 substrate writes (iters 70-75 asset/doc/harness-only)
 substrate_writes_this_arc: 41  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×23 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
-current_round: 10-open — Phase 1 distinctness-audit (iter 74 structural baseline shipped); iter-073-round10-rethesis.md is the blueprint
-current_round_phase: BUILD — Round 10 Phase 1 continuation iter 75 (play-sim metrics on top of iter-74's structural signal vector)
+current_round: 10-open — Phase 1 distinctness-audit COMPLETE (iter 74 structural + iter 75 play-relevant); Phase 2 starting iter 76
+current_round_phase: BUILD — Round 10 Phase 2 (PRESSURES.md per-archetype × per-pressure matrix); iter-073-round10-rethesis.md is the blueprint
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -21,7 +21,7 @@ last_consult: iter 73  # CONSULT 008 — GPT Pro extended thinking via /second-o
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 75 — BUILD — Round 10 Phase 1 continuation: play-sim metrics for the distinctness audit. Read iter-073-round10-rethesis.md. The iter-74 structural-signal scaffold passes (min pairwise distance 5/6; DEFAULT/MORTAR/RAM share only `move_blocked: no`). Iter 75 extends test_breach_distinctness_audit.gd with PLAY-SIM signals: spawn a fixed test scene (player + N enemies + walls), drive each archetype's fire input for K physics ticks on the SAME seed, capture per-archetype: median kill distance (raycast at moment-of-kill), % time stationary in combat (frames with zero position delta during fire-held), wall interaction mode (HE-blast / beam-burn / collide / over-the-wall — count per type), damage source histogram (projectile / per-tick raycast / aoe-impact / collision+swing). Append play-sim signals to the existing structural signals as additional vector axes; re-assert pairwise distance ≥ N (tune the threshold for the new axis count). Hash-anchor verify; test-all + test-breach green.
+next_action: iter 76 — BUILD — Round 10 Phase 2: PRESSURES.md (per-archetype × per-pressure tactical matrix). Read iter-073-round10-rethesis.md. Per Consult 008's H2 critique, document which pressure dimensions the existing roster already exposes per archetype + which it doesn't. Write loop/breach/PRESSURES.md with a matrix: rows = pressure dimensions (long-LoS threat / dense swarm / armor / narrow corridors / moving targets / brick obstruction / depot timing); columns = 4 archetypes; cells = {best answer, costly backup, bad answer}. Read Spawner.gd + BreachConfig.gd + the per-role harnesses to fill cells. Empty cells = pressures the current game doesn't express → Round-11 candidates (NOT this round — Round 10 is detection + documentation). This is the gate before adding enemies — ensures the next enemy expresses an UNCOVERED pressure rather than "another monster with stats." Hash-anchor verify; no substrate work.
 score: 46/75 absolute · 46/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -140,6 +140,16 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-23 — **iter 75 (BUILD).** Round 10 Phase 1 continuation:
+  added 4 play-relevant derived axes (damage_rate_hz / magnitude /
+  persistence / range_shape) to the distinctness audit. 10-axis
+  vector; threshold ≥5 of 10. ALL 6 pairs now 9-10/10 distinct
+  (min 9, max 10) — play-relevant axes are MORE distinct than
+  structural axes; residual tie is `move_blocked: no` for the
+  three non-PRISM archetypes. CALIBRATION WARNING fires as
+  designed: min ratio 0.90 > 0.80 ceiling — audit too easy,
+  Phase 2 must add tighter signals. No substrate; hash preserved;
+  test-all 5/5; test-breach 36/36. Δ 0. 46/75.
 - 2026-05-23 — **iter 74 (BUILD).** Round 10 Phase 1: distinctness-
   audit harness scaffold. Per Consult 008's H4 reframe, built
   loop/breach/test_breach_distinctness_audit.gd — compares per-
@@ -214,33 +224,36 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 75 — BUILD — Round 10 Phase 1 continuation: play-sim metrics.**
+**Iter 76 — BUILD — Round 10 Phase 2: PRESSURES.md matrix.**
 
-Read `loop/breach/iter-073-round10-rethesis.md`. Iter 74's
-structural-signal scaffold passes (min 5/6 pairwise distance) —
-this iter extends the audit with PLAY-SIM signals so the audit
-fires on the dimensions a playtester actually experiences.
+Read `loop/breach/iter-073-round10-rethesis.md` (Phase 2 section).
+Phase 1's audit passed with a CALIBRATION WARNING (audit too easy
+at 9-10/10 pairwise). Phase 2 is where tighter signals come from —
+the per-archetype × per-pressure tactical matrix.
 
-Extend `loop/breach/test_breach_distinctness_audit.gd`:
+Write `loop/breach/PRESSURES.md` with the matrix:
 
-- Spawn a fixed test scene (player at known origin + 3-5 enemies +
-  a brick wall + an open lane) — same scene + same seed for all 4
-  archetypes.
-- Drive each archetype's fire input for K physics ticks
-  (K~200 ≈ 3-4s game time; use `_physics_process(0.05)` driven
-  manually).
-- Capture per archetype:
-  - median kill distance (record `pt.global_position.distance_to(enemy.global_position)` at moment-of-kill — i.e. when `enemy.hp` drops to 0)
-  - `% time stationary in combat` (frames where `pt.position` delta ≈ 0 while fire-held)
-  - wall interaction mode counter (`HE-blast / beam-burn / collide / over-the-wall` — increment per event)
-  - damage source histogram (`projectile / per-tick-raycast / aoe-impact / collision+swing`)
-- Append these as 4 NEW axes to the existing 6-axis vector → 10
-  axes total. Tune the threshold proportionally (≥5 of 10? — TBD
-  on results).
+  Rows (pressure dimensions):
+    - long-LoS threat
+    - dense swarm
+    - armor (HEAT/APCR-class)
+    - narrow corridors
+    - moving targets
+    - brick obstruction
+    - depot timing
 
-If pairwise distance drops below threshold on a play-sim axis pair,
-the harness emits the convergence warning per Consult 008's
-structural-correlate logic.
+  Columns: DEFAULT / PRISM / MORTAR / RAM
+
+  Cells: {best answer, costly backup, bad answer}
+
+Fill cells by reading `scripts/Spawner.gd`, the breach config, and
+the per-archetype harnesses (test_breach_{prism,mortar,ram}). Empty
+cells = pressures the current game doesn't express → Round-11
+candidates (NOT this round).
+
+This is the design-gate before adding enemies — ensures the next
+enemy added expresses an UNCOVERED pressure rather than "another
+monster with stats" (per Consult 008 H2/H3 critique).
 
 Hash-anchor verify (no substrate); test-all + test-breach green.
 

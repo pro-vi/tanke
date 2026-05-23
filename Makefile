@@ -382,7 +382,7 @@ check-breach-archetype-switch:
 # per-archetype STRUCTURAL signal vectors (6 axes); FAILS with a
 # convergence warning if any pair shares more than 3 of 6 signals.
 check-breach-distinctness-audit:
-	@$(HEADLESS) --script res://loop/breach/test_breach_distinctness_audit.gd 2>&1 | grep -E "^(  (DEFAULT|PRISM|MORTAR|RAM|min|NOTE)|  [A-Z]+↔[A-Z]+|BREACH_DISTINCTNESS_AUDIT_OK|FAIL|ERROR|SCRIPT ERROR)"; \
+	@$(HEADLESS) --script res://loop/breach/test_breach_distinctness_audit.gd 2>&1 | grep -E "^(  (DEFAULT|PRISM|MORTAR|RAM|min|max|NOTE|CALIBRATION)|  [A-Z]+↔[A-Z]+|BREACH_DISTINCTNESS_AUDIT_OK|FAIL|ERROR|SCRIPT ERROR)"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_distinctness_audit.gd 2>&1 | grep -q "^BREACH_DISTINCTNESS_AUDIT_OK"
 
 # Arc-4 breach mode: all breach harnesses in one target.

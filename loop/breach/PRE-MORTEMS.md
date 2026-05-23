@@ -24,6 +24,41 @@ Format:
 
 ---
 
+## iter 075 — BUILD — Round 10 Phase 1 continuation: play-relevant axes for the distinctness audit
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 7 (the new axes are derived from
+  the per-archetype VERB profile — fire rate / magnitude / damage
+  persistence / range shape — closer to "what the player feels"
+  than the iter-74 existence-of-mechanism signals).
+- CONSULT constraints risked: 4 (silhouette-grammar gate logic) —
+  the new axes are play-RELEVANT derived properties, not play-SIM.
+  This iter doesn't run a frame-by-frame auto-play sim. The risk
+  is overclaiming "play-sim verified" when the axes are still
+  computed from constants. Mitigation: tag the new axes as
+  "play-relevant derived" in the harness output; iter 76 (Phase 2
+  PRESSURES.md) is where real play-sim probe scenarios go.
+- Predicted failure: the new axes will increase minimum pairwise
+  distance (because the play-relevant signals are MORE distinct
+  than the structural ones — different cadences are very
+  archetype-specific). The audit will pass trivially again, giving
+  false confidence. Mitigation: the harness emits a CALIBRATION
+  WARNING any time the min distance > 80% of max — that's a sign
+  the audit is too easy and Phase-1's job (early-warning for
+  convergence) is being underdone. Need to tune thresholds before
+  Phase 2 starts.
+- Falsifiable claim: with 10 axes, threshold ≥5, the minimum
+  pairwise distance lands ≥6 (because the play-relevant axes will
+  rarely tie). If a pair lands at exactly 5, the audit is properly
+  calibrated. If all pairs land at 8+, calibration is too loose
+  and Phase 1 isn't doing its job.
+- Substrate touched: none — extends the iter-74 harness only.
+- Hash-anchor verification plan: trivially verify (no substrate);
+  test-all + test-breach green.
+
+---
+
 ## iter 074 — BUILD — Round 10 Phase 1: distinctness-audit harness (structural-signal scaffold)
 
 - Date: 2026-05-23

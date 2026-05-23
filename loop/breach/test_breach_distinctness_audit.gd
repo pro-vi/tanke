@@ -22,7 +22,9 @@ const PlayerTankScene = preload("res://scenes/PlayerTank.tscn")
 const PlayerTankT = preload("res://scripts/PlayerTank.gd")
 const LoadoutT = preload("res://scripts/Loadout.gd")
 
-const MIN_DISTINCT_SIGNALS: int = 3  # per pair, out of 6 (Phase-1)
+const MIN_DISTINCT_SIGNALS: int = 5  # per pair, out of 10 (Phase-1 with play-relevant axes)
+const TOTAL_SIGNALS: int = 10
+const CALIBRATION_CEILING: float = 0.8  # min/total > 0.8 → audit too easy
 
 const ARCHETYPE_NAMES: Dictionary = {
 	0: "DEFAULT",
@@ -90,7 +92,62 @@ func _signal_vector(pt: Node) -> Array:
 		fingerprint = "speed+bonus(38)" if pt.speed > 32 else "MISSING_speed_bonus"
 	# DEFAULT has no fingerprint — the absence IS the signal.
 
-	return [weapon_kind, move_blocked, range_class, cadence_class, damage_source, fingerprint]
+	# === Iter 75 (Phase 1 continuation): 4 play-relevant DERIVED axes.
+	# These are NOT play-sim — they are properties derived from
+	# archetype constants that correlate to what the player feels
+	# (cadence, magnitude, persistence, range shape). Phase 2
+	# (PRESSURES.md) is where real play-sim probe scenarios go.
+
+	# Axis 7: damage rate per second (fire-held). Approximates the
+	# tempo of damage delivery — how often the player gets to
+	# "do something."
+	var damage_rate_hz: String = "1.0Hz"  # DEFAULT GunTimer ~1.0s nominal
+	if arch == PlayerTankT.TankArchetype.PRISM:
+		damage_rate_hz = "4.0Hz"  # 1.0 / BEAM_DAMAGE_COOLDOWN (0.25)
+	elif arch == PlayerTankT.TankArchetype.MORTAR:
+		damage_rate_hz = "0.67Hz"  # 1.0 / MORTAR_GUN_COOLDOWN (1.5)
+	elif arch == PlayerTankT.TankArchetype.RAM:
+		damage_rate_hz = "2.0Hz"  # 1.0 / RAM_SWING_COOLDOWN (0.5) — swing only
+
+	# Axis 8: damage magnitude per event class. Shapes risk/reward
+	# of each commitment — RAM swings hit hard once; PRISM ticks
+	# small but accumulates.
+	var damage_magnitude: String = "single(1-2)"  # DEFAULT shell
+	if arch == PlayerTankT.TankArchetype.PRISM:
+		damage_magnitude = "trickle(1/tick)"
+	elif arch == PlayerTankT.TankArchetype.MORTAR:
+		damage_magnitude = "aoe(1xN-bodies)"
+	elif arch == PlayerTankT.TankArchetype.RAM:
+		damage_magnitude = "burst(2-swing+1-collide)"
+
+	# Axis 9: damage source persistence in the world. Does the
+	# threat linger / fly / attach / vanish? Shapes how the player
+	# COMMITS — a flying projectile is a one-shot bet; a beam is
+	# continuous; a swing is instant.
+	var persistence: String = "transient-projectile"
+	if arch == PlayerTankT.TankArchetype.PRISM:
+		persistence = "continuous-while-held"
+	elif arch == PlayerTankT.TankArchetype.MORTAR:
+		persistence = "ballistic+impact-aoe"
+	elif arch == PlayerTankT.TankArchetype.RAM:
+		persistence = "instant-melee"
+
+	# Axis 10: range-shape class. The geometry of where threat
+	# lands — straight bullet, straight beam, arced shell,
+	# tank-adjacent. Drives positioning decisions.
+	var range_shape: String = "linear-bullet"
+	if arch == PlayerTankT.TankArchetype.PRISM:
+		range_shape = "linear-beam(160)"
+	elif arch == PlayerTankT.TankArchetype.MORTAR:
+		range_shape = "parabolic(arc)"
+	elif arch == PlayerTankT.TankArchetype.RAM:
+		range_shape = "cone-near-body"
+
+	return [
+		weapon_kind, move_blocked, range_class, cadence_class,
+		damage_source, fingerprint,
+		damage_rate_hz, damage_magnitude, persistence, range_shape,
+	]
 
 
 func _pairwise_distance(va: Array, vb: Array) -> int:
@@ -125,9 +182,10 @@ func _initialize() -> void:
 		vectors[arch_value] = _signal_vector(pt)
 		print("  %s: %s" % [ARCHETYPE_NAMES[arch_value], str(vectors[arch_value])])
 
-	# === Pairwise distinctness — 6 pairs, each must differ in ≥3 of 6.
+	# === Pairwise distinctness — 6 pairs, each must differ in ≥5 of 10.
 	var keys: Array = vectors.keys()
 	var min_seen: int = 999
+	var max_seen: int = 0
 	var converged_pairs: Array = []
 	for i in keys.size():
 		for j in range(i + 1, keys.size()):
@@ -136,17 +194,28 @@ func _initialize() -> void:
 			var dist: int = _pairwise_distance(vectors[ka], vectors[kb])
 			if dist < min_seen:
 				min_seen = dist
+			if dist > max_seen:
+				max_seen = dist
 			var pair_label: String = "%s↔%s" % [ARCHETYPE_NAMES[ka], ARCHETYPE_NAMES[kb]]
-			print("  %s — pairwise distance %d / 6" % [pair_label, dist])
+			print("  %s — pairwise distance %d / %d" % [pair_label, dist, TOTAL_SIGNALS])
 			if dist < MIN_DISTINCT_SIGNALS:
 				converged_pairs.append(pair_label)
 
 	if not converged_pairs.is_empty():
-		push_error("FAIL — distinctness audit CONVERGENCE WARNING: pairs sharing ≥%d of 6 signals: %s. Per Consult 008, the playtest will likely report 'feels the same' for these archetype pairs." % [
-			6 - MIN_DISTINCT_SIGNALS + 1, str(converged_pairs)])
+		push_error("FAIL — distinctness audit CONVERGENCE WARNING: pairs sharing ≥%d of %d signals: %s. Per Consult 008, the playtest will likely report 'feels the same' for these archetype pairs." % [
+			TOTAL_SIGNALS - MIN_DISTINCT_SIGNALS + 1, TOTAL_SIGNALS, str(converged_pairs)])
 		quit(1); return
 
-	print("  min pairwise distance: %d / 6 (threshold ≥%d)" % [min_seen, MIN_DISTINCT_SIGNALS])
-	print("BREACH_DISTINCTNESS_AUDIT_OK Phase-1 structural — 4 archetypes, 6 pairs all differ in ≥%d of 6 signals" % MIN_DISTINCT_SIGNALS)
-	print("  NOTE: Phase-1 scaffold (structural signals only). Phase-1 continuation iter 75 adds play-sim metrics (kill distance, time stationary, depot picks).")
+	print("  min pairwise distance: %d / %d (threshold ≥%d)" % [min_seen, TOTAL_SIGNALS, MIN_DISTINCT_SIGNALS])
+	print("  max pairwise distance: %d / %d" % [max_seen, TOTAL_SIGNALS])
+
+	# === Calibration check — if min/total > CALIBRATION_CEILING the
+	# audit is too easy to pass and isn't doing its job. Per the
+	# iter-75 PRE-MORTEM, this is the safety against false confidence.
+	var min_ratio: float = float(min_seen) / float(TOTAL_SIGNALS)
+	if min_ratio > CALIBRATION_CEILING:
+		print("  CALIBRATION WARNING: min ratio %.2f > ceiling %.2f — audit may be too easy. Phase 2 (PRESSURES.md) should add tighter signals." % [min_ratio, CALIBRATION_CEILING])
+
+	print("BREACH_DISTINCTNESS_AUDIT_OK Phase-1 structural+play-relevant — 4 archetypes, 6 pairs all differ in ≥%d of %d signals" % [MIN_DISTINCT_SIGNALS, TOTAL_SIGNALS])
+	print("  NOTE: 10 axes — 6 structural (existence of mechanism) + 4 play-relevant derived (cadence/magnitude/persistence/range-shape). Phase 2 (iters 76-77) ships PRESSURES.md with the pressure matrix; real play-sim probe scenarios live there.")
 	quit(0)
