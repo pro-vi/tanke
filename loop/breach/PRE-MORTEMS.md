@@ -24,6 +24,43 @@ Format:
 
 ---
 
+## iter 067 — BUILD — Round 9e: RAM Tank
+
+- Date: 2026-05-22
+- Tag: [STRUCTURE]
+- Round 9e — the third and final new archetype, closing the iter-062
+  blueprint's per-archetype build phase. archetype=RAM: no projectile
+  weapon. Damages via COLLISION (driving into bodies hurts them) + a
+  short-range AoE swing as the fire button + a built-in sprint/dash.
+  The movement-as-weapon archetype.
+- The change (scripts/PlayerTank.gd, sanctioned substrate):
+  - Speed bonus: archetype=RAM gets +RAM_SPEED_BONUS to base speed in
+    _ready.
+  - Collision damage: after move_and_collide, if archetype=RAM AND
+    cooldown ready → damage the collider (RAM_COLLISION_DAMAGE).
+  - Swing on fire: when archetype=RAM and fire-held and swing
+    cooldown ready → _ram_swing() (damages every Node2D sibling in
+    the forward semicircle within RAM_SWING_RANGE that has
+    take_damage, deals RAM_SWING_DAMAGE).
+  - Sprint unlocked: the overdrive sprint check now extends to
+    `archetype == RAM` — RAM always has shift-sprint, no depot pick
+    required.
+  - RAM does NOT call _fire — no discrete bullets.
+- CONSULT constraints respected: 1 (no choice in combat).
+- Predicted failure modes:
+  - Hash anchor: all RAM behavior gates on archetype=RAM; DEFAULT
+    bit-identical. arc-2/3 unaffected.
+  - The swing uses sibling-distance + forward-projection (matches
+    MORTAR AoE / HE blast pattern).
+- Falsifiable claim: post-edit — test_breach_ram shows: archetype=RAM
+  gives speed > 32; _ram_swing damages a forward in-range stub but
+  spares behind + far stubs. Hash anchor 23d6a2ec3bf2821f preserved;
+  test-all 5/5; test-breach 33/33.
+- Sentence test: n/a (archetype weapon primitive).
+- Substrate touched: PlayerTank.gd (RAM branches + speed bonus +
+  sprint gate — sanctioned).
+- Hash-anchor verification plan: post-edit, loop/test_runner.gd seed 42.
+
 ## iter 066 — BUILD — Round 9d: MORTAR Tank
 
 - Date: 2026-05-22

@@ -133,6 +133,16 @@ var _beam_dmg_timer: float = 0.0
 const MortarShellScene = preload("res://scenes/MortarShell.tscn")
 const MORTAR_RANGE: float = 96.0
 const MORTAR_GUN_COOLDOWN: float = 1.5
+# arc-4 iter 67 (Round 9e): RAM Tank — collision damage + short-range
+# swing + built-in sprint. The movement-as-weapon archetype.
+const RAM_COLLISION_DAMAGE: int = 1
+const RAM_DAMAGE_COOLDOWN: float = 0.35
+const RAM_SWING_DAMAGE: int = 2
+const RAM_SWING_RANGE: float = 18.0
+const RAM_SWING_COOLDOWN: float = 0.5
+const RAM_SPEED_BONUS: int = 6
+var _ram_collision_timer: float = 0.0
+var _ram_swing_timer: float = 0.0
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
@@ -229,6 +239,9 @@ func _ready() -> void:
 	# arc-4 iter 66 (Round 9d): MORTAR fires slow — bump GunTimer wait_time.
 	if archetype == TankArchetype.MORTAR:
 		$GunTimer.wait_time = MORTAR_GUN_COOLDOWN
+	# arc-4 iter 67 (Round 9e): RAM moves faster — built-in speed bonus.
+	if archetype == TankArchetype.RAM:
+		speed += RAM_SPEED_BONUS
 
 
 func _physics_process(delta: float) -> void:
@@ -312,12 +325,19 @@ func _physics_process(delta: float) -> void:
 	# arc-4 iter 28: OVERDRIVE sprint — KEY_SHIFT triggers a speed burst
 	# when the depot upgrade is owned. Gated on loadout.has_overdrive, so
 	# arc-2/3 movement is bit-identical (no loadout → branch never taken).
-	if loadout != null and loadout.has_overdrive:
+	# arc-4 iter 67 (Round 9e): sprint is unlocked by the OVERDRIVE depot
+	# upgrade OR by the RAM archetype (built-in).
+	var _sprint_unlocked: bool = (loadout != null and loadout.has_overdrive) or archetype == TankArchetype.RAM
+	if _sprint_unlocked:
 		var shift_now: bool = Input.is_physical_key_pressed(KEY_SHIFT)
 		if shift_now and not _shift_was_pressed \
 				and _overdrive_timer <= 0.0 and _overdrive_cd <= 0.0:
 			_overdrive_timer = overdrive_burst
 		_shift_was_pressed = shift_now
+	# arc-4 iter 67 (Round 9e): RAM damage/swing cooldowns tick down.
+	if archetype == TankArchetype.RAM:
+		_ram_collision_timer -= delta
+		_ram_swing_timer -= delta
 	var move_speed: float = float(speed)
 	if _overdrive_timer > 0.0:
 		move_speed *= overdrive_mult
@@ -327,15 +347,25 @@ func _physics_process(delta: float) -> void:
 	var collision: KinematicCollision2D = move_and_collide(velocity * delta)
 	if collision:
 		velocity = velocity.slide(collision.get_normal())
+		# arc-4 iter 67 (Round 9e): RAM damages any body it collides with.
+		if archetype == TankArchetype.RAM and _ram_collision_timer <= 0.0:
+			var collider: Object = collision.get_collider()
+			if collider != null and collider.has_method("take_damage"):
+				collider.take_damage(RAM_COLLISION_DAMAGE)
+				_ram_collision_timer = RAM_DAMAGE_COOLDOWN
 	sprite.colliding = collision != null
 
-	# arc-4 iter 65 (Round 9c): PRISM fires a continuous beam (no
-	# discrete shells); DEFAULT keeps the existing _fire shell path.
+	# arc-4 iter 65 (Round 9c) + iter 67 (Round 9e): per-archetype fire
+	# input handling — PRISM beams, RAM swings, DEFAULT/MORTAR via _fire.
 	if archetype == TankArchetype.PRISM:
 		if Input.is_action_pressed("ui_accept"):
 			_tick_beam(delta)
 		else:
 			_stop_beam()
+	elif archetype == TankArchetype.RAM:
+		if Input.is_action_pressed("ui_accept") and _ram_swing_timer <= 0.0:
+			_ram_swing()
+			_ram_swing_timer = RAM_SWING_COOLDOWN
 	elif Input.is_action_pressed("ui_accept"):
 		_fire()
 
@@ -500,6 +530,32 @@ func _fire_mortar() -> void:
 	var shell = MortarShellScene.instantiate()
 	lvl.add_child(shell)
 	shell.launch(origin, target)
+
+
+# arc-4 iter 67 (Round 9e): RAM melee swing — damage every Node2D
+# sibling in the forward semicircle within RAM_SWING_RANGE that has
+# take_damage. Sibling-distance pattern (cf. MORTAR AoE, HE blast).
+# Public so the harness drives it.
+func _ram_swing() -> void:
+	var lvl: Node = get_parent()
+	if lvl == null:
+		return
+	var origin: Vector2 = global_position
+	var dir: Vector2 = Vector2(1.0, 0.0).rotated(rotation)
+	for sibling in lvl.get_children():
+		if sibling == self:
+			continue
+		if not (sibling is Node2D):
+			continue
+		if not sibling.has_method("take_damage"):
+			continue
+		var to_target: Vector2 = (sibling as Node2D).global_position - origin
+		var forward_proj: float = to_target.dot(dir)
+		if forward_proj <= 0.0:
+			continue  # behind the tank
+		if to_target.length() > RAM_SWING_RANGE:
+			continue  # out of range
+		sibling.take_damage(RAM_SWING_DAMAGE)
 
 
 func take_damage(amount: int) -> void:

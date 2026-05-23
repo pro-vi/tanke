@@ -17,6 +17,47 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 067 — BUILD — Round 9e: RAM Tank
+
+- Date: 2026-05-22
+- Tag: [STRUCTURE]
+- Score: **42/70** (Δ 0 — per the iter-062 blueprint, C15 lands at
+  round close.)
+- Round 9e — the third and final new archetype, closing the iter-062
+  blueprint's per-archetype build phase. archetype=RAM: no projectile
+  — damages via COLLISION + a short-range AoE swing as the fire
+  button + a built-in sprint/dash. The movement-as-weapon archetype.
+- The change (scripts/PlayerTank.gd):
+  - Speed bonus: archetype=RAM gets +RAM_SPEED_BONUS (6) to base speed
+    in _ready.
+  - Collision damage: after move_and_collide, if archetype=RAM AND
+    cooldown ready → damage the collider (RAM_COLLISION_DAMAGE = 1,
+    RAM_DAMAGE_COOLDOWN = 0.35s).
+  - Swing on fire: when archetype=RAM and fire-held AND swing
+    cooldown ready → `_ram_swing()` — damages every Node2D sibling in
+    the forward semicircle within RAM_SWING_RANGE (18px) that has
+    take_damage, dealing RAM_SWING_DAMAGE (2). Sibling-distance +
+    forward-projection (matches MORTAR / HE blast pattern).
+  - Sprint unlocked: the overdrive sprint check extends to include
+    `archetype == RAM` — RAM has shift-sprint built in, no depot pick
+    required.
+  - RAM does NOT call _fire — no discrete bullets.
+- Hash anchor: `23d6a2ec3bf2821f` verified — all RAM behavior gates
+  on archetype=RAM; DEFAULT bit-identical. `make test-all` 5/5.
+  `make test-breach` 33/33.
+- Harness: new test_breach_ram.gd + check-breach-ram (test-breach
+  32 → 33). RAM speed = 38 (32 + 6); swing damages a forward in-range
+  stub (+2), spares a behind stub (0) and a far stub (0).
+- Falsifications: none.
+- Substrate writes this arc: 38 → 39 (PlayerTank.gd ×21).
+- Files: scripts/PlayerTank.gd, test_breach_ram.gd, Makefile,
+  PRE-MORTEMS.md, LEDGER.md, STATE.md
+- Finding: **RAM ships — collision-as-weapon, melee swing, sprint;
+  all 4 archetypes (DEFAULT/PRISM/MORTAR/RAM) now mechanically
+  distinct, the Into-the-Breach test held.** Round 9's per-archetype
+  builds (9c-9e) are complete. iter 68 = 9f: start-pick selection
+  screen.
+
 ## iter 066 — BUILD — Round 9d: MORTAR Tank
 
 - Date: 2026-05-22
