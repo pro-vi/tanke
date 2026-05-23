@@ -17,6 +17,52 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 083 — BUILD — Round 11 Phase 1 continuation: band-shape analyzer + death-recap surfacing
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0 — instrumentation work; the C16 "Run-shape
+  distinctness" anchor candidate per iter-80 lands at Phase-1
+  close once playtest 5 validates the metrics empirically.)
+- Constraints respected: 5 (analyzer cross-references signatures
+  feeding C5 evidence), 6 (the surfaced band sequence on the
+  death screen extends death-attribution to band-shape).
+- Constraints risked: none.
+- Two artifacts:
+  - **scripts/RunRecapAnalyzer.gd** (NEW, arc-4-owned). Static
+    `compare_signatures(sigs: Array)` returns
+    `{pairs, min_seq_distance, max_seq_distance, verdict}`. Uses
+    Hamming-style position-count distance (explainable, robust to
+    same-length permutations; tail elements count as mismatches).
+    Verdict: "distinct" if min ≥ 2, else "similar".
+  - **PlayerTank.gd `_die()`** — updates `_breach_prompt_label.text`
+    to append the band-visit sequence ("bands visited: warmup >
+    first_push > bunker > steel"). Resized the prompt panel/label
+    (44 → 56 / 36 → 48) to fit the extra line. Substrate write
+    ×26, inside the existing `_breach_prompt_label != null` gate
+    (no new gating surface).
+- Harness:
+  - **test_breach_band_shape_analyzer.gd** — 4 micro-cases
+    (identical seqs / reorder / different length / 4-archetype
+    mock) + the all-divergent set. All pass; analyzer correctly
+    distinguishes "similar" (DEFAULT↔PRISM same seq) from
+    "distinct" (DEFAULT↔RAM reorder + tail).
+- Hash anchor: `23d6a2ec3bf2821f` preserved. test-all 5/5;
+  test-breach 38 → 39 (new check-breach-band-shape-analyzer).
+- Falsifications: none.
+- Substrate writes this arc: 43 → 44 (PlayerTank.gd ×26).
+- Files: scripts/RunRecapAnalyzer.gd (NEW), scripts/PlayerTank.gd,
+  loop/breach/test_breach_band_shape_analyzer.gd (NEW), Makefile,
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Band-shape Phase 1 COMPLETE. Recorder (iter 82) +
+  Analyzer (iter 83) + death-screen surface (iter 83) form the
+  full Round-11 distinctness pipeline at the RUN scale,
+  complementing the iter-74-75 single-moment audit. When playtest
+  5 lands, real per-archetype signatures are captured + analyzable.
+  Iter 84 = either bootstrap Round 11 Phase 2 (per the iter-080
+  candidate list) OR idle heartbeat awaiting playtest 5.**
+
 ## iter 082 — BUILD — Round 11 Phase 1 start: band-shape recorder (RunRecap extension)
 
 - Date: 2026-05-23

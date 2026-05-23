@@ -24,6 +24,38 @@ Format:
 
 ---
 
+## iter 083 — BUILD — Round 11 Phase 1 continuation: band-shape analyzer + death-recap surfacing
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 5 (analyzer cross-references
+  per-archetype run-shape signatures), 6 (the surfaced band-visit
+  sequence on the death screen extends death-attribution into
+  multi-band run-shape).
+- CONSULT constraints risked: none.
+- Predicted failure: the analyzer's pairwise distance metric is a
+  judgment call (Levenshtein-style vs simple position-count vs
+  set-diff). The wrong choice could give false confidence
+  (high distances on mock data that aren't structural). Mitigation:
+  use simple position-count distance (counts differing positions
+  in the sequence) — well-known, explainable, robust to
+  permutations. Document the choice in the analyzer comment.
+- Falsifiable claim: the harness creates 4 mock signatures with
+  known divergent sequences (e.g. DEFAULT visits 5 bands in order;
+  PRISM visits same 5 bands but at different timing; MORTAR
+  visits only 3 bands; RAM visits 5 bands in different order).
+  Pairwise distances should reflect: DEFAULT↔PRISM small (same
+  sequence, different timing); DEFAULT↔MORTAR larger (different
+  sequence length); DEFAULT↔RAM largest (different order). If
+  any distance contradicts intuition, the metric is wrong.
+- Substrate touched: scripts/PlayerTank.gd (substrate write ×26,
+  inside existing breach-mode-gated block in _die for the
+  death-recap surface update). New scripts/RunRecapAnalyzer.gd
+  (arc-4-owned, not substrate).
+- Hash-anchor verification plan: post-edit hash verify.
+
+---
+
 ## iter 082 — BUILD — Round 11 Phase 1 start: band-shape recorder (RunRecap extension)
 
 - Date: 2026-05-23

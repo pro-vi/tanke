@@ -933,6 +933,18 @@ func _die() -> void:
 	if _breach_prompt_panel != null:
 		_breach_prompt_panel.visible = true
 	if _breach_prompt_label != null:
+		# arc-4 iter 83 (Round 11 Phase 1 continuation): append the
+		# band-visit sequence to the prompt label so the user sees
+		# the actual run-shape next to the reflection questions.
+		# Per CONSULT 009 — band-shape distinctness is the open
+		# axis; the visible sequence anchors the user's recall.
+		var prompt_text: String = "— playtest prompt —\nwhich moment did you regret?  right archetype?  would switching help?"
+		if run_recap != null and run_recap.band_visit_log.size() > 0:
+			var seq_names: Array = []
+			for v in run_recap.band_visit_log:
+				seq_names.append(String(v["band"]))
+			prompt_text += "\nbands visited: %s" % " > ".join(seq_names)
+		_breach_prompt_label.text = prompt_text
 		_breach_prompt_label.visible = true
 	died.emit()
 
@@ -1098,14 +1110,14 @@ func _setup_hud() -> void:
 		_breach_prompt_panel = ColorRect.new()
 		_breach_prompt_panel.name = "BreachPromptPanel"
 		_breach_prompt_panel.position = Vector2(24, 192)
-		_breach_prompt_panel.size = Vector2(272, 44)
+		_breach_prompt_panel.size = Vector2(272, 56)  # iter 83: +12 for band-visit line
 		_breach_prompt_panel.color = Color(0.0, 0.0, 0.0, 0.65)
 		_breach_prompt_panel.visible = false
 		canvas.add_child(_breach_prompt_panel)
 		_breach_prompt_label = Label.new()
 		_breach_prompt_label.name = "BreachPromptLabel"
 		_breach_prompt_label.position = Vector2(32, 196)
-		_breach_prompt_label.size = Vector2(256, 36)
+		_breach_prompt_label.size = Vector2(256, 48)  # iter 83: +12 for band-visit line
 		_breach_prompt_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_breach_prompt_label.text = "— playtest prompt —\nwhich moment did you regret?  right archetype?  would switching help?"
 		_breach_prompt_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
