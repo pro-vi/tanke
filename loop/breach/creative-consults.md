@@ -20,6 +20,179 @@ Format:
 
 ---
 
+## Consult 008 — iter 73 — /second-opinion (GPT Pro extended thinking) — ADOPTED → Round 10 rethesis
+
+- Date: 2026-05-23
+- Tab status: ok. Key: `tanke-arc4-round9-second-opinion`. Initial
+  runId: `a7e8cdeb-1bb0-439c-8521-5723c31bf7ec` (~6 min wall-clock,
+  status: success). Provider: ChatGPT Pro extended thinking via
+  `mcp__agentify-desktop__agentify_query` with `modeIntent:
+  "extended-pro"`. Initial response exceeded the read-page truncation
+  budget (60K cap); a follow-up compression query (runId
+  `6713aff7-08c8-43e0-81a5-e53b6ec8be26`) returned the digest below
+  inline.
+- Conversation URL: https://chatgpt.com/g/g-p-69c9d0b3c3b88191872d6b59cb5adfb8-agentify/c/6a116549-525c-83e8-b579-3eba1b4a37bc
+- User-initiated via `/second-opinion` (off the established
+  written-self-pre-mortem default — the first external consult of
+  arc 4 to actually go to a frontier model rather than the loop's
+  own self-pre-mortem).
+- Hypotheses framed for challenge: H1 Round 9 fixed the iter-62 "too
+  thin" verdict; H2 Round 10 = enemy-roster expansion (C5 weakest at
+  2/5); H3 Alternative = arc-3 OG enemy import; H4 Seductive-but-
+  hollow = mechanically distinct but experientially homogeneous; H5
+  Defer to playtest verdict (loop's choice).
+- Key reframe: **"Round 9 solved INPUT POVERTY, not yet DECISION
+  POVERTY."** Different verbs are not automatically different games;
+  if every archetype produces the same practical loop (kill / breach
+  / move / depot), a hostile playtester sees four control schemes
+  for the same climb. The follow-on is operationally large.
+- Adopted into: loop/breach/iter-073-round10-rethesis.md (the
+  new Round 10 blueprint, supersedes iter-072 diagnose's "enemy
+  roster expansion" recommendation); LEDGER iter 073; STATE update
+  pivoting next_action from idle-heartbeat → BUILD the distinctness-
+  audit instrumentation.
+
+### Pro's digest (verbatim from compressed follow-up query)
+
+**H1 — Round 9 fixed the "too thin" verdict?** Verdict: partially —
+solved input poverty, not yet decision poverty. The strongest read is
+that PRISM/MORTAR/RAM each violate a different default-tank
+assumption (move-while-fighting / LoS-matters / gun-as-weapon) —
+real verb breaks, not stat skins. The sharpest critique: different
+verbs are not automatically different games; if every archetype
+still produces "kill enemies, open wall, move up, take depot reward,"
+a hostile playtester experiences four control schemes for the same
+climb. The current roster + terrain may be too forgiving to force
+each archetype's weakness to matter — PRISM's exposure, MORTAR's
+timing, RAM's path-risk, Default's logistics may not produce
+distinct memories. The right test: not "different weapons" but "does
+each archetype create a different characteristic mistake, death
+reason, depot desire, route choice." If the player later says "I
+overcommitted the beam," "I misjudged the mortar impact," "I rammed
+into a bad lane," or "I wasted HE before the bunker band," Round 9
+landed; if they say "I picked Prism and shot stuff," it didn't.
+**Confidence: 0.78.**
+
+**H2 — Round 10 = enemy roster expansion?** Directionally plausible
+but risks rubric-chasing; the stronger Round-10 thesis is
+**archetype pressure design**, with new enemies only as one possible
+instrument. C5 is genuinely weak — Light/Heavy/Fast likely can't
+expose the full design space of beam/mortar/ram/shell-logistics —
+but "C5 is lowest" ≠ "adding roles is highest leverage." Sniper/
+Swarm/Hulk are valuable only if they create distinct pressure
+contracts, not monster variety. **Sniper is promising** because it
+can punish PRISM stationary exposure, but if it just makes PRISM bad
+it becomes a matchup tax. **Swarm** can collapse into generic
+crowd-control fodder. **Hulk** can easily become a higher-HP Heavy.
+The better requirement is NOT "this enemy demands one archetype"
+(that makes start-pick a pre-run coin flip); it is **"this enemy
+creates a best answer, costly backup answer, and bad answer across
+multiple archetypes."** Round 10 should first build an
+**archetype-pressure matrix** across long-LoS threat / dense swarm /
+armor / narrow corridors / moving targets / brick obstruction /
+depot timing — and then add only enemies expressing pressures the
+current roster can't. Adding enemies before defining pressures
+raises the rubric while lowering design clarity. **Confidence: 0.72.**
+
+**H3 — OG roster import?** Useful as a cheap spike, dangerous as the
+main Round-10 thesis. OG enemies were designed for Battle-City
+fidelity, not breach-economy decision pressure or archetype
+differentiation; importing wholesale may pull the game back toward
+the very identity arc 4 is trying to escape. Cheap reuse can create
+false progress — enemies spawn, animate, pass tests, differ in HP/
+cadence while still being answered by "shoot them until they die."
+Right use: **sandbox probe**, not content pipeline. Pick at most 3
+candidates, test whether each creates a decision Light/Heavy/Fast
+cannot, promote only ones that change ≥2 archetypes' optimal
+behavior. Reject any whose main contribution is "another enemy with
+different speed/HP/fire-rate" — that's content density, not breach
+economy. **Confidence: 0.67.**
+
+**H4 — Mechanically distinct but experientially homogeneous?** The
+correct fear, and it is NOT purely cognitive (though final truth
+remains playtest-gated). A player's felt sense of difference has
+**structural correlates**: if every archetype produces the same path
+shape / wall-breach pattern / kill order / depot picks / damage
+source / survival rhythm / death recap, the player WILL experience
+them as skins. The harnesses prove isolated correctness, not
+experiential contrast. Before the playtest, build a **distinctness
+audit** comparing per-archetype: kill distance, time stationary in
+danger, wall interaction mode, failure reason, input rhythm,
+preferred depot choices, ammo pressure, average exposure, awkward-
+but-possible answers to common situations. Also build a **wrong-
+archetype suite**: each archetype needs encounters where it's
+strong, awkward, and surviving-only-through-costly-backup-play —
+because personality comes from both strengths AND temptations. Use
+metrics as a smoke test, not a surrogate for playtest verdict: if
+the metrics converge, the playtest will likely say "these feel the
+same." **Confidence: 0.81.**
+
+**H5 — Defer Round 10 to playtest?** Correct, but **deferral ≠
+passivity**. The loop's "non-stop" rule can tempt speculative
+production, and speculative production after a major untested
+mechanic is how a project accumulates systems that look impressive
+but don't cohere. The useful pre-playtest work is NOT new content;
+it is **playtest instrumentation**: curated challenge rooms,
+run-summary prompts, possibly a short structured playtest script
+that improves verdict quality without changing design surface. The
+playtest must include normal runs (not only flattering test
+chambers — hand-authored archetype showcases can prove mechanics
+can shine without proving the actual roguelite run makes them shine).
+Central capture question: does the user describe events by archetype
+verb + regret ("I overcommitted the beam," "I should have switched
+to Ram before the swarm," "Mortar let me bypass that bunker") OR
+"this still felt like shooting with different weapons." **Confidence:
+0.86.**
+
+**First-principles section.** The most important question the loop
+is failing to name sharply enough: **are archetypes RUN IDENTITIES
+or WEAPONS?** Start-pick says identities ("this is who I am this
+run" — switching should be rare, dramatic, costly, memorable).
+Mid-run depot switching says tools ("this is what I need for the
+next pressure" — implies the game's real identity is routing +
+timing transformations, not inhabiting one chassis). Both can work,
+but they imply DIFFERENT SUCCESS CRITERIA, and the current C15
+anchor may be too narrow — the strongest player quote may become
+"I stayed Prism too long; I should have switched to Ram before the
+swarm band," which is arguably MORE breach-economy than a pure "I
+played Mortar." The next first-principles question is what each
+archetype TEMPTS the player into doing wrong: PRISM tempts
+overcommitment; MORTAR tempts lazy safety or bad prediction; RAM
+tempts reckless pathing; Default tempts shell waste or wrong-shell
+preparation. **Mechanics become identities through characteristic
+mistakes, not through feature lists.** The spine should remain "what
+are you willing to spend to open the next vertical lane," so Round
+10's best thesis is: **every archetype must buy passage
+differently.**
+
+### Synthesis — what changes
+
+1. **Round 10 thesis shifts** from "enemy roster expansion" to
+   "**archetype pressure design + distinctness instrumentation**" —
+   build the pressure matrix and distinctness audit FIRST; add
+   enemies only to fill uncovered pressures.
+2. **Pre-playtest work is non-speculative**: a distinctness-audit
+   harness comparing per-archetype metrics across the same seeds is
+   genuine BUILD work that surfaces the H4 risk structurally before
+   the user playtests. Loop exits idle-heartbeat; iter 74 builds it.
+3. **C15 anchor 5 may need rephrasing** — "describes runs by
+   archetype + verb" is too narrow; should accept "switched
+   archetypes in response to pressure" as equally valid evidence.
+   Hold pending playtest verdict.
+4. **Curated playtest support**: at least a short structured prompt
+   the user sees on death ("which moment regretted? was wrong
+   archetype? would switch help?") to improve verdict quality
+   without changing design surface.
+5. **REVIEW-QUEUE #15** opens: "the archetypes-as-identities vs
+   archetypes-as-weapons question." For the user to settle (Pro
+   surfaces it but defers to the user's design intuition).
+
+---
+
+## Consult 007 — iter 71 — written self-pre-mortem — Round 9 close
+
+---
+
 ## Consult 007 — iter 71 — written self-pre-mortem — Round 9 close
 
 - Date: 2026-05-23

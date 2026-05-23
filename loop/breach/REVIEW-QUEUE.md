@@ -363,3 +363,52 @@ Format per item:
     only one a playtest can answer.
   How to invoke: write `playtest` in the conversation. The loop pauses,
     surfaces this REVIEW-QUEUE, and awaits your direction.
+
+#15 — Archetypes-as-identities vs archetypes-as-weapons (Consult 008 surfaced question) — round 10 — iter 73 — open (design-direction question)
+  Finding: Consult 008 (GPT Pro extended thinking, iter 73) raised
+    a first-principles question the loop hadn't framed sharply:
+    **start-pick** says archetypes are RUN IDENTITIES ("this is who
+    I am this run — switching should be rare, dramatic, costly,
+    memorable"); **mid-run depot switching** says archetypes are
+    TOOLS ("this is what I need for the next pressure — implies
+    the game's real identity is routing + timing transformations,
+    not inhabiting one chassis"). BOTH can work but they imply
+    different success criteria.
+  Affordance: clarifying this decides whether C15 anchor 5 should
+    stay as "user describes runs by archetype + verb" (identities
+    framing) or extend to "user switches archetypes in response to
+    pressure" (weapons framing). It also informs Round-11 direction:
+    if identities → invest in stickier per-archetype temptations and
+    larger between-archetype gulfs; if weapons → invest in the
+    switch verb itself (animations, depot pacing, switch costs).
+  Risk: holding both ambiguously means the game tries to do both
+    at half-strength. Pro flagged this as a HIDDEN AMBIGUITY in the
+    Round-9 design (start-pick + mid-run-switch landed in the same
+    round; their implications were never reconciled).
+  How to answer: pick one when you playtest. The cleanest evidence
+    is which kind of regret-quote you actually emit at end of run
+    ("I overcommitted as Prism" = identities; "I should have
+    switched to Ram before the swarm" = weapons). The loop can
+    record both as positive C15-5 evidence pending your call.
+
+#16 — Pressure matrix + distinctness audit (Phase 1-2 of Round 10) — round 10 — iter 73 — open (loop-internal)
+  Finding: Per Consult 008's H2 critique ("enemy roster expansion
+    is rubric-chasing"), Round 10 builds INSTRUMENTATION before
+    content. Three phases: Phase 1 distinctness-audit harness
+    (auto-play sim, per-archetype metric vector, asserts pairwise
+    vector distance > tolerance — structurally detects "feels the
+    same" before the playtest); Phase 2 PRESSURES.md matrix
+    documenting which pressure dimensions the existing roster
+    already exposes per archetype + which it doesn't; Phase 3
+    curated playtest instrumentation (on-death prompts +
+    PLAYTEST-5-BRIEF). Round-10 close iter 79.
+  Affordance: by iter 78, the loop ships a distinctness-audit
+    metric report + a pressure matrix → REVIEW-QUEUE #16 upgrades
+    REVIEW-QUEUE #14 (★ playtest request) with structural evidence
+    on whether the archetypes really differ in PLAY metrics, not
+    just in code paths.
+  Risk: Pro hasn't played the game and is reasoning from docs only.
+    The reframe is structural-design-grade but not playtest-grade.
+    Mitigation: the rethesis kept Pro's STRUCTURAL recommendations
+    and deferred IDENTITY-PROTECTED calls (C15-5 rephrase, the
+    identity-vs-weapons question) to user direction.

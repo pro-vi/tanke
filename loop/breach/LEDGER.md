@@ -17,6 +17,59 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 073 — META — Consult 008 (GPT Pro extended thinking) captured + Round 10 rethesis
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]
+- Score: **46/75** (Δ 0 — META iter; the rethesis itself doesn't
+  lift a rubric anchor, but Phase-1 distinctness-audit will plausibly
+  lift C5 anchor 2 (canonical-answer documentation) via the pressure
+  matrix.)
+- Constraints respected: 5 (pressure matrix documents per-archetype
+  answers), 4 (the audit extends silhouette logic into mechanics
+  — "readable mechanic" not just "readable asset").
+- Constraints risked: none — META + blueprint only.
+- Consult 008 fired iter 72 via `/second-opinion` → GPT Pro extended
+  thinking (~6 min, status success). Initial response exceeded the
+  60K-char read-page truncation; a follow-up compression query
+  returned the digest inline. Full digest captured to
+  creative-consults.md.
+- Key reframe (the killer line): **"Round 9 solved INPUT POVERTY,
+  not yet DECISION POVERTY."** Different verbs ≠ different games;
+  if every archetype still produces the same practical loop, a
+  playtester sees four control schemes for the same climb.
+- Round 10 rethesis (supersedes iter-072 diagnose recommendation):
+  enemy roster expansion was DIRECTIONALLY plausible but risked
+  rubric-chasing per Pro. The stronger thesis is **archetype
+  pressure design + distinctness instrumentation**. Three phases:
+  Phase 1 (iters 74-75) distinctness-audit harness; Phase 2
+  (iters 76-77) PRESSURES.md matrix doc; Phase 3 (iter 78)
+  curated playtest instrumentation (death prompts + PLAYTEST-5-BRIEF).
+  Round-10 close iter 79.
+- The reframe also surfaced a first-principles question Pro
+  deferred to the user: **are archetypes RUN IDENTITIES or
+  WEAPONS?** Start-pick says identities; mid-run depot switching
+  says tools. Both can work — different success criteria. C15
+  anchor 5 may need rephrasing ("switched archetypes in response
+  to pressure" as equally valid evidence). Held pending playtest
+  per R2 (identity-protected anchors not loop-rephrased).
+- REVIEW-QUEUE #15 opened — "the archetypes-as-identities vs
+  archetypes-as-weapons question" for user direction.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (META + docs only).
+  test-all + test-breach not re-run.
+- Falsifications: none.
+- Substrate writes this arc: 41 → 41.
+- Files: loop/breach/creative-consults.md (Consult 008 captured
+  with full digest), loop/breach/iter-073-round10-rethesis.md (NEW
+  blueprint, supersedes iter-072 default recommendation),
+  loop/breach/REVIEW-QUEUE.md, loop/breach/PRE-MORTEMS.md,
+  loop/breach/LEDGER.md, loop/breach/STATE.md
+- Finding: **Consult 008 reframed Round 10 from "enemy roster
+  expansion" to "distinctness audit + pressure matrix +
+  instrumentation." Loop exits idle-heartbeat — Phase-1 build work
+  is non-speculative; iter 74 starts the distinctness-audit
+  harness.**
+
 ## iter 072 — META — diagnose Round 10 + idle-heartbeat awaiting playtest
 
 - Date: 2026-05-23

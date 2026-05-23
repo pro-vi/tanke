@@ -24,6 +24,36 @@ Format:
 
 ---
 
+## iter 073 — META — Consult 008 captured + Round 10 rethesis
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE-DEFERRED]  # META analysis; the BUILD work starts
+  iter 74 (distinctness-audit harness).
+- CONSULT constraints respected: 5 (the rethesis names a pressure
+  matrix that documents each band/role's tactical answer per
+  archetype — direct constraint-5 lift); 4 (the distinctness-audit
+  follows the silhouette grammar logic into mechanics — extends
+  the gate from "asset readable" to "mechanic readable").
+- CONSULT constraints risked: none — META + BUILD-PLAN work.
+- Predicted failure: the BUILD work pivots based on Pro's reframe;
+  the risk is over-trusting an external model's read of an internal
+  game design problem. Pro hasn't played the game and is reasoning
+  from docs only. Mitigation: the rethesis kept Pro's STRUCTURAL
+  recommendations (distinctness audit, pressure matrix) and deferred
+  the IDENTITY/RUBRIC-rephrase calls (the identity-vs-weapons
+  question, the C15-5 rephrase) to the user as REVIEW-QUEUE #15.
+- Falsifiable claim: the distinctness-audit harness, when built in
+  Phase 1, produces converged metric vectors across ≥2 archetypes —
+  proving Pro's H4 risk is REAL, not theoretical. If divergent
+  vectors emerge cleanly, Pro's H4 was over-cautious. Either way the
+  harness is the right tool.
+- Substrate touched: none — META + new compaction-safe blueprints
+  (iter-073-round10-rethesis.md).
+- Hash-anchor verification plan: trivial (no substrate; cheap
+  spot-check post-iter).
+
+---
+
 ## iter 072 — META — diagnose Round 10 + write blueprint; idle-heartbeat awaiting playtest
 
 - Date: 2026-05-23
