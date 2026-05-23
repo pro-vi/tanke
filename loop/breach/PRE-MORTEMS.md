@@ -24,6 +24,38 @@ Format:
 
 ---
 
+## iter 071 — META — Round 9-close (CONSULT 007 + ★REVIEW-QUEUE #14 + RUBRIC +C15)
+
+- Date: 2026-05-23
+- Tag: [MIXED]  # structural rubric edit + cognitive consult.
+- CONSULT constraints respected: 7 (verbs and affordances — archetypes
+  are pure verb-differentiation, the most extreme form of constraint 7),
+  3 (each archetype's tactical answer is identity-distinct), 4
+  (silhouette grammar from iter 70's concept sprites).
+- CONSULT constraints risked: 7 vs the Round-8 user override — the loop
+  re-establishes constraint 7 via Round 9 even though Round 8 relaxed
+  it for C14. Document the tension in the consult writeup.
+- Predicted failure: the written self-pre-mortem's Q3 ("seductive-but-
+  hollow") risks being too generous — the loop wants to celebrate the
+  4-archetype slate as done, but the user-facing question that hasn't
+  been answered is "do the 4 archetypes FEEL distinct?" — that's
+  playtest-only. The consult must NAME the unverified claim, not
+  paper over it.
+- Falsifiable claim: the new C15 anchor 4 ("playtest: user describes
+  the run by archetype + verb, not by archetype-as-skin") is the
+  cognitive gate. If the next playtest reports "I picked PRISM but it
+  felt like default with a beam," anchor 4 doesn't land — and the
+  Into-the-Breach standard from the iter-62 blueprint is broken.
+- Sentence test: n/a — Round 9 is archetype-differentiation, not a
+  per-upgrade addition; the sentence-test gate is per-upgrade (C8).
+- Substrate touched: none — close-of-round META work (RUBRIC.md +
+  REVIEW-QUEUE.md + creative-consults.md + LEDGER + STATE).
+- Hash-anchor verification plan: trivial verify (no substrate); a
+  cheap test-all + test-breach safety net to ensure the close didn't
+  drift.
+
+---
+
 ## iter 070 — BUILD — Round 9h: visual assets via /agentify image_gen
 
 - Date: 2026-05-23

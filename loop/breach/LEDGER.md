@@ -17,6 +17,52 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 071 — META — Round 9-close (CONSULT 007 + ★REVIEW-QUEUE #14 + RUBRIC +C15)
+
+- Date: 2026-05-23
+- Tag: [MIXED]  # structural rubric edit + cognitive consult.
+- Score: **46/75 effective · 46/75 absolute** (Δ +4 via C15 anchor 4
+  — the structural ceiling for tank archetypes lands at round close.
+  Anchor 5 is identity-protected, playtest-only.)
+- Constraints respected: 7 (verbs+affordances re-established at
+  maximum intensity via 4 archetypes), 3 (each archetype's tactical
+  answer is identity-distinct), 4 (silhouette grammar from iter 70).
+- Constraints risked: 7 vs the Round-8 user override (documented in
+  the consult — Round 9 sits ON TOP of Round 8 rather than
+  replacing it).
+- Round 9-close — three close artifacts:
+  - **CONSULT 007** — written self-pre-mortem (established arc-4
+    mode per CONSULT 003/004/005/006). Three permanent questions +
+    Round-9 distinctness + rubric. Key reframe: Round 9
+    re-establishes constraint 7 maximally; the structural ceiling
+    is reached, the cognitive ceiling is playtest-gated. Captured
+    to creative-consults.md.
+  - **REVIEW-QUEUE #14** — ★ PLAYTEST REQUEST. Summarizes all 8
+    Round-9 sub-rounds + their universal-systems carry from
+    Round 8 + the open #13 integration-path decision. Playtest
+    gate — the loop pauses for user direction when invoked.
+  - **RUBRIC.md +C15** — "Tank archetypes" criterion (anchors 1-4
+    structural, anchor 5 cognitive + identity-protected).
+    Effective ceiling math updated for the 75-pt total; revision
+    log iter-71 row added; the Into-the-Breach gate prose embedded
+    in the criterion ("different INPUT → different combat loop").
+- Hash anchor: `23d6a2ec3bf2821f` preserved (asset/doc-only iter;
+  trivially verified). test-all 5/5; test-breach 35/35 (no
+  regression — round-close is rubric + queue + consult, no code).
+- Falsifications: none.
+- Substrate writes this arc: 41 → 41 (no substrate touched).
+- Files: loop/breach/RUBRIC.md, loop/breach/REVIEW-QUEUE.md,
+  loop/breach/creative-consults.md, loop/breach/PRE-MORTEMS.md,
+  loop/breach/LEDGER.md, loop/breach/STATE.md
+- Finding: **Round 9 closed. C15 lands at 4/5 — the structural
+  ceiling for the tank archetype program. The cognitive ceiling
+  (C15-5: "user describes runs by archetype + verb") is the open
+  playtest question and the only one a hands-on session can
+  answer.** Per PROMPT §EXPLORATION ROUND CADENCE, the loop now
+  bootstraps the next round — iter 72 = META diagnose-next-surface
+  (the strongest remaining un-rubric'd surface vs the weakest
+  rubric axis).
+
 ## iter 070 — BUILD — Round 9h: visual assets via /agentify image_gen
 
 - Date: 2026-05-23

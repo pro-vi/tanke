@@ -323,3 +323,43 @@ Format per item:
         when ready. Round 9 ships at-mechanic; visuals deferred.
   Default if no answer: (b) — algorithmic tint+overlay via
     gen_tile.py preserves BC grammar and is the most loop-native path.
+
+#14 — ★ PLAYTEST REQUEST — Round 9 complete — round 9 — iter 71 — open (playtest gate)
+  Finding: Round 9 closes. Eight sub-rounds shipped — 9a enemy HP
+    primitive + HP bars; 9b TankArchetype enum framework; 9c PRISM
+    (stop-and-fire continuous beam with per-tick raycast); 9d MORTAR
+    (lobbed parabolic shells with AoE on impact); 9e RAM (collision
+    damage + forward-cone swing + sprint speed bonus); 9f start-of-run
+    selection screen (MetaProgress-gated: PRISM@20, MORTAR@40, RAM@60);
+    9g event-unlock mid-run switching (3 new depot upgrade kinds
+    SWITCH_TO_*, gated by the same MetaProgress tiers; `_revert_archetype`
+    keeps speed clean across N switches); 9h /agentify image_gen
+    concept sprites (cyan beam-aperture / olive angled-barrel / red
+    plow), silhouette grammar gate passes at the concept tier.
+    All 4 archetypes are mechanically distinct — different INPUT
+    produces a different combat loop (Into-the-Breach standard).
+    The Round 8 systems (XP, per-phase picks, ammo drops, longer
+    shields) STAY universal across archetypes.
+    Substrate write count: 41 (PlayerTank.gd ×23 + Spawner.gd ×4 +
+    Enemy.gd ×1 + others — all gated on `breach_mode_enabled`).
+    Hash anchor 23d6a2ec3bf2821f preserved.
+    test-all 5/5; test-breach 35/35.
+  Affordance: 4 mechanically distinct tanks the user can pick
+    between at run start (after the relevant MetaProgress unlock)
+    AND switch between mid-run via depot upgrades. Each archetype
+    rewards a different play style — PRISM rewards positioning and
+    commitment under fire; MORTAR rewards reading enemy movement and
+    pre-aiming; RAM rewards aggression and momentum management;
+    Default rewards shell-economy discipline (the breach economy
+    itself).
+  Open question (REVIEW-QUEUE #13): which integration path for the
+    concept sprites? (a) downsample-and-composite into the 8-direction
+    sheet, (b) algorithmic tint+overlay via extended gen_tile.py, or
+    (c) defer for human pass. Default if no answer: (b).
+  Risk: the Into-the-Breach test is structural-only at this iter — it
+    holds because each archetype's INPUT is different. The cognitive
+    test — does the user describe a run by archetype + verb, not by
+    archetype-as-skin? — is the open C15-anchor-5 question and the
+    only one a playtest can answer.
+  How to invoke: write `playtest` in the conversation. The loop pauses,
+    surfaces this REVIEW-QUEUE, and awaits your direction.

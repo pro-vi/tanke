@@ -1,6 +1,6 @@
 # tanke — Breach Loop Rubric (arc 4, v1)
 
-**14 criteria**, 0–5 scale. **70-point absolute ceiling.** Score above 2 on any
+**15 criteria**, 0–5 scale. **75-point absolute ceiling.** Score above 2 on any
 upgrade-related anchor requires the upgrade to pass the sentence test:
 *"This upgrade helps me climb through ___ by changing how I use ___."*
 
@@ -267,18 +267,40 @@ STATE §Arc-4 amendments.)
 
 ---
 
+## 15. Tank archetypes (0–5) — *structural+feel*
+
+The Round-9 surface added per the iter-62 playtest-4 override: the
+"tank that shoots discrete bullets" primitive is one of N archetypes.
+Each archetype is a DIFFERENT way to play — not a stat-skinned
+default. The Into-the-Breach standard: if a new archetype reduces to
+a stat tweak, it shouldn't ship. (CONSULT constraint 7 — "verbs and
+affordances, not passive stats" — applies maximally here.)
+
+| Score | Anchor | Tag |
+|-------|--------|-----|
+| 0 | Single archetype (the original "default tank") | — |
+| 1 | ≥2 archetypes in code; each with a verb-differentiated weapon (not just a stat) — code-cited | [STRUCTURE] |
+| 2 | ≥3 mechanically distinct archetypes shipped (e.g. discrete bullets + continuous beam + lobbed AoE); each gates on a TankArchetype enum — code-cited | [STRUCTURE] |
+| 3 | 4-archetype slate + start-of-run selection screen (MetaProgress-gated unlocks) + mid-run event-unlock switching via a depot upgrade kind — all code-cited via the test_breach_{archetype,prism,mortar,ram,archetype_select,archetype_switch} harnesses | [STRUCTURE] |
+| 4 | Visual concept sprites with mechanically-readable silhouettes per archetype (cyan beam-aperture / olive angled-barrel / red plow / default), passing the silhouette grammar gate at the concept tier; integration path queued for user decision — code/asset-cited | [STRUCTURE] |
+| 5 | Playtest: the user describes ≥2 runs by ARCHETYPE + VERB ("I had to play this run as a Mortar — picking my impacts"), not by archetype-as-skin ("I picked Prism, then I shot stuff") — cited unprompted | [FEEL] [IDENTITY-PROTECTED] |
+
+**Into-the-Breach gate (anchor 2+)**: a new archetype is rubric-eligible only if a different player INPUT produces a meaningfully different combat loop. Stop-and-fire (PRISM), lobbed parabola (MORTAR), and collision-as-weapon + sprint (RAM) each pass; a "Default + 20% damage" archetype would fail at anchor 2.
+
+---
+
 ## Effective ceiling math (per R3)
 
 | Bucket | Criteria | Max | Notes |
 |--------|----------|-----|-------|
-| Auto-citable (structural) | C2-anchor-3, C3-anchor-4, C4-anchor-4, C6-anchor-3, C7-anchor-3, C8-anchor-3, C10 (all), C11-anchor-3, C12-anchor-3, C13-anchor-3, C14-anchor-3 | ~42 | Reachable without playtest |
-| Cognitive (feel-only) | C1-anchor-4-5, C2-anchor-4-5, C3-anchor-5, C4-anchor-5, C5-anchor-4-5, C6-anchor-4-5, C7-anchor-4-5, C8-anchor-4-5, C9-anchor-3-5, C11-anchor-4-5, C12-anchor-4-5, C13-anchor-4-5, C14-anchor-4-5 | ~28 | Requires 1-2 playtests |
-| Identity-protected (NEVER AUDIT-rephrased) | C1-anchor-5, C5-anchor-5, C7-anchor-5, C8-anchor-5, C9-anchor-5, C11-anchor-5, C12-anchor-5, C13-anchor-5, C14-anchor-5 | ~8 | Gaming-prevention; playtest-only by design |
+| Auto-citable (structural) | C2-anchor-3, C3-anchor-4, C4-anchor-4, C6-anchor-3, C7-anchor-3, C8-anchor-3, C10 (all), C11-anchor-3, C12-anchor-3, C13-anchor-3, C14-anchor-3, C15-anchor-4 | ~46 | Reachable without playtest |
+| Cognitive (feel-only) | C1-anchor-4-5, C2-anchor-4-5, C3-anchor-5, C4-anchor-5, C5-anchor-4-5, C6-anchor-4-5, C7-anchor-4-5, C8-anchor-4-5, C9-anchor-3-5, C11-anchor-4-5, C12-anchor-4-5, C13-anchor-4-5, C14-anchor-4-5, C15-anchor-5 | ~29 | Requires 1-2 playtests |
+| Identity-protected (NEVER AUDIT-rephrased) | C1-anchor-5, C5-anchor-5, C7-anchor-5, C8-anchor-5, C9-anchor-5, C11-anchor-5, C12-anchor-5, C13-anchor-5, C14-anchor-5, C15-anchor-5 | ~9 | Gaming-prevention; playtest-only by design |
 
-**Effective ceiling (auto + cognitive): ~70/70.** Same as absolute since
-identity-protected anchors are inside cognitive. Reports use "X/70" with
-breakdown. (Round 8 adds C14 "in-run progression" — the iter-55
-playtest-3 roguelite-overhaul surface.)
+**Effective ceiling (auto + cognitive): ~75/75.** Same as absolute since
+identity-protected anchors are inside cognitive. Reports use "X/75" with
+breakdown. (Round 9 adds C15 "Tank archetypes" — the iter-62
+playtest-4 archetype-program surface.)
 
 ---
 
@@ -318,3 +340,4 @@ Evidence: LEDGER iter NNN cites results; BANDS.md checkbox flipped.
 | 42 | +C12 "Stakes & escalation" — 12 criteria, 60-pt absolute ceiling | Round 6d (stakes & escalation) — surfaces the single-life depth chase (band-arrival banner + live best-depth). Per the iter-39 incremental plan, each roguelite criterion lands when its sub-round opens; C13 (meta-progression) lands with sub-round 6e. |
 | 45 | +C13 "Meta-progression" — 13 criteria, 65-pt absolute ceiling | Round 6e (meta-progression) — depth-gated depot-pool widening. Completes the iter-39 incremental plan: Round 6's three roguelite axes (C11 variety, C12 stakes, C13 meta) are now all rubric-covered. |
 | 60 | +C14 "In-run progression" — 14 criteria, 70-pt absolute ceiling | Round 8 (the iter-55 playtest-3 override) adds a conventional roguelite power curve — XP/levels, per-phase upgrade picks, enemy ammo drops, longer shields — a surface the breach-economy rubric never covered. Per the iter-39 incremental pattern, the criterion is added when its round closes. C14=3 (anchor 3 — the full in-run suite, harness-cited via test_breach_xp / level / depot / ammo); anchors 4-5 playtest-gated. Constraint 7 ("verbs not stats") is relaxed for C14 per the user override (STATE §Arc-4 amendments). |
+| 71 | +C15 "Tank archetypes" — 15 criteria, 75-pt absolute ceiling | Round 9 (the iter-62 playtest-4 override) adds the tank-archetype program — 4 mechanically-distinct tanks (Default / Prism / Mortar / Ram) + start-of-run selection + mid-run event-unlock switching via depot upgrade + visual concept sprites. C15=4 (anchor 4 — the structural ceiling: 4-archetype slate + both selection paths + concept sprites passing the silhouette gate, all harness-cited via test_breach_{archetype,prism,mortar,ram,archetype_select,archetype_switch} + iter-70 image-gen output); anchor 5 playtest-gated. Constraint 7 ("verbs not stats") is re-established maximally here — archetypes are pure verb-differentiation. The Into-the-Breach gate (different input → different combat loop) is encoded in the C15 prose. |

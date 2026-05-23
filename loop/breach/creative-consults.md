@@ -20,6 +20,139 @@ Format:
 
 ---
 
+## Consult 007 — iter 71 — written self-pre-mortem — Round 9 close
+
+- Date: 2026-05-23
+- Tab status: n/a — written self-pre-mortem (the established arc-4
+  mode; cf. CONSULT 003/004/005/006). Round 9 was a user-directed
+  archetype-program build; the user's hands-on verdict is the next
+  gate.
+- Three permanent questions answered? YES (+ the Round-9 distinctness
+  question + the rubric question).
+- Key reframe: Round 9 re-establishes CONSULT constraint 7 (verbs +
+  affordances, not passive stats) at maximum intensity — the 4
+  archetypes ARE the verb-differentiation. This partially answers
+  CONSULT 006's open risk that Round 8 had relaxed constraint 7.
+  Round 9's archetype verbs (beam / lob / collide) sit ON TOP of
+  Round 8's XP layer; the universal systems stack uniformly across
+  archetype-specific combat loops.
+- Adopted into: RUBRIC.md +C15 "Tank archetypes"; REVIEW-QUEUE #14
+  ★ PLAYTEST REQUEST; the iter-71 Round-9 close.
+
+### Round 9 review — did the archetype program land structurally?
+
+Round 9 shipped all 8 sub-rounds + close:
+- 9a enemy HP primitive (Heavy 3-4 hp / Light 1-2 / Fast 2) + HP-bar
+  HUD gated on `breach_mode_enabled and max_hp > 1`. Sanctioned
+  Enemy.gd substrate write — HUD-only, hash bit-identical.
+- 9b TankArchetype enum (DEFAULT/PRISM/MORTAR/RAM), `@export var
+  archetype: int = TankArchetype.DEFAULT` gating all per-archetype
+  behavior; DEFAULT is the original breach-economy tank,
+  bit-identical.
+- 9c PRISM — per-physics-tick raycast beam (BEAM_RANGE=160) with
+  per-body-type damage rule + brick burn; stop-and-fire (movement
+  gated by `_beam_active`); BeamLine HUD child for the visible beam.
+- 9d MORTAR — MortarShell.gd + .tscn projectile, parabolic via
+  `sin(πt) · ARC_HEIGHT`, AoE on impact via sibling-distance loop,
+  slower rate of fire (GunTimer 1.5s).
+- 9e RAM — collision damage (move_and_collide loop with cooldown),
+  forward-cone swing (RAM_SWING_RANGE=18) as the fire button,
+  RAM_SPEED_BONUS=6 stacked onto base speed.
+- 9f start-pick — `force_archetype_select` HUD panel with KEY_1-4
+  picker, MetaProgress unlock tiers (PRISM@20/MORTAR@40/RAM@60),
+  refactor of per-archetype init into `_init_archetype()` so post-pick
+  re-init works.
+- 9g event-unlock switching — 3 new Depot UpgradeKind values
+  (SWITCH_TO_PRISM/MORTAR/RAM), gated on the same MetaProgress tiers;
+  `apply_upgrade` calls the new public `switch_archetype(value)`
+  which `_revert_archetype()`s outgoing mods (speed/GunTimer/beam
+  line) and re-runs init — multi-switch (PRISM→RAM→MORTAR→RAM)
+  verified by test_breach_archetype_switch to keep speed clean.
+- 9h visual concept sprites via /agentify image_gen — 3 distinct
+  silhouettes (cyan beam-aperture / olive angled barrel / red plow),
+  silhouette grammar gate passes at concept tier; integration path
+  is REVIEW-QUEUE #13 (default: algorithmic tint+overlay via
+  extended gen_tile.py).
+All harness-cited via test_breach_{archetype, prism, mortar, ram,
+archetype_select, archetype_switch, meta, overdrive (catalog +3)}.
+The 4-archetype slate + both selection paths + concept sprites =
+C15 anchor 4 (the structural ceiling). Anchor 5 is playtest-only.
+
+### Q1 — distinct from BC, or BC with extra steps?
+
+The shape of the answer keeps changing. Through Round 6 the answer
+was "distinct via the breach economy." Round 8 added "WITH a
+standard power curve" (less distinctive). Round 9 adds 4
+mechanically distinct tanks — each with a verb the others don't
+have. The game now reads as a four-loop multi-tool: each archetype is
+a different game ABOUT a breach economy. PRISM is closer to a
+twin-stick beam game; MORTAR closer to an arc-aim artillery game;
+RAM closer to a momentum-management game; Default is the original
+shell-economy puzzle. That diversity is more distinct from BC than
+Round 8 alone made it — but at the cost of being four-things instead
+of one. The risk is now a fragmentation risk: do the four tanks add
+up to ONE game, or four-half-games?
+
+### Q2 — depots earned beats, or menu-grind?
+
+Round 9 added the SWITCH_TO_* depot upgrades, which can be ROUTE-
+ALTERING picks ("switch to RAM now that I've earned the option" =
+the player consciously commits to a different combat loop for the
+remainder of the run). This is the most consequential class of depot
+pick the loop has shipped — it changes WHAT THE PLAYER DOES, not
+just refills or +N%. If the user picks a SWITCH_TO_* once per run,
+depots become a chapter-boundary (which is a stronger framing than
+"resupply"). If picked never, the new options are dead-weight in the
+pool (a risk the pool-widening C13 anchor accepted).
+
+### Q3 — what's seductive-but-hollow about Round 9?
+
+The sharp finding. Round 9's structural progress is real — 4 tanks
+that mechanically differ. BUT: the loop has not VERIFIED whether
+they FEEL distinct in play. The PRE-MORTEM's failure mode is
+"hollow distinctness" — the verbs are different on paper
+(beam / lob / collide / discrete) but maybe a playtest reveals
+that, with the existing enemy roster and tile palette, PRISM-against-
+brick and Default-with-HE produce the same player-felt loop ("kill
+brick → kill enemy → next phase"). Each archetype was harness-
+verified IN ISOLATION; their distinctness AS PLAY EXPERIENCES is the
+open cognitive question. The omission that would look stupid in 6
+months: shipping 4 archetypes that are mechanically distinct but
+experientially homogeneous — the Into-the-Breach test failed in
+practice while passing on paper.
+
+The mitigation in the structure already shipped: each archetype
+violates a DIFFERENT default-tank assumption. PRISM violates
+hit-and-run. MORTAR violates LoS. RAM violates the gun-as-weapon
+primitive entirely. If those three constraint-breaks each force a
+different decision moment, the archetypes will feel distinct. If the
+existing roster is too forgiving to let those constraint-breaks
+matter, they won't. Only a playtest separates the two outcomes —
+which is why iter 71 ships a ★ PLAYTEST REQUEST (REVIEW-QUEUE #14)
+as the close artifact, not "just" another internal milestone.
+
+### Round-9-specific question — into-the-breach distinctness?
+
+The harness tests assert the structural distinctness — `pt.archetype`
+differs, `_init_archetype()` builds the right per-archetype
+artifacts, `switch_archetype()` keeps internal state clean. That is
+the necessary condition. The SUFFICIENT condition — that the user
+describes a run by archetype-verb rather than archetype-as-skin
+("I had to play this as a Mortar — picking my impacts" vs "I picked
+Prism, then I shot stuff") — lives in C15 anchor 5, identity-
+protected. The honest report: structural ceiling reached at C15=4;
+the climb to C15=5 is gated on the playtest answer.
+
+### Rubric question
+
+Per the iter-39 incremental pattern, Round 9 lands +C15 "Tank
+archetypes" — 15 criteria, 75-pt absolute ceiling. The criterion's
+structural anchors (1-4) are reachable via Round-9 work; anchor 5 is
+the identity-protected cognitive gate. Adopted into RUBRIC.md
+revision log under iter 71.
+
+---
+
 ## Consult 006 — iter 60 — written self-pre-mortem — Round 8 close
 
 - Date: 2026-05-21

@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 70
+iter: 71
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_70: 23d6a2ec3bf2821f  # bit-identical through 41 substrate writes (iter 70 asset-only)
+hash_anchor_at_iter_71: 23d6a2ec3bf2821f  # bit-identical through 41 substrate writes (iters 70-71 asset/doc-only)
 substrate_writes_this_arc: 41  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×23 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
-current_round: 9-open
-current_round_phase: ROUND-CLOSE — Round 9-close (CONSULT 007 + QUEUE close marker + RUBRIC +C15); blueprint iter-062-round9-architect.md
+current_round: 9-CLOSED
+current_round_phase: BETWEEN-ROUNDS — Round 9 closed at iter 71; next-round META bootstrap pending
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER)
@@ -17,12 +17,12 @@ falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved]
 reachability_status: all 5 bands verified — 12/12-seed sweep (100%, floor ≥80%) — refreshed iter 61 post-Round-8
 audit_candidates: []
 last_audit: iter 26
-last_consult: iter 60  # CONSULT 006 — written self-pre-mortem, Round 8 close
+last_consult: iter 71  # CONSULT 007 — written self-pre-mortem, Round 9 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 71 — ROUND-CLOSE — Round 9-close. Read iter-062-round9-architect.md (the Round-9-close subsection). Three close artifacts: (1) CONSULT 007 via /agentify with the three permanent questions framed around "Are the 4 archetypes mechanically distinct, or just stat-skinned defaults?" Capture to loop/breach/creative-consults.md regardless of tab status (PROMPT §CONSULT SCHEDULE rule). (2) Append REVIEW-QUEUE #14 — "★ PLAYTEST REQUEST — Round 9 complete" with four-archetype affordance + start-pick + mid-run-switch + visual concept sprites + the open #13 integration-path question; mark playtest gate. (3) RUBRIC.md edit: add C15 "Tank archetypes" anchor (auto-citable: ≥3 archetypes with verb+silhouette; cognitive: each changes WHAT the player does, not just stats; identity-protected). Score advance ladder. Update LEDGER score line for the 65→70-pt ceiling. Hash-anchor verify (no substrate; trivially preserved); test-all + test-breach green.
-score: 42/70 absolute · 42/70 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3
+next_action: iter 72 — META — diagnose next exploration round. Round 9 closed at iter 71 (CONSULT 007 + ★REVIEW-QUEUE #14 + RUBRIC +C15; score 42/70 → 46/75 at the structural ceiling). Per PROMPT §EXPLORATION ROUND CADENCE the loop bootstraps the next round without waiting for the playtest verdict — REVIEW-QUEUE #14 is a user-look gate, not a halt. Read STATE.md + the last 30 LEDGER entries + REVIEW-QUEUE.md and decide: what's the weakest axis NOW, given C15=4 is the ceiling for tank archetypes? Candidates: (a) C5 enemy-role-vocabulary at 2/5 — only 3 roles (Light/Heavy/Fast) and HP-bar HUD shipped; the silhouette gate and the canonical-answer documentation are open; the new archetypes EXPOSE roster weakness (PRISM/RAM are most interesting against varied enemies). (b) C4 depth-bands at 3/5 — 5 bands exist but band-4 ("avg shell-mix differs per band") is playtest-gated and pre-archetype. (c) C9 identity at 2/5 — the cognitive distinctness anchors are all playtest-gated; not a SPIKE candidate. Recommended Round 10 SPIKE: ENEMY ROSTER EXPANSION (C5 axis) — propose 2-3 new enemy roles whose tactical answer DEMANDS a specific archetype (e.g. a sniper that punishes PRISM exposure; a swarm that rewards MORTAR AoE; an armored hulk that rewards RAM collision). Each role exists to make the archetype distinctness MATTER. SPIKE: 2 parallel investigations (roster-expansion VS arc-3-OG-roster-import). Cadence 360s. Hash-anchor verify; test-all + test-breach green.
+score: 46/75 absolute · 46/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=2,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
 round6_blueprint: loop/breach/iter-038-round6-architect.md
@@ -31,7 +31,7 @@ round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 round9_blueprint: loop/breach/iter-062-round9-architect.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch} + check-silhouette-gate (35 in test-breach aggregate)
-review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch]  # #3, #7, #9, #11 CLOSED — playtests delivered
+review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch, #13 archetype-sprite integration path (decision-needed), #14 ★ PLAYTEST REQUEST Round 9 complete (playtest gate)]  # #3, #7, #9, #11 CLOSED — playtests delivered
 ```
 
 ---
@@ -140,6 +140,18 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-23 — **iter 71 (META).** Round 9-close. Three artifacts:
+  (1) CONSULT 007 — written self-pre-mortem on the 3 permanent
+  questions + Round-9 distinctness + rubric, captured to
+  creative-consults.md. Key reframe: Round 9 re-establishes CONSULT
+  constraint 7 (verbs+affordances) maximally; the structural ceiling
+  is reached, the cognitive ceiling is playtest-gated. (2) REVIEW-
+  QUEUE #14 — ★ PLAYTEST REQUEST — Round 9 complete; summarizes all
+  8 sub-rounds + the open #13 integration-path decision. (3) RUBRIC
+  +C15 "Tank archetypes" — 15 criteria, 75-pt absolute ceiling; C15
+  lands at 4 (structural ceiling), anchor 5 identity-protected.
+  Score 42/70 → 46/75. No substrate; hash anchor preserved; test-all
+  5/5; test-breach 35/35.
 - 2026-05-23 — **iter 70 (BUILD).** Round 9h — visual assets via
   /agentify image_gen. 3 parallel ChatGPT image_gen calls returned 3
   concept sprites (~300×300) saved to
@@ -163,26 +175,37 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 71 — ROUND-CLOSE — Round 9-close.**
-Read `loop/breach/iter-062-round9-architect.md` (the Round-9-close
-subsection). Three close artifacts:
-  1. CONSULT 007 via `/agentify` with the three permanent questions
-     framed around "Are the 4 archetypes mechanically distinct, or
-     just stat-skinned defaults?" Capture to
-     `loop/breach/creative-consults.md` regardless of tab status
-     (PROMPT §CONSULT SCHEDULE rule).
-  2. Append REVIEW-QUEUE #14 — "★ PLAYTEST REQUEST — Round 9
-     complete" — summarizing the four-archetype affordance + the
-     start-pick + the mid-run switch + the visual concept sprites
-     + the open #13 integration-path question. Mark as playtest
-     gate.
-  3. RUBRIC.md edit: add C15 "Tank archetypes" anchor (auto-citable:
-     ≥3 archetypes with verb+silhouette; cognitive: each changes
-     WHAT the player does, not just stats; identity-protected).
-     Score advance ladder. Update LEDGER score line for the
-     65→70-pt ceiling.
-Hash-anchor verify (no substrate; trivially preserved); test-all +
-test-breach green.
+**Iter 72 — META — diagnose next exploration round.**
+Round 9 closed at iter 71. Per PROMPT §EXPLORATION ROUND CADENCE
+the loop bootstraps the next round without waiting for the playtest
+verdict — REVIEW-QUEUE #14 is a user-look gate, not a halt.
+
+Read STATE.md + the last 30 LEDGER entries + REVIEW-QUEUE.md and
+decide: what's the weakest axis NOW, given C15=4 is the ceiling for
+tank archetypes?
+
+Recommended candidates (loop chooses):
+  - **(a) Round 10 SPIKE — Enemy roster expansion (C5 at 2/5).** The
+    new archetypes EXPOSE roster weakness — PRISM/MORTAR/RAM are
+    most interesting against varied enemy roles, but only 3 roles
+    exist (Light/Heavy/Fast). Propose 2-3 new roles whose tactical
+    answer DEMANDS a specific archetype: a sniper that punishes
+    PRISM exposure; a swarm that rewards MORTAR AoE; an armored
+    hulk that rewards RAM collision. Each role exists to make the
+    archetype distinctness MATTER (not just exist).
+  - **(b) Round 10 SPIKE — Roster import from arc-3 OG.** A
+    cheaper path: lift enemy variants already shipped in arc-3
+    OG mode (per Roster.gd) into the breach config; SPIKE
+    measures effort-to-fit.
+  - **(c) Defer to playtest verdict.** If you'd rather have the
+    user steer Round 10 — log an idle heartbeat and await `playtest`.
+    Default scope is too easy to mis-pick when 4 mechanics just
+    landed.
+
+Default if no diagnosis emerges: SPIKE between (a) and (b) — 2
+parallel investigations, 360s cadence.
+
+Hash-anchor verify; test-all + test-breach green.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.
