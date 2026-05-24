@@ -17,6 +17,45 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 105 — META — code-review-iter-100 sprint CLOSE-OUT + bootstrap diagnosis
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- Score: 47/75 effective · 47/75 absolute   (Δ vs prior: 0 — META
+  iter, no rubric criterion lift; BUILD-QUALITY cadence cap holds
+  at 1 quality iter per 3 BUILDs — iters 101-104 were BUILDs, this
+  is the legitimate META close-out)
+- Constraints respected: none directly (process iter)
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… n/a (no substrate touch)
+- Falsifications: none added
+- Files: loop/breach/code-review-iter-100-sprint-summary.md (NEW —
+  full resolution table for 10 findings; hash anchor integrity log;
+  5 loop-process findings including the F006/F007 pattern's full
+  life-cycle, the paired-fix batching cadence proof, and the Godot
+  HUD same-name + queued_for_deletion gotcha), loop/breach/REVIEW-
+  QUEUE.md (+#17 sprint-complete summary), loop/breach/STATE.md
+  (current_round → 11-closed-via-cleanup; next_action → iter 106
+  DIAGNOSE on C9 death-recap surface), loop/breach/PRE-MORTEMS.md.
+- Finding: code-review-iter-100 sprint is closed. The F006/F007
+  discipline produced its first full life-cycle: surface latent
+  findings via delegated /code-review → paired-fix batch across
+  iters (2 findings + 1 harness per iter average) → close with a
+  summary doc that captures process learnings for the next sprint
+  to inherit. The Round-5-8 substrate is hardened against the 10
+  specific failure modes the review found; the substrate write
+  count went from ×35 → ×41 on PlayerTank.gd (six default-on-gated
+  writes; hash anchor preserved across every iter). Round 11 is
+  now closed-via-cleanup (Phase 1 archetype + Phase 2 swarm-spike
+  + Phase 3 review-fix); the next round bootstraps on C9 (death
+  attribution / run recap legibility) as the weakest rubric axis
+  (2/5), with the option to widen to C5 if the spike surfaces
+  shared infrastructure. C9's outcome also de-risks the open
+  REVIEW-QUEUE #14 playtest gate by improving the post-run debrief
+  quality.
+
+---
+
 ## iter 104 — BUILD — code-review-iter-100 FINAL batch: P2-B + P2-C (toast stagger + route-strip max-cleared)
 
 - Date: 2026-05-24

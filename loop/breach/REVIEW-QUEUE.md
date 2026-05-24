@@ -443,3 +443,36 @@ Format per item:
     Mitigation: the rethesis kept Pro's STRUCTURAL recommendations
     and deferred IDENTITY-PROTECTED calls (C15-5 rephrase, the
     identity-vs-weapons question) to user direction.
+
+#17 — code-review-iter-100 fix sprint COMPLETE (Round 5-8 retroactive cleanup) — iters 100-104 — closed (10/11 fixed, 1 design no-op)
+  Finding: per F006 + F007 (delegate /code-review at every round
+    close, retroactively when prior rounds were skipped), the
+    iter-100 /code-review surfaced 11 anchored findings on Round
+    5-8 substrate that had been latent since iters 41-80. The
+    most severe was a P0 Depot re-entry exploit present since
+    iter 41 — ~60 iters of silent exposure. 10 of 11 actionable
+    findings were fixed across iters 100-104 with regression
+    harness coverage for each (test-breach 47 → 57). The 11th
+    (P2-D, MetaProgress option revocation) is a design-call no-op
+    per the iter-100 review note. Full resolution table + meta
+    findings: loop/breach/code-review-iter-100-sprint-summary.md.
+  Affordance: the substrate is now hardened against the specific
+    failure modes the review found — APCR salvage refund is frame-
+    safe; codex dismiss doesn't waste shells; HUD banner / toast /
+    route-strip cleanup is correct; level-up max-stats are bounded;
+    AmmoPickup re-rolls instead of wasting; depot pick is once-per-
+    lifetime. Hash anchor 23d6a2ec3bf2821f preserved across 6
+    additional PlayerTank.gd substrate writes (×35 → ×41) — all
+    default-on-gated, all on arc-4-only codepaths.
+  Risk: the F006/F007 pattern works but is reactive — it catches
+    bugs after they exist, not before. The deeper risk is what
+    the NEXT review (call it iter-150 + 50 iters of new substrate)
+    will surface. Mitigation: keep delegating /code-review at every
+    round close; treat the harness count as the loop's primary
+    structural-quality signal.
+  Next round: iter 105 (META, this iter) closes the sprint; iter
+    106 DIAGNOSE → iter 107 SPIKE on C9 (death attribution / run
+    recap legibility, currently 2/5 — the weakest rubric axis),
+    with the option to widen to C5 if the spike surfaces shared
+    infrastructure. Recap quality directly informs the playtest
+    debrief, so this also de-risks the open REVIEW-QUEUE #14 gate.

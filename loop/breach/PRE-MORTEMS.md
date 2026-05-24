@@ -24,6 +24,39 @@ Format:
 
 ---
 
+## iter 105 — META — code-review-iter-100 sprint close-out + bootstrap diagnosis
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- CONSULT constraints respected: none directly (process iter, no
+  feature work). Indirectly: F006/F007 discipline — the sprint
+  closeout doc captures the meta-pattern that drove the 5-iter
+  cleanup, so it stays visible to future loop iters.
+- CONSULT constraints risked: none.
+- Actions:
+  - Write `loop/breach/code-review-iter-100-sprint-summary.md`
+    with the full resolution table (10 findings + harnesses +
+    substrate writes), hash-anchor integrity log, and 5
+    loop-process findings.
+  - Append `REVIEW-QUEUE #17` summarizing the sprint outcome
+    + the next-round bootstrap question.
+  - Update STATE: `current_round` → "11-closed-via-cleanup";
+    `next_action` → iter 106 DIAGNOSE on C9 (death-recap surface)
+    as the weakest rubric axis.
+- META-trigger cited: sprint-close threshold (the F006/F007
+  meta-pattern's full life-cycle — surface findings via
+  /code-review, paired-fix batch them across iters, close with
+  a summary doc — is itself the workflow improvement worth
+  preserving for later loop iters to re-enact).
+- Falsifiable claim: the sprint-summary doc captures every
+  finding's resolution iter + harness + substrate write count;
+  cross-referencing against the iter-100/101/102/103/104 LEDGER
+  entries shows zero gaps.
+- Substrate touched: none (process iter).
+- Hash-anchor verification: not required (no code changes).
+
+---
+
 ## iter 104 — BUILD — P2-B + P2-C (toast stacking + route-strip backward)
 
 - Date: 2026-05-24
