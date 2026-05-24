@@ -24,6 +24,37 @@ Format:
 
 ---
 
+## iter 091 — BUILD — P0-1 fix: `_archetype_selecting` must pause the world
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1 (no choices during combat — the
+  pick screen now ACTUALLY pauses combat instead of leaving the
+  player exposed), 6 (death-attribution stays accurate; the
+  defensive dead-during-selector escape preserves the death code
+  path).
+- CONSULT constraints risked: none.
+- Predicted failure: PlayerTank `process_mode = PROCESS_MODE_ALWAYS`
+  during selector means PlayerTank's other `_process`/`_physics_process`
+  logic could fire while tree is paused — sprite modulate, iframe
+  timer, shield timer, etc. all keep ticking. Most are harmless
+  (timers tick a few ms then pause anyway when tree unpauses);
+  the iframe timer ticking while paused MIGHT consume iframes the
+  player would otherwise have on resume. Mitigation: iframes only
+  start after a damage event; no damage can happen while paused
+  (enemies stopped); so iframes can't be primed during pause.
+  Verified by inspection.
+- Falsifiable claim: new regression harness verifies (a) tree
+  paused after _show_archetype_select; (b) tree unpaused after
+  _pick_archetype; (c) a stub Enemy's _physics_process doesn't
+  tick while paused; (d) player can poll input while paused. If
+  any assertion fails, the fix is wrong.
+- Substrate touched: scripts/PlayerTank.gd (substrate write ×28,
+  sanctioned).
+- Hash-anchor verification plan: post-edit verify.
+
+---
+
 ## iter 090 — META + BUILD — /code-review delegation + P1-1 fix (resume loop per user feedback)
 
 - Date: 2026-05-23

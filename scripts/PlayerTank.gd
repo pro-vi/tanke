@@ -268,7 +268,16 @@ func _physics_process(delta: float) -> void:
 	# arc-4 iter 68 (Round 9f): while the archetype-select screen is up,
 	# everything else pauses — only the picker polls input. Released on
 	# _pick_archetype.
+	# arc-4 iter 091 (P0-1 fix): defensive dead-during-selector escape.
+	# Even though the iter-091 tree-pause SHOULD prevent the player from
+	# dying while the selector is up, if some path bypasses pause (e.g.
+	# a scripted death, an HUD codex dismiss damage path), exit the
+	# selector cleanly and route to restart input.
 	if _archetype_selecting:
+		if _dead:
+			_exit_archetype_select()
+			_handle_restart_input()
+			return
 		_poll_archetype_select_input()
 		return
 	# arc-4 iter 36: the shell codex is dismissed by the first gameplay
@@ -644,6 +653,12 @@ func _build_archetype_panel(canvas: CanvasLayer) -> void:
 # selecting gate (which makes _physics_process poll only for KEY_1-4).
 func _show_archetype_select() -> void:
 	_archetype_selecting = true
+	# arc-4 iter 091 (P0-1 fix from code-review-iter-090): pause the
+	# world so enemies don't spawn/shoot while the player reads the
+	# pick screen. PlayerTank stays processing (PROCESS_MODE_ALWAYS)
+	# so the picker input poll keeps firing.
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	get_tree().paused = true
 	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
 	if canvas == null:
 		return
@@ -651,6 +666,18 @@ func _show_archetype_select() -> void:
 		_build_archetype_panel(canvas)
 	_refresh_archetype_panel()
 	_archetype_panel.visible = true
+
+
+# arc-4 iter 091 (P0-1 fix): centralized selector cleanup — unpause
+# the tree, restore default process_mode, hide the panel. Called by
+# _pick_archetype (normal path) and the dead-during-selector escape
+# in _physics_process.
+func _exit_archetype_select() -> void:
+	_archetype_selecting = false
+	if _archetype_panel != null:
+		_archetype_panel.visible = false
+	get_tree().paused = false
+	process_mode = Node.PROCESS_MODE_INHERIT
 
 
 # arc-4 iter 68 (Round 9f): populate the panel's 4 rows from the
@@ -691,9 +718,9 @@ func _pick_archetype(value: int) -> void:
 	archetype = value
 	_archetype_initialized = false
 	_init_archetype()
-	if _archetype_panel != null:
-		_archetype_panel.visible = false
-	_archetype_selecting = false
+	# arc-4 iter 091 (P0-1 fix): centralized cleanup — also unpauses
+	# tree + restores process_mode.
+	_exit_archetype_select()
 
 
 # arc-4 iter 68 (Round 9f): KEY_1-4 = the Nth unlocked archetype.

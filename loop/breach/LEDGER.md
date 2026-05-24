@@ -17,6 +17,48 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 091 — BUILD — P0-1 fix: archetype-select now pauses the world
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0 — bug fix, no rubric anchor lift).
+- Constraints respected: 1 (no choice during combat — pick screen
+  now ACTUALLY pauses combat), 6 (defensive dead-during-selector
+  escape preserves death code path).
+- Constraints risked: none.
+- P0-1 from code-review-iter-090.md FIXED. Three coordinated
+  changes:
+  - `_show_archetype_select`: sets `get_tree().paused = true` +
+    `process_mode = PROCESS_MODE_ALWAYS` on PlayerTank (so picker
+    input keeps polling while tree paused; Spawner/Enemy/projectiles
+    paused per PROCESS_MODE_INHERIT default).
+  - New `_exit_archetype_select()` helper: centralized cleanup —
+    `_archetype_selecting = false`, panel hidden, `paused = false`,
+    `process_mode = PROCESS_MODE_INHERIT`.
+  - `_pick_archetype` calls `_exit_archetype_select` instead of
+    inline cleanup.
+  - `_physics_process` dead-during-selector escape: if `_dead`
+    while `_archetype_selecting`, exit selector cleanly + route to
+    `_handle_restart_input`. Defensive against future bypass paths.
+- Harness: new `test_breach_archetype_select_pause.gd` with 6
+  assertions: tree paused after _show_archetype_select; PlayerTank.
+  process_mode == ALWAYS; stub Node ticks=0 while paused;
+  _pick_archetype unpauses + restores process_mode + clears
+  selecting flag; stub resumes ticking; dead-during-selector
+  escape clears state. All pass.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (PlayerTank substrate
+  write ×28; gated on `loadout != null` via the original
+  force_archetype_select flag path; flag-off codepath unchanged).
+  test-all 5/5; test-breach 41 → 42.
+- Falsifications: none.
+- Substrate writes this arc: 46 → 47 (PlayerTank.gd ×28).
+- Files: scripts/PlayerTank.gd,
+  loop/breach/test_breach_archetype_select_pause.gd (NEW),
+  Makefile, loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **P0-1 fixed + regression-guarded. Next: P0-2
+  FASTER_RELOAD XP bonus cache (iter 92).**
+
 ## iter 090 — META + BUILD — /code-review delegation + P1-1 fix (resume loop per user feedback)
 
 - Date: 2026-05-23
