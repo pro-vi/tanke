@@ -2,14 +2,14 @@
 
 ```yaml
 phase: running
-iter: 97
+iter: 98
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_97: 23d6a2ec3bf2821f  # bit-identical through 53 substrate writes
-substrate_writes_this_arc: 53  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×34 + Level.gd + Spawner.gd ×4 + Enemy.gd ×2
-current_round: 11-open — 14 of 18 anchored code-review findings closed (2 P0 + 6 P1 + 6 P2); P2 sweep continuing
-current_round_phase: BUILD — Round 11 Phase 2 P2 sweep (3 items remaining: P2-5, P2-7, P2-9) from code-review-iter-090.md
+hash_anchor_at_iter_98: 23d6a2ec3bf2821f  # bit-identical through 54 substrate writes
+substrate_writes_this_arc: 54  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×35 + Level.gd + Spawner.gd ×4 + Enemy.gd ×2
+current_round: 11-CLOSED on code-review queue — 17 of 18 anchored findings fixed (2 P0 + 6 P1 + 9 P2); the 18th (MORTAR friendly-fire conf 70) was below the 75 gate
+current_round_phase: BETWEEN-PHASES — code-review queue closed; Phase 2 candidates B/C/D from iter-080 still gated on playtest 5
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30, 88]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER); 88 = state-hygiene fix per iter-87 audit
@@ -21,7 +21,7 @@ last_consult: iter 79  # CONSULT 009 — written self-pre-mortem, Round 10 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 98 — BUILD — P2 sweep batch 3 (final P2s): P2-7 (beam burn cooldown universal — apply BEAM_DAMAGE_COOLDOWN to all damageable bodies, not just enemies; protects future multi-HP non-enemy from melting at 60fps) + P2-9 (MetaProgress.unlock_ladder under-reports — add 3 archetype rungs at depth 20/40/60 OR split into upgrade_ladder/archetype_ladder; reconcile test_breach_meta if needed) + P2-5 (HEAT vs breach Heavy HP=3 contradiction — DESIGN CALL: either exclude Heavy from BREACH_HP_BONUS, OR raise HEAT damage to 3, OR update PRESSURES.md/codex text to "HEAT 2-shots breach Heavy"). P2-5 is a design judgment — go with the smallest-change option (update codex text + PRESSURES.md to reflect 2-shot HEAT) unless the user has steered otherwise. Substrate write #35 on PlayerTank.gd (P2-7). Hash-anchor verify; test-all + test-breach green.
+next_action: iter 99 — META — code-review-iter-090 queue CLOSED summary + Round 11 forward plan. Three artifacts: (1) update loop/breach/code-review-iter-090.md with the per-finding fix status (CLOSED + iter + harness reference) — turns the original report into a living document. (2) Append CONSULT 010 written self-pre-mortem to creative-consults.md reflecting on the iter-89→98 fix sprint (lessons + discipline updates: /code-review at every round close, paired-fix batching for small P2s, regression-harness-per-fix). (3) REVIEW-QUEUE #14 status note: code-review-driven hardening sprint complete; substrate is playtest-5-ready with 9 new regression harnesses + 17 fixed findings. Then idle heartbeat per the iter-54/61/72 reconciliation OR pivot to user-direction work if available. Hash-anchor verify (META + docs only).
 score: 47/75 absolute · 47/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4 (iter 76 lifts C5 2→3 via PRESSURES.md canonical-answer doc)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -30,7 +30,7 @@ round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 round9_blueprint: loop/breach/iter-062-round9-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike,double-kill,archetype-select-pause,xp-reload-persistence,switch-archetype-validation,pick-archetype-and-mortar-guard,run-recap-archetype-contract,p2-batch1,p2-batch2} + check-silhouette-gate (48 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike,double-kill,archetype-select-pause,xp-reload-persistence,switch-archetype-validation,pick-archetype-and-mortar-guard,run-recap-archetype-contract,p2-batch1,p2-batch2,p2-batch3} + check-silhouette-gate (49 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch, #13 archetype-sprite integration path (decision-needed), #14 ★ PLAYTEST REQUEST Round 9 complete (playtest gate), #15 archetypes-as-identities vs archetypes-as-weapons (design-direction question), #16 pressure matrix + distinctness audit (Round 10 internal)]  # #3, #7, #9, #11 CLOSED — playtests delivered
 ```
 
@@ -140,6 +140,24 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-24 — **iter 98 (BUILD).** P2 sweep batch 3 (final) —
+  closes the code-review-iter-090 queue. P2-7 (PlayerTank.gd
+  ×35): `_apply_beam_to_body` applies BEAM_DAMAGE_COOLDOWN
+  uniformly to all bodies with take_damage (not just enemies);
+  bricks still die in 1 tick (hp=1), but future multi-HP
+  non-enemies protected from framerate melt. Updated
+  test_breach_prism harness for new cooldown-gated brick
+  semantics. P2-9 (MetaProgress.gd): new `archetype_ladder()`
+  returning 3 rungs (PRISM@20, MORTAR@40, RAM@60) — companion
+  to existing 4-rung `unlock_ladder()` (backward-compat).
+  P2-5 (configs/breach_default.tres + PRESSURES.md): canonical
+  answer text updated to "APCR 1-shots; HEAT 2-shots
+  entrenched heavies (breach Heavy hp=3)". New harness
+  test_breach_p2_batch3 with 5 assertions, all pass. Substrate
+  write ×35. Hash preserved; test-all 5/5; test-breach 48 → 49.
+  **CODE-REVIEW-ITER-090 QUEUE CLOSED. 17 of 18 anchored
+  findings fixed across 9 iters (90-98); the 18th was below
+  the 75 gate.** Δ 0. 47/75.
 - 2026-05-24 — **iter 97 (BUILD).** P2 sweep batch 2 fix from
   code-review-iter-090. P2-4 (PlayerTank.gd ×34): `_die` calls
   `_stop_beam()` if PRISM, hiding the beam on the death overlay.
@@ -471,33 +489,35 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 98 — BUILD — P2 sweep batch 3 (final P2s): P2-7 + P2-9 + P2-5.**
+**Iter 99 — META — code-review queue CLOSED summary + Round 11 forward plan.**
 
-- **P2-7** (PlayerTank.gd `_apply_beam_to_body`): apply
-  `BEAM_DAMAGE_COOLDOWN` to ALL damageable bodies (not just
-  enemies). Protects future multi-HP non-enemy (eagle base,
-  destructible cover) from melting at 60fps.
-- **P2-9** (MetaProgress.unlock_ladder): add the 3 archetype
-  rungs (PRISM@20, MORTAR@40, RAM@60) OR split into separate
-  ladders. Reconcile test_breach_meta rung count assertion (4
-  → 7 if combined, or split entirely).
-- **P2-5** (PRESSURES.md + codex text — DESIGN CALL): the
-  canonical answer text "HEAT kills entrenched heavies" reads as
-  one-shot, but breach Heavy HP=3 means HEAT (damage 2) takes 2
-  shots. Smallest-change option: update PRESSURES.md +
-  breach_default.tres canonical_answer text to "HEAT 2-shots
-  breach Heavy" (or similar). Skip if user has signaled a different
-  preference (e.g. raise HEAT damage to 3).
+The code-review-iter-090 queue is now CLOSED (iters 90-98 fixed
+17 of 18 anchored findings; 18th was below 75-gate). Three META
+artifacts:
 
-New harness `test_breach_p2_batch3.gd` for P2-7 + P2-9.
-Substrate write #35 on PlayerTank.gd (P2-7). Hash-anchor verify;
-test-all + test-breach green.
+  1. Update `loop/breach/code-review-iter-090.md` with per-finding
+     fix status — each entry gets CLOSED/iter-NN/harness-NN tag.
+     The report becomes a living document.
 
-After iter 98: all 18 anchored code-review-iter-090 findings will
-be closed (the 8th P2 — MORTAR friendly-fire at conf 70 — never
-entered the queue because it was below the 75 gate). Total work:
-8 iters (90-97) for 14 findings; iter 98 ships the final 3 (with
-P2-5 being a design-doc edit not code).
+  2. Append CONSULT 010 (written self-pre-mortem) to
+     `creative-consults.md` reflecting on the iter-89→98 fix sprint.
+     Lessons + discipline updates:
+       - /code-review at every round close (already codified F006)
+       - Paired-fix batching for small P2s (3-fix paired iters
+         are efficient + tractable for harness coverage)
+       - Regression-harness-per-fix discipline
+       - Substrate write count climbed from 41 → 54 (+13) for the
+         fix sprint; all gated, hash anchor intact throughout
+
+  3. REVIEW-QUEUE #14 status note: code-review-driven hardening
+     sprint complete; substrate is playtest-5-ready with 9 new
+     regression harnesses (40 → 49 in test-breach) + 17 fixed
+     findings (2 P0 + 6 P1 + 9 P2).
+
+Then idle heartbeat (1800s) per the iter-54/61/72 reconciliation
+OR pivot to user-direction work if a signal arrived.
+
+Hash-anchor verify; test-all + test-breach green.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.

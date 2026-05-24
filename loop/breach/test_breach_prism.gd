@@ -64,19 +64,29 @@ func _initialize() -> void:
 	pt_d.queue_free()
 	await process_frame
 
-	# === Brick: damaged every tick (burn-through feel).
+	# === Brick: damaged on cooldown (iter-098 P2-7 fix from
+	# code-review-iter-090 — was "every tick", now cooldown-gated
+	# uniformly with enemies to protect future multi-HP non-enemies
+	# from melting at framerate; bricks still die fast since hp=1).
 	var brick := StubBrick.new()
 	root.add_child(brick)
 	await process_frame
+	pt._beam_dmg_timer = 0.0  # reset for clean cooldown trace
 	pt._apply_beam_to_body(0.1, brick)
 	if brick.damage_taken != 1:
 		push_error("FAIL — brick stub not damaged on first tick (got %d)" % brick.damage_taken)
 		quit(1); return
+	# Second tick mid-cooldown: no damage.
 	pt._apply_beam_to_body(0.1, brick)
-	if brick.damage_taken != 2:
-		push_error("FAIL — brick stub not damaged on second tick (got %d)" % brick.damage_taken)
+	if brick.damage_taken != 1:
+		push_error("FAIL — brick mid-cooldown: damage %d, want 1 (cooldown should have blocked)" % brick.damage_taken)
 		quit(1); return
-	print("  brick: damaged every tick (%d after 2 ticks)" % brick.damage_taken)
+	# Advance past cooldown — next damage tick fires.
+	pt._apply_beam_to_body(0.2, brick)  # 0.25 - 0.1 - 0.1 - 0.2 = -0.15, fires
+	if brick.damage_taken != 2:
+		push_error("FAIL — brick post-cooldown: damage %d, want 2" % brick.damage_taken)
+		quit(1); return
+	print("  brick: cooldown-gated (1 hit, mid-cooldown skipped, 2 hits after cooldown — P2-7 universal cooldown)")
 
 	# === Enemy: damaged on cooldown.
 	var enemy := StubEnemy.new()

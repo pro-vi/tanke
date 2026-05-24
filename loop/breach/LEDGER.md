@@ -17,6 +17,65 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 098 — BUILD — P2 batch 3 (final): P2-7 + P2-9 + P2-5 — code-review-iter-090 queue CLOSED
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0).
+- Constraints respected: 7 (P2-7 preserves beam-as-burn intent
+  without melt risk), 5 (P2-9 archetype_ladder makes the unlock
+  state fully expressible), 6 (P2-5 canonical_answer text now
+  matches gameplay).
+- Constraints risked: none.
+- 3 fixes shipped:
+  - **P2-7** (PlayerTank.gd substrate write ×35): `_apply_beam_to_body`
+    now applies `BEAM_DAMAGE_COOLDOWN` uniformly to all bodies
+    with `take_damage` (not just enemies). Bricks (hp=1) still
+    die in one tick; future multi-HP non-enemies protected from
+    melting at framerate. Updated existing test_breach_prism
+    harness to reflect new cooldown-gated brick semantics.
+  - **P2-9** (MetaProgress.gd, arc-4-owned): new
+    `archetype_ladder()` returning 3 rungs (PRISM@20/MORTAR@40/
+    RAM@60). Companion to existing 4-rung `unlock_ladder()`;
+    backward-compat preserved.
+  - **P2-5** (configs/breach_default.tres + loop/breach/PRESSURES.md):
+    bunker_zone canonical_answer updated to "APCR 1-shots; HEAT
+    2-shots entrenched heavies (breach Heavy hp=3)". PRESSURES.md
+    "Armor bypass gaps" paragraph clarified. No code change.
+- New harness test_breach_p2_batch3.gd with 5 assertions, all pass:
+  - P2-7: non-enemy stub damaged 1 tick → mid-cooldown skipped
+    → 2 ticks after cooldown (was 4 hits at framerate before fix)
+  - P2-9: archetype_ladder returns 3 rungs with right names+depths
+  - P2-9: unlock_ladder still returns 4 rungs (backward compat)
+  - P2-5: bunker_zone canonical_answer contains "2-shot"
+    clarification text
+- Hash anchor: `23d6a2ec3bf2821f` preserved (PlayerTank ×35).
+  test-all 5/5; test-breach 48 → 49 (after fixing the
+  test_breach_prism harness assertion for the new cooldown
+  semantics, which was the only test that depended on the OLD
+  "brick burns every tick" behavior).
+- Falsifications: none. The PRE-MORTEM predicted-failure scenario
+  (universal cooldown slows brick destruction) is REAL but
+  acceptable — bricks still die in one tick; only the
+  framerate-stacking case is gated. The test_breach_prism
+  harness update made the semantic shift explicit + test-cited.
+- Substrate writes this arc: 53 → 54 (PlayerTank.gd ×35).
+- Files: scripts/PlayerTank.gd, scripts/MetaProgress.gd,
+  configs/breach_default.tres, loop/breach/PRESSURES.md,
+  loop/breach/test_breach_prism.gd (assertion update),
+  loop/breach/test_breach_p2_batch3.gd (NEW), Makefile,
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **CODE-REVIEW-ITER-090 QUEUE CLOSED. 17 of 18
+  anchored findings fixed (2 P0 + 6 P1 + 9 P2); the 18th —
+  MORTAR friendly-fire at composition-anchor 70 — fell below the
+  75 gate and is documented in code-review-iter-090.md "P2-10".
+  Total fix work: 9 iters (90-98) for 17 findings + 1 design-doc
+  edit. test-breach 40 → 49 (9 new regression harnesses added).
+  Next: iter 99 META — Round 11 status doc + plan forward (P2 sweep
+  complete; Phase 2 candidates B/C/D from iter-080 still gated on
+  playtest 5).**
+
 ## iter 097 — BUILD — P2 batch 2: P2-4 + P2-6 + P2-2 (_stop_beam in _die, Depot same-archetype filter, enum pin)
 
 - Date: 2026-05-24

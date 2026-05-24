@@ -98,7 +98,9 @@ representation:
    high damage, slow movement).**
 
 3. **HEAVY ARMOR (beyond 2hp Heavy)** — the breach-mode bonus
-   gives Heavy 3hp. With HEAT/APCR bypass, the ceiling holds. But
+   gives Heavy 3hp. HEAT (damage 2) takes **2 shots** to clear a
+   breach Heavy — clarified iter 098 (P2-5 fix) in canonical_answer
+   text. APCR bypass means 1 APCR clears any Heavy. But
    the matrix above flagged that PRISM/MORTAR/RAM may NOT have
    correct armor-bypass logic — needs verification (see "Armor
    bypass gaps" below).

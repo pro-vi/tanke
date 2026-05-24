@@ -24,6 +24,51 @@ Format:
 
 ---
 
+## iter 098 — BUILD — P2 batch 3 (final): P2-7 + P2-9 + P2-5 (beam cooldown universal + archetype ladder + HEAT/Heavy doc)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 7 (P2-7 preserves beam-as-burn
+  intent without melting future multi-HP non-enemies), 5
+  (archetype ladder fully expressible — Depot + UI consumers
+  can render the complete unlock state), 6 (canonical-answer
+  text now matches actual gameplay).
+- CONSULT constraints risked: none.
+- 3 fixes:
+  - **P2-7** (PlayerTank.gd ×35, ~5 lines): `_apply_beam_to_body`
+    applies `BEAM_DAMAGE_COOLDOWN` uniformly to ALL bodies with
+    `take_damage`, not just enemies. Bricks burning fast was
+    intended only because bricks have hp=1 (one tick kills them);
+    a future multi-HP non-enemy would melt. Universal cooldown
+    preserves the intent without the latent risk.
+  - **P2-9** (MetaProgress.gd, ~10 lines): add separate
+    `archetype_ladder()` returning [{depth:20, name:"PRISM"},
+    {depth:40, name:"MORTAR"}, {depth:60, name:"RAM"}]. Keeps
+    the existing 4-rung `unlock_ladder()` unchanged for
+    backward compat. test_breach_meta extension verifies both.
+  - **P2-5** (PRESSURES.md + configs/breach_default.tres
+    canonical_answer text update — DESIGN-DOC FIX): clarify that
+    "HEAT 2-shots breach Heavy" (because BREACH_HP_BONUS makes
+    Heavy hp 3 and HEAT deals 2). Update the text from "HEAT
+    kills entrenched heavies" → "HEAT 2-shots entrenched heavies"
+    (or similar). No code change; design intent is now consistent.
+- Predicted failure: P2-7's `_beam_dmg_timer = BEAM_DAMAGE_COOLDOWN`
+  reset for non-enemy hits could slow brick destruction
+  noticeably. With cooldown=0.25s, a 1-HP brick takes a single
+  tick still, but THE TIMER is then primed; the NEXT brick the
+  beam hits in the same fire-hold waits 0.25s. Bricks no longer
+  melt at framerate. Acceptable — the playtest direction "burn
+  through brick" was about visual feel, not raw DPS. Brick walls
+  still die fast; just one-at-a-time instead of all-at-once.
+- Falsifiable claim: harness verifies (a) non-enemy take_damage
+  now respects cooldown; (b) archetype_ladder returns 3 entries;
+  (c) text-doc updates are present.
+- Substrate touched: scripts/PlayerTank.gd (substrate write ×35,
+  4-line `_apply_beam_to_body` refactor).
+- Hash-anchor verification plan: post-edit verify.
+
+---
+
 ## iter 097 — BUILD — P2 batch 2: P2-4 + P2-6 + P2-2 (_stop_beam in _die, Depot same-archetype filter, enum pin)
 
 - Date: 2026-05-24

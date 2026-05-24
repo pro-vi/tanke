@@ -563,12 +563,14 @@ func _apply_beam_to_body(delta: float, hit_body: Node) -> void:
 	_beam_dmg_timer -= delta
 	if hit_body == null:
 		return
-	if hit_body.is_in_group("enemy"):
-		if _beam_dmg_timer <= 0.0 and hit_body.has_method("take_damage"):
-			hit_body.take_damage(1)
-			_beam_dmg_timer = BEAM_DAMAGE_COOLDOWN
-	elif hit_body.has_method("take_damage"):
+	# arc-4 iter 098 (P2-7 fix from code-review-iter-090): apply the
+	# BEAM_DAMAGE_COOLDOWN to ALL bodies with take_damage, not just
+	# enemies. Bricks have hp=1 so they still die in one tick (intent
+	# preserved); the cooldown protects future multi-HP non-enemies
+	# (eagle base, destructible cover) from melting at framerate.
+	if _beam_dmg_timer <= 0.0 and hit_body.has_method("take_damage"):
 		hit_body.take_damage(1)
+		_beam_dmg_timer = BEAM_DAMAGE_COOLDOWN
 
 
 # arc-4 iter 65 (Round 9c): hide the beam visual + reset the damage

@@ -87,6 +87,19 @@ static func ram_unlocked(best: int) -> bool:
 	return best >= UNLOCK_RAM_DEPTH
 
 
+# arc-4 iter 098 (P2-9 fix from code-review-iter-090): companion
+# to `unlock_ladder()` (which lists the 4 depot-upgrade rungs).
+# `archetype_ladder()` lists the 3 archetype-unlock rungs.
+# Consumers (HUD codex, depot panel) needing the full unlock
+# state should render BOTH ladders.
+static func archetype_ladder() -> Array:
+	return [
+		{"depth": UNLOCK_PRISM_DEPTH, "name": "PRISM"},
+		{"depth": UNLOCK_MORTAR_DEPTH, "name": "MORTAR"},
+		{"depth": UNLOCK_RAM_DEPTH, "name": "RAM"},
+	]
+
+
 # Ordered list of unlocked TankArchetype values (ints) for a given
 # best-depth — DEFAULT (always) followed by tier-unlocked archetypes.
 # PlayerTank's start-pick screen indexes into this list (key 1 → first
