@@ -17,6 +17,38 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 122 — META — Round 16 close-out (Gap 4 backlog item closed)
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Constraints respected: none directly (META)
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… n/a
+- Falsifications: none added
+- Files: loop/breach/round-16-summary.md (NEW — 2-iter close-
+  out: timeline + 2 loop-process findings: (1) backlog-
+  closure rounds work without rubric movement when the spec
+  is already in a prior DIAGNOSE — no need to re-DIAGNOSE;
+  (2) the death-overlay diagnosis surface is now 4-layer
+  with the addition of route-diff to the breach-prompt
+  label), loop/breach/REVIEW-QUEUE.md (+#22 honest framing
+  of Round 16 closure without milestone bloat), loop/breach/
+  PRE-MORTEMS.md.
+- Finding: Round 16 closes cleanly at 2 iters. Round-size
+  contraction across recent rounds is evidence of the
+  structural-ceiling reality: 12=5, 13=3, 14=3, 15=3, 16=2.
+  Without user signal on REVIEW-QUEUE #13/#14/#21, forward
+  high-value work shrinks. Iter 123 tackles Gap 5 regret-
+  quote (the last iter-106 backlog item) per the iter-121
+  pattern. Beyond Gap 5, the loop will likely need to pivot
+  to documentation (ARC-4-checkpoint.md cross-rounds catch-
+  up) OR explicit user-request-via-PushNotification, as
+  natural BUILD-QUALITY scope runs out. Loop continues
+  non-stop per PROMPT.
+
+---
+
 ## iter 121 — BUILD-QUALITY — Gap 4 route-diff (Round 16 default-D scope)
 
 - Date: 2026-05-24

@@ -444,6 +444,29 @@ Format per item:
     and deferred IDENTITY-PROTECTED calls (C15-5 rephrase, the
     identity-vs-weapons question) to user direction.
 
+#22 — Round 16 — Gap 4 route-diff (path-not-taken) backlog closure — iters 121-122 — closed (1 BUILD-QUALITY + 1 META)
+  Finding: iter 121 BUILD-QUALITY closed the iter-106 Gap 4
+    deferral. Added `RunRecap.route_diff_clause(full_route_
+    names)` helper + PlayerTank substrate write ×45 wiring it
+    into the breach-prompt label below the death overlay.
+    Route attribution joins BUILD/RESOURCE/CANONICAL as the
+    4th constraint-6-shaped diagnosis surface in the post-
+    death view.
+  Affordance: post-death prompt now reads
+    "Visited: warmup > bunker; skipped: maze, killbox, endgame."
+    instead of the iter-83 simple "bands visited: warmup >
+    bunker" — the player sees the path they DIDN'T take, not
+    just the path they walked.
+  Risk: no rubric movement (C6 anchor 4 already at effective
+    ceiling; this is info-density addition). Score stays at
+    ★ 50/75. Round size contracting — Round 12 was 5 iters,
+    Round 13-15 each 3 iters, Round 16 was 2 iters. This is
+    the structural-ceiling reality. Forward direction still
+    requires user signal on #13/#14/#21.
+  Next round: iter 123 BUILD-QUALITY (Round 17) likely tackles
+    Gap 5 regret-quote (the last iter-106 backlog item).
+    Full summary: loop/breach/round-16-summary.md.
+
 #21 — Round 15 — C10 anchor 5 re-tag — iters 118-120 — closed (1 DIAGNOSE + 1 BUILD-QUALITY + 1 META) — **★ 50/75 MILESTONE**
   Finding: iter 118 DIAGNOSE walked 4 forward-direction options
     (A user playtest / B mechanical scope / C RUBRIC extension /

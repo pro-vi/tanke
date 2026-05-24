@@ -24,6 +24,29 @@ Format:
 
 ---
 
+## iter 122 — META — Round 16 close-out (Gap 4 backlog item closed)
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- CONSULT constraints respected: none directly (META).
+- CONSULT constraints risked: none.
+- Action: write round-16-summary.md (2-iter round timeline +
+  2 loop-process findings: backlog-closure-rounds-without-
+  rubric-movement; death-overlay-diagnosis-surface-now-4-layer);
+  append REVIEW-QUEUE #22 (lighter than #21 — notes round-
+  closure without milestone framing); update STATE → 16-closed
+  + queue iter 123 BUILD-QUALITY on Gap 5 regret-quote.
+- META-trigger cited: round-close (2-iter shortest round of arc-4
+  — same shape as iter-120 close of Round 15).
+- Falsifiable claim: round-16-summary names the Gap 4 closure
+  + flags the round-size-contraction pattern (5 → 3 → 3 → 3 →
+  2) as evidence of the structural-ceiling reality the loop
+  has been honestly documenting since iter 117.
+- Substrate touched: none.
+- Hash-anchor verification: not required.
+
+---
+
 ## iter 121 — BUILD-QUALITY — Gap 4 route-diff (path-not-taken) in RunRecap
 
 - Date: 2026-05-24
