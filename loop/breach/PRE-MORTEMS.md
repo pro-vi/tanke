@@ -24,6 +24,37 @@ Format:
 
 ---
 
+## iter 112 — DIAGNOSE — C8 sentence-test audit + C1 anchor-4 re-score (Round 13 bootstrap)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 7 (the C8 audit grades each
+  upgrade against the "verbs and affordances, not passive stats"
+  standard — explicitly the sentence-test template); 5 (per-band
+  coverage analysis names which bands lack dedicated upgrade
+  support, mapping to "every depth band must have a dominant
+  pressure" enforcement).
+- CONSULT constraints risked: none (DIAGNOSE iter, no code).
+- Action: enumerate the 12-item UpgradeKind catalog in Depot.gd;
+  apply sentence test to each; cross-reference per-band coverage
+  against the 5 canonical band pressures. Re-score C1 against
+  the verdict_sentence's build_tag rendering (iter 108).
+- Output: loop/breach/iter-112-c8-c1-diagnose.md — 12-row
+  sentence-test verdict table; 5-band coverage table; OPTION
+  A/B/C lift plans; C1 re-score finding.
+- Falsifiable claim: post-audit C8 sits at 2-3 effective
+  depending on strictness (9/12 pass strictly + 2/5 bands have
+  no dedicated upgrade); OPTION B adds SCOUT_TELEGRAPH +
+  SNAP_TURRET to close the 2-band gap → C8 anchor 3 cleanly
+  satisfied. C1 stays at 3/5 (anchor 4+ are [FEEL] playtest-
+  only; no structural surrogate).
+- Substrate touched: none (research iter).
+- Hash-anchor verification: not required.
+- Next: iter 113 DECISION + BUILD on OPTION B (add
+  SCOUT_TELEGRAPH + SNAP_TURRET UpgradeKind values).
+
+---
+
 ## iter 111 — META — Round 12 close-out + scoring-label correction
 
 - Date: 2026-05-24

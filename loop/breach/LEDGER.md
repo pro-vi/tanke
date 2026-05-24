@@ -17,6 +17,42 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 112 — DIAGNOSE — C8 sentence-test audit + C1 anchor-4 re-score (Round 13 bootstrap)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 47/75 absolute · 48/75 effective   (Δ vs prior: 0 —
+  DIAGNOSE iter, no code; rubric movement comes at iter 113+)
+- Constraints respected: 7, 5
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… n/a (no substrate touch)
+- Falsifications: none added
+- Files: loop/breach/iter-112-c8-c1-diagnose.md (NEW — 12-row
+  upgrade-catalog audit against sentence-test template; 5-band
+  coverage table; 3 lift OPTIONs A/B/C; C1 re-score finding),
+  loop/breach/PRE-MORTEMS.md.
+- Finding: C8's 12-item catalog has 9 strict-PASS + 3 MARGINAL
+  (HE_MAX_EXPAND_2 + HEAT_MAX_EXPAND_2 + FULL_RESUPPLY — all
+  inventory-scaling, none affordance-changing). Strict reading
+  fails anchor 2 ("all pass"); lenient reading honors the
+  utility role of maintenance refills. Per-band coverage: 3 of
+  5 bands fully covered, 2 of 5 have gaps — tutorial_choke
+  (LIGHT scouts have no dedicated upgrade) and open_killbox
+  (FAST scouts + facing-aware positioning have only OVERDRIVE
+  as an indirect aid). C8 anchor 3 ("≥1 upgrade per band's
+  pressure type") strictly fails on these 2 gaps. Round-13
+  lift target: OPTION B — add SCOUT_TELEGRAPH (route-strip
+  pre-spawn marker for tutorial_choke) + SNAP_TURRET (instant
+  facing rotation for open_killbox), each sentence-test-
+  compliant by design. C1 re-score: stays at 3 — anchors 4+
+  are [FEEL] playtest-only; the verdict_sentence (iter 108)
+  satisfies anchor 3 ("build identity surfaces in recap") which
+  was already met. No cognitive-max surrogate for the playtest
+  anchors. 1-2 BUILD iters expected to lift C8 from 3 → 4
+  effective + close the band-coverage gap.
+
+---
+
 ## iter 111 — META — Round 12 close-out + **scoring-label correction (C9 → C6)**
 
 - Date: 2026-05-24
