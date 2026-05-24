@@ -17,6 +17,55 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 147 — META — Pro Consult 011 plan close-out + REVIEW-QUEUE #13 close
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Constraints respected: all 7 (META — no code changes).
+- Constraints risked: none.
+- Hash anchor: 23d6a2ec3bf2821f… re-verified bit-identical (no code
+  edits this iter; spot-check ran for sanity).
+- Falsifications: none added.
+- Files: loop/breach/REVIEW-QUEUE.md (#13 closed with full closure
+  prose; original #13 entry archived as #13-ARCHIVED-original for
+  traceability); PRE-MORTEMS.md + LEDGER.md + STATE.md.
+- Finding: **Pro Consult 011's 5-iter plan COMPLETE.** REVIEW-QUEUE
+  #13 (open since iter 70 / 77 iters of latency) is now closed via
+  a FOURTH path — H5 motif-first procedural masks — that none of
+  the original (a)/(b)/(c) options anticipated. The user's iter-140
+  directive ("i want them to be the actual 8 bit tank i drive,
+  /second-opinion … to continue building") has been fulfilled
+  end-to-end:
+    142 (SPIKE)  — palette extraction + Consult capture
+    143 (BUILD)  — 16×16 procedural masks
+    144 (BUILD)  — frame 2 + machine-checkable silhouette gate
+    145 (BUILD)  — atlas packed into NEW img/archetype_sprites.png
+    146 (BUILD)  — PlayerTank wiring; substrate write #70; hash OK
+    147 (META)   — REVIEW-QUEUE #13 closed; plan close-out (this)
+  Three lessons from the plan:
+    L1: pixel-level falsifiable claims caught a tread-cleat no-op
+        that visual-eye review missed (iter 145).
+    L2: the readability gate caught design defects on first run
+        (iter 144 RAM over-solid + PRISM↔MORTAR weak distinctness);
+        threshold tuning was NOT the fix — silhouette redesign was.
+    L3: NEW PNGs need a `godot --import --quit` pass before
+        preload() resolves them; the .import file (not the .png
+        alone) defines the resource loader.
+  C4 anchor 3 (silhouette gate verified) is now BACKED by a
+  machine-checkable harness (tools/gen_archetype_sprites.py --check),
+  not just per-iter prose — a hardening of the existing iter-70
+  claim. C4 anchor 4 (≥4 of 5 readable in 2s) + C15 anchor 5
+  (identity-protected) remain playtest-5-gated. Score unchanged.
+  REVIEW-QUEUE #14 (★ PLAYTEST REQUEST) now has additional
+  evidence to share at playtest: the player will SEE distinct
+  archetypes in motion. Loop continues non-stop per PROMPT;
+  next iter diagnoses the next surface (likely STATUS-CHECK
+  pattern from iter-128's HONEST SATURATION posture, unless
+  user signals a new direction).
+
+---
+
 ## iter 146 — BUILD — PlayerTank archetype → texture swap (Pro Consult 011 step 4/5)
 
 - Date: 2026-05-24

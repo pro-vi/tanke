@@ -2,9 +2,11 @@
 
 ```yaml
 phase: running
-iter: 146
+iter: 147
 hash_anchor_at_iter_146: 23d6a2ec3bf2821f  # bit-identical through 70 substrate writes — PlayerTank archetype sprite swap is gated on loadout != null + archetype != DEFAULT; procedural baseline (loadout=null) keeps sprites_0.png + frame_base=0; TankSprite.gd frame_base field defaults to 0 (bit-identical at default)
+hash_anchor_at_iter_147: 23d6a2ec3bf2821f  # re-verified bit-identical (META iter, no code edits)
 substrate_writes_iter_146: 70
+review_queue_13_closed_at_iter: 147  # Pro Consult 011 5-iter plan complete; iter-70 #13 (77-iter latent) closed via path d (motif-first procedural masks; H5 from Consult 011)
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config

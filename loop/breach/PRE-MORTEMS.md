@@ -24,6 +24,40 @@ Format:
 
 ---
 
+## iter 147 — META — Pro Consult 011 plan close-out + REVIEW-QUEUE #13 close
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 (META iter — no code changes).
+- CONSULT constraints risked: none.
+- Plan:
+  (a) Close REVIEW-QUEUE #13 with the decision verdict: a 4th path
+      (not a/b/c) was taken — H5 motif-first procedural masks (Pro
+      Consult 011) — additive new atlas; concept art used only for
+      palette extraction; existing TankSprite swap is loadout-gated.
+  (b) Upgrade REVIEW-QUEUE #14 (★ PLAYTEST REQUEST) noting the visual
+      layer is now shipped — the user's iter-140 "i want them to be
+      the actual 8 bit tank i drive" directive is fulfilled.
+  (c) Re-verify iter-146 harness passes one final time.
+  (d) Bump STATE.md iter pointer + last_action prose.
+- Predicted failure: REVIEW-QUEUE #13 default-if-no-answer was (b)
+  algorithmic tint+overlay via gen_tile.py — the path actually taken
+  is closer to "(d) NEW: procedural masks from extracted palettes."
+  Risk that the closure prose conflates these and obscures the design
+  evolution (concept → palette extraction → motif-first procedural).
+  Mitigation: explicit "path d, not a/b/c" naming in the close note.
+- Falsifiable claim:
+  - REVIEW-QUEUE.md #13 status changes from "open (decision-needed)"
+    to "closed (path d shipped via iters 142-146)".
+  - REVIEW-QUEUE.md #14 sub-bullet acknowledges visual layer done.
+  - check-breach-archetype-sprite still passes.
+- Sentence test (n/a — META).
+- Substrate touched: none (REVIEW-QUEUE.md + STATE.md are loop docs,
+  not Layer 1-4 substrate).
+- Hash-anchor verification plan: n/a (no code changes).
+
+---
+
 ## iter 146 — BUILD — PlayerTank archetype → texture swap (Pro Consult 011 step 4/5)
 
 - Date: 2026-05-24

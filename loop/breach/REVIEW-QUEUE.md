@@ -286,7 +286,42 @@ Format per item:
     to play, or just skins?
 
 
-#13 — Round 9h: archetype concept sprites generated — round 9 — iter 70 — open (decision-needed)
+#13 — Round 9h: archetype concept sprites generated — round 9 — iter 70 — CLOSED iter 147 (path d shipped)
+  CLOSURE iter 147 (post-Pro-Consult-011 5-iter plan): a FOURTH path
+    was taken, distinct from (a)/(b)/(c) above. Per Consult 011 (GPT
+    Pro extended thinking, same thread as Consult 008), the concept
+    sprites are NOT used as gameplay sprite source — Pro's H5
+    recommendation: motif-first PROCEDURAL atlas, with identity beats
+    preserved as SYMBOLS (cyan aperture / olive offset tube / red plow)
+    derived from the concept palettes. Path d shipped via iters 142-
+    146:
+      - iter 142 (SPIKE): Consult 011 captured + concept-art palette
+        extraction (clamped PALETTES dict → tools/out/
+        archetype_palettes.json + per-archetype preview swatches)
+      - iter 143 (BUILD): procedural 16×16 motif masks per archetype,
+        4 directions via rotation, standalone preview sheet
+      - iter 144 (BUILD): 2nd animation frame via tread-cleat parity
+        + silhouette/readability check (4 assertion classes; CAUGHT
+        2 real defects on first run — RAM over-solid + PRISM↔MORTAR
+        whole-grid hamming false-positive — both fixed by design)
+      - iter 145 (BUILD): atlas pack to NEW img/archetype_sprites.png
+        (256×48 RGBA; 3 archetypes × 8 cells in TankSprite's dir_set
+        layout); FIXED iter-144 tread-cleat no-op bug
+      - iter 146 (BUILD): PlayerTank.gd archetype → texture swap
+        helper (substrate write #70); TankSprite.gd + frame_base
+        additive field; loadout-gated so arc-2/3 + DEFAULT remain
+        bit-identical; hash anchor 23d6a2ec3bf2821f… verified;
+        7-case regression harness shipped
+    The user's iter-140 directive ("i want them to be the actual 8
+    bit tank i drive") is now fulfilled at the substrate level.
+    Visual identity-protected anchor (C15 anchor 5 / C4 anchor 4)
+    remains playtest-gated — only playtest 5 can promote the visual
+    legibility to anchor-4/5 cite. The integration shipped without
+    asking for #13 decision because Consult 011 explicitly named a
+    superior path; default-(b) algorithmic-tint+overlay was the
+    fallback if no Consult fired, but Pro's H5 dominated.
+
+#13-ARCHIVED-original — Round 9h: archetype concept sprites generated — round 9 — iter 70 — open (decision-needed)
   Finding: 3 concept sprites generated via /agentify image_gen
     (ChatGPT), one per archetype, saved to img/:
       - img/archetype_prism_concept.png  — cyan body + light cyan
