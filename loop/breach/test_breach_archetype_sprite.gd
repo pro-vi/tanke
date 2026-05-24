@@ -121,6 +121,30 @@ func _initialize() -> void:
 		quit(1); return
 	print("  switch MORTAR→RAM: chain works (frame_base 16 → 32)")
 
+	# === Case 8 (iter 149 BUILD-QUALITY N2 from code-review-iter-148):
+	# revert-from-chain mid-flow. PRISM → MORTAR → DEFAULT chain asserts
+	# the final revert to DEFAULT correctly restores texture + vframes +
+	# frame_base. Catches a hypothetical future regression if
+	# _revert_archetype is refactored to be archetype-specific instead
+	# of always calling _apply_archetype_sprite(DEFAULT). ===
+	pt_ram.switch_archetype(PlayerTankT.TankArchetype.PRISM)
+	await process_frame
+	if not _assert_eq(pt_ram.sprite.get("frame_base"), 0, "RAM→PRISM mid-chain: frame_base 32 → 0"):
+		quit(1); return
+	pt_ram.switch_archetype(PlayerTankT.TankArchetype.MORTAR)
+	await process_frame
+	if not _assert_eq(pt_ram.sprite.get("frame_base"), 16, "PRISM→MORTAR mid-chain: frame_base 0 → 16"):
+		quit(1); return
+	pt_ram.switch_archetype(PlayerTankT.TankArchetype.DEFAULT)
+	await process_frame
+	if not _assert_eq(pt_ram.sprite.texture, DEFAULT_TEX, "MORTAR→DEFAULT mid-chain: texture reverts to sprites_0.png"):
+		quit(1); return
+	if not _assert_eq(pt_ram.sprite.vframes, 18, "MORTAR→DEFAULT mid-chain: vframes 3 → 18"):
+		quit(1); return
+	if not _assert_eq(pt_ram.sprite.get("frame_base"), 0, "MORTAR→DEFAULT mid-chain: frame_base 16 → 0"):
+		quit(1); return
+	print("  chain RAM→PRISM→MORTAR→DEFAULT: every step reverts texture/vframes/frame_base cleanly")
+
 	holder.queue_free()
-	print("BREACH_ARCHETYPE_SPRITE_OK 7 cases verified: arc-2/3 gating + DEFAULT + PRISM/MORTAR/RAM frame_base + revert + chain")
+	print("BREACH_ARCHETYPE_SPRITE_OK 8 cases verified: arc-2/3 gating + DEFAULT + PRISM/MORTAR/RAM frame_base + revert + chain + revert-from-chain")
 	quit(0)

@@ -775,27 +775,26 @@ func switch_archetype(value: int) -> void:
 func _apply_archetype_sprite(arch: int) -> void:
 	if sprite == null:
 		return
+	# `frame_base` is a TankSprite dynamic field. sprite.set("frame_base",
+	# ...) works because (a) when sprite IS a TankSprite (the production
+	# config per PlayerTank.tscn), the field exists with default 0; (b)
+	# even if some test substitutes a plain Sprite2D, Godot's set() on
+	# an absent property creates a dynamic entry — no AttributeError.
 	# Gating: arc-2/3 mode (no loadout) keeps the original texture.
-	# Without this gate, an arc-2/3 PlayerTank instance would still
-	# point at sprites_0.png frame_base=0 (correct), so the gate is
-	# defense-in-depth but cheap.
 	if loadout == null:
 		sprite.texture = DEFAULT_ATLAS_TEX
 		sprite.vframes = 18
-		if sprite.has_method("set"):
-			sprite.set("frame_base", 0)
+		sprite.set("frame_base", 0)
 		return
 	if arch == TankArchetype.DEFAULT or not _ARCHETYPE_FRAME_BASE.has(arch):
 		sprite.texture = DEFAULT_ATLAS_TEX
 		sprite.vframes = 18
-		if sprite.has_method("set"):
-			sprite.set("frame_base", 0)
+		sprite.set("frame_base", 0)
 		return
 	sprite.texture = ARCHETYPE_ATLAS_TEX
 	sprite.vframes = 3
 	sprite.hframes = 16
-	if sprite.has_method("set"):
-		sprite.set("frame_base", _ARCHETYPE_FRAME_BASE[arch])
+	sprite.set("frame_base", _ARCHETYPE_FRAME_BASE[arch])
 
 
 func _init_archetype() -> void:

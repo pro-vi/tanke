@@ -24,6 +24,51 @@ Format:
 
 ---
 
+## iter 149 — BUILD-QUALITY — iter-148 sub-75 nits (N1 tautology + N2 chain coverage)
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- CONSULT constraints respected: all 7 (quality iter; no new
+  mechanics).
+- CONSULT constraints risked: none — both fixes are inside iter-146
+  surface already audited at iter 148.
+- BUILD-QUALITY justification: iter-148 review surfaced 2 sub-anchor
+  observations that aren't bugs today but harden against future
+  regressions. Per L3+R4 (BUILD-QUALITY is the release valve at
+  honest saturation), shipping these at the ceiling is more honest
+  than another status-check idle entry.
+- Plan:
+  (a) N1: remove `sprite.has_method("set")` guards (3 sites in
+      _apply_archetype_sprite). They're tautologies — Object.set
+      always exists; the apparent intent was guarding the dynamic
+      frame_base field but the guard is inert. Replace with a
+      single one-line comment explaining the dynamic-field set.
+  (b) N2: add Case 8 to test_breach_archetype_sprite — chains
+      MORTAR→PRISM→DEFAULT mid-flow, asserts each step reverts
+      texture/vframes/frame_base correctly. Catches a future
+      regression if _revert_archetype is refactored to be
+      archetype-specific instead of always calling
+      _apply_archetype_sprite(DEFAULT).
+- Predicted failure: the tautology cleanup might break the harness
+  if I underestimate what the guards were silently doing. (They are
+  truly no-ops — `set()` is on Object — but defensive coding can
+  sometimes have load-bearing semantics elsewhere. Mitigation: run
+  full test-breach after.)
+- Falsifiable claim:
+  - `make test-all` 5/5 + `make test-breach` all green.
+  - Hash anchor 23d6a2ec3bf2821f… preserved.
+  - check-breach-archetype-sprite now reports 8 cases (was 7), all
+    pass.
+- Sentence test (n/a — quality iter).
+- Substrate touched: scripts/PlayerTank.gd (substrate write #71;
+  remove 3 lines, keep the same gating; bit-identical behavior since
+  the removed guards were no-ops). loop/breach/test_breach_archetype_
+  sprite.gd (test extension only; not substrate).
+- Hash-anchor verification plan: post-edit, run test_runner.gd seed
+  42 → must equal 23d6a2ec3bf2821f.
+
+---
+
 ## iter 148 — META — F006 delegated /code-review on Pro Consult 011 round substrate
 
 - Date: 2026-05-24

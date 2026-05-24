@@ -2,7 +2,7 @@
 
 ```yaml
 phase: running
-iter: 148
+iter: 149
 hash_anchor_at_iter_146: 23d6a2ec3bf2821f  # bit-identical through 70 substrate writes — PlayerTank archetype sprite swap is gated on loadout != null + archetype != DEFAULT; procedural baseline (loadout=null) keeps sprites_0.png + frame_base=0; TankSprite.gd frame_base field defaults to 0 (bit-identical at default)
 hash_anchor_at_iter_147: 23d6a2ec3bf2821f  # re-verified bit-identical (META iter, no code edits)
 substrate_writes_iter_146: 70
@@ -27,7 +27,7 @@ current_round: 19-closed-via-saturation — Round 19 closed iter 128 META. ★ H
 current_round_phase: STATUS-CHECK — iter 129+ runs idle-poll META iters at 1500s wakeup; pivots back to BUILD/DIAGNOSE/META on user signal or new substantive surface
 consult_001_status: adopted
 consult_002_status: adopted
-build_quality_iters: [10, 24, 29, 30, 88]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER); 88 = state-hygiene fix per iter-87 audit
+build_quality_iters: [10, 24, 29, 30, 88, 149]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER); 88 = state-hygiene fix per iter-87 audit; 149 = iter-148 sub-75 nits closed (N1 tautology + N2 chain coverage)
 falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved, F005-open, F006-open, F007-open]  # F007 (iter 100): F006's /code-review discipline should retroactively cover prior-round substrate; Round 5-8 sat with 11 latent findings (including a 60-iter-latent P0 depot exploit) until iter-100 review
 reachability_status: all 5 bands verified — 12/12-seed sweep (100%, floor ≥80%) — refreshed iter 61 post-Round-8
 audit_candidates: []

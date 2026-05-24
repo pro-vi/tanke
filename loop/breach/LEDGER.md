@@ -17,6 +17,43 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 149 — BUILD-QUALITY — iter-148 sub-75 nits closed (N1 tautology + N2 chain coverage)
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Constraints respected: all 7 (quality iter; bit-identical behavior).
+- Constraints risked: none.
+- Hash anchor: 23d6a2ec3bf2821f… VERIFIED bit-identical (substrate
+  write #71 was a 3-guard removal; semantically a no-op since the
+  removed guards were tautologies).
+- Falsifications: none added.
+- Files: scripts/PlayerTank.gd (substrate write #71; removed 3
+  `sprite.has_method("set")` tautology guards; collapsed comment
+  block to a single 5-line explanation of the dynamic-field set);
+  loop/breach/test_breach_archetype_sprite.gd (+ Case 8 — chain
+  RAM→PRISM→MORTAR→DEFAULT asserting each step reverts texture/
+  vframes/frame_base); Makefile (+ "chain" to harness grep filter);
+  PRE-MORTEMS.md + LEDGER.md.
+- Finding: BUILD-QUALITY ships both iter-148 sub-75 nits:
+    **N1 (tautology)**: 3 `sprite.has_method("set")` guards removed.
+      `Object.set()` always exists; the guards were inert. Code is
+      now 3 lines shorter; behavior bit-identical.
+    **N2 (chain coverage)**: harness now has 8 cases (was 7). New
+      Case 8 chains RAM→PRISM→MORTAR→DEFAULT, asserting each
+      transition's texture/vframes/frame_base. Catches a hypothetical
+      future regression if _revert_archetype is refactored to be
+      archetype-specific instead of always calling
+      _apply_archetype_sprite(DEFAULT).
+  Per build_quality_iters [10, 24, 29, 30, 88, 149]: this is the
+  first BUILD-QUALITY iter in 61 BUILDs (last was iter 88). Well
+  within the 1-per-3 cap. The iter-128 saturation posture's
+  hardening-not-shipping value-per-iter manifested here. Score
+  unchanged (correct — quality iter, no anchor lift). Loop continues
+  per PROMPT.
+
+---
+
 ## iter 148 — META — F006 delegated /code-review on Pro Consult 011 round substrate — CLEAN
 
 - Date: 2026-05-24

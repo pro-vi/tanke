@@ -380,7 +380,7 @@ check-breach-archetype-switch:
 # PlayerTank archetype → sprite-atlas swap; loadout-gated so arc-2/3
 # keep sprites_0.png + vframes=18 bit-identically.
 check-breach-archetype-sprite:
-	@$(HEADLESS) --script res://loop/breach/test_breach_archetype_sprite.gd 2>&1 | grep -E "^(  (arc-2/3|DEFAULT|PRISM|MORTAR|RAM|switch)|BREACH_ARCHETYPE_SPRITE_OK|FAIL|ERROR|SCRIPT ERROR)"; \
+	@$(HEADLESS) --script res://loop/breach/test_breach_archetype_sprite.gd 2>&1 | grep -E "^(  (arc-2/3|DEFAULT|PRISM|MORTAR|RAM|switch|chain)|BREACH_ARCHETYPE_SPRITE_OK|FAIL|ERROR|SCRIPT ERROR)"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_archetype_sprite.gd 2>&1 | grep -q "^BREACH_ARCHETYPE_SPRITE_OK"
 
 # Arc-4 breach mode: Round-10 Phase-1 distinctness-audit harness.
