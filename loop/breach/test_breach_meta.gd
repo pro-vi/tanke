@@ -48,7 +48,9 @@ func _initialize() -> void:
 	await process_frame
 	# Pool sizes after iter 69 (Round 9g) added 3 archetype-SWITCH kinds
 	# gated on the same tiers as the start-pick screen.
-	var sizes: Dictionary = {0: 5, 20: 7, 40: 9, 60: 11, 80: 12, 999: 12}
+	# arc-4 iter 113 (Round 13 Phase 2): SCOUT_TELEGRAPH added at the
+	# tail of every pool (no meta-gate). All pool sizes +1.
+	var sizes: Dictionary = {0: 6, 20: 8, 40: 10, 60: 12, 80: 13, 999: 13}
 	for best in sizes:
 		var got: int = depot._upgrade_pool(best).size()
 		if got != sizes[best]:
@@ -60,7 +62,7 @@ func _initialize() -> void:
 		for j in range(i + 1, deep.size()):
 			if deep[i] == deep[j]:
 				push_error("FAIL — duplicate kind in the upgrade pool"); quit(1); return
-	print("  depot pool widens: 5 (fresh) -> 7/9/11 -> 12 (all tiers; incl. archetype switches)")
+	print("  depot pool widens: 6 (fresh) -> 8/10/12 -> 13 (all tiers; incl. SCOUT_TELEGRAPH)")
 	depot.queue_free()
 
 	# === Arc-4 iter 097 (P2-2): enum-pin assertion. MetaProgress's

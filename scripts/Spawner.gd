@@ -470,6 +470,19 @@ func _telegraph_then_spawn(plan: Dictionary) -> void:
 	enemy.set("bullet_damage", type_data.bullet_damage)  # iter 52
 	enemy.set("sprite_tint", type_data.sprite_tint)  # iter 67
 	enemy.set("sprite_scale", type_data.sprite_scale)  # iter 86
+	# arc-4 iter 113 (Round 13 Phase 2, sanctioned substrate write ×5):
+	# SCOUT_TELEGRAPH affordance — when the player owns the upgrade,
+	# Light enemies spawn with a warm yellow tint so the player can
+	# see them earlier and pre-aim. Sentence-test compliant per C8
+	# anchor 3 (closes tutorial_choke band-coverage gap). Defensive:
+	# the loadout field check is duck-typed (arc-2/3 player has no
+	# loadout property; flag never set; no behavior change).
+	if type_data.name == "Light" and _player != null \
+			and is_instance_valid(_player) and "loadout" in _player \
+			and _player.loadout != null \
+			and "has_scout_telegraph" in _player.loadout \
+			and _player.loadout.has_scout_telegraph:
+		enemy.set("scout_telegraph_outline", true)
 	# arc-4 iter 23: armored enemies join the "armored" group — Bullet.gd
 	# mitigates AP/HE against group members; HEAT bypasses. Uses a group
 	# tag (a Node method) rather than an Enemy.gd @export, so no Layer-2

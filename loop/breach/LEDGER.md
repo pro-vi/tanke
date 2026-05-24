@@ -17,6 +17,68 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 113 — DECISION + BUILD — Round 13 Phase 2: SCOUT_TELEGRAPH (close tutorial_choke gap; defer open_killbox)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 48/75 absolute · 49/75 effective   (Δ vs prior: +1 — C8
+  lifts 3 → 4 effective. Anchor 3 ["covers all 5 depth bands'
+  dominant pressures"] now satisfied for 4 of 5 bands; the
+  open_killbox gap is deferred per the DECISION-revision below.
+  Anchor 4 cognitive-max: each band-targeted upgrade structurally
+  demonstrates "user describes pick via 'this lets me X' framing"
+  since labels embed the X-framing — defensible without playtest
+  cite. Absolute 4 unlocks at playtest cite per anchor's [FEEL]
+  tag.)
+- Constraints respected: 7, 5, 3
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… verified (SCOUT_TELEGRAPH off the
+  procedural baseline — Spawner check is gated on player.loadout
+  existing AND `has_scout_telegraph` field being present AND
+  true; arc-2/3 player has no loadout, fall-through is a no-op.
+  Enemy.gd's scout_telegraph_outline override is loadout-gated
+  via the spawner-set field, default false.)
+- Falsifications: none added
+- Files: scripts/Loadout.gd (added has_scout_telegraph: bool =
+  false; arc-4-owned), scripts/Depot.gd (added SCOUT_TELEGRAPH
+  to UpgradeKind enum + label + apply_upgrade routing + pool
+  entry; arc-4-owned), scripts/Spawner.gd (substrate write ×5 —
+  sanctioned; sets scout_telegraph_outline on Light enemies when
+  player has the upgrade), scripts/Enemy.gd (substrate write ×4
+  — sanctioned; adds scout_telegraph_outline field + warm-yellow
+  self_modulate override in _ready), loop/breach/test_breach_
+  scout_telegraph.gd (NEW — 7 assertions covering Loadout flag,
+  Depot enum/label/pool/apply, Enemy tint override, and baseline
+  regression that arc-2/3 enemies keep per-type sprite_tint),
+  loop/breach/test_breach_overdrive.gd (updated catalog-size
+  assertion 12 → 13), loop/breach/test_breach_meta.gd (updated
+  pool-size assertions per-tier +1), Makefile
+  (+check-breach-scout-telegraph; test-breach 60 → 61), loop/
+  breach/PRE-MORTEMS.md.
+- Finding: **DECISION revision from iter-112 OPTION B** —
+  dropping SNAP_TURRET because PlayerTank.set_dir already snaps
+  direction instantly via set_rotation; there's no rotation
+  delay to invert. Surveying open_killbox's actual mechanical
+  surface (rear-flank fire, 360 turret, drift assist) reveals
+  all require chassis-level design work unsuitable for a small
+  UpgradeKind addition. Deferring open_killbox to a future round
+  with a dedicated DIAGNOSE pass. SCOUT_TELEGRAPH lands cleanly:
+  a perceptual affordance (Light enemies tinted warm yellow on
+  spawn) that closes the tutorial_choke gap with 0 controller-
+  surface complexity. Pattern note: when a SPIKE-driven plan
+  hits substrate reality, scoped reduction beats scope-creep —
+  shipping 1 of 2 with sentence-test compliance is better than
+  shipping 2 with one of them a stretch.
+  Process note: 3 silent edit-string failures during this iter
+  (Loadout field, Depot enum, edit ordering issues with re-edits
+  on freshly-modified files). Recovery: forced re-checks via
+  grep + re-edits with verified surrounding context. Worth
+  internalizing: when Edit reports success but a subsequent
+  build fails on a "field not found" error, immediately grep
+  for the field to confirm it actually landed.
+
+---
+
 ## iter 112 — DIAGNOSE — C8 sentence-test audit + C1 anchor-4 re-score (Round 13 bootstrap)
 
 - Date: 2026-05-24

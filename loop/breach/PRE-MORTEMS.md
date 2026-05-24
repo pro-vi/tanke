@@ -24,6 +24,59 @@ Format:
 
 ---
 
+## iter 113 — DECISION + BUILD — Round 13 Phase 2: SCOUT_TELEGRAPH (close 1 of 2 C8 gaps; defer open_killbox)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 7 (verb/affordance over passive
+  stat — SCOUT_TELEGRAPH changes HOW the player perceives Light
+  scouts in tutorial_choke); 5 (closes 1 of 2 dominant-pressure
+  band gaps surfaced by iter-112 audit); 3 (Light scouts are an
+  existing role with a canonical answer the upgrade scaffolds
+  perception around — no new enemy invented).
+- CONSULT constraints risked: none.
+- **DECISION REVISION from iter-112 OPTION B**: dropping
+  SNAP_TURRET because PlayerTank.set_dir already snaps direction
+  instantly via `set_rotation(Constants.dir_to_rotation(direction))`
+  — there's no rotation delay to invert. Surveying open_killbox's
+  actual mechanical surface (rear-flank fire, 360 turret, drift
+  assist) reveals all require chassis-level design work
+  unsuitable for a small UpgradeKind addition. **Defer open_
+  killbox to a future round** with a dedicated DIAGNOSE pass
+  (e.g. iter 115+ if Round 13 surfaces strong C8 movement here).
+- Single fix:
+  - **SCOUT_TELEGRAPH** — new UpgradeKind + Loadout flag
+    `has_scout_telegraph: bool`. When owned, Spawner tags each
+    Light enemy at spawn with a `scout_telegraph_outline = true`
+    field; Enemy.gd's _ready applies a warm yellow self_modulate
+    to its sprite, making Light scouts visually distinct from
+    the moment they appear. Sentence: "helps me climb through
+    tutorial_choke by changing how I see Light scouts." Verb-
+    style affordance — perception change, not stat boost.
+- Predicted failure: the Enemy.gd _ready check might run BEFORE
+  Spawner.set("scout_telegraph_outline", true) is called — a
+  race condition. Mitigation: Spawner sets the flag BEFORE
+  `enemy.set("enemy_type", ...)` etc. (which Spawner does after
+  `holder.add_child(enemy)`); _ready fires during add_child, so
+  set the flag pre-add OR have Enemy.gd re-check in _process
+  (cheap; field rarely changes). Going with pre-add-child set
+  in Spawner.
+- Falsifiable claim: with `loadout.has_scout_telegraph = true`,
+  the next-spawned Light enemy has `self_modulate.r >= 0.95`
+  (yellow tint). Without the flag, Light enemies keep their
+  default sprite_tint.
+- Substrate touched: scripts/Spawner.gd (substrate write ×5 —
+  sanctioned per arc-4 amendments), scripts/Enemy.gd (substrate
+  write ×4 — sanctioned per Round-9 amendment for HUD writes;
+  this is a sprite write but follows the same pattern). Both
+  are off-baseline (gated on `scout_telegraph_outline = true`,
+  which is only set when the player loadout has the upgrade —
+  arc-2/3 player has no loadout, no flag, no tint change; hash
+  anchor preserved).
+- Hash-anchor verification plan: post-edit verify.
+
+---
+
 ## iter 112 — DIAGNOSE — C8 sentence-test audit + C1 anchor-4 re-score (Round 13 bootstrap)
 
 - Date: 2026-05-24

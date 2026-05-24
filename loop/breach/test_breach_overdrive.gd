@@ -30,17 +30,21 @@ func _initialize() -> void:
 	# iter 69 (Round 9g): 12 entries total — 9 original (refills /
 	# expands / resupply / 4 rule-changers) + 3 SWITCH_TO_* archetype
 	# kinds.
+	# arc-4 iter 113 (Round 13 Phase 2, C8 anchor 3): SCOUT_TELEGRAPH
+	# added → 13 entries; closes the tutorial_choke band-coverage gap
+	# surfaced by iter-112 audit.
 	var UK = depot.UpgradeKind
-	if UK.size() != 12:
-		push_error("FAIL — catalog has %d entries, want 12" % UK.size()); quit(1); return
+	if UK.size() != 13:
+		push_error("FAIL — catalog has %d entries, want 13" % UK.size()); quit(1); return
 	# Each category has a representative; OVERDRIVE = positioning, the
-	# previously-uncovered open_killbox pressure.
-	for kind in [UK.HE_REFILL_2, UK.HEAT_REFILL_1, UK.OVERDRIVE, UK.FULL_RESUPPLY]:
+	# previously-uncovered open_killbox pressure; SCOUT_TELEGRAPH =
+	# perceptual aid for tutorial_choke (closes 1 of 2 iter-112 gaps).
+	for kind in [UK.HE_REFILL_2, UK.HEAT_REFILL_1, UK.OVERDRIVE, UK.FULL_RESUPPLY, UK.SCOUT_TELEGRAPH]:
 		var probe: LoadoutT = LoadoutT.new()
 		probe.he_reserve = 0
 		probe.heat_reserve = 0
 		depot.apply_upgrade(kind, probe)  # must not crash; effect applied
-	print("  catalog: 12 upgrades — refills + 4 rule-changers + 3 archetype-switches, all 5 bands covered")
+	print("  catalog: 13 upgrades — refills + 4 rule-changers + 3 archetype-switches + SCOUT_TELEGRAPH (tutorial_choke perception)")
 	depot.queue_free()
 
 	# === Test 3: a breach PlayerTank with OVERDRIVE sprints; speed

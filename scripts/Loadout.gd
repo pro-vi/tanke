@@ -32,6 +32,12 @@ const Bullet = preload("res://scripts/Bullet.gd")
 # beat. steel_salvage: an APCR steel-cluster breach refunds 1 APCR.
 @export var quick_swap: bool = false
 @export var steel_salvage: bool = false
+# arc-4 iter 113 (Round 13 Phase 2, C8 anchor 3): SCOUT_TELEGRAPH —
+# closes the tutorial_choke band-coverage gap surfaced by iter-112
+# audit. When true, Light enemies spawn with a warm yellow tint so
+# the player can see them earlier and pre-aim. Sentence:
+# "helps me climb tutorial_choke by changing how I see Light scouts."
+@export var has_scout_telegraph: bool = false
 
 
 # Returns true if the player can fire the given shell class. AP is

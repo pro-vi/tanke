@@ -24,6 +24,13 @@ signal aim_canceled
 # and aim-telegraph). Light=white default, Fast=cyan, Heavy=white (its red
 # AIM_FIRE telegraph is sufficient distinction).
 @export var sprite_tint: Color = Color(1, 1, 1, 1)
+# arc-4 iter 113 (Round 13 Phase 2, sanctioned substrate write ×4):
+# SCOUT_TELEGRAPH outline flag. Set by Spawner at instantiate-time
+# when the player owns has_scout_telegraph AND this enemy is a Light.
+# When true, _ready overrides self_modulate with a warm yellow tint
+# so the scout reads as visible/tagged from spawn. Default false
+# preserves arc-2/3 baseline.
+@export var scout_telegraph_outline: bool = false
 # iter 86: per-type sprite scale — Heavy bigger (toughness), Fast smaller
 # (agility), Light default. Adds visual ID layer alongside iter-67 color tint.
 @export var sprite_scale: float = 1.0
@@ -110,6 +117,13 @@ func _ready() -> void:
 	if _sprite != null:
 		_sprite.self_modulate = sprite_tint
 		_sprite.scale = Vector2(sprite_scale, sprite_scale)
+		# arc-4 iter 113 (Round 13 Phase 2): SCOUT_TELEGRAPH override.
+		# When set by Spawner (player has has_scout_telegraph AND this is
+		# a Light enemy), replace the per-type tint with a warm yellow so
+		# the scout is visible/tagged from spawn. Sentence: "helps me
+		# climb tutorial_choke by changing how I see Light scouts."
+		if scout_telegraph_outline:
+			_sprite.self_modulate = Color(1.0, 0.95, 0.4, 1.0)
 
 
 func _physics_process(delta: float) -> void:
