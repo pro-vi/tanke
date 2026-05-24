@@ -444,6 +444,42 @@ Format per item:
     and deferred IDENTITY-PROTECTED calls (C15-5 rephrase, the
     identity-vs-weapons question) to user direction.
 
+#20 — Round 14 — open_killbox C8 completion (REAR_GUARD; lifted C8 absolute 3 → 4) — iters 115-117 — closed (1 DIAGNOSE + 1 BUILD + 1 META) — **★ STRUCTURAL CEILING REACHED**
+  Finding: iter 115 DIAGNOSE surfaced that 8 of 8 audited 3/5
+    axes (C2 C4 C5 C7 C11 C12 C13 C14) are at structural
+    ceiling — anchor 3 fully met, anchors 4-5 [FEEL] playtest-
+    only. iter 116 shipped REAR_GUARD (closes the open_killbox
+    band-coverage gap deferred from Round 13). All 5 bands
+    now have dedicated upgrade coverage. The dual-step pattern
+    — cognitive-max effective first (Round 13), structural-
+    completion absolute later (Round 14) — is the R3 framework's
+    intended shape; documented as a reusable recipe.
+  Affordance: ABSOLUTE 49/75 now matches EFFECTIVE 49/75. The
+    loop has lifted every structurally-reachable point on the
+    rubric. Further movement requires playtest cite, new
+    mechanical scope, or RUBRIC extension.
+  Risk: **the loop has reached structural ceiling on the
+    current rubric**. Forward progress without a playtest
+    signal will be diminishing-returns mechanical scope work.
+    The honest action is to surface this to you via this
+    REVIEW-QUEUE: any of the 8 FEEL-blocked axes (C2 anchor 4,
+    C4 anchor 4-5, C5 anchor 4-5, C7 anchor 4-5, C11 anchor
+    4-5, C12 anchor 4-5, C13 anchor 4-5, C14 anchor 4-5) AND
+    the 3 cognitive-max-but-not-absolute axes (C6 anchor 4
+    absolute, C8 anchor 4 absolute, all anchor-5 lifts) are
+    potentially unlockable via playtest. **REVIEW-QUEUE #14
+    (★ playtest gate, open since iter 71) is the natural
+    user-action surface for this.**
+  Next round: iter 118 DIAGNOSE candidate Round-15 programs.
+    Options: (A) wait on user playtest signal — loop continues
+    on structural surfaces; (B) new mechanical scope —
+    5th archetype / 6th band / asset gen via /agentify image_gen
+    (Round-9-sanctioned); (C) RUBRIC extension with a 16th
+    criterion; (D) C10 anchor 5 re-tag from "arc-close-gated"
+    to "iter-N+ checkpoint" so the loop can claim the +1.
+    Full timeline + per-anchor citation table:
+    loop/breach/round-14-summary.md.
+
 #19 — Round 13 — C8 sentence test compliance (lifted 3 → 4 effective) — iters 112-114 — closed (1 DIAGNOSE + 1 BUILD + 1 META)
   Finding: iter-112 audit of the 12-item UpgradeKind catalog
     found 9/12 strict-PASS + 3 MARGINAL (inventory-scaling) and

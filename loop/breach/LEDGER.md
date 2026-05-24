@@ -17,6 +17,44 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 117 — META — Round 14 close-out + ★ STRUCTURAL CEILING REACHED
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- Score: 49/75 absolute · 49/75 effective   (Δ vs prior: 0 —
+  META iter; +1 absolute happened at iter 116 closing the
+  effective-vs-absolute gap on C8)
+- Constraints respected: none directly (process iter)
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… n/a
+- Falsifications: none added
+- Files: loop/breach/round-14-summary.md (NEW — timeline +
+  scoring + C8 per-anchor citation table + 4 loop-process
+  findings + Round 15 bootstrap candidates A/B/C/D);
+  loop/breach/REVIEW-QUEUE.md (+#20 ★ STRUCTURAL CEILING
+  REACHED — prominently surfaces the loop's natural playtest
+  gate, names the 4 forward-direction options, ties to the
+  long-open REVIEW-QUEUE #14 playtest request);
+  loop/breach/PRE-MORTEMS.md.
+- Finding: The loop has reached the structural rubric ceiling
+  at 49/75 effective AND absolute. After Round 12 (C6 recap
+  3 → 4 effective via cognitive-max) + Round 13 (C8 3 → 4
+  effective via cognitive-max) + Round 14 (C8 4 absolute via
+  REAR_GUARD structural completion), every axis that can move
+  without playtest evidence has moved. The dual-step pattern
+  — cognitive-max first, structural-completion later — is
+  formalized as a reusable recipe in round-14-summary §finding 1.
+  Forward direction requires one of: (A) wait on user playtest
+  signal (unlocks up to +8 absolute across FEEL-gated axes);
+  (B) new mechanical scope (diminishing rubric returns);
+  (C) RUBRIC extension with C16; (D) C10 anchor 5 re-tag from
+  "arc-close-gated" to "iter-N checkpoint" (+1 cheap absolute).
+  Iter 118 DIAGNOSE walks these options and proposes the
+  Round 15 program — the loop continues non-stop per PROMPT;
+  the REVIEW-QUEUE surfaces the user-decision request.
+
+---
+
 ## iter 116 — DECISION + BUILD — REAR_GUARD (Round 14 Phase 2; closes open_killbox C8 anchor-3 gap)
 
 - Date: 2026-05-24

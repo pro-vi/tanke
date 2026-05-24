@@ -24,6 +24,31 @@ Format:
 
 ---
 
+## iter 117 — META — Round 14 close-out + structural-ceiling surfacing
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- CONSULT constraints respected: none directly (process iter);
+  indirect: the dual-step (cognitive-max → structural completion)
+  pattern from rounds 13-14 codified as a reusable recipe.
+- CONSULT constraints risked: none.
+- Action: write round-14-summary.md (timeline + scoring + C8
+  per-anchor citation table + 4 loop-process findings + Round 15
+  bootstrap candidates). Append REVIEW-QUEUE #20 prominently
+  framing the **structural-ceiling-reached** finding — this is
+  the loop's natural playtest gate. Update STATE.
+- META-trigger cited: round-close (small-round variant); + a
+  structural-ceiling reached signal — load-bearing for forward
+  direction.
+- Falsifiable claim: REVIEW-QUEUE #20 honestly names the 49/75
+  ceiling AND the 4 forward-direction options (A playtest /
+  B mechanical scope / C rubric extension / D C10 re-tag);
+  iter-118 DIAGNOSE picks among them transparently.
+- Substrate touched: none.
+- Hash-anchor verification: not required.
+
+---
+
 ## iter 116 — DECISION + BUILD — REAR_GUARD (Round 14 Phase 2; closes open_killbox C8 anchor-3 gap)
 
 - Date: 2026-05-24
