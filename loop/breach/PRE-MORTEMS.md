@@ -24,6 +24,34 @@ Format:
 
 ---
 
+## iter 095 — BUILD — P1-4 fix: RunRecap.archetype contract
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (death recap stays accurate
+  about run start identity), 7 (the recap now correctly captures
+  the player's INITIAL verb choice, not whatever they last
+  switched to).
+- CONSULT constraints risked: none.
+- Predicted failure: capturing run_recap.archetype on every band
+  change was wrong but ALSO masked the missing run-start capture
+  — if I only remove the band-change reassignment without adding
+  the _ready + _pick_archetype captures, run_recap.archetype
+  becomes stale at 0 (DEFAULT) for non-DEFAULT runs.
+  Mitigation: 3-fix paired — REMOVE band-change write, ADD
+  _ready capture, ADD _pick_archetype capture (now via the
+  routed-through-switch_archetype path).
+- Falsifiable claim: harness verifies (a) run_recap.archetype
+  captures DEFAULT after fresh _ready; (b) _pick_archetype(PRISM)
+  updates run_recap.archetype to PRISM; (c) switch_archetype(RAM)
+  AFTER pick does NOT overwrite run_recap.archetype — it stays
+  at the pick value; (d) band crossing does NOT overwrite either.
+- Substrate touched: scripts/PlayerTank.gd (substrate write ×32 —
+  removes one line + adds two lines; net +1 line).
+- Hash-anchor verification plan: post-edit verify.
+
+---
+
 ## iter 094 — BUILD — P1-2 + P1-6 paired (_pick_archetype bypass + MortarShell parent guard)
 
 - Date: 2026-05-24

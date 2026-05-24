@@ -17,6 +17,56 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 095 — BUILD — P1-4 fix: RunRecap.archetype contract
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0 — contract fix; the iter-82/83 cross-
+  archetype distinctness analysis now reads correct run-start
+  archetypes, but that's a downstream measurement improvement,
+  not a rubric anchor lift.)
+- Constraints respected: 6 (death recap stays accurate about
+  run-start identity), 7 (the recap captures the player's INITIAL
+  verb choice, not what they last switched to).
+- Constraints risked: none.
+- P1-4 from code-review-iter-090.md (adversarial + composition +
+  codex all flagged → promoted to anchor 100). The
+  `RunRecap.archetype` field documented as "PlayerTank.TankArchetype
+  value at run start" was being reassigned on every band crossing
+  via PlayerTank._on_breach_band_changed. Mid-run SWITCH_TO_*
+  upgrades polluted the iter-82/83 cross-archetype distinctness
+  analysis (the WHOLE POINT of Round 11 Phase 1).
+- Three coordinated PlayerTank.gd changes (substrate write ×32):
+  - **_ready**: after `run_recap = RunRecapT.new()`, add
+    `run_recap.archetype = archetype` to capture run-start.
+  - **_on_breach_band_changed**: REMOVE the
+    `run_recap.archetype = archetype` reassignment line.
+  - **_pick_archetype**: after `switch_archetype(value)`, add
+    `if run_recap != null: run_recap.archetype = archetype` so
+    the pick-screen choice IS the run-start (overrides _ready
+    DEFAULT capture).
+- Regression harness test_breach_run_recap_archetype_contract.gd
+  (6 assertions, all pass):
+  - Fresh _ready: run_recap.archetype = DEFAULT (0) captured
+  - switch_archetype(PRISM) mid-run: run_recap.archetype STAYS 0
+  - Band crossing: STAYS 0; band_visit_log captured "warmup"
+  - Multi-band + switch_archetype(RAM): STAYS 0; log size 2
+  - _pick_archetype(MORTAR): UPDATES to MORTAR (2) — pick override
+  - switch_archetype(RAM) post-pick: STAYS MORTAR (2) — pick preserved
+- Hash anchor: `23d6a2ec3bf2821f` preserved (PlayerTank substrate
+  write ×32; flag-off codepath unchanged). test-all 5/5;
+  test-breach 45 → 46.
+- Falsifications: none.
+- Substrate writes this arc: 50 → 51 (PlayerTank.gd ×32).
+- Files: scripts/PlayerTank.gd,
+  loop/breach/test_breach_run_recap_archetype_contract.gd (NEW),
+  Makefile, loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **P1-4 fixed + regression-guarded. ALL 6 P1s + 2 P0s
+  from code-review-iter-090 are now closed (7 of 8 anchored
+  findings — the 8th was MORTAR friendly-fire which scored 70
+  below the 75 gate). Iter 96+ = P2 sweep (10 items).**
+
 ## iter 094 — BUILD — P1-2 + P1-6 paired (_pick_archetype bypass + MortarShell parent guard)
 
 - Date: 2026-05-24

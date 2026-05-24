@@ -234,6 +234,14 @@ func _ready() -> void:
 		# .tres template; the template is never mutated.
 		loadout = loadout.duplicate()
 		run_recap = RunRecapT.new()
+		# arc-4 iter 095 (P1-4 fix from code-review-iter-090):
+		# capture the START-OF-RUN archetype immediately. The field
+		# is documented as "TankArchetype at run start" — for runs
+		# that don't show the pick screen (force_archetype_select=
+		# false), this @export default IS the run-start identity.
+		# _pick_archetype updates this on the picked archetype below;
+		# _on_breach_band_changed no longer overwrites it.
+		run_recap.archetype = archetype
 	# iter 101 (review-fix): sibling lookup via Tiles parent, not root-walk.
 	var level: Node = get_parent()
 	if level != null:
@@ -752,6 +760,13 @@ func _pick_archetype(value: int) -> void:
 	# old direct-assignment path would leak RAM_SPEED_BONUS / MORTAR
 	# GunTimer / PRISM beam state).
 	switch_archetype(value)
+	# arc-4 iter 095 (P1-4 fix): the pick-screen choice IS the
+	# run-start archetype (overrides the _ready DEFAULT capture).
+	# Only update if the switch succeeded — if switch_archetype
+	# rejected out-of-range or same-value, archetype didn't change
+	# and run_recap should reflect the actual state.
+	if run_recap != null:
+		run_recap.archetype = archetype
 	# arc-4 iter 091 (P0-1 fix): centralized cleanup — also unpauses
 	# tree + restores process_mode. Always runs even if switch_archetype
 	# early-returned (out-of-range or same-value).
@@ -1498,9 +1513,13 @@ func _on_breach_band_changed(band) -> void:
 		# arc-4 iter 82 (Round 11 Phase 1): record the band crossing
 		# into the run recap's per-band visit log for CONSULT-009
 		# band-shape analysis.
+		# arc-4 iter 095 (P1-4 fix): the previous code overwrote
+		# run_recap.archetype on every band crossing, contradicting
+		# the documented "at run start" contract. Removed. Run-start
+		# capture lives in _ready (line ~244) and _pick_archetype
+		# (line ~769) now.
 		if run_recap != null and "band_name" in band:
 			run_recap.enter_band(String(band.band_name))
-			run_recap.archetype = archetype
 
 
 # arc-4 iter 42 (Round 6d, stakes & escalation): the band-arrival banner.

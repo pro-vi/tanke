@@ -448,6 +448,15 @@ check-breach-pick-archetype-and-mortar-guard:
 	@$(HEADLESS) --script res://loop/breach/test_breach_pick_archetype_and_mortar_guard.gd 2>&1 | grep -E "^(  (RAM|_pick_archetype|MortarShell|no)|BREACH_PICK_ARCHETYPE_AND_MORTAR_GUARD_OK|FAIL|ERROR|SCRIPT ERROR)"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_pick_archetype_and_mortar_guard.gd 2>&1 | grep -q "^BREACH_PICK_ARCHETYPE_AND_MORTAR_GUARD_OK"
 
+# Arc-4 breach mode: P1-4 regression — RunRecap.archetype must
+# reflect the RUN-START archetype, not the latest switch (iter
+# 095). Before fix: _on_breach_band_changed reassigned archetype
+# on every crossing, polluting cross-archetype distinctness
+# analysis.
+check-breach-run-recap-archetype-contract:
+	@$(HEADLESS) --script res://loop/breach/test_breach_run_recap_archetype_contract.gd 2>&1 | grep -E "^(  (fresh|after|_pick_archetype|switch_archetype)|BREACH_RUN_RECAP_ARCHETYPE_CONTRACT_OK|FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/breach/test_breach_run_recap_archetype_contract.gd 2>&1 | grep -q "^BREACH_RUN_RECAP_ARCHETYPE_CONTRACT_OK"
+
 # Arc-4 breach mode: Round-11 Phase-2 SWARM SPIKE harness (iter 85).
 # Compares α/β/γ variants empirically; emits hierarchy verdict +
 # recommendation per Pro's H2 critique (best/costly/bad answer
@@ -457,7 +466,7 @@ check-breach-swarm-spike:
 	$(HEADLESS) --script res://loop/breach/test_breach_swarm_spike.gd 2>&1 | grep -q "^BREACH_SWARM_SPIKE_OK"
 
 # Arc-4 breach mode: all breach harnesses in one target.
-test-breach: check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness check-breach-recap check-breach-enemies check-breach-assets check-silhouette-gate check-breach-armor check-breach-dividend check-breach-swap check-breach-overdrive check-breach-hud check-breach-apcr check-breach-codex check-breach-shuffle check-breach-depot-roll check-breach-rulechangers check-breach-stakes check-breach-meta check-breach-route check-breach-xp check-breach-ammo check-breach-shield check-breach-hp check-breach-archetype check-breach-prism check-breach-mortar check-breach-ram check-breach-archetype-select check-breach-archetype-switch check-breach-distinctness-audit check-breach-pressure-probes check-breach-band-shape check-breach-band-shape-analyzer check-breach-swarm-spike check-breach-double-kill check-breach-archetype-select-pause check-breach-xp-reload-persistence check-breach-switch-archetype-validation check-breach-pick-archetype-and-mortar-guard
+test-breach: check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness check-breach-recap check-breach-enemies check-breach-assets check-silhouette-gate check-breach-armor check-breach-dividend check-breach-swap check-breach-overdrive check-breach-hud check-breach-apcr check-breach-codex check-breach-shuffle check-breach-depot-roll check-breach-rulechangers check-breach-stakes check-breach-meta check-breach-route check-breach-xp check-breach-ammo check-breach-shield check-breach-hp check-breach-archetype check-breach-prism check-breach-mortar check-breach-ram check-breach-archetype-select check-breach-archetype-switch check-breach-distinctness-audit check-breach-pressure-probes check-breach-band-shape check-breach-band-shape-analyzer check-breach-swarm-spike check-breach-double-kill check-breach-archetype-select-pause check-breach-xp-reload-persistence check-breach-switch-archetype-validation check-breach-pick-archetype-and-mortar-guard check-breach-run-recap-archetype-contract
 
 # Arc-3 → arc-2 metric handshake: compute per-stage structural metrics
 # across all 35 BC stages and emit loop/originals/og-metrics.json.
