@@ -17,6 +17,14 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 159 — STATUS-CHECK — 2nd post-checkpoint idle iter
+
+- Date: 2026-05-24
+- Hash: 23d6a2ec3bf2821f… (verified iter 156; bit-identical no-edit)
+- Status: 2 idle iters since checkpoint. Awaiting user signal.
+
+---
+
 ## iter 158 — STATUS-CHECK — checkpoint shipped iter 157; loop at honest idle
 
 - Date: 2026-05-24
