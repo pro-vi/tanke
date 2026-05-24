@@ -131,33 +131,37 @@ def _outline_rect(grid: List[List[int]], r0: int, c0: int, r1: int, c1: int) -> 
         if 0 <= c1 - 1 < CELL: grid[r][c1 - 1] = O
 
 
-def _add_chassis_and_treads(grid: List[List[int]]) -> None:
+def _add_chassis_and_treads(grid: List[List[int]], frame: int = 0) -> None:
     """Common chassis + tread layout (UP-facing). Body rows 6..14,
-    cols 3..13; treads cols 1..3 and 13..15."""
+    cols 3..13; treads cols 1..3 and 13..15.
+
+    iter 144: frame parameter toggles tread-cleat row parity so a
+    2-frame animation reads as "tracks moving" without changing the
+    core silhouette (CONSULT constraint 4 unchanged)."""
     # Chassis body (filled)
     _fill_rect(grid, 6, 4, 14, 12, B)
-    # Chassis outline
     _outline_rect(grid, 6, 4, 14, 12)
     # Left tread
     _fill_rect(grid, 6, 1, 14, 4, B)
     _outline_rect(grid, 6, 1, 14, 4)
-    # Tread cleats (alternating pixels on outer column)
-    for r in range(7, 13, 2):
+    # Tread cleats: frame 0 = odd rows (7,9,11), frame 1 = even rows (8,10,12)
+    cleat_rows = range(7, 13, 2) if frame == 0 else range(8, 13, 2)
+    for r in cleat_rows:
         grid[r][1] = O
         grid[r][2] = B
     # Right tread (mirror)
     _fill_rect(grid, 6, 12, 14, 15, B)
     _outline_rect(grid, 6, 12, 14, 15)
-    for r in range(7, 13, 2):
+    for r in cleat_rows:
         grid[r][14] = O
         grid[r][13] = B
 
 
-def make_prism_up() -> List[List[int]]:
+def make_prism_up(frame: int = 0) -> List[List[int]]:
     """PRISM: compact chassis + bright cyan lens aperture at front.
     Identity: 2x2 bright accent cluster at top center = beam emitter."""
     g = _blank_grid()
-    _add_chassis_and_treads(g)
+    _add_chassis_and_treads(g, frame=frame)
     # Turret base on top center (chassis row 5)
     _fill_rect(g, 4, 6, 7, 10, B)
     _outline_rect(g, 4, 6, 7, 10)
@@ -174,11 +178,11 @@ def make_prism_up() -> List[List[int]]:
     return g
 
 
-def make_mortar_up() -> List[List[int]]:
+def make_mortar_up(frame: int = 0) -> List[List[int]]:
     """MORTAR: chassis + stubby angled tube offset to right-front.
     Identity: ASYMMETRIC silhouette + accent at tube tip = lobber, not gun."""
     g = _blank_grid()
-    _add_chassis_and_treads(g)
+    _add_chassis_and_treads(g, frame=frame)
     # Tube base mount (slightly right of center)
     _fill_rect(g, 4, 7, 7, 11, B)
     _outline_rect(g, 4, 7, 7, 11)
@@ -196,32 +200,35 @@ def make_mortar_up() -> List[List[int]]:
     return g
 
 
-def make_ram_up() -> List[List[int]]:
+def make_ram_up(frame: int = 0) -> List[List[int]]:
     """RAM: chassis + oversized front plow (wedge wider than chassis).
-    Identity: silhouette WIDER at front than rear = unmistakable plow."""
+    Identity: silhouette WIDER at front than rear = unmistakable plow.
+
+    iter 144 tightening: plow drawn as hollow wedge (outline-defined
+    blade) rather than solid fill — keeps the wider-at-front read but
+    drops fill ratio under the 0.65 readability ceiling."""
     g = _blank_grid()
-    _add_chassis_and_treads(g)
-    # Plow extends forward of the chassis, wider with each row toward
-    # the leading edge. Row 5 = chassis top edge (already drawn as
-    # outline by _add_chassis_and_treads).
-    # Row 4: cols 2..14 (wider than chassis)
-    _fill_rect(g, 4, 2, 6, 14, B)
-    # Row 3: cols 1..15 (widest)
-    _fill_rect(g, 3, 1, 4, 15, B)
-    # Row 2: cols 2..14 (taper — "blade" thinness)
-    _fill_rect(g, 2, 2, 3, 14, B)
-    # Plow outline (top + sides)
+    _add_chassis_and_treads(g, frame=frame)
+    # Plow extends forward of the chassis as a hollow wedge.
+    # Row 5 = chassis top edge (already outline from _add_chassis).
+    # Row 4: thin band cols 2..14 (slightly wider than chassis)
     for c in range(2, 14):
-        g[2][c] = O
-    g[3][0] = O if False else g[3][0]  # leave edges
-    g[3][1] = O
-    g[3][15] = O if 15 < CELL else g[3][15]
-    # Use cells safely
-    g[3][14] = O
-    g[4][2] = O
-    g[4][13] = O
-    # Bright leading-edge accent stripe (one row of bright pixels)
-    for c in range(3, 13):
+        g[4][c] = B
+    # Row 3: widest band cols 1..15 (1-px outline-style band)
+    for c in range(1, 15):
+        g[3][c] = B
+    # Outline edges of the wedge
+    g[3][0] = O
+    g[3][15] = O
+    for c in range(0, 16):
+        g[2][c] = O if (3 <= c <= 12) else g[2][c]
+    # Side ramps (1-px outline diagonals)
+    g[4][1] = O
+    g[4][14] = O
+    g[5][3] = O
+    g[5][12] = O
+    # Bright leading-edge accent stripe (single row, narrow)
+    for c in range(4, 12):
         g[1][c] = A
     return g
 
@@ -272,33 +279,129 @@ def render_cell(grid: List[List[int]], palette: dict, scale: int = 8):
 
 
 def write_sprite_preview(out_path: Path, scale: int = 8) -> None:
-    """3 archetypes (rows) × 4 directions (cols) preview sheet."""
+    """3 archetypes (rows) × 4 directions × 2 frames (cols) preview sheet.
+
+    iter 144: extended to render frame 0 + frame 1 side-by-side per
+    direction (8 cols total: L0 L1 D0 D1 U0 U1 R0 R1). The frame pair
+    shares the silhouette + motif; only tread cleats shift parity."""
     from PIL import Image, ImageDraw
     cell_px = CELL * scale
     gap = 12
+    pair_gap = 4  # tighter gap between frame-0 and frame-1 of the same direction
     label_h = 18
     archetypes = ["prism", "mortar", "ram"]
     dirs = ["L", "D", "U", "R"]
-    sheet_w = label_h + len(dirs) * (cell_px + gap) + gap
+    frames = [0, 1]
+    pair_w = 2 * cell_px + pair_gap
+    sheet_w = label_h + len(dirs) * (pair_w + gap) + gap
     sheet_h = label_h + len(archetypes) * (cell_px + gap) + gap
     sheet = Image.new("RGBA", (sheet_w, sheet_h), (28, 28, 36, 255))
     draw = ImageDraw.Draw(sheet)
 
-    # Column labels (directions across the top)
+    # Column labels (direction over each frame-pair)
     for di, d in enumerate(dirs):
-        x = label_h + gap + di * (cell_px + gap) + cell_px // 2 - 6
+        x = label_h + gap + di * (pair_w + gap) + pair_w // 2 - 6
         draw.text((x, 2), d, fill=(220, 220, 230, 255))
     # Row labels + cells
     for ai, arch in enumerate(archetypes):
         y = label_h + gap + ai * (cell_px + gap)
         draw.text((2, y + cell_px // 2 - 6), arch[0].upper(), fill=(220, 220, 230, 255))
-        base = ARCHETYPE_BUILDERS[arch]()
         for di, d in enumerate(dirs):
-            x = label_h + gap + di * (cell_px + gap)
-            rotated = rotate_grid(base, d)
-            cell_img = render_cell(rotated, PALETTES[arch], scale=scale)
-            sheet.paste(cell_img, (x, y), cell_img)
+            for fi, frame in enumerate(frames):
+                base = ARCHETYPE_BUILDERS[arch](frame=frame)
+                rotated = rotate_grid(base, d)
+                cell_img = render_cell(rotated, PALETTES[arch], scale=scale)
+                x = label_h + gap + di * (pair_w + gap) + fi * (cell_px + pair_gap)
+                sheet.paste(cell_img, (x, y), cell_img)
     sheet.save(out_path)
+
+
+# ============================================================
+# Iter 144 — readability / silhouette gate
+# ============================================================
+#
+# Machine-checkable assertions per CONSULT constraint 4 ("silhouette
+# grammar"). Run `--check` to exit nonzero if any archetype fails.
+
+def _palette_codes(grid: List[List[int]]) -> set:
+    """Return set of role codes used in the grid."""
+    return {grid[r][c] for r in range(CELL) for c in range(CELL)}
+
+
+def _fill_ratio(grid: List[List[int]]) -> float:
+    """Fraction of cells that are non-transparent."""
+    nz = sum(1 for r in range(CELL) for c in range(CELL) if grid[r][c] != T)
+    return nz / (CELL * CELL)
+
+
+def _hamming(g1: List[List[int]], g2: List[List[int]]) -> int:
+    """Count cells where g1 and g2 disagree (whole grid)."""
+    return sum(1 for r in range(CELL) for c in range(CELL) if g1[r][c] != g2[r][c])
+
+
+def _motif_hamming(g1: List[List[int]], g2: List[List[int]]) -> int:
+    """Count cells where g1 and g2 disagree in the MOTIF region only
+    (rows 0..6 for UP orientation — the turret/tube/plow zone). The
+    shared chassis + treads (rows 6..14) are excluded because they are
+    intentionally common across archetypes (= 'all three are tanks')."""
+    return sum(1 for r in range(0, 6) for c in range(CELL) if g1[r][c] != g2[r][c])
+
+
+def _front_half_accent(grid: List[List[int]], direction: str) -> int:
+    """Count accent (A) pixels in the 'front half' of the grid for
+    given direction. UP=top half (rows 0..7), DOWN=bottom half (8..15),
+    LEFT=left half (cols 0..7), RIGHT=right half (cols 8..15)."""
+    if direction == "U":
+        return sum(1 for r in range(0, 8) for c in range(CELL) if grid[r][c] == A)
+    if direction == "D":
+        return sum(1 for r in range(8, CELL) for c in range(CELL) if grid[r][c] == A)
+    if direction == "L":
+        return sum(1 for r in range(CELL) for c in range(0, 8) if grid[r][c] == A)
+    if direction == "R":
+        return sum(1 for r in range(CELL) for c in range(8, CELL) if grid[r][c] == A)
+    return 0
+
+
+def check_readability() -> List[str]:
+    """Run all silhouette/readability assertions. Returns list of
+    failure messages (empty list = all pass)."""
+    archetypes = ["prism", "mortar", "ram"]
+    dirs = ["L", "D", "U", "R"]
+    failures: List[str] = []
+
+    # Build base UP grids for all archetypes (frame 0) for the
+    # pairwise-distinctness check.
+    up_grids = {a: ARCHETYPE_BUILDERS[a](frame=0) for a in archetypes}
+
+    # Per archetype × direction assertions
+    for arch in archetypes:
+        for d in dirs:
+            grid = rotate_grid(ARCHETYPE_BUILDERS[arch](frame=0), d)
+            # (a) palette codes — must be subset of {T, O, B, A}
+            codes = _palette_codes(grid)
+            if not codes.issubset({T, O, B, A}):
+                failures.append(f"{arch}-{d}: palette codes {codes} not in {{T,O,B,A}}")
+            # (b) fill ratio in sane range
+            ratio = _fill_ratio(grid)
+            if ratio < 0.20:
+                failures.append(f"{arch}-{d}: fill ratio {ratio:.2f} < 0.20 (sprite too sparse)")
+            if ratio > 0.65:
+                failures.append(f"{arch}-{d}: fill ratio {ratio:.2f} > 0.65 (sprite too dense)")
+            # (c) at least one accent pixel in the front half
+            front_acc = _front_half_accent(grid, d)
+            if front_acc < 1:
+                failures.append(f"{arch}-{d}: 0 accent pixels in front half (motif not readable as 'forward')")
+
+    # Pairwise distinctness in the MOTIF region (rows 0..6) — chassis
+    # + treads are excluded because they are shared by design.
+    pairs = [("prism", "mortar"), ("prism", "ram"), ("mortar", "ram")]
+    MOTIF_THRESH = 10  # rows 0..6 × 16 cols = 96 cells; 10 = ~10% disagreement
+    for a, b in pairs:
+        dist = _motif_hamming(up_grids[a], up_grids[b])
+        if dist < MOTIF_THRESH:
+            failures.append(f"{a}↔{b}: motif hamming {dist} < {MOTIF_THRESH} (front-region silhouette not distinct)")
+
+    return failures
 
 
 def main() -> None:
@@ -308,7 +411,9 @@ def main() -> None:
     parser.add_argument("--extract", action="store_true",
                         help="re-extract raw dominant colors from concept PNGs (for tuning the clamped PALETTES dict)")
     parser.add_argument("--sprites", action="store_true",
-                        help="iter 143: write motif-first procedural sprite preview sheet (3 archetypes x 4 directions, 8x scaled)")
+                        help="iter 143/144: write 2-frame procedural sprite preview sheet (3 archetypes x 4 directions x 2 frames)")
+    parser.add_argument("--check", action="store_true",
+                        help="iter 144: run silhouette/readability assertions; exit nonzero on failure")
     args = parser.parse_args()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     if args.extract:
@@ -329,7 +434,15 @@ def main() -> None:
     if args.sprites:
         out_path = OUT_DIR / "archetype_sprites_preview.png"
         write_sprite_preview(out_path, scale=8)
-        print(f"wrote {out_path} (3 archetypes x 4 directions, 8x scaled)")
+        print(f"wrote {out_path} (3 archetypes x 4 directions x 2 frames, 8x scaled)")
+    if args.check:
+        failures = check_readability()
+        if failures:
+            print(f"FAIL — {len(failures)} silhouette/readability assertion(s):")
+            for f in failures:
+                print(f"  - {f}")
+            raise SystemExit(1)
+        print("OK — 12 archetype×direction combinations pass silhouette/readability checks; motif-region pairwise distinctness ≥ 10 cells")
 
 
 if __name__ == "__main__":

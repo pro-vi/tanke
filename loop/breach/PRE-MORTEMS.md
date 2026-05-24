@@ -24,6 +24,40 @@ Format:
 
 ---
 
+## iter 144 — BUILD — 2nd animation frame + silhouette/readability checks (Pro Consult 011 step 2/5)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 4 (silhouette grammar gate codified
+  as machine-checkable assertions); 7 (frame alternation = tread-cleat
+  pixel toggle ONLY, core silhouette + motif unchanged → "moving"
+  legibility without inventing mechanics).
+- CONSULT constraints risked: none.
+- Plan: extend tools/gen_archetype_sprites.py with:
+  (a) `frame` parameter on _add_chassis_and_treads — frame 0 = odd-row
+      cleats, frame 1 = even-row cleats; identity motif unchanged.
+  (b) check_readability(grid, archetype, dir) — asserts: palette
+      count ≤ 4; non-transparent fill ratio ≥ 0.20 and ≤ 0.65;
+      pairwise hamming distance between archetypes ≥ 30 cells (out
+      of 256); accent pixels in "front half" of grid ≥ 1.
+  (c) --check CLI flag runs all assertions; returns nonzero on fail.
+  (d) extend --sprites preview to show frame 0 + frame 1 side-by-side
+      per direction (6 cols × 3 rows instead of 4 cols × 3 rows).
+- Predicted failure: the readability check may flag MORTAR's tube
+  as not having accent in the "front half" because the angled tube
+  cap is the only accent and might land in the rear half after rotation.
+  Falsifiable claim:
+  - --check exits 0 (all 12 archetype×direction combinations pass).
+  - Frame 0 and frame 1 tread cleats are visibly different (eye check).
+  - Pairwise distance: PRISM↔MORTAR, PRISM↔RAM, MORTAR↔RAM all ≥ 30
+    cells different out of 256.
+  - Front-half accent count ≥ 1 for all 12 combinations.
+- Sentence test (n/a — asset pipeline).
+- Substrate touched: none (tools/ is arc-4-owned).
+- Hash-anchor verification plan: n/a.
+
+---
+
 ## iter 143 — BUILD — H5 motif-first procedural masks (Prism / Mortar / Ram × 4 dirs)
 
 - Date: 2026-05-24

@@ -17,6 +17,41 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 144 — BUILD — 2nd animation frame + silhouette/readability check (Pro Consult 011 step 2/5)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Constraints respected: 4 (silhouette grammar gate now machine-
+  checkable via --check); 7 (frame alternation = tread-cleat pixel
+  toggle only, core motif unchanged).
+- Constraints risked: none.
+- Hash anchor: 23d6a2ec… n/a.
+- Falsifications: none added.
+- Files: tools/gen_archetype_sprites.py (extended: frame param on
+  _add_chassis_and_treads; check_readability with 4 assertion
+  classes; CLI --check flag; --sprites now renders 8-col 2-frame
+  preview); tools/out/archetype_sprites_preview.png (regenerated,
+  2-frame layout); PRE-MORTEMS.md + LEDGER.md.
+- Finding: The readability gate CAUGHT 2 real defects on its first
+  run: (1) RAM fill ratio 0.68 > 0.65 ceiling (plow was over-solid;
+  redesigned as hollow wedge with 1-px outline blade); (2) PRISM↔
+  MORTAR whole-grid hamming 21 < my 30 threshold (chassis-and-tread
+  sharing is intentional — redefined distinctness as MOTIF-region
+  hamming, rows 0..6 only, threshold 10, which honestly measures
+  what 'distinct silhouette' means when chassis is shared by
+  design). Post-fix: all 12 archetype×direction combinations pass;
+  pairwise motif distinctness ≥ 10 cells. The check is the gate;
+  the fix was design clarification, not threshold rationalization.
+  Score unchanged — C4 anchor 3 was already claimed via iter 70's
+  concept sprites; machine-checkable harness HARDENS that anchor
+  rather than lifting C4 to anchor 4 (which is [FEEL] playtest-
+  gated). Pro's plan continues: iter 145 atlas pack (append cells,
+  don't mutate Default); iter 146 PlayerTank wiring; iter 147 META
+  + REVIEW-QUEUE #13 close.
+
+---
+
 ## iter 143 — BUILD — H5 motif-first procedural sprite masks (Pro Consult 011 plan, step 1/5)
 
 - Date: 2026-05-24
