@@ -24,6 +24,56 @@ Format:
 
 ---
 
+## iter 146 — BUILD — PlayerTank archetype → texture swap (Pro Consult 011 step 4/5)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 4 (silhouette gate already passed
+  at iter 145 atlas build; swap just renders); 7 (texture per
+  archetype = visual reinforcement of EXISTING verb-distinction, not
+  new mechanics).
+- CONSULT constraints risked: H1 multiplication risk — touches Layer
+  2 substrate (PlayerTank.gd + TankSprite.gd). Mitigation: default-on
+  gating per PROMPT §SUBSTRATE TEMPLATE — additive frame_base field
+  default 0; texture swap gated on `loadout != null && archetype !=
+  DEFAULT`. Flag-off codepath bit-identical → hash anchor preserved.
+- Plan:
+  (a) TankSprite.gd: add `var frame_base: int = 0` and use
+      `frame_base + dir_set[animation_frame]` in `_process`. Default
+      0 means existing call sites are bit-identical.
+  (b) PlayerTank.gd: preload archetype_atlas_tex at script-level;
+      new helper `_apply_archetype_sprite(arch)` swaps sprite.texture
+      + sprite.vframes + sprite.frame_base; called from
+      `_init_archetype()` for non-DEFAULT and from `_revert_archetype`
+      to restore. Gating: only if loadout != null (preserves arc-2/3
+      mode hash anchor).
+  (c) Hash anchor verification: run loop/test_runner.gd on procedural
+      baseline (seed 42), compare to `23d6a2ec3bf2821f`.
+  (d) make test-all / make test-breach: must stay green.
+- Predicted failure: TankSprite.gd is used by both PlayerTank AND
+  Enemy.gd. The Enemy has its OWN sprite_base_frame field (lines
+  46-47). My additive frame_base on TankSprite might collide with
+  Enemy's mechanism. Mitigation: TankSprite is only attached to
+  PlayerTank's Sprite2D (per scene file); Enemy doesn't use TankSprite,
+  it has its own sprite logic in Enemy.gd. Need to verify this.
+- Falsifiable claim:
+  - test_runner.gd hash output == 23d6a2ec3bf2821f (4 hex check).
+  - make test-all = 5/5.
+  - In-game (manual via Godot headless or actual editor): PRISM
+    archetype displays cyan sprite instead of default green tank.
+    The visual claim is deferred to iter 147 META in-game check; this
+    iter ships the code wiring.
+- Sentence test (n/a — asset pipeline).
+- Substrate touched: scripts/PlayerTank.gd (sanctioned per PROMPT;
+  substrate write #70); scripts/TankSprite.gd (additive Layer-2
+  utility; default-on gating template applies — frame_base default 0).
+- Hash-anchor verification plan: post-edit, run
+  `godot --headless --path . --script res://loop/test_runner.gd --
+  --json --seed 42` and check the hash field equals 23d6a2ec3bf2821f.
+  If broken: revert immediately and investigate.
+
+---
+
 ## iter 145 — BUILD — atlas pack (img/archetype_sprites.png) — Pro Consult 011 step 3/5
 
 - Date: 2026-05-24

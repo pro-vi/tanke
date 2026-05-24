@@ -11,6 +11,20 @@ const LoadoutT = preload("res://scripts/Loadout.gd")
 const RunRecapT = preload("res://scripts/RunRecap.gd")
 const MetaProgressT = preload("res://scripts/MetaProgress.gd")
 
+# arc-4 iter 146 (Pro Consult 011 step 4/5): per-archetype atlas. PRISM row 0,
+# MORTAR row 1, RAM row 2; each row 8 cells matching TankSprite.gd dir_set
+# layout (U=[0,1], L=[2,3], D=[4,5], R=[6,7]). Default texture stays
+# sprites_0.png so arc-2/3 mode + DEFAULT archetype = bit-identical.
+const ARCHETYPE_ATLAS_TEX = preload("res://img/archetype_sprites.png")
+const DEFAULT_ATLAS_TEX = preload("res://img/sprites_0.png")
+# Per-archetype base frame in the archetype atlas (hframes=16, vframes=3).
+# DEFAULT keeps frame_base=0 against sprites_0.png (existing behavior).
+const _ARCHETYPE_FRAME_BASE = {
+	TankArchetype.PRISM: 0,
+	TankArchetype.MORTAR: 16,
+	TankArchetype.RAM: 32,
+}
+
 # arc-4 iter 64 (Round 9b): tank archetype enum — distinct personalities
 # the user named in playtest-4 (Red Alert / Into the Breach references).
 # Per-archetype behaviour lands in 9c (PRISM beam), 9d (MORTAR lob), 9e
@@ -708,6 +722,10 @@ func _fire_mortar() -> void:
 # as "swap reloads instantly," consistent with the iter-69 user
 # direction ("almost like switching a weapon").
 func _revert_archetype() -> void:
+	# arc-4 iter 146: restore default sprite atlas before next _init.
+	# Idempotent — _apply_archetype_sprite(DEFAULT) is a no-op if already
+	# on sprites_0.png + frame_base 0.
+	_apply_archetype_sprite(TankArchetype.DEFAULT)
 	if archetype == TankArchetype.PRISM and _beam_line != null:
 		_beam_line.visible = false
 		_beam_dmg_timer = 0.0  # S2: clear pending beam damage cooldown
@@ -748,10 +766,43 @@ func switch_archetype(value: int) -> void:
 # arc-4 iter 68 (Round 9f): per-archetype init — extracted from _ready
 # so post-_ready selection can re-init when the user picks. Guarded by
 # _archetype_initialized so re-calls without an archetype change are no-ops.
+# arc-4 iter 146 (Pro Consult 011 step 4/5): swap sprite texture +
+# frame_base when archetype changes. Gating: only takes effect when
+# loadout != null (= arc-4 breach mode). DEFAULT archetype always
+# restores sprites_0.png + frame_base 0, so arc-2/3 baseline + arc-4
+# DEFAULT runs are bit-identical to before. Hash anchor preserved on
+# procedural baseline (loadout=null in that codepath).
+func _apply_archetype_sprite(arch: int) -> void:
+	if sprite == null:
+		return
+	# Gating: arc-2/3 mode (no loadout) keeps the original texture.
+	# Without this gate, an arc-2/3 PlayerTank instance would still
+	# point at sprites_0.png frame_base=0 (correct), so the gate is
+	# defense-in-depth but cheap.
+	if loadout == null:
+		sprite.texture = DEFAULT_ATLAS_TEX
+		sprite.vframes = 18
+		if sprite.has_method("set"):
+			sprite.set("frame_base", 0)
+		return
+	if arch == TankArchetype.DEFAULT or not _ARCHETYPE_FRAME_BASE.has(arch):
+		sprite.texture = DEFAULT_ATLAS_TEX
+		sprite.vframes = 18
+		if sprite.has_method("set"):
+			sprite.set("frame_base", 0)
+		return
+	sprite.texture = ARCHETYPE_ATLAS_TEX
+	sprite.vframes = 3
+	sprite.hframes = 16
+	if sprite.has_method("set"):
+		sprite.set("frame_base", _ARCHETYPE_FRAME_BASE[arch])
+
+
 func _init_archetype() -> void:
 	if _archetype_initialized:
 		return
 	_archetype_initialized = true
+	_apply_archetype_sprite(archetype)
 	if archetype == TankArchetype.PRISM:
 		_build_beam_line()
 	elif archetype == TankArchetype.MORTAR:
