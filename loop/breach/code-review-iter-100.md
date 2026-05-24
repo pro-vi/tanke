@@ -167,9 +167,9 @@ operational gate but documented as awareness-tier:
 
 | Order | Finding | File | Effort | Iter target |
 |-------|---------|------|--------|-------------|
-| 1 | **P0-A** Depot re-entry exploit | Depot.gd | small (4 lines) | **iter 100 (inline)** |
-| 2 | P1-A APCR steel_drilled >= + latch | Bullet.gd | small (3 lines) | iter 101 |
-| 3 | P1-B codex dismiss → return | PlayerTank.gd | 1 line | iter 101 |
+| 1 | **P0-A** Depot re-entry exploit | Depot.gd | small (4 lines) | **iter 100 ✓ FIXED** |
+| 2 | P1-A APCR steel_drilled >= + latch | Bullet.gd | small (3 lines) | **iter 101 ✓ FIXED** (harness: test_breach_steel_salvage_threshold) |
+| 3 | P1-B codex dismiss → return | PlayerTank.gd | 1 line | **iter 101 ✓ FIXED** (substrate write ×36) |
 | 4 | P1-C BandBanner cleanup | PlayerTank.gd | small | iter 102 |
 | 5 | P1-D fire-while-swap UX | PlayerTank.gd | medium | iter 102 |
 | 6 | P1-E + P1-F max ceilings | PlayerTank.gd | small | iter 103 |

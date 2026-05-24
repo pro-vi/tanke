@@ -24,6 +24,41 @@ Format:
 
 ---
 
+## iter 101 — BUILD — P1-A + P1-B paired (APCR salvage latch + codex dismiss return)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 3 (P1-A keeps APCR's "drill +
+  earn salvage refund" verb honest under physics-frame edge
+  cases), 6 (P1-B no longer wastes a shell on codex-dismiss,
+  preserving accurate shells_fired recap).
+- CONSULT constraints risked: none.
+- 2 small fixes:
+  - **P1-A** (Bullet.gd): change `if _steel_drilled ==
+    STEEL_SALVAGE_THRESHOLD` to `if _steel_drilled >= THRESHOLD
+    and not _salvage_paid`. Add `var _salvage_paid: bool = false`.
+    Also move `_steel_drilled` increment INSIDE the
+    `body.has_method("breach")` guard so inert steel doesn't
+    inflate the counter.
+  - **P1-B** (PlayerTank.gd substrate write ×36): add `return`
+    after `_dismiss_codex()` call so the same-frame `ui_accept`
+    input doesn't continue into `_fire()` and waste a shot +
+    arm GunTimer cooldown.
+- Predicted failure: P1-A might break the existing
+  test_breach_apcr harness if it asserts strict `==` triggering.
+  Mitigation: update harness assertions to expect `>=` semantics.
+- Falsifiable claim: regression harness verifies (a) APCR drills
+  THRESHOLD blocks → refund fires; (b) APCR drills 2*THRESHOLD
+  → refund fires ONCE not twice; (c) inert steel block (no
+  has_method breach) doesn't tick _steel_drilled; (d) codex
+  dismiss frame doesn't trigger _fire (GunTimer remains stopped).
+- Substrate touched: scripts/PlayerTank.gd (substrate write ×36,
+  1-line `return` add). Bullet.gd is arc-4-extended substrate
+  (sanctioned) — counter logic restructure.
+- Hash-anchor verification plan: post-edit verify.
+
+---
+
 ## iter 100 — META — /code-review on Round 5-8 substrate (fresh scope)
 
 - Date: 2026-05-24

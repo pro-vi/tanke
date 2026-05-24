@@ -23,6 +23,13 @@ const SHELL_CLASS_APCR: int = 3
 
 var velocity: Vector2 = Vector2.ZERO
 var _steel_drilled: int = 0  # arc-4 iter 49: steel blocks this APCR shell has drilled
+# arc-4 iter 101 (P1-A fix from code-review-iter-100): once-per-shot
+# Steel Salvage refund latch. Without this, _steel_drilled == THRESHOLD
+# strict equality would skip the refund if 2 steel blocks were
+# drilled in the same physics frame (e.g. Area2D scanning through
+# adjacent tiles), incrementing 2→4 past THRESHOLD=3. Now uses
+# `>= THRESHOLD and not _salvage_paid`.
+var _salvage_paid: bool = false
 
 @onready var _lifetime_timer: Timer = $LifeTimeTimer
 
@@ -89,13 +96,19 @@ func _on_body_entered(body: Node) -> void:
 	# arc-4 iter 49: APCR-vs-steel is handled FIRST + returns — the bullet
 	# does NOT queue_free, so the drill continues to the next block.
 	if shell_class == SHELL_CLASS_APCR and body.is_in_group("steel"):
+		# arc-4 iter 101 (P1-A fix): only tick the drill counter if
+		# the steel block actually breaches. Inert steel (no breach
+		# method) doesn't count toward Steel Salvage.
 		if body.has_method("breach"):
 			body.breach()
-		_steel_drilled += 1
+			_steel_drilled += 1
 		# Steel Salvage (iter 41, retuned iter 49): drilling
 		# >=STEEL_SALVAGE_THRESHOLD blocks with one shot refunds 1 APCR
 		# — once per shot — if the player owns the upgrade.
-		if _steel_drilled == STEEL_SALVAGE_THRESHOLD:
+		# arc-4 iter 101 (P1-A fix): use `>=` + `_salvage_paid` latch
+		# so a frame-multi-block hit doesn't skip the refund (was `==`).
+		if _steel_drilled >= STEEL_SALVAGE_THRESHOLD and not _salvage_paid:
+			_salvage_paid = true
 			_try_steel_salvage()
 		_spawn_impact_spark()
 		return  # penetrate — the drill flies on until its lifetime ends

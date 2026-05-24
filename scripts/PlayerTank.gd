@@ -306,8 +306,12 @@ func _physics_process(delta: float) -> void:
 		return
 	# arc-4 iter 36: the shell codex is dismissed by the first gameplay
 	# input — the player reads the breach-economy primer, then plays.
+	# arc-4 iter 101 (P1-B fix from code-review-iter-100): return after
+	# dismiss so the same-frame ui_accept doesn't continue to _fire()
+	# (which would consume a shell + arm GunTimer cooldown unintentionally).
 	if _shell_codex != null and _shell_codex.visible and _any_gameplay_input():
 		_dismiss_codex()
+		return
 	if _iframe_timer > 0.0:
 		_iframe_timer -= delta
 	# arc-4 iter 27: tick down the shell-swap reload beat.

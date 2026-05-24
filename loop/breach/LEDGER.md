@@ -17,6 +17,43 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 101 — BUILD — code-review-iter-100 batch 1: P1-A + P1-B paired
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 47/75 effective · 47/75 absolute   (Δ vs prior: 0 — bug fixes
+  with regression coverage; no rubric criterion lift this iter)
+- Constraints respected: 3 (P1-A keeps APCR's "drill + earn salvage
+  refund" verb honest under physics-frame edge cases — overshoot,
+  double-refund, inert-steel false positive), 6 (P1-B no longer
+  wastes a shell on codex-dismiss, preserving accurate shells_fired
+  recap stat)
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… verified (Bullet.gd APCR branch + PlayerTank
+  codex dismiss are both off the default procedural codepath; baseline
+  hash unaffected)
+- Falsifications: none added
+- Files: scripts/Bullet.gd (P1-A — `>=` + `_salvage_paid` latch +
+  increment moved inside `body.has_method("breach")` guard),
+  scripts/PlayerTank.gd (P1-B — `return` after `_dismiss_codex()`;
+  substrate write ×36), loop/breach/test_breach_steel_salvage_threshold.gd
+  (NEW — 4 assertions: baseline drill=3, overshoot pre-seed=4,
+  latch drill=6 refunds 1 not 2, inert-steel doesn't tick counter),
+  Makefile (+check-breach-steel-salvage-threshold; test-breach 50 → 51),
+  loop/breach/PRE-MORTEMS.md, loop/breach/STATE.md.
+- Finding: paired-fix batching continues to pay — two ≤5-line fixes
+  + one comprehensive harness shipped in one iter. The
+  `==`-vs-`>=` overshoot bug + inert-steel false-positive are the
+  kind of edge cases the existing `test_breach_rulechangers` salvage
+  coverage couldn't catch because it only walked the linear drill
+  path; the targeted regression harness exercises the off-path
+  states (pre-seeded counter, group-without-method) that produce
+  the actual failure modes. F006 + F007 pattern holds: anchored
+  findings → targeted harnesses → fixed substrate, with the
+  harness itself becoming the proof-of-fix.
+
+---
+
 ## iter 100 — META + BUILD — /code-review on Round 5-8 substrate + P0-A inline fix
 
 - Date: 2026-05-24
