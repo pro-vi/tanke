@@ -17,6 +17,32 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 156 — CAPABILITY — wire archetype-sprite silhouette gate into test-breach
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Constraints respected: 4 (silhouette grammar gate now machine-
+  enforced on every test-breach invocation).
+- Constraints risked: none.
+- Hash anchor: 23d6a2ec3bf2821f… n/a (no scripts/ writes).
+- Falsifications: none added.
+- Files: Makefile (+ check-archetype-sprite-silhouettes target +
+  wired into test-breach + .PHONY); PRE-MORTEMS.md + LEDGER.md.
+- Finding: Iter-144's machine-checkable silhouette gate
+  (gen_archetype_sprites.py --check) was previously only invoked
+  manually. Now wired into test-breach so any future regression on
+  the procedural archetype atlas (palette codes, fill ratio, front-
+  half accent, motif-region pairwise distinctness) catches automatically.
+  Validates 12 archetype × direction combinations on every test
+  run. Lean CAPABILITY work — 5-line Makefile add, 0 substrate.
+  C4 anchor 3 hardened (still 3 absolute; anchor 4 is [FEEL]
+  playtest-gated). Pipeline polish at saturation = honest value-
+  per-iter. Score unchanged. Test-breach all 67 targets green;
+  hash anchor n/a (no code edits).
+
+---
+
 ## iter 155 — STATUS-CHECK — 6th at-idle · cron continues · loop continues per PROMPT
 
 - Date: 2026-05-24 ~14:57 PDT (cron tick)

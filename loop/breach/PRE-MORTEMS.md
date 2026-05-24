@@ -24,6 +24,43 @@ Format:
 
 ---
 
+## iter 156 — CAPABILITY — wire archetype-sprite silhouette gate into test-breach
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 4 (silhouette grammar gate is the
+  whole point — now runs on every test-breach invocation).
+- CONSULT constraints risked: none.
+- Per PROMPT §SELECT MODE CAPABILITY: "Extend loop/breach/test_breach_
+  harness.gd, tools/gen_tile.py, or write new tools. Must justify
+  against a rubric axis." Justification: hardens C4 (Generated asset
+  pipeline) at anchor 3 — the iter-144 check_readability() function
+  exists but only runs when manually invoked; this iter wires it
+  into the standard test-breach pipeline so a regression on the
+  archetype sprite atlas is caught automatically. Doesn't lift C4
+  anchor (still 3 absolute; anchor 4 is playtest-gated FEEL).
+- Plan:
+  (a) Add Makefile target `check-archetype-sprite-silhouettes:` that
+      runs `python3 tools/gen_archetype_sprites.py --check`. Use
+      system Python (PIL verified installed) for portability matching
+      the existing check-silhouette-gate target pattern.
+  (b) Add the target to test-breach prerequisites list.
+  (c) Add to .PHONY.
+- Predicted failure: the `python3` reference may fail on CI that
+  doesn't have PIL installed in system Python (though uv is
+  available as fallback). If discovered, switch to
+  `uv run --with pillow ...` pattern.
+- Falsifiable claim:
+  - `make check-archetype-sprite-silhouettes` exits 0.
+  - `make test-breach` exits 0 with the new target included.
+  - No regression in existing test-breach targets.
+- Sentence test (n/a — pipeline polish).
+- Substrate touched: Makefile (not in any Layer 1-4 freeze list;
+  pipeline infra).
+- Hash-anchor verification plan: n/a (no scripts/ writes).
+
+---
+
 ## iter 151 — META — REVIEW-QUEUE hygiene sweep (loop-internal items only)
 
 - Date: 2026-05-24
