@@ -17,6 +17,22 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 154 — STATUS-CHECK — 5th at-idle iter · saturation threshold hit · PushNotification fired
+
+- Date: 2026-05-24 14:53 PDT
+- Hash: 23d6a2ec3bf2821f… verified
+- Tests: make test exit 0 (skipped this iter; verified iter 153)
+- Status: 5 consecutive at-idle iters (150-154) reaches the iter-128
+  "≥5 status-checks → consider wakeup extension" threshold. Per
+  PROMPT §SELECT MODE, AWAIT is forbidden for pacing decisions; loop
+  can't gate on user via AskUserQuestion. Used PushNotification
+  (non-blocking) to surface the situation: user may have walked
+  away from the session and not be aware that the cron is firing
+  every 4 min against pure idle. Loop continues per PROMPT — next
+  cron fire will produce another STATUS unless user signals.
+
+---
+
 ## iter 153 — STATUS-CHECK — 4th at-idle iter · hash ok · awaiting user signal
 
 - Date: 2026-05-24 14:49 PDT
