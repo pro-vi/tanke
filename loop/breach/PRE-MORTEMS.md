@@ -24,6 +24,41 @@ Format:
 
 ---
 
+## iter 148 — META — F006 delegated /code-review on Pro Consult 011 round substrate
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 (META — no code changes
+  this iter; review only).
+- CONSULT constraints risked: none.
+- F006 trigger: Pro Consult 011 round closed iter 147. Substrate
+  writes this round: scripts/PlayerTank.gd ×1 (#70, iter 146);
+  scripts/TankSprite.gd ×1 (additive frame_base). Per F006,
+  /code-review at every round close — not self-audit (which
+  missed 18 anchored findings in iter-87 → became F006).
+- Plan: delegate a single focused Agent dispatch reviewing the
+  iter-142-147 substrate diff (PlayerTank + TankSprite changes,
+  the helper gating logic, harness assertion completeness).
+  Capture findings to loop/breach/code-review-iter-148.md;
+  open any anchored findings (≥75) as REVIEW-QUEUE items.
+- Predicted failure: most likely finding is that
+  `_apply_archetype_sprite` doesn't handle the edge case where
+  `sprite` is missing OR `frame_base` field doesn't exist on the
+  Sprite2D yet (the `has_method("set")` check is defensive but
+  doesn't actually verify frame_base exists). A non-TankSprite
+  Sprite2D would silently fail to set frame_base, leading to
+  wrong-archetype rendering.
+- Falsifiable claim:
+  - At least 1 finding emerges OR review reports "no findings
+    above anchor 75" — both outcomes are valid signals.
+  - If findings emerge: they are appended to REVIEW-QUEUE for
+    iter-149+ fix work (matching the iter-90 → iter-91-98 pattern).
+- Sentence test (n/a — META).
+- Substrate touched: none (review only; no edits this iter).
+- Hash-anchor verification plan: n/a.
+
+---
+
 ## iter 147 — META — Pro Consult 011 plan close-out + REVIEW-QUEUE #13 close
 
 - Date: 2026-05-24

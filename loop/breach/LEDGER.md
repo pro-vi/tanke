@@ -17,6 +17,37 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 148 — META — F006 delegated /code-review on Pro Consult 011 round substrate — CLEAN
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Constraints respected: all 7 (META — no code changes).
+- Constraints risked: none.
+- Hash anchor: 23d6a2ec3bf2821f… n/a (no edits; verified clean at
+  iter 147).
+- Falsifications: none added.
+- Files: loop/breach/code-review-iter-148.md (NEW — review findings
+  doc); PRE-MORTEMS.md + LEDGER.md.
+- Finding: F006 delegated /code-review on the iter-142-147 substrate
+  writes returns **NO ANCHORED FINDINGS at the 75-confidence gate.**
+  Independent reviewer (Agent dispatch, correctness + adversarial +
+  invariance lenses) audited the full _apply_archetype_sprite body,
+  both gate branches, all 7 harness cases, and confirmed bit-identity
+  at frame_base=0. Cross-arc hash anchor 23d6a2ec3bf2821f holds on
+  the procedural baseline. Two sub-75 nits recorded for future
+  reference (N1: sprite.has_method("set") tautology — cosmetic; N2:
+  harness chain coverage gap for revert-from-non-DEFAULT chain mid-
+  flow — currently safe). Neither warrants a REVIEW-QUEUE item or a
+  dedicated fix iter — both are below the anchor 75 reporting gate.
+  This is the iter-128 "honest saturation → hardening" posture in
+  action: at the structural ceiling, marginal-value-per-iter shifts
+  from "ship more" to "harden what's shipped." This iter's review IS
+  that hardening. Pro's plan + F006 round-close audit are now both
+  complete. Loop continues per PROMPT.
+
+---
+
 ## iter 147 — META — Pro Consult 011 plan close-out + REVIEW-QUEUE #13 close
 
 - Date: 2026-05-24
