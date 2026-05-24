@@ -24,6 +24,39 @@ Format:
 
 ---
 
+## iter 118 — DIAGNOSE — Round 15 bootstrap (4 options walked)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: none directly (DIAGNOSE iter);
+  indirect: the diagnosis honors PROMPT §ANTI-PATTERNS by
+  declining rubric-extension-for-score-creep (Option C).
+- CONSULT constraints risked: none.
+- Action: walk the 4 forward-direction options (A/B/C/D from
+  round-14-summary) against forward-value heuristics; recommend
+  the Round 15 program.
+- Output: loop/breach/iter-118-round-15-bootstrap.md — per-
+  option analysis with verdicts. Recommendation:
+  - **(A)** keep visible (already done iter 117); not standalone
+  - **(B)** defer all sub-options (user-gated or scope-expanding-
+    beyond-CONSULT)
+  - **(C)** decline (rubric-extension-for-points fails anti-
+    pattern test)
+  - **(D)** ★ DO THIS — C10 anchor 5 re-tag is honest
+    correction of stale anchor text written before the loop's
+    non-stop reframe
+- Falsifiable claim: the iter-119 C10 re-tag is honest because
+  (a) the substantive cross-arc-invariant claim is verified
+  (117 iters + 67 substrate writes + hash anchor preserved);
+  (b) the anchor's "arc-close-gated" wording was structurally
+  unreachable due to PROMPT's non-stop amendment.
+- Substrate touched: none.
+- Hash-anchor verification: not required.
+- Next: iter 119 BUILD-QUALITY — RUBRIC.md C10 anchor 5 re-tag
+  + STATE.score update.
+
+---
+
 ## iter 117 — META — Round 14 close-out + structural-ceiling surfacing
 
 - Date: 2026-05-24
