@@ -17,6 +17,21 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 152 — STATUS-CHECK — no change · hash ok · tests green · idle-polling at 240s cron
+
+- Date: 2026-05-24 14:45 PDT
+- Hash: 23d6a2ec3bf2821f… verified
+- Tests: make test exit 0
+- Status: 3rd consecutive at-idle iter since Pro Consult 011 plan
+  closed (148 review, 149 sub-nits, 150 status, 151 queue sweep).
+  All known self-directable hygiene shipped. Cron continues at 240s
+  per iter-140 directive; per iter-128 posture, after ≥5 status-
+  checks consider extending wakeup — at 2/5 currently. Loop is
+  honestly waiting for user signal: #14 playtest gate OR #15
+  identities-vs-weapons direction OR new surface.
+
+---
+
 ## iter 151 — META — REVIEW-QUEUE hygiene sweep (loop-internal items closed)
 
 - Date: 2026-05-24
