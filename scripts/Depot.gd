@@ -342,14 +342,22 @@ func apply_upgrade(kind: int, loadout) -> void:
 		# arc-4 iter 69 (Round 9g): SWITCH_TO_* upgrades flip the player's
 		# archetype mid-run. value 1=PRISM, 2=MORTAR, 3=RAM (matches
 		# PlayerTank.TankArchetype enum).
+		# arc-4 iter 093 (P1-5 fix from code-review-iter-090): also
+		# `is_instance_valid` check — _player could have been freed
+		# by a scene reload or death-restart while the upgrade panel
+		# was up, leaving a dangling reference that would crash on
+		# has_method().
 		UpgradeKind.SWITCH_TO_PRISM:
-			if _player != null and _player.has_method("switch_archetype"):
+			if _player != null and is_instance_valid(_player) \
+					and _player.has_method("switch_archetype"):
 				_player.switch_archetype(1)
 		UpgradeKind.SWITCH_TO_MORTAR:
-			if _player != null and _player.has_method("switch_archetype"):
+			if _player != null and is_instance_valid(_player) \
+					and _player.has_method("switch_archetype"):
 				_player.switch_archetype(2)
 		UpgradeKind.SWITCH_TO_RAM:
-			if _player != null and _player.has_method("switch_archetype"):
+			if _player != null and is_instance_valid(_player) \
+					and _player.has_method("switch_archetype"):
 				_player.switch_archetype(3)
 
 

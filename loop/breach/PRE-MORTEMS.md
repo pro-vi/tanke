@@ -24,6 +24,34 @@ Format:
 
 ---
 
+## iter 093 — BUILD — P1-3 + P1-5 paired (switch_archetype validation + Depot._player is_instance_valid)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (defensive guards catch state-
+  corruption paths that would otherwise produce garbled death
+  recaps), 7 (preserves verb-distinction by rejecting garbage
+  archetype values).
+- CONSULT constraints risked: none.
+- Predicted failure: the `is_instance_valid` check on `_player`
+  in Depot.gd's SWITCH_TO_* branches might mask a legitimate bug
+  upstream (`_player` should never be invalid at apply_upgrade
+  time if `_on_body_exited` correctly nulls). Mitigation: keep
+  the check defensive (it returns silently if invalid); the
+  invariant violation (player exits without _on_body_exited
+  firing) isn't masked because the check is in addition to the
+  existing `!= null` guard, not instead of it.
+- Falsifiable claim: regression harness verifies (a) value < 0
+  rejected; (b) value > TankArchetype.RAM rejected; (c) value ==
+  current archetype is the existing no-op; (d) freed _player via
+  queue_free + frame doesn't crash on apply_upgrade.
+- Substrate touched: scripts/PlayerTank.gd (substrate write ×30,
+  4-line validation guard in switch_archetype) + scripts/Depot.gd
+  (arc-4-owned, 3 line guards in apply_upgrade SWITCH_TO_*).
+- Hash-anchor verification plan: post-edit verify.
+
+---
+
 ## iter 092 — BUILD — P0-2 fix: FASTER_RELOAD XP bonus survives archetype switches
 
 - Date: 2026-05-24

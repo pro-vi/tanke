@@ -17,6 +17,48 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 093 — BUILD — P1-3 + P1-5 paired (switch_archetype validation + Depot._player is_instance_valid)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0 — defensive fixes, no rubric anchor lift).
+- Constraints respected: 6 (state-corruption paths blocked → death
+  recap stays honest), 7 (rejects garbage archetype values, verb-
+  distinction preserved).
+- Constraints risked: none.
+- Paired fix:
+  - **P1-3** (PlayerTank.gd substrate write ×30, 4 lines): at top
+    of `switch_archetype`, validate `value < TankArchetype.DEFAULT
+    or value > TankArchetype.RAM` → push_warning + return. Prevents
+    `archetype = 99` undefined-state path.
+  - **P1-5** (Depot.gd arc-4-owned, 3 line guards × 3 branches):
+    SWITCH_TO_PRISM/MORTAR/RAM apply_upgrade branches now also
+    check `is_instance_valid(_player)`. Prevents crash if _player
+    was freed by scene reload while upgrade panel was up.
+- Regression harness `test_breach_switch_archetype_validation.gd`
+  with 8 assertions, all pass:
+  - switch_archetype(-1), (99), (RAM+1) all rejected
+  - switch_archetype(DEFAULT) same-value no-op
+  - switch_archetype(PRISM/RAM) valid switches
+  - Depot apply_upgrade(SWITCH_TO_PRISM) with `_player==null` no-op
+  - Depot apply_upgrade(SWITCH_TO_PRISM) with freed `_player` no-op
+    (queue_free + 2 frames → is_instance_valid returns false →
+    branch silently skipped)
+- Hash anchor: `23d6a2ec3bf2821f` preserved (PlayerTank substrate
+  write ×30; flag-off codepath unchanged). test-all 5/5;
+  test-breach 43 → 44.
+- Falsifications: none.
+- Substrate writes this arc: 48 → 49 (PlayerTank.gd ×30).
+- Files: scripts/PlayerTank.gd, scripts/Depot.gd,
+  loop/breach/test_breach_switch_archetype_validation.gd (NEW),
+  Makefile, loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **P1-3 + P1-5 fixed + regression-guarded. 4 of 8
+  code-review findings closed (P1-1 iter 90 + P0-1 iter 91 +
+  P0-2 iter 92 + P1-3/P1-5 iter 93). Next: iter 94 — P1-2
+  `_pick_archetype` bypass + P1-6 MortarShell parent guard
+  paired.**
+
 ## iter 092 — BUILD — P0-2 fix: FASTER_RELOAD XP bonus survives archetype switches
 
 - Date: 2026-05-24

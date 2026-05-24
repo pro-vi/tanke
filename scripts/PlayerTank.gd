@@ -618,6 +618,14 @@ func _revert_archetype() -> void:
 # value, re-runs init. Public so Depot.apply_upgrade drives it; idempotent
 # on same-value.
 func switch_archetype(value: int) -> void:
+	# arc-4 iter 093 (P1-3 fix from code-review-iter-090): reject
+	# out-of-range values silently (with a warning) — prevents
+	# `archetype = 99` putting the tank in undefined state where
+	# no _init_archetype branch matches and no _revert_archetype
+	# branch can restore.
+	if value < TankArchetype.DEFAULT or value > TankArchetype.RAM:
+		push_warning("switch_archetype: invalid value %d (valid range %d-%d)" % [value, TankArchetype.DEFAULT, TankArchetype.RAM])
+		return
 	if value == archetype:
 		return
 	_revert_archetype()
