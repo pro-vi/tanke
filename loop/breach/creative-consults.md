@@ -20,6 +20,80 @@ Format:
 
 ---
 
+## Consult 011 — iter 140 — /second-opinion (GPT Pro extended thinking, same thread as 008) — ADOPTED → H5 motif-first procedural atlas
+
+- Date: 2026-05-24
+- Tab status: ok. Key: `tanke-arc4-round9-second-opinion` (same
+  thread as Consult 008). RunId: `15fc01b5-623c-4843-b504-4c7b4c0cb4c8`.
+  4m 30s wall-clock. Provider: ChatGPT Pro extended thinking.
+- Conversation URL: same as Consult 008 (extended thread).
+- Full response: `/Users/provi/.claude/projects/-Users-provi-Development--projs-tanke/e9ba622c-dc3b-44a6-ac0d-47c797a63ae9/tool-results/mcp-agentify-desktop-agentify_read_page-1779655761760.txt` lines 1279-1361.
+- User direction (iter 140): "i want them to be the actual 8 bit
+  tank i drive" — meaning the AI concept art (iter-70 generated)
+  should BECOME the in-game gameplay sprite per-archetype, not
+  just splash. Asked for /second-opinion on how to do this
+  autonomously, reusing the GPT Pro thread.
+- 5 hypotheses framed (H1 algorithmic downsample / H2 re-gen via
+  image_gen / H3 concept-ref + algo synth / H4 hybrid / H5
+  missing).
+- Key reframe: **"the driven tank must change visibly by archetype,
+  using concept art as palette/motif input rather than naive 8×8
+  downsampling."** Pro proposed H5 (motif-first procedural atlas
+  generator) as the missing option — "treats the concept art as
+  visual canon but not pixel source."
+- Verdicts:
+  - H1 algorithmic downsample: REJECT — "pipeline success, art
+    failure" trap. Salvage palette extraction only.
+  - H2 direct AI atlas gen: REJECT for final pixels — image_gen
+    bad at exact atlas discipline (4 directions, 2 frames, strict
+    palette, no antialiasing). Use only for reference sheets.
+  - H3 concept-ref + algo synth: STRONG core strategy — "at 8×8,
+    bespoke silhouette templates are not manual indulgence; they
+    are the product."
+  - H4 hybrid: MODIFY — "AI/reference → palette and motif →
+    deterministic 8×8 template" not "AI low-res → downsample →
+    rotate." Don't rotate motif-heavy sprites mechanically.
+  - **H5 motif-first procedural atlas: RECOMMENDED**. Deterministic
+    8×8 from concept-derived palettes + archetype-specific masks.
+    Identity beats survive as SYMBOLS (cyan aperture / olive
+    barrel / red plow), not illustrations.
+- Honest compromise: gameplay sprite = 8×8 deterministic
+  archetype-specific. Archetype-select card = existing high-res
+  concept art. Death-recap = optional concept thumbnail. Atlas
+  preview = 8× scaled sheet for verification.
+- 7-iter execution plan (iters 141-147):
+  - 141 SPIKE: palette extraction + previews (skipped — went
+    directly to 142 via cron firing)
+  - **142 SPIKE: ★ THIS ITER — palette extraction done; role-
+    assigned 4-color palettes per archetype written to
+    tools/out/archetype_palettes.json**
+  - 143 BUILD: procedural 8×8 masks for Prism/Mortar/Ram, 4
+    directions, 1 frame each. Standalone preview sheet (not
+    atlas integration yet).
+  - 144 BUILD: 2nd animation frames (track-pixel alternation
+    only — don't change core silhouette). Silhouette/readability
+    checks (palette count, non-empty cells, archetype distinctness,
+    directional front motif).
+  - 145 BUILD: pack into extended atlas (append cells; don't
+    mutate Default).
+  - 146 BUILD: wire PlayerTank.gd archetype→base-frame lookup
+    (loadout+archetype gated; verify flag-off hash).
+  - 147 SWEEP/META: in-game preview verification + REVIEW-QUEUE
+    #13 close-out.
+- Adopted into: tools/gen_archetype_sprites.py (palette extractor +
+  preview swatches; iter 142). Atlas pipeline + Godot integration
+  follow iters 143-147.
+- Key constraint: Pro framed at 8×8 cells but the actual atlas is
+  16×16 per cell (256/16 hframes × 288/18 vframes = 16×16 px). All
+  H5 recommendations apply at the larger cell size with MORE
+  motif-pixel budget — no harder, only easier.
+- Atlas append rule: don't mutate existing Default frames. Add new
+  cells at hframes 16+ (currently only 16 hframes wide, so atlas
+  width grows). PlayerTank.gd extends `sprite_base_frame`-style
+  per-archetype lookup, gated on archetype != DEFAULT.
+
+---
+
 ## Consult 010 — iter 99 — written self-pre-mortem — code-review fix sprint retrospective (iters 89-98)
 
 - Date: 2026-05-24
