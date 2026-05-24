@@ -17,6 +17,44 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 143 — BUILD — H5 motif-first procedural sprite masks (Pro Consult 011 plan, step 1/5)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Constraints respected: 4 (silhouette grammar gate — symbols not
+  illustrations: cyan aperture / olive offset tube / red plow); 7
+  (asset pipeline doesn't invent mechanics — sprites symbolize
+  existing archetype verbs).
+- Constraints risked: none (preview-only iter; atlas integration
+  deferred to iter 145).
+- Hash anchor: 23d6a2ec… n/a (no scripts/ touched; tools/ is arc-4-
+  owned not Layer 1-3).
+- Falsifications: none added.
+- Files: tools/gen_archetype_sprites.py (extended with 4 builders +
+  rotate_grid + render_cell + write_sprite_preview); tools/out/
+  archetype_sprites_preview.png (NEW — 3 archetypes × 4 directions,
+  8× scaled). PRE-MORTEMS.md + LEDGER.md.
+- Finding: First procedural-mask pass per Consult 011's H5
+  recommendation ships an eye-readable preview sheet. All 3 falsifiable
+  claims pass: (1) silhouettes pairwise distinguishable at source
+  16×16; (2) PRISM-front has the brightest pixel cluster (cyan accent
+  lens); (3) MORTAR-front carries an asymmetric off-center tube;
+  (4) RAM-U leading edge wider than rear (plow extends past chassis).
+  Honest observation: ROTATIONAL SYMMETRY works cleanly for PRISM
+  and MORTAR-U/D, but RAM-L and RAM-R show the plow as a horizontal
+  side-stripe rather than a leading wedge — iter 144 will refine
+  with per-direction handcrafted plow templates. Score unchanged
+  (C15 anchor 5 is identity-protected playtest-only; visuals don't
+  lift structural anchors). Pro's 5-iter plan continues:
+  iter 144 BUILD adds 2nd animation frames + silhouette/readability
+  checks; iter 145 BUILD packs into extended atlas (append cells,
+  don't mutate Default); iter 146 BUILD wires PlayerTank archetype→
+  base-frame lookup; iter 147 META in-game verification + REVIEW-
+  QUEUE #13 close-out.
+
+---
+
 ## iter 128 — META — Round 19 close-out + ★ HONEST SATURATION + cadence shift
 
 - Date: 2026-05-24

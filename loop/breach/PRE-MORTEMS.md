@@ -24,6 +24,48 @@ Format:
 
 ---
 
+## iter 143 — BUILD — H5 motif-first procedural masks (Prism / Mortar / Ram × 4 dirs)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 4 (silhouette grammar — each archetype's
+  identity verb readable from silhouette + palette + facing); 7 (asset
+  pipeline doesn't invent mechanics — these sprites just SYMBOLIZE
+  existing archetype mechanics: PRISM=lens, MORTAR=stubby tube,
+  RAM=plow). Per Consult 011 / Round-9 amendment, /agentify image_gen
+  is sanctioned and so is its successor procedural pipeline (image-only;
+  no MLX-SD; identity preserved as SYMBOL rather than illustration).
+- CONSULT constraints risked: none (this iter ships standalone preview
+  only — atlas integration deferred to iter 145).
+- Plan: extend tools/gen_archetype_sprites.py with:
+  (a) per-archetype 16×16 "UP-facing" mask using {transparent, outline,
+      body, accent} roles drawn from the clamped PALETTES dict;
+  (b) rotate_grid() helper that takes UP-mask → L/D/R via 90°/180°
+      rotation (rotational symmetry chosen so iter 144 can refine front
+      motifs without redrawing 4× per archetype);
+  (c) --sprites flag that writes tools/out/archetype_sprites_preview.png
+      — a 3×4 grid (Prism / Mortar / Ram × L / D / U / R), 8× scaled
+      for eye-level readability.
+- Predicted failure: rotational symmetry too cheap — PRISM's lens
+  aperture reads at all 4 directions, but MORTAR's offset tube and
+  RAM's asymmetric plow may look weird when rotated. If so, iter 144
+  handcrafts per-direction templates instead of rotating.
+- Falsifiable claim:
+  - 3 silhouettes in the preview sheet are pairwise-distinguishable
+    at 16×16 source resolution by silhouette alone (palette-blind eye
+    test passes).
+  - PRISM-front has the brightest single pixel (lens accent).
+  - MORTAR-front has an off-center asymmetric motif (tube offset).
+  - RAM-front silhouette is wider at the leading edge than at the rear
+    (plow extends past chassis width).
+- Sentence test (n/a — this iter is asset pipeline, not upgrade).
+- Substrate touched: none (tools/ is owned by arc 4; not Layer 1-3).
+- Hash-anchor verification plan: n/a (no scripts/ writes; substrate
+  untouched). Skip the post-edit verification (only required when
+  Layer 1/2/3 substrate is touched per PROMPT §Step 4).
+
+---
+
 ## iter 139 — PLAYTEST-FIX-2 — separate beam_hp pool ("feel like 10 hp, beam does DPS")
 
 - Date: 2026-05-24
