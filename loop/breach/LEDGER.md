@@ -17,6 +17,54 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 108 — DECISION + BUILD — γ recap verdict sentence (Round 12 Phase 2, Gap 1 wire)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 48/75 effective · 48/75 absolute   (Δ vs prior: +1 — C9
+  lifts 2 → 3 effective; absolute 5 unlocks after Gap 2 kill-source
+  + Gap 3 resource-sentence, plus playtest cite per R3)
+- Constraints respected: 6, 7
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… verified (verdict path is loadout-gated
+  via `if run_recap != null` — arc-2/3 procedural baseline preserved
+  bit-identical when run_recap is null)
+- Falsifications: none added
+- Files: scripts/RunRecap.gd (added verdict_sentence + 3 helpers —
+  _format_resource_clause, _pressure_first_phrase, _canonical_
+  answer_brief; arc-4-owned, not substrate), scripts/PlayerTank.gd
+  (substrate write ×42 — _death_label.text gains the verdict +
+  compact-footer branch, gated on run_recap != null; original
+  ASCENDER text preserved for arc-2/3 modes; also hoisted `band`
+  out of the run_recap capture block so the verdict path can read
+  band.canonical_answer), loop/breach/test_breach_run_recap_
+  verdict_sentence.gd (NEW — 6 assertions: standard shape names
+  depth+band+build+dry-HE+pressure+canonical; comfortable reserves
+  use "to spare" framing; missing canonical drops parenthetical;
+  long pressure truncates with ellipsis; em-dash canonical "HE —
+  …" reduces to "HE"; meta canonical "build cohesion test —…"
+  falls back to first-phrase), Makefile (+check-breach-run-recap-
+  verdict-sentence; test-breach 57 → 58), loop/breach/PRE-MORTEMS.md,
+  loop/breach/STATE.md.
+- Finding: γ shape lands as predicted. The verdict sentence reads
+  as a SINGLE declarative diagnosis — "Died at depth 95 in
+  BUNKER_ZONE as a MIXED BREACHER — 0 HE against steel-armored
+  bunkers. (canonical answer: APCR)" — which is the strongest
+  constraint-6 form: not just "what happened" but "what would have
+  worked." The canonical_answer surfacing turns each death into a
+  learning moment, not a stat dump. Helper design pays off: the
+  em-dash split correctly handles SHELL-directive answers
+  ("HE — open vertical lanes" → brief "HE") while falling back
+  to the first-phrase whole for meta answers ("build cohesion test
+  — chosen identity…" → brief "build cohesion test —..." truncated).
+  C9 movement: rubric anchor 3 ("recap names band + build +
+  resource state") now CITABLE; anchor 4 ("recap surfaces the
+  band's canonical answer to make death a learning moment") also
+  CITABLE post-this-iter. Anchor 5 unlocks at Gap 2 (kill source
+  no longer placeholder) + playtest cite. iter 109 ships Gap 2.
+
+---
+
 ## iter 107 — SPIKE — C9 recap rendering-shape POCs
 
 - Date: 2026-05-24

@@ -24,6 +24,63 @@ Format:
 
 ---
 
+## iter 108 — DECISION + BUILD — γ recap verdict sentence (Gap 1 wire)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (verdict sentence names band
+  + build + resource state in one declarative line + surfaces
+  the band's canonical_answer as a diagnosis — the strongest
+  form of constraint-6 "tied to resource/build/route"); 7
+  (the recap reads as an ACTIONABLE diagnosis, not stat soup
+  — verbs/affordances over passive numbers).
+- CONSULT constraints risked: none.
+- DECISION: affirm γ from iter-107 SPIKE. Reasons: (1) γ is
+  the only shape that surfaces canonical_answer — turns recap
+  from "what happened" into "what would have worked"; (2) γ
+  fits the 10-line panel budget; (3) γ's sentence form is
+  sentence-test-compatible, which feeds Gap 5 (auto-regret-
+  quote) at a future iter; (4) compact ASCENDER footer
+  preserves arc-2 BEST tracking. Fallback to β unnecessary —
+  the sentence template's null-safety is verifiable via
+  defensive helpers (`_format_resource_clause` returns "with
+  shells to spare" when all reserves comfortable; `_canonical
+  _answer_brief` returns "" when band has no answer).
+- 3 changes:
+  - **RunRecap.gd** (arc-4-owned, not substrate): add
+    `verdict_sentence(canonical_answer: String = "") -> String`
+    plus 3 helpers (`_format_resource_clause` / `_pressure_
+    first_phrase` / `_canonical_answer_brief`).
+  - **PlayerTank.gd** (substrate write ×42): replace the
+    `_death_label.text = "YOU DIED\n\nDEPTH %d…"` line with
+    `"YOU DIED" + verdict + compact_footer`. Verdict reads
+    band.canonical_answer from the killing band (defensively
+    null-checked); compact_footer keeps DEPTH · TIME · KILLS
+    on one line plus BEST on next.
+  - **test_breach_run_recap_verdict_sentence.gd** (NEW): 4+
+    assertions on the sentence shape (standard, low-reserve,
+    comfortable-reserve, missing-canonical, long-pressure
+    truncation).
+- Predicted failure: the sentence template might read awkwardly
+  for the "endgame_mixed" band whose canonical_answer is "build
+  cohesion test — chosen identity determines reach" (a META
+  string, not a shell directive). Mitigation: the
+  `_canonical_answer_brief` helper truncates at first semicolon
+  or em-dash, so this becomes "build cohesion test" which still
+  reads OK as a parenthetical aside. The bug is real for the
+  truncated form ("build cohesion test" doesn't tell the player
+  what to DO) but it's better than nothing and the data fix
+  belongs in configs/breach_default.tres, not in the recap code.
+- Falsifiable claim: post-build, a simulated death with the
+  iter-107 test state (MORTAR in bunker_zone, dry on HE) produces
+  a `_death_label.text` that contains "Died at depth 95",
+  "BUNKER_ZONE", "MIXED BREACHER", and "canonical answer: APCR".
+- Substrate touched: scripts/PlayerTank.gd (substrate write ×42).
+- Hash-anchor verification plan: post-edit verify (recap wire is
+  loadout-gated — `if run_recap != null`, off procedural baseline).
+
+---
+
 ## iter 107 — SPIKE — C9 recap rendering-shape POCs (3 parallel)
 
 - Date: 2026-05-24

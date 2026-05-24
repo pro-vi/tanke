@@ -117,6 +117,100 @@ func build_tag() -> String:
 	return "mixed breacher"
 
 
+# arc-4 iter 108 (Round 12 Phase 2, γ shape from iter-107 SPIKE):
+# compose a one-sentence verdict from build + killing_band +
+# reserve_left + (optionally) the band's canonical_answer. The
+# canonical answer is read from the killing BreachBand by
+# PlayerTank at death-render time and passed in here, since
+# RunRecap is a RefCounted that doesn't hold a band reference.
+#
+# Sentence template:
+#   "Died at depth N in BAND_NAME
+#    as a BUILD_TAG —
+#    RESOURCE_CLAUSE against
+#    PRESSURE_PHRASE.
+#
+#    (canonical answer: CANONICAL_BRIEF)"
+#
+# Constraint-6-shaped: names the band (route), build (build), and
+# resource state (resource) in one declarative sentence. The
+# canonical_answer surfacing turns the recap into a DIAGNOSIS the
+# player can learn from, not just a report of what happened.
+func verdict_sentence(canonical_answer: String = "") -> String:
+	if not captured:
+		return "(no death captured)"
+	var build_up: String = build_tag().to_upper()
+	var resource_clause: String = _format_resource_clause()
+	var pressure_short: String = _pressure_first_phrase()
+	var band_up: String = killing_band.to_upper() if not killing_band.is_empty() else "UNKNOWN"
+	var s: String = "Died at depth %d in %s\nas a %s —\n%s against\n%s." % [
+		depth_reached,
+		band_up,
+		build_up,
+		resource_clause,
+		pressure_short,
+	]
+	if not canonical_answer.is_empty():
+		var brief: String = _canonical_answer_brief(canonical_answer)
+		if not brief.is_empty():
+			s += "\n\n(canonical answer: %s)" % brief
+	return s
+
+
+# arc-4 iter 108: format the resource clause. Reports only the
+# reserves that are LOW (== 0); if all reserves are comfortable,
+# returns the positive "with shells to spare" framing. Note this
+# only knows HE + HEAT (the fields RunRecap captured); APCR was
+# added in iter 33 but not captured at death — that's a follow-on
+# fix (Gap 2's surface, not blocking γ).
+func _format_resource_clause() -> String:
+	var clauses: Array[String] = []
+	if he_reserve_at_death == 0:
+		clauses.append("0 HE")
+	if heat_reserve_at_death == 0:
+		clauses.append("0 HEAT")
+	if clauses.is_empty():
+		return "with %d HE / %d HEAT to spare" % [
+			he_reserve_at_death, heat_reserve_at_death]
+	return ", ".join(clauses)
+
+
+# arc-4 iter 108: trim the band's `dominant_pressure` string to its
+# first phrase (split on ";" — matches BreachConfig's convention of
+# semicolons separating sub-pressures). Cap at 32 chars so the
+# verdict sentence fits the 176px death label width.
+func _pressure_first_phrase() -> String:
+	if killing_pressure.is_empty():
+		return "(unknown pressure)"
+	var first: String = killing_pressure.split(";", true, 1)[0].strip_edges()
+	if first.length() > 32:
+		first = first.substr(0, 29) + "..."
+	return first
+
+
+# arc-4 iter 108: trim the band's `canonical_answer` string to its
+# first phrase (split on ";" or em-dash "—" — the BreachConfig
+# convention is "SHELL — terse explanation; further detail").
+# Returns "" if the answer is empty or starts with a meta-string
+# we can't usefully convey in one line (e.g. "build cohesion test"
+# for endgame_mixed). Cap at 24 chars.
+func _canonical_answer_brief(answer: String) -> String:
+	if answer.is_empty():
+		return ""
+	var first: String = answer.split(";", true, 1)[0].strip_edges()
+	# Em-dash split — take the first part if the answer leads with
+	# "SHELL — explanation" form; otherwise keep the whole first phrase.
+	if "—" in first:
+		var em_parts: PackedStringArray = first.split("—", true, 1)
+		var head: String = em_parts[0].strip_edges()
+		# Only use the head if it reads as a shell directive (short).
+		if head.length() <= 12:
+			return head
+	if first.length() > 24:
+		first = first.substr(0, 21) + "..."
+	return first
+
+
 # Render the recap text. Reads as an actionable diagnosis tied to
 # resource/build/route (constraint 6) — NOT "got overwhelmed".
 func format() -> String:

@@ -1015,11 +1015,13 @@ func _die() -> void:
 	# object from the parent level's _current_breach_band (set by
 	# ProceduralLevel breach mode) so the recap can name both the band
 	# and its dominant_pressure. null when absent.
+	# arc-4 iter 108: hoist `band` out of the run_recap block so the
+	# death-label verdict path (below) can also read its canonical_answer.
+	var band = null
+	var lvl: Node = get_parent()
+	if lvl != null and "_current_breach_band" in lvl:
+		band = lvl._current_breach_band
 	if run_recap != null:
-		var band = null
-		var lvl: Node = get_parent()
-		if lvl != null and "_current_breach_band" in lvl:
-			band = lvl._current_breach_band
 		run_recap.capture_death(depth, band, loadout)
 	var t: int = int(_run_time)
 	var ascent_rate: float = 0.0
@@ -1068,7 +1070,22 @@ func _die() -> void:
 			best_time_line = "\n* NEW BEST TIME!  (was %d:%02d)" % [prior_best_time / 60, prior_best_time % 60]
 		else:
 			best_time_line = "\nBEST TIME %d:%02d" % [prior_best_time / 60, prior_best_time % 60]
-		_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nCANCELS %d\nSTALL %d%%%s%s" % [depth, t / 60, t % 60, kills, aim_cancels, int(stall_pct), best_line, best_time_line]
+		# arc-4 iter 108 (Round 12 γ, substrate write ×42): the death
+		# overlay now shows the RunRecap verdict sentence (constraint-6-
+		# shaped diagnosis) + a compact ASCENDER footer. In arc-2/3 modes
+		# (run_recap == null), the iter-43 ASCENDER block is preserved
+		# bit-identical — keeps the procedural baseline + OG mode HUD
+		# behaviour untouched.
+		if run_recap != null:
+			var canonical: String = ""
+			if band != null and "canonical_answer" in band:
+				canonical = String(band.canonical_answer)
+			var verdict: String = run_recap.verdict_sentence(canonical)
+			_death_label.text = "YOU DIED\n\n%s\n\nDEPTH %d · TIME %d:%02d · KILLS %d%s%s" % [
+				verdict, depth, t / 60, t % 60, kills, best_line, best_time_line
+			]
+		else:
+			_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nCANCELS %d\nSTALL %d%%%s%s" % [depth, t / 60, t % 60, kills, aim_cancels, int(stall_pct), best_line, best_time_line]
 		_death_label.visible = true
 	if _death_panel != null:
 		_death_panel.visible = true
