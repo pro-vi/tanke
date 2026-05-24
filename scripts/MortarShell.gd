@@ -62,7 +62,13 @@ func _explode() -> void:
 	_exploded = true
 	global_position = target_pos
 	var parent_node: Node = get_parent()
-	if parent_node == null:
+	# arc-4 iter 094 (P1-6 fix from code-review-iter-090): scene-reload
+	# mid-flight (e.g. player dies + presses R within TRAVEL_TIME 0.6s
+	# of firing) can leave parent_node freed or queued for deletion.
+	# Without this guard, parent_node.add_child(burst) crashes.
+	if parent_node == null \
+			or not is_instance_valid(parent_node) \
+			or parent_node.is_queued_for_deletion():
 		return
 	for sibling in parent_node.get_children():
 		if sibling == self:
@@ -79,6 +85,13 @@ func _explode() -> void:
 
 # Brief orange burst at impact — outlives the shell's queue_free.
 func _spawn_burst(parent_node: Node) -> void:
+	# arc-4 iter 094 (P1-6 fix): defensive — _explode already guards,
+	# but if _spawn_burst is ever called from elsewhere with a
+	# freed/queued parent, no-op silently.
+	if parent_node == null \
+			or not is_instance_valid(parent_node) \
+			or parent_node.is_queued_for_deletion():
+		return
 	var burst: ColorRect = ColorRect.new()
 	burst.size = Vector2(AOE_RADIUS * 2.0, AOE_RADIUS * 2.0)
 	burst.position = target_pos - Vector2(AOE_RADIUS, AOE_RADIUS)

@@ -24,6 +24,35 @@ Format:
 
 ---
 
+## iter 094 — BUILD — P1-2 + P1-6 paired (_pick_archetype bypass + MortarShell parent guard)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 7 (P1-2 fix enforces the single-
+  transition contract; verb-distinction preserved across all
+  archetype paths), 6 (P1-6 prevents recap corruption when a
+  MortarShell explodes against a freed parent).
+- CONSULT constraints risked: none.
+- Predicted failure: refactoring `_pick_archetype` to route through
+  `switch_archetype` could break the start-pick screen's behavior
+  if `switch_archetype`'s `value == archetype` early-return prevents
+  `_init_archetype` from running. Mitigation: `_init_archetype` was
+  already a no-op on same-value due to `_archetype_initialized`
+  guard from iter 68. The refactor preserves that — value == DEFAULT
+  → switch_archetype returns early → _exit_archetype_select still
+  runs (idempotent panel hide + tree unpause).
+- Falsifiable claim: regression harness verifies P1-2 (set
+  archetype = RAM externally, call _pick_archetype(DEFAULT), verify
+  RAM_SPEED_BONUS reverted = speed back to base) AND P1-6
+  (instantiate MortarShell, queue_free parent + 2 frames, call
+  _explode → no crash + no children added to freed parent).
+- Substrate touched: scripts/PlayerTank.gd (substrate write ×31,
+  3-line _pick_archetype refactor) + scripts/MortarShell.gd
+  (arc-4-owned, 4-line guards × 2 functions).
+- Hash-anchor verification plan: post-edit verify.
+
+---
+
 ## iter 093 — BUILD — P1-3 + P1-5 paired (switch_archetype validation + Depot._player is_instance_valid)
 
 - Date: 2026-05-24

@@ -2,13 +2,13 @@
 
 ```yaml
 phase: running
-iter: 93
+iter: 94
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_93: 23d6a2ec3bf2821f  # bit-identical through 49 substrate writes
-substrate_writes_this_arc: 49  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×30 + Level.gd + Spawner.gd ×4 + Enemy.gd ×2
-current_round: 11-open — fix queue running; 4 of 8 code-review findings closed (iters 90-93); next P1-2 + P1-6 paired
+hash_anchor_at_iter_94: 23d6a2ec3bf2821f  # bit-identical through 50 substrate writes
+substrate_writes_this_arc: 50  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×31 + Level.gd + Spawner.gd ×4 + Enemy.gd ×2
+current_round: 11-open — fix queue running; 6 of 8 code-review findings closed (iters 90-94); next P1-4 RunRecap.archetype contract
 current_round_phase: BUILD — Round 11 Phase 2 fix queue from code-review-iter-090.md
 consult_001_status: adopted
 consult_002_status: adopted
@@ -21,7 +21,7 @@ last_consult: iter 79  # CONSULT 009 — written self-pre-mortem, Round 10 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 94 — BUILD — P1-2 + P1-6 paired. P1-2: `_pick_archetype` in PlayerTank.gd bypasses `_revert_archetype` (latent: only triggers if `_pick_archetype` is called with a non-DEFAULT current archetype). Fix: route through `switch_archetype` (single transition function), OR call `_revert_archetype()` inside `_pick_archetype` before reassigning. P1-6: MortarShell._explode and _spawn_burst need `is_instance_valid(parent_node) and not parent_node.is_queued_for_deletion()` guard before `add_child` — crashes on scene-reload mid-flight. New harness `test_breach_pick_archetype_revert.gd` verifying _pick_archetype from non-DEFAULT state correctly reverts; and `test_breach_mortar_shell_parent_guard.gd` verifying _explode is safe when parent is invalid. Substrate write #31 on PlayerTank.gd. Hash-anchor verify; test-all + test-breach green.
+next_action: iter 95 — BUILD — P1-4 fix: RunRecap.archetype reassigned on every band change → contradicts "at run start" documented contract. Read code-review-iter-090.md "P1-4" section. Three sub-fixes: (1) RunRecap.gd: clarify the field semantics — either rename to `current_archetype` (tracks live), OR keep `archetype` and stop overwriting it on band change. (2) PlayerTank.gd `_on_breach_band_changed`: REMOVE the `run_recap.archetype = archetype` line so the field reflects run-start. Add a separate one-shot capture in `_ready` (after run_recap creation) AND in `_pick_archetype` (so start-pick captures the picked archetype as run-start). (3) Optional improvement: ALSO capture the starting band (deferred read of level._current_breach_band) so signatures don't miss the initial band segment. New harness `test_breach_run_recap_archetype_contract.gd` verifying: run_recap.archetype reflects pick screen choice (not later switch); band_visit_log starts from band 0 not band 1+. Substrate write #32 on PlayerTank.gd. Hash-anchor verify; test-all + test-breach green.
 score: 47/75 absolute · 47/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4 (iter 76 lifts C5 2→3 via PRESSURES.md canonical-answer doc)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -30,7 +30,7 @@ round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 round9_blueprint: loop/breach/iter-062-round9-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike,double-kill,archetype-select-pause,xp-reload-persistence,switch-archetype-validation} + check-silhouette-gate (44 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike,double-kill,archetype-select-pause,xp-reload-persistence,switch-archetype-validation,pick-archetype-and-mortar-guard} + check-silhouette-gate (45 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch, #13 archetype-sprite integration path (decision-needed), #14 ★ PLAYTEST REQUEST Round 9 complete (playtest gate), #15 archetypes-as-identities vs archetypes-as-weapons (design-direction question), #16 pressure matrix + distinctness audit (Round 10 internal)]  # #3, #7, #9, #11 CLOSED — playtests delivered
 ```
 
@@ -140,6 +140,21 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-24 — **iter 94 (BUILD).** P1-2 + P1-6 paired fix from
+  code-review-iter-090. P1-2 (PlayerTank.gd ×31): `_pick_archetype`
+  now routes through `switch_archetype`, ensuring `_revert_archetype`
+  runs first if current archetype is non-DEFAULT. Latent today but
+  defensive against future callers. P1-6 (MortarShell.gd, arc-4-
+  owned): `_explode` + `_spawn_burst` add
+  `is_instance_valid(parent_node) and not
+  parent_node.is_queued_for_deletion()` guards before iterating
+  children / add_child — prevents crash on scene-reload mid-shell-
+  flight. New harness test_breach_pick_archetype_and_mortar_guard
+  with 4 assertions (RAM start speed=38; _pick_archetype(DEFAULT)
+  from RAM reverts speed to 32; MortarShell._explode against
+  queued-for-deletion parent no-ops; no ColorRect burst added to
+  queued parent). Substrate write ×31. Hash preserved; test-all
+  5/5; test-breach 44 → 45. Δ 0. 47/75.
 - 2026-05-24 — **iter 93 (BUILD).** P1-3 + P1-5 paired fix from
   code-review-iter-090. P1-3 (PlayerTank.gd ×30): switch_archetype
   validates value in [DEFAULT, RAM] range; out-of-range pushes
@@ -419,40 +434,45 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 94 — BUILD — P1-2 + P1-6 paired.**
+**Iter 95 — BUILD — P1-4 fix: RunRecap.archetype contract.**
 
-P1-2 (PlayerTank.gd `_pick_archetype` bypasses `_revert_archetype`):
-- Currently calls `archetype = value; _archetype_initialized = false;
-  _init_archetype()` directly. Latent because the only live caller
-  is the start-pick screen where archetype is always DEFAULT.
-  But if a future caller invokes `_pick_archetype(MORTAR)` when
-  archetype is RAM, RAM_SPEED_BONUS leaks.
-- Fix: route through `switch_archetype` (which calls
-  `_revert_archetype` first). After value check + cleanup,
-  `_exit_archetype_select()` still runs.
+Read `loop/breach/code-review-iter-090.md` "P1-4" section.
 
-P1-6 (MortarShell._explode / _spawn_burst no parent guard):
-- `_physics_process` fires after scene-reload during shell flight
-  → `get_parent()` returns invalid/queued-for-deletion node.
-  `parent_node.add_child(burst)` crashes.
-- Fix in MortarShell.gd: guard at start of `_explode` and
-  `_spawn_burst`:
-  ```gdscript
-  if parent_node == null or not is_instance_valid(parent_node) \
-          or parent_node.is_queued_for_deletion():
-      return
-  ```
+The field is documented as "PlayerTank.TankArchetype value at run
+start" but PlayerTank `_on_breach_band_changed` reassigns it on
+every band crossing. Cross-archetype distinctness analysis
+(iter-82/83) is corrupted by any mid-run SWITCH_TO_* upgrade.
 
-Regression harnesses:
-- `test_breach_pick_archetype_revert.gd` — set archetype = RAM
-  externally, call `_pick_archetype(DEFAULT)`, verify
-  RAM_SPEED_BONUS is removed (speed back to base).
-- `test_breach_mortar_shell_parent_guard.gd` — instantiate
-  MortarShell, queue_free its parent, drive its `_explode`,
-  verify no crash and no children added to the freed parent.
+Three sub-fixes:
 
-Substrate write #31 on PlayerTank.gd; MortarShell.gd is
-arc-4-owned. Hash-anchor verify; test-all + test-breach green.
+1. **PlayerTank.gd `_on_breach_band_changed`**: REMOVE the
+   `run_recap.archetype = archetype` line. Field becomes
+   immutable from this code path.
+
+2. **PlayerTank.gd `_ready`**: after `run_recap = RunRecapT.new()`,
+   add `run_recap.archetype = archetype`. This captures the
+   START-OF-RUN archetype (DEFAULT for non-force-select runs).
+
+3. **PlayerTank.gd `_pick_archetype` (and now `switch_archetype`
+   if called from selector)**: the start-pick screen happens
+   AFTER `_ready`, so update `run_recap.archetype` on the pick
+   too — that's the actual "run start" once the user has chosen.
+
+Optional improvement (defer if scope grows): also capture the
+starting band (deferred read of `level._current_breach_band`
+after parent `_ready`) so signatures include the initial band.
+
+Regression harness `test_breach_run_recap_archetype_contract.gd`:
+- Spawn PlayerTank with DEFAULT, _ready runs → run_recap.archetype
+  should be 0 (DEFAULT)
+- Switch to PRISM via switch_archetype → run_recap.archetype
+  should STAY 0 (run-start contract)
+- Simulate band crossing → run_recap.archetype should STAY 0
+- (For the future) Test that _pick_archetype updates
+  run_recap.archetype when called from selector
+
+Substrate write #32 on PlayerTank.gd; RunRecap.gd doc-only
+update. Hash-anchor verify; test-all + test-breach green.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.

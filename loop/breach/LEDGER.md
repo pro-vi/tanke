@@ -17,6 +17,54 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 094 — BUILD — P1-2 + P1-6 paired (_pick_archetype bypass + MortarShell parent guard)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0 — defensive fixes).
+- Constraints respected: 7 (P1-2 enforces single-transition
+  contract — `switch_archetype` is now THE archetype mutator), 6
+  (P1-6 prevents recap corruption from MortarShell crash on
+  freed parent).
+- Constraints risked: none.
+- Paired fix:
+  - **P1-2** (PlayerTank.gd substrate write ×31, 3-line refactor):
+    `_pick_archetype` now routes through `switch_archetype(value)`
+    instead of direct `archetype = value; _archetype_initialized
+    = false; _init_archetype()`. This ensures `_revert_archetype`
+    runs first if the current archetype is non-DEFAULT — latent
+    today (start-pick only fires from DEFAULT) but defensive
+    against future callers. Bonus: `_pick_archetype` now gets P1-3
+    validation for free.
+  - **P1-6** (MortarShell.gd arc-4-owned, 4-line guards × 2): both
+    `_explode` and `_spawn_burst` now check `parent_node == null
+    or not is_instance_valid(parent_node) or
+    parent_node.is_queued_for_deletion()` before iterating children
+    or calling add_child. Prevents crash when scene-reload mid-shell-
+    flight leaves parent freed.
+- Regression harness `test_breach_pick_archetype_and_mortar_guard.gd`
+  with 4 assertions, all pass:
+  - RAM start: speed = 38 (base 32 + RAM_SPEED_BONUS 6) → confirms
+    initial state with non-DEFAULT archetype
+  - _pick_archetype(DEFAULT) from RAM: speed reverts to base 32
+    (confirms _revert_archetype ran), archetype = DEFAULT,
+    selector exited cleanly
+  - MortarShell._explode against parent that called queue_free
+    in-frame: no crash
+  - No ColorRect burst added to queued-for-deletion parent
+- Hash anchor: `23d6a2ec3bf2821f` preserved (PlayerTank substrate
+  write ×31; flag-off codepath unchanged). test-all 5/5;
+  test-breach 44 → 45.
+- Falsifications: none.
+- Substrate writes this arc: 49 → 50 (PlayerTank.gd ×31).
+- Files: scripts/PlayerTank.gd, scripts/MortarShell.gd,
+  loop/breach/test_breach_pick_archetype_and_mortar_guard.gd (NEW),
+  Makefile, loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **P1-2 + P1-6 fixed + regression-guarded. 6 of 8
+  code-review findings closed (P0-1 + P0-2 + P1-1/2/3/5/6 done;
+  P1-4 RunRecap.archetype contract remains). Iter 95 = P1-4.**
+
 ## iter 093 — BUILD — P1-3 + P1-5 paired (switch_archetype validation + Depot._player is_instance_valid)
 
 - Date: 2026-05-24

@@ -744,11 +744,17 @@ func _refresh_archetype_panel() -> void:
 func _pick_archetype(value: int) -> void:
 	if not _archetype_selecting:
 		return
-	archetype = value
-	_archetype_initialized = false
-	_init_archetype()
+	# arc-4 iter 094 (P1-2 fix from code-review-iter-090): route
+	# through switch_archetype so _revert_archetype runs if the
+	# current archetype is non-DEFAULT (latent today — start-pick is
+	# always from DEFAULT — but defensive against future callers
+	# that drive _pick_archetype from a non-DEFAULT state, where the
+	# old direct-assignment path would leak RAM_SPEED_BONUS / MORTAR
+	# GunTimer / PRISM beam state).
+	switch_archetype(value)
 	# arc-4 iter 091 (P0-1 fix): centralized cleanup — also unpauses
-	# tree + restores process_mode.
+	# tree + restores process_mode. Always runs even if switch_archetype
+	# early-returned (out-of-range or same-value).
 	_exit_archetype_select()
 
 
