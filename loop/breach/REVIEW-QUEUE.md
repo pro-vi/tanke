@@ -444,6 +444,42 @@ Format per item:
     and deferred IDENTITY-PROTECTED calls (C15-5 rephrase, the
     identity-vs-weapons question) to user direction.
 
+#25 — Round 19 — Audio DIAGNOSE → ★ HONEST SATURATION reached + cadence shift — iters 127-128 — closed (1 DIAGNOSE + 1 META)
+  Finding: iter-127 DIAGNOSE concluded "NO audio surface worth
+    building without user direction." Three reasons cited:
+    (a) audio asset-gen is NOT sanctioned by PROMPT (Round-9
+    amendment is image-only); (b) the visual layer already
+    satisfies constraint-6 across every candidate (5-layer
+    death-overlay + shell-class triple-visible + visual
+    band-banner + iter-102 panel-flash); (c) rubric movement
+    would be zero per structural-ceiling reality (50/75
+    saturated). This is the **2nd consecutive empty DIAGNOSE**
+    — iter-118 4-option walk reached the same "no scope worth
+    building without user direction" conclusion. Combined with
+    iter-106 backlog COMPLETE (iter 124) + ★ 50/75 milestone
+    (iter 119) + structural-ceiling audit (iter 117), the
+    loop is at the **honest saturation point**.
+  Affordance: iter 128 implements the cadence-shift policy
+    per ScheduleWakeup cache-window discipline — status-check
+    META iters at 1500s wakeup (idle-poll-grade overhead)
+    instead of the 240s pattern. Loop continues non-stop per
+    PROMPT but cadence + scope honestly reflect saturation.
+    PushNotification sent to surface state for user direction.
+  Risk: **the loop has exhausted self-directed forward work.**
+    Without user direction, iter 129+ runs idle-poll status
+    checks indefinitely. Worth noting honestly: per the iter-89
+    directive ("u havent done enough to deserve a pause"), the
+    loop has now DONE enough — 12 substrate-write rounds + 5
+    backlog gaps shipped + 50/75 milestone + 2 empty DIAGNOSE
+    iters is the explicit evidence the loop has reached
+    genuine saturation absent user direction. **Your decision
+    on any of REVIEW-QUEUE #13/#14/#15/#16/#21/#23/#24/#25
+    unblocks substantive forward work.**
+  Next round: status-check mode. Loop pivots back to BUILD/
+    DIAGNOSE/META on any user signal, new substantive surface,
+    or correctness violation. Full summary:
+    loop/breach/round-19-summary.md.
+
 #24 — Round 18 — ARC-4-checkpoint.md cross-rounds catch-up doc — iters 125-126 — closed (1 BUILD-QUALITY + 1 META)
   Finding: iter 125 shipped loop/breach/ARC-4-checkpoint.md —
     a ~270-line single-read consolidation of 17 rounds of arc-4

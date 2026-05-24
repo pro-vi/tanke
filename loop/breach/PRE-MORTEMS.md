@@ -24,6 +24,34 @@ Format:
 
 ---
 
+## iter 128 — META — Round 19 close-out + ★ HONEST SATURATION + cadence shift
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- CONSULT constraints respected: none directly (META).
+- CONSULT constraints risked: none.
+- Action: write loop/breach/round-19-summary.md (2-iter
+  round timeline + 3 loop-process findings on empty-DIAGNOSE-
+  validity + saturation-signal + cadence-discipline-harmony);
+  append REVIEW-QUEUE #25 prominently surfacing the honest-
+  saturation finding + cadence-shift policy + user-decision
+  unlock surface; update STATE.next_action with the 1500s
+  status-check META pattern; send PushNotification surfacing
+  state for user direction.
+- META-trigger cited: round-close + saturation-acknowledgment
+  signal (2-empty-DIAGNOSE + structural-ceiling + backlog-
+  complete + 50/75-milestone = explicit evidence the loop
+  has reached genuine saturation absent user direction).
+- Falsifiable claim: REVIEW-QUEUE #25 surfaces the saturation
+  state honestly; STATE.next_action transitions to the
+  status-check pattern at 1500s wakeup; PushNotification
+  message is under 200 chars + leads with what the user can
+  act on.
+- Substrate touched: none.
+- Hash-anchor verification: not required.
+
+---
+
 ## iter 127 — DIAGNOSE — Audio cues surface assessment
 
 - Date: 2026-05-24
