@@ -150,11 +150,77 @@ func verdict_sentence(canonical_answer: String = "") -> String:
 		resource_clause,
 		pressure_short,
 	]
-	if not canonical_answer.is_empty():
+	# arc-4 iter 110 (Round 12 Phase 4, Gap 3): splice the resource
+	# attribution sentence between the main verdict and the canonical
+	# aside. When the resource sentence fires (player was dry on a
+	# shell), it ALREADY references the canonical answer — so suppress
+	# the parenthetical aside to preserve the panel's line budget.
+	var rs: String = resource_sentence(canonical_answer)
+	if not rs.is_empty():
+		s += "\n\n" + rs
+	elif not canonical_answer.is_empty():
 		var brief: String = _canonical_answer_brief(canonical_answer)
 		if not brief.is_empty():
 			s += "\n\n(canonical answer: %s)" % brief
 	return s
+
+
+# arc-4 iter 110 (Round 12 Phase 4, Gap 3): the constraint-6
+# learning-moment clause. When the player was dry on a shell at
+# death, name the dry-vs-canonical relationship so the recap
+# diagnoses the failure mode:
+#
+#   - dry-on-X AND X matches the canonical answer → "Dry on HE —
+#     the band's canonical answer." (you ran out of THE answer)
+#   - dry-on-X AND canonical is Y → "Dry on HE; band wanted APCR."
+#     (you had the wrong answer ready)
+#   - dry-on-X AND no canonical → "Dry on HE." (no canonical tie;
+#     still surfaces the resource gap)
+#   - comfortable reserves → "" (no clause; caller falls back to
+#     the parenthetical canonical aside)
+#
+# Returns "" when no dry-on-X clause applies.
+func resource_sentence(canonical_answer: String) -> String:
+	var dry: Array[String] = _dry_shells_list()
+	if dry.is_empty():
+		return ""
+	var dry_label: String = ", ".join(dry)
+	if canonical_answer.is_empty():
+		return "Dry on %s." % dry_label
+	var brief: String = _canonical_answer_brief(canonical_answer)
+	if brief.is_empty():
+		return "Dry on %s." % dry_label
+	if _dry_matches_canonical(brief, dry):
+		return "Dry on %s — the band's canonical answer." % dry_label
+	return "Dry on %s; band wanted %s." % [dry_label, brief]
+
+
+# arc-4 iter 110: list shells the player was dry on at death (HE +
+# HEAT — APCR isn't captured by RunRecap yet; that's a Gap-2-adjacent
+# follow-on, not blocking this iter). Returns ["HE"], ["HEAT"],
+# ["HE", "HEAT"], or [].
+func _dry_shells_list() -> Array[String]:
+	var dry: Array[String] = []
+	if he_reserve_at_death == 0:
+		dry.append("HE")
+	if heat_reserve_at_death == 0:
+		dry.append("HEAT")
+	return dry
+
+
+# arc-4 iter 110: does any of `dry` appear as a whole-word token
+# in `brief`? Uses regex word-boundary so "AP" doesn't match "APCR"
+# and "HE" doesn't match "HEAT".
+func _dry_matches_canonical(brief: String, dry: Array[String]) -> bool:
+	if brief.is_empty():
+		return false
+	var brief_upper: String = brief.to_upper()
+	var re: RegEx = RegEx.new()
+	for d in dry:
+		re.compile("\\b%s\\b" % d)
+		if re.search(brief_upper) != null:
+			return true
+	return false
 
 
 # arc-4 iter 108: format the resource clause. Reports only the

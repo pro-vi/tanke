@@ -24,6 +24,55 @@ Format:
 
 ---
 
+## iter 110 — BUILD — Gap 3 resource attribution sentence (Round 12 Phase 4)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (the verdict now NAMES the
+  resource-vs-canonical relationship: "Dry on HE — the band's
+  canonical answer" or "Dry on HE; band wanted APCR" — closing
+  the constraint-6 "tied to resource" loop with a learning-
+  moment clause); 7 (the resource sentence is a verb-style
+  diagnosis, not a passive stat — "Dry on" + "band wanted" reads
+  as an active failure mode).
+- CONSULT constraints risked: none.
+- 2 changes:
+  - **RunRecap.gd** (arc-4-owned, not substrate): add
+    `resource_sentence(canonical_answer: String) -> String`
+    method + `_dry_shells_list() -> Array[String]` helper +
+    `_dry_matches_canonical(brief, dry) -> bool` helper using
+    word-boundary regex (so "AP" doesn't match "APCR"). Splice
+    into verdict_sentence between the main "Died at depth N…"
+    block and the canonical aside. When resource_sentence
+    fires, SUPPRESS the parenthetical canonical aside to
+    preserve line budget (it's already named in the resource
+    sentence's "band wanted Y" tail or "the band's canonical
+    answer" reference).
+  - **test_breach_run_recap_verdict_sentence.gd**: update
+    `_test_standard_shape` to expect "Dry on HE" + "band wanted
+    APCR" instead of "(canonical answer: APCR)" — the
+    parenthetical is suppressed when resource_sentence fires
+    in dry-vs-canonical mismatch case.
+  - **test_breach_run_recap_resource_sentence.gd** (NEW): 4
+    assertions covering (a) dry-on-canonical match → "the band's
+    canonical answer" form; (b) dry-on-mismatch → "band wanted
+    Y" form; (c) comfortable reserves → empty (no clause);
+    (d) empty canonical + dry → "Dry on HE." (no canonical tie).
+- Predicted failure: the regex word-boundary detection could
+  return false on canonical strings like "HE — open vertical
+  lanes" if the brief is just "HE" (length 2, single word ≤12).
+  Mitigation: `\bHE\b` matches a single word "HE" — verified by
+  the existing iter-108 em-dash test.
+- Falsifiable claim: post-build the verdict for the MORTAR-in-
+  bunker-dry-on-HE case includes the literal phrases "Dry on
+  HE" AND "band wanted APCR" AND does NOT include "(canonical
+  answer:".
+- Substrate touched: none (RunRecap.gd is arc-4-owned).
+- Hash-anchor verification plan: post-edit verify (RunRecap.gd
+  changes don't touch the procedural baseline).
+
+---
+
 ## iter 109 — BUILD — Gap 2 kill-source tracking (Round 12 Phase 3)
 
 - Date: 2026-05-24

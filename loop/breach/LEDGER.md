@@ -17,6 +17,64 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 110 — BUILD — Gap 3 resource attribution sentence (Round 12 Phase 4, C9 → 5/5 effective)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 effective · 50/75 absolute   (Δ vs prior: +1 — C9
+  lifts 4 → 5 effective; absolute 5/5 still gated on playtest
+  cite per R3. Round-12 program: 47/75 → 50/75 in 5 iters via
+  C9 reactivation.)
+- Constraints respected: 6, 7
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… verified (RunRecap.gd is arc-4-owned;
+  no substrate touch this iter)
+- Falsifications: none added
+- Files: scripts/RunRecap.gd (added `resource_sentence(canonical
+  _answer)` + `_dry_shells_list()` + `_dry_matches_canonical(brief
+  , dry)` helpers; spliced into verdict_sentence between the main
+  block and the canonical aside, with the aside suppressed when
+  resource_sentence fires), loop/breach/test_breach_run_recap_
+  verdict_sentence.gd (updated 3 assertions to reflect the new
+  parenthetical-suppression behavior — standard/em-dash/meta
+  cases now expect "Dry on HE" + "band wanted X" form instead
+  of "(canonical answer: X)"), loop/breach/test_breach_run_recap_
+  resource_sentence.gd (NEW — 6 assertions: match form,
+  mismatch form, comfortable→empty, no-canonical→bare, +2
+  word-boundary correctness tests proving "AP" doesn't false-
+  match "APCR" and "HE" doesn't false-match "HEAT"), Makefile
+  (+check-breach-run-recap-resource-sentence; test-breach 59 →
+  60), loop/breach/PRE-MORTEMS.md, loop/breach/STATE.md.
+- Finding: the constraint-6 loop is closed end-to-end. The
+  death recap is now a constraint-6-shaped diagnosis chain:
+    "Died at depth 95 in BUNKER_ZONE
+     as a MIXED BREACHER —
+     0 HE against
+     steel-armored bunkers.
+
+     Dry on HE; band wanted APCR 1-shots."
+  This names BUILD (mixed breacher), ROUTE (bunker_zone +
+  pressure), RESOURCE (0 HE), and DIAGNOSIS (band wanted APCR,
+  you had wrong answer ready). Every C9 rubric anchor 1-4 has
+  a citable behavior; anchor 5 ("recap regularly cited by user
+  during playtest debrief") is the playtest-gated absolute-5
+  threshold. C9 movement summary across Round 12:
+    iter 106 DIAGNOSE: surface map identified 5 gaps
+    iter 107 SPIKE: γ rendering shape selected (canonical
+      answer surfacing as killer feature)
+    iter 108 BUILD: verdict_sentence wired → 2/5 → 3/5
+    iter 109 BUILD: kill-source attribution → 3/5 → 4/5
+    iter 110 BUILD: resource attribution sentence → 4/5 → 5/5
+      effective
+  Three substrate writes (PlayerTank ×42 + ×43, plus the iter-
+  109 Bullet ×9 + Enemy ×3 cluster) — all default-on gated.
+  Hash anchor 23d6a2ec3bf2821f intact across the entire round.
+  Round 12 close-out queued for iter 111 META — same pattern
+  as iter-105 code-review-iter-100 close-out (full summary doc
+  + REVIEW-QUEUE append + next-round bootstrap).
+
+---
+
 ## iter 109 — BUILD — Gap 2 kill-source tracking (Round 12 Phase 3)
 
 - Date: 2026-05-24

@@ -91,19 +91,31 @@ func _test_standard_shape() -> bool:
 	var canonical: String = "APCR 1-shots; HEAT 2-shots entrenched heavies (breach Heavy hp=3)"
 	var s: String = rr.verdict_sentence(canonical)
 	# Hit-list: the verdict must name each of these legible elements.
+	# arc-4 iter 110: with the resource_sentence (Gap 3) firing for
+	# dry-on-HE in a band whose canonical brief is "APCR 1-shots"
+	# (no "HE" token in the brief), the verdict now reads:
+	#   "Dry on HE; band wanted APCR 1-shots."
+	# and the parenthetical "(canonical answer: …)" is suppressed —
+	# the resource sentence already names the canonical.
 	var must_contain: Array[String] = [
 		"Died at depth 95",
 		"BUNKER_ZONE",
 		"MIXED BREACHER",        # build_tag for AP14/HE5/HEAT2 — no shell dominates
-		"0 HE",
-		"steel-armored bunkers",  # pressure first-phrase (semicolon-split head)
-		"canonical answer: APCR", # canonical brief from em-dash split (head "APCR" before space)
+		"0 HE",                  # resource clause inside main sentence
+		"steel-armored bunkers", # pressure first-phrase (semicolon-split head)
+		"Dry on HE",             # resource_sentence (Gap 3, iter 110)
+		"band wanted APCR",      # canonical brief named inside resource_sentence
 	]
 	for s_part in must_contain:
 		if not (s_part in s):
-			push_error("FAIL standard — missing %q in verdict:\n%s" % [s_part, s])
+			push_error("FAIL standard — missing '%s' in verdict:\n%s" % [s_part, s])
 			return false
-	print("  standard — verdict names depth/band/build/dry-HE/pressure/canonical-APCR")
+	# When resource_sentence fires, the parenthetical canonical aside
+	# is suppressed (otherwise it'd repeat info already in resource_sentence).
+	if "(canonical answer:" in s:
+		push_error("FAIL standard — parenthetical leaked when resource_sentence fired:\n%s" % s)
+		return false
+	print("  standard — verdict names depth/band/build/dry-HE/pressure + Dry-on-HE + band-wanted-APCR (parenthetical suppressed)")
 	return true
 
 
@@ -156,35 +168,43 @@ func _test_long_pressure_truncation() -> bool:
 func _test_em_dash_canonical() -> bool:
 	var rr: RunRecapT = _make_recap_standard()
 	# brick_maze canonical: "HE — open vertical lanes; trade shells for time"
+	# arc-4 iter 110: the recap state is dry-on-HE; brief "HE" matches
+	# dry → resource_sentence fires as "Dry on HE — the band's
+	# canonical answer." The parenthetical aside is suppressed.
 	var canonical: String = "HE — open vertical lanes; trade shells for time"
 	var s: String = rr.verdict_sentence(canonical)
-	# Em-dash split → head "HE" (length 2 ≤ 12) → brief is "HE".
-	if not ("canonical answer: HE" in s):
-		push_error("FAIL em-dash — brief should be 'HE' (just the shell directive):\n%s" % s)
+	if not ("Dry on HE — the band's canonical answer" in s):
+		push_error("FAIL em-dash — resource_sentence should fire as 'Dry on HE — the band's canonical answer':\n%s" % s)
 		return false
 	# Full explanation should NOT be in the brief.
 	if "open vertical lanes" in s:
 		push_error("FAIL em-dash — explanation leaked into brief:\n%s" % s)
 		return false
-	print("  em-dash canonical — brief is 'HE' (head of 'HE — explanation' kept)")
+	# Parenthetical suppressed when resource_sentence fires.
+	if "(canonical answer:" in s:
+		push_error("FAIL em-dash — parenthetical leaked when resource_sentence fired:\n%s" % s)
+		return false
+	print("  em-dash canonical — resource_sentence fires 'Dry on HE — the band's canonical answer'")
 	return true
 
 
 func _test_meta_canonical() -> bool:
 	var rr: RunRecapT = _make_recap_standard()
 	# endgame_mixed canonical: "build cohesion test — chosen identity determines reach"
-	# Em-dash head "build cohesion test" is 19 chars, exceeds the 12-char shell-
-	# directive ceiling, so the helper falls back to the FIRST phrase whole.
+	# arc-4 iter 110: recap is dry-on-HE; brief "build cohesion test —..."
+	# contains no "HE" word → resource_sentence emits the mismatch
+	# form: "Dry on HE; band wanted build cohesion test —...". The
+	# parenthetical aside is suppressed.
 	var canonical: String = "build cohesion test — chosen identity determines reach"
 	var s: String = rr.verdict_sentence(canonical)
-	# First phrase (no semicolon, but >24 chars) gets truncated.
-	# "build cohesion test — chosen identity determines reach" length = 54.
-	# Truncated to 21 chars + "..." → "build cohesion test —..."
-	if not ("canonical answer:" in s):
-		push_error("FAIL meta — parenthetical missing entirely:\n%s" % s)
+	if not ("Dry on HE" in s):
+		push_error("FAIL meta — resource_sentence missing 'Dry on HE':\n%s" % s)
+		return false
+	if not ("band wanted" in s):
+		push_error("FAIL meta — resource_sentence missing 'band wanted':\n%s" % s)
 		return false
 	if not ("build cohesion test" in s):
-		push_error("FAIL meta — first phrase head should still appear:\n%s" % s)
+		push_error("FAIL meta — first-phrase brief should appear in 'band wanted' tail:\n%s" % s)
 		return false
-	print("  meta canonical — first-phrase fallback used (not the em-dash head)")
+	print("  meta canonical — resource_sentence emits 'Dry on HE; band wanted build cohesion test...'")
 	return true
