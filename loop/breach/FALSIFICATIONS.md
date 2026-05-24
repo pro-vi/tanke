@@ -17,6 +17,62 @@ Format:
 
 ---
 
+## F006 — iter-87 substrate audit missed 18 real bugs surfaced by /code-review delegation — iter 89-90
+
+- Predicted (iter-87 LEDGER): "Round 9-10-11 substrate is
+  correctness-clean for playtest 5. 3 state-hygiene observations
+  filed for a future cleanup iter (none playtest-blocking)."
+- Observed (iter-90 /code-review with 5 personas + codex cross-
+  model): 18 findings at anchor ≥75 — 2 P0 (selector doesn't
+  pause world, FASTER_RELOAD XP clobbered on switch), 6 P1
+  (Enemy double-kill, _pick_archetype bypass, switch_archetype
+  no validation, RunRecap.archetype contract violation, Depot
+  _player not is_instance_valid, MortarShell parent guard), 10 P2.
+- Root cause: instrumentation. iter-87 was a SINGLE-PASS READ of
+  state-machine code; didn't construct cross-module failure
+  scenarios, didn't trace XP/leveling × archetype switching,
+  didn't validate cross-module contracts, didn't check the
+  pause/tree-state contract, didn't notice the codex vs gameplay
+  contradiction (HEAT vs breach Heavy HP).
+- Lesson: **At every round close, delegate /code-review (9 persona
+  subagents + cross-model CLI), don't rely on single-pass self-
+  audit.** The pipeline catches what a self-audit cannot —
+  adversarial failure-scenario construction, composition cross-
+  module tracing, invariance contract anchoring, reliability
+  lifecycle reasoning, and cross-model architectural-bias hedging.
+- Codified where: this file (F006); loop/breach/code-review-iter-090.md
+  (full report); LEDGER iter 090; new harness
+  test_breach_double_kill.gd (regression for P1-1).
+- Fixed in iter 090: P1-1 (Enemy.take_damage idempotency guard).
+  Remaining: P0-1, P0-2, P1-2, P1-3, P1-4, P1-5, P1-6, and 8 P2s
+  queued for iters 091-096+.
+
+---
+
+## F005 — SWARM hierarchy verification needs sustained-DPS measure, not first-event kills — iter 85
+
+- Predicted (iter-84 blueprint): variant α (5-Light chevron) would
+  produce 3 distinct cross-archetype outcomes (DEFAULT=COSTLY,
+  PRISM=WEAK, MORTAR=BEST, RAM=BEST).
+- Observed (iter-85 SPIKE): α produces 2 distinct outcomes
+  (DEFAULT/PRISM/RAM all COSTLY; MORTAR BEST) — VIOLATES the
+  hierarchy rule. β and γ also violate. ALL 3 variants fail the
+  iter-77-style stub probe.
+- Root cause: instrumentation. The SPIKE measures KILLS-PER-EVENT
+  (one fire burst) — right for MORTAR's one-shell-AoE pattern but
+  WRONG for PRISM continuous-DPS, RAM multi-swing, DEFAULT
+  discrete-over-cooldowns.
+- Lesson: iter-77 stub-probe pattern works for binary armor-bypass
+  (yes/no), NOT for sustained-DPS hierarchy comparison. The right
+  measurement is *time-to-clear-cluster* or *cluster-survivors-
+  after-K-seconds* — exactly what iter-82 RunRecap + iter-83
+  analyzer were built for (per-band telemetry from REAL
+  playthroughs).
+- Codified where: this file; iter-85 LEDGER; iter-086 + iter-080
+  blueprints reference.
+
+---
+
 ## F004 — breach loadout leaked across runs (shared Resource) — iter 43-44
 
 - Predicted: the arc-4 loadout work (iter 8+) treated PlayerTank.loadout
