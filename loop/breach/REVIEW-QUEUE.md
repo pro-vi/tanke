@@ -444,6 +444,50 @@ Format per item:
     and deferred IDENTITY-PROTECTED calls (C15-5 rephrase, the
     identity-vs-weapons question) to user direction.
 
+#18 — Round 12 — death-recap legibility (C6 lifted 3 → 4 effective) + scoring-label correction — iters 106-111 — closed (4 BUILDs + 1 SPIKE + 1 META)
+  Finding: the weakest legibility surface was the on-screen death
+    overlay still showing arc-2 ASCENDER stats (DEPTH/TIME/KILLS/
+    CANCELS/STALL/BEST) when RunRecap.gd had been capturing rich
+    constraint-6-shaped data (depth + killing_band + killing_
+    pressure + build_tag + shells_fired + reserve_at_death +
+    band_visit_log) since iter 31. Root cause: UI integration gap,
+    not data-model gap. Round 12 wired RunRecap.verdict_sentence
+    into _death_label (γ rendering shape per iter-107 SPIKE),
+    added kill-source attribution via a method-existence-gated
+    propagation pattern (Bullet.source_label → PlayerTank.
+    _last_damage_source → RunRecap.killer), and spliced a
+    resource attribution sentence ("Dry on HE — the band's
+    canonical answer" or "Dry on HE; band wanted APCR") with
+    word-boundary regex preventing AP↔APCR / HE↔HEAT false
+    matches. Verdict now reads as constraint-6 diagnosis:
+      "Died at depth 95 in BUNKER_ZONE
+       as a MIXED BREACHER —
+       0 HE against
+       steel-armored bunkers.
+       Dry on HE; band wanted APCR 1-shots."
+  Affordance: the post-death overlay now serves as a learning
+    moment — names build + band + resource + canonical answer.
+    De-risks REVIEW-QUEUE #14 (open playtest gate) since the
+    recap quality directly feeds the playtest debrief surface.
+  Risk: **scoring-label correction (process risk, not code).**
+    Iters 106-110 STATE/LEDGER entries attributed the work to
+    "C9" — but RUBRIC.md is unambiguous: C9 = Identity / breach-
+    roguelite singularity (a [FEEL] playtest-gated criterion);
+    death attribution is C6. Corrected at iter 111: C6 lifted
+    3 → 4 effective (anchor 4 cognitive-max — verdict reads as
+    actionable diagnosis structurally; absolute still 3, anchor
+    4 [FEEL] needs playtest cite). C9 stays at 2 (no Identity-
+    axis work shipped). Total score: 47 → 48 effective, not
+    47 → 50. New discipline: every BUILD iter claiming a rubric
+    lift must cite the criterion's NAME from RUBRIC.md, not
+    just the number — STATE.score is a cache, RUBRIC is canonical.
+  Next round: iter 112 DIAGNOSE on C8 (sentence test compliance)
+    OR C1 (breach build identity, anchor 4 effective re-score
+    given verdict-sentence visibility) — both are 3/5 axes with
+    structural surfaces. Full timeline + per-anchor citation
+    table + 5 loop-process findings:
+    loop/breach/round-12-summary.md.
+
 #17 — code-review-iter-100 fix sprint COMPLETE (Round 5-8 retroactive cleanup) — iters 100-104 — closed (10/11 fixed, 1 design no-op)
   Finding: per F006 + F007 (delegate /code-review at every round
     close, retroactively when prior rounds were skipped), the

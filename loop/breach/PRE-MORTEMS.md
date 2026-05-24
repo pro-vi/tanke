@@ -24,6 +24,40 @@ Format:
 
 ---
 
+## iter 111 — META — Round 12 close-out + scoring-label correction
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- CONSULT constraints respected: none directly (process iter).
+  Indirect: the scoring-label correction restores RUBRIC.md as
+  the canonical source-of-truth, which is the foundation of
+  every constraint-citation discipline downstream.
+- CONSULT constraints risked: none.
+- Action: write the round-12-summary.md doc (full timeline,
+  per-anchor citation table, loop-process findings). Append
+  REVIEW-QUEUE #18 honestly framing the C6-vs-C9 mislabeling
+  + the corrected score. Update STATE to current_round
+  "12-closed-via-recap-completion" + iter 112 DIAGNOSE bootstrap.
+- META-trigger cited: round-close + a falsification check (the
+  rubric-mapping bug surfaced during the close-out — exactly
+  what META iters are for).
+- Falsifiable claim: the corrected score string in STATE
+  (C6=4, C9=2) reflects RUBRIC.md's actual criterion ordering
+  AND the actual work shipped. Cross-referencing iter 108-110
+  LEDGER entries against C6 anchor 4 ("recap reads as actionable
+  diagnosis") confirms the lift; cross-referencing against C9
+  anchors (3-5 all [FEEL]) confirms no Identity-axis work
+  happened.
+- Substrate touched: none.
+- Hash-anchor verification: not required.
+- Score correction noted at iter 111 in LEDGER + STATE; the
+  intermediate iter 108/109/110 LEDGER entries are left as-is
+  (append-only discipline) with the corrected scoring marked
+  explicitly in iter 111 + round-12-summary.md as the canonical
+  authoritative number.
+
+---
+
 ## iter 110 — BUILD — Gap 3 resource attribution sentence (Round 12 Phase 4)
 
 - Date: 2026-05-24

@@ -17,7 +17,53 @@ Append-only. One entry per iter. Format:
 
 ---
 
-## iter 110 — BUILD — Gap 3 resource attribution sentence (Round 12 Phase 4, C9 → 5/5 effective)
+## iter 111 — META — Round 12 close-out + **scoring-label correction (C9 → C6)**
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- Score: **48/75 effective · 47/75 absolute** (**corrected** —
+  iters 108-110 LEDGER entries claimed lifts to C9, but per
+  RUBRIC.md the actual axis lifted is C6 — Death attribution.
+  Honest delta: C6 was 3 → effective 4 (anchor 4 cognitive-max
+  via verdict-sentence structural evidence); C9 stays at 2
+  (no Identity-axis work shipped). Total effective lift this
+  round: +1, not +3 as previously claimed.)
+- Constraints respected: none directly (META iter); indirect:
+  RUBRIC.md re-grounding restores the canonical scoring source.
+- Constraints risked: none.
+- Hash anchor: 23d6a2ec… n/a (no substrate touch).
+- Falsifications: none added.
+- Files: loop/breach/round-12-summary.md (NEW — full timeline +
+  resolution table + per-anchor citation table + 5 loop-process
+  findings including the mislabeling as the round's primary
+  meta-finding), loop/breach/REVIEW-QUEUE.md (+#18 honestly
+  framing C6 lift + scoring correction + next-round bootstrap),
+  loop/breach/PRE-MORTEMS.md, loop/breach/STATE.md.
+- Finding: the scoring-label correction IS the round's most
+  valuable loop-process finding. Five iters of work consistently
+  attributed lifts to "C9" when the actual axis was C6. Caught
+  only during the META close-out by re-grounding against
+  RUBRIC.md. The intermediate iter 108/109/110 STATE/LEDGER
+  entries are left in place (append-only discipline) — the
+  correction is canonical at iter 111 + round-12-summary.md.
+  New discipline going forward: every BUILD iter claiming a
+  rubric lift must cite the criterion's NAME from RUBRIC.md,
+  not just the number; STATE.score is a cache, RUBRIC is
+  authoritative. Round 12 also produced legitimate work: 3 new
+  regression harnesses, the γ verdict sentence wired into
+  _death_label with canonical_answer surfacing, kill-source
+  attribution via method-existence-gated propagation, resource
+  attribution sentence with word-boundary regex. All shipped,
+  all hash-anchor-clean, all regression-covered. The work
+  earned +1 effective on C6 (anchor 4 cognitive-max), with
+  absolute-4 unlocking at the next playtest cite. Round 13
+  bootstrap: iter 112 DIAGNOSE C8 (sentence test compliance,
+  3/5) or re-score C1 (build identity, anchor 4 effective
+  given the verdict-sentence visibility).
+
+---
+
+## iter 110 — BUILD — Gap 3 resource attribution sentence (Round 12 Phase 4, ~~C9~~ **C6** anchor 4 effective)
 
 - Date: 2026-05-24
 - Tag: [STRUCTURE]
