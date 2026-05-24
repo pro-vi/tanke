@@ -24,6 +24,54 @@ Format:
 
 ---
 
+## iter 139 — PLAYTEST-FIX-2 — separate beam_hp pool ("feel like 10 hp, beam does DPS")
+
+- Date: 2026-05-24
+- Tag: [FEEL]
+- User feedback after iter-138 ship: "right now it feels enemy
+  has 2 hp, which reduces every tick of the beam. but i want
+  it more granular to feel like 10 hp and my beam does DPS"
+- CONSULT constraints respected: 6 (beam-vs-bullet split is a
+  legible affordance distinction); 7 (DPS-feel keeps beam a
+  verb, not a passive stat).
+- CONSULT constraints risked: none.
+- Three changes — separate beam-damage pool:
+  - **Enemy.gd**: add `@export var beam_hp_max: int = 10` + 
+    `var beam_hp: int` + `take_beam_damage(amount)` method.
+    Bar visual shows MIN(hp_ratio, beam_hp_ratio) so whichever
+    pool is more depleted dictates the bar.
+  - **BrickBlock.gd**: add `@export var beam_hp_max: int = 3` +
+    `var beam_hp: int` + `take_beam_damage(amount)` method.
+    Bricks die at beam_hp ≤ 0 (separate from bullet HP=1).
+  - **PlayerTank.gd**: `_apply_beam_to_targets` prefers
+    `take_beam_damage` when available, else falls back to
+    `take_damage`. Bump BEAM_DAMAGE_PER_TICK to 1.0 (1 beam-
+    HP per cooldown tick). Drop the float accumulator complexity
+    — each tick is 1 damage exactly.
+- Predicted failure: existing tests assume accumulator behavior
+  (4 ticks = 1 damage). Need updating: PRISM / pressure-probes
+  / p2-batch3 — all 3 expect a different damage rate now.
+- Falsifiable claim: after build:
+  - Beam vs Light (beam_hp_max=10) → 10 cooldown ticks @ 0.25s
+    = 2.5s visible drain over 10 discrete bar steps
+  - Beam vs Heavy (beam_hp_max=10) → same (per user's "feels
+    like 10 hp" spec; Heavy differentiation moves to other
+    surfaces if needed later)
+  - Beam vs Brick (beam_hp_max=3) → 3 ticks = 0.75s
+  - Bullets unchanged — Light still 2 AP shots, Heavy still 3
+- Substrate touched: scripts/Enemy.gd (substrate write ×5),
+  scripts/PlayerTank.gd (substrate write ×48). BrickBlock.gd
+  is arc-2 substrate — adding take_beam_damage is additive
+  (no behavior change for bullets); needs sanctioned-write
+  justification but this is exactly the kind of breach-mode
+  extension PROMPT §SUBSTRATE FREEZE Layer 2 covers.
+- Hash-anchor verification plan: post-edit verify. All three
+  changes are loadout/breach-mode-gated via `has_method` check
+  in the beam path — arc-2/3 bodies don't define take_beam_
+  damage, so the fallback path takes_damage works as before.
+
+---
+
 ## iter 138 — PLAYTEST-FIX — PRISM beam fixes from user playtest (water / thick beam / drain visibility)
 
 - Date: 2026-05-24

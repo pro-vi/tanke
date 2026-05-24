@@ -42,36 +42,34 @@ func _initialize() -> void:
 	await process_frame
 
 	# Stub is in NO group (not "enemy"). Pre-fix (iter 098): would
-	# take damage every tick. Post-iter-098: cooldown gates per-tick
-	# damage. Post-iter-138 (PLAYTEST-FIX): accumulator-based — 4
-	# cooldown-spaced ticks per HP via BEAM_DAMAGE_PER_TICK=0.25.
-	# Universal cooldown discipline preserved.
+	# take damage every tick. iter-098: cooldown gates per-tick
+	# damage. iter-138 added accumulator; iter-139 reverted to
+	# integer-per-tick via separate take_beam_damage pool. This
+	# stub has only take_damage so falls back to integer-per-tick.
+	# Universal cooldown discipline preserved across all iters.
 	var stub: Node = _MultiHpStub.new()
 	holder.add_child(stub)
 	pt._beam_dmg_timer = 0.0  # reset for clean cooldown trace
 
-	# 4 cooldown-spaced ticks → 1 damage (accumulator hits 1.0).
-	for i in 4:
-		pt._apply_beam_to_body(pt.BEAM_DAMAGE_COOLDOWN + 0.01, stub)
+	# Tick 1: cooldown=0 → 1 damage applied.
+	pt._apply_beam_to_body(0.0, stub)
 	if stub.damage_taken != 1:
-		push_error("FAIL — P2-7 after 4 cooldown ticks: stub damage %d, want 1" % stub.damage_taken)
+		push_error("FAIL — P2-7 tick 1: stub damage %d, want 1" % stub.damage_taken)
 		quit(1); return
 
-	# Mid-cooldown ticks (within timer window): NO accumulator add.
-	pt._beam_dmg_timer = pt.BEAM_DAMAGE_COOLDOWN  # arm cooldown
+	# Mid-cooldown ticks (within timer window): NO damage.
 	pt._apply_beam_to_body(0.05, stub)
 	pt._apply_beam_to_body(0.05, stub)
 	if stub.damage_taken != 1:
-		push_error("FAIL — P2-7 mid-cooldown: stub damage %d, want 1 (was framerate-damaged before iter-098 fix; cooldown discipline preserved at iter-138)" % stub.damage_taken)
+		push_error("FAIL — P2-7 mid-cooldown: stub damage %d, want 1 (framerate-damage guard intact)" % stub.damage_taken)
 		quit(1); return
 
-	# 4 more cooldown-spaced ticks → +1 damage = 2 total.
-	for i in 4:
-		pt._apply_beam_to_body(pt.BEAM_DAMAGE_COOLDOWN + 0.01, stub)
+	# Tick past cooldown → +1 damage = 2 total.
+	pt._apply_beam_to_body(pt.BEAM_DAMAGE_COOLDOWN + 0.01, stub)
 	if stub.damage_taken != 2:
 		push_error("FAIL — P2-7 post-cooldown: stub damage %d, want 2" % stub.damage_taken)
 		quit(1); return
-	print("  P2-7 universal cooldown + iter-138 accumulator: 4 ticks → 1 damage; mid-cooldown skipped; 4 more → 2 damage")
+	print("  P2-7 universal cooldown discipline preserved through iter-139: 1 damage per cooldown tick (fallback path)")
 
 	# === P2-9: archetype_ladder returns the 3 archetype rungs.
 	var arch_ladder: Array = MetaProgressT.archetype_ladder()

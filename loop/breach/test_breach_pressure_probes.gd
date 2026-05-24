@@ -75,10 +75,11 @@ func _initialize() -> void:
 	print("  DEFAULT+HEAT vs armored Heavy: %d damage — BYPASS (matrix confirmed)" % stub_heat.damage_received)
 
 	# === Probe 3: PRISM beam vs armored Heavy → bypass armor (BYPASS).
-	# arc-4 iter 138 (PLAYTEST-FIX): beam now uses BEAM_DAMAGE_PER_TICK
-	# accumulator (0.25 per tick × 4 = 1 damage). 4 cooldown-spaced
-	# ticks land 1 damage on the armored stub — same BYPASS verdict
-	# (no armor check in the beam-damage path).
+	# arc-4 iter 139 (PLAYTEST-FIX-2): beam path prefers
+	# take_beam_damage when available, falls back to take_damage.
+	# Stub here has only take_damage → fallback path applies 1
+	# damage per cooldown tick. BYPASS verdict (no armor check
+	# in either beam path).
 	var pt_prism: Node = PlayerTankScene.instantiate()
 	pt_prism.loadout = LoadoutT.new()
 	pt_prism.archetype = PlayerTankT.TankArchetype.PRISM
@@ -87,12 +88,11 @@ func _initialize() -> void:
 	await process_frame
 	var stub_prism: Node = _make_stub(holder, true)
 	pt_prism._beam_dmg_timer = 0.0
-	for i in 4:
-		pt_prism._apply_beam_to_body(pt_prism.BEAM_DAMAGE_COOLDOWN + 0.01, stub_prism)
+	pt_prism._apply_beam_to_body(0.0, stub_prism)
 	if stub_prism.damage_received == 0:
 		push_error("FAIL — PRISM beam vs armored: damage_received 0, want >=1 (beam should bypass armor by mechanism)")
 		quit(1); return
-	print("  PRISM beam vs armored Heavy: %d damage after 4 ticks — BYPASS (no armor check in beam path; accumulator iter-138)" % stub_prism.damage_received)
+	print("  PRISM beam vs armored Heavy: %d damage in 1 tick — BYPASS (no armor check in beam path)" % stub_prism.damage_received)
 
 	# === Probe 4: MORTAR shell vs armored Heavy → AOE_DAMAGE (BYPASS).
 	# MortarShell._explode iterates siblings, calls take_damage(AOE_DAMAGE).

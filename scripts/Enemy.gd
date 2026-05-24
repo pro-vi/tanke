@@ -24,6 +24,13 @@ signal aim_canceled
 # and aim-telegraph). Light=white default, Fast=cyan, Heavy=white (its red
 # AIM_FIRE telegraph is sufficient distinction).
 @export var sprite_tint: Color = Color(1, 1, 1, 1)
+# arc-4 iter 139 (PLAYTEST-FIX-2 from user "feel like 10 hp"):
+# separate beam-damage pool. Bullets damage `hp` (1-shot biased
+# per BC tradition); beam damages `beam_hp` (10-step drain for
+# visible DPS). Either pool reaching 0 kills the enemy. HP bar
+# shows MIN(hp_ratio, beam_hp_ratio) so the more-depleted pool
+# dictates the visual.
+@export var beam_hp_max: int = 10
 # arc-4 iter 113 (Round 13 Phase 2, sanctioned substrate write ×4):
 # SCOUT_TELEGRAPH outline flag. Set by Spawner at instantiate-time
 # when the player owns has_scout_telegraph AND this enemy is a Light.
@@ -65,6 +72,10 @@ signal aim_canceled
 @export var aim_cancel_cooldown: float = 1.5
 
 var hp: int = max_hp
+# arc-4 iter 139 (PLAYTEST-FIX-2): beam pool initialized in _ready
+# from beam_hp_max (so Spawner can set per-type overrides before
+# _ready fires, same pattern as max_hp).
+var beam_hp: int = 10
 var direction: int = Constants.Dir.D  # start facing down (comes from top)
 var _player: Node2D
 var _grass_tilemap: TileMapLayer = null
@@ -95,6 +106,9 @@ var _hp_bar_fg: ColorRect = null
 
 func _ready() -> void:
 	hp = max_hp
+	# arc-4 iter 139 (PLAYTEST-FIX-2): init beam pool from exported
+	# max (allows Spawner per-type overrides via set() before _ready).
+	beam_hp = beam_hp_max
 	add_to_group("enemy")
 	# iter 101 (review-fix): sibling lookups instead of root-walk find_child;
 	# avoids ambiguity during scene reload windows and binds lifetime to the
@@ -533,22 +547,38 @@ func _build_hp_bar() -> void:
 # + fg width tracks the damage ratio. Called from take_damage on every
 # non-fatal hit; a no-op if the bar was never built (arc-2/3 or
 # max_hp = 1).
-# arc-4 iter 138 (PLAYTEST-FIX from user): subtract the PRISM beam's
-# pending accumulator from the displayed ratio so the bar drains
-# VISIBLY across the multi-tick beam-damage window. Bullets continue
-# to land integer-step damage; this only adds smooth drain when the
-# player has the beam on a single enemy. Sub-1 damage is shown
-# as bar shrinkage but doesn't yet trigger take_damage.
-const BEAM_ACCUM_META: String = "_beam_accum"
+# arc-4 iter 139 (PLAYTEST-FIX-2 from user "feel like 10 hp, beam
+# does DPS"): bar shows MIN of bullet-HP ratio and beam-HP ratio,
+# so the more-depleted pool dictates the visible bar drain. With
+# beam_hp_max=10 and beam doing 1 hp per tick, the bar drops in 10
+# discrete steps across ~2.5s of continuous beam.
 func _update_hp_bar() -> void:
 	if _hp_bar_bg == null or _hp_bar_fg == null or max_hp <= 0:
 		return
 	_hp_bar_bg.visible = true
 	_hp_bar_fg.visible = true
-	var beam_accum: float = get_meta(BEAM_ACCUM_META, 0.0)
-	var effective_hp: float = maxf(0.0, float(hp) - beam_accum)
-	var ratio: float = clampf(effective_hp / float(max_hp), 0.0, 1.0)
+	var bullet_ratio: float = clampf(float(hp) / float(max_hp), 0.0, 1.0)
+	var beam_ratio: float = 1.0
+	if beam_hp_max > 0:
+		beam_ratio = clampf(float(beam_hp) / float(beam_hp_max), 0.0, 1.0)
+	var ratio: float = minf(bullet_ratio, beam_ratio)
 	_hp_bar_fg.size = Vector2(HP_BAR_WIDTH * ratio, 2.0)
+
+
+# arc-4 iter 139 (PLAYTEST-FIX-2): beam-pool damage. Drains beam_hp
+# (separate from bullet hp); when beam_hp <= 0, fall through to
+# take_damage to use the existing death path (signals, ammo drops,
+# kill counter). Bar refresh on every call so accumulator drain is
+# visible across the beam-active window.
+func take_beam_damage(amount: int) -> void:
+	if amount <= 0:
+		return
+	beam_hp = maxi(0, beam_hp - amount)
+	_update_hp_bar()
+	if beam_hp <= 0 and hp > 0:
+		# Trigger death via the existing path so killed signal +
+		# ammo drop + kill counter all fire correctly.
+		take_damage(hp)
 
 
 # iter 51: Heavy hit-cancel during AIM_FIRE. Interrupts wind-up burst,

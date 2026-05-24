@@ -597,8 +597,11 @@ func _build_beam_line() -> void:
 #       ≥ 1.0, take_damage(1) + decrement. HP bar drains visibly
 #       in discrete steps across the beam-active window.
 const BEAM_HEIGHT_PX: float = 8.0              # one tile tall = covers seam-adjacent rows
-const BEAM_DAMAGE_PER_TICK: float = 0.25       # 0.25 × 4 = 1 HP per second; matches iter-65 DPS
-const BEAM_ACCUM_META: String = "_beam_accum"  # per-target accumulator key
+# arc-4 iter 139 (PLAYTEST-FIX-2): each cooldown tick = 1 beam HP
+# (no accumulator). With BEAM_DAMAGE_COOLDOWN = 0.25s, that's 4 HP/sec
+# DPS. Enemy beam_hp_max = 10 → 2.5s + 10 visible bar steps. Brick
+# beam_hp_max = 3 → 0.75s.
+const BEAM_DAMAGE_PER_TICK: int = 1
 func _tick_beam(delta: float) -> void:
 	if _beam_line == null:
 		return
@@ -648,20 +651,16 @@ func _apply_beam_to_targets(delta: float, bodies: Array) -> void:
 		return
 	for entry in bodies:
 		var body: Node = entry.get("collider")
-		if body == null or not body.has_method("take_damage"):
+		if body == null:
 			continue
-		var accum: float = body.get_meta(BEAM_ACCUM_META, 0.0) + BEAM_DAMAGE_PER_TICK
-		var dmg: int = int(accum)
-		if dmg > 0:
-			body.take_damage(dmg)
-			accum -= float(dmg)
-		if is_instance_valid(body):
-			body.set_meta(BEAM_ACCUM_META, accum)
-			# arc-4 iter 138: refresh the HP bar so sub-1 damage shows
-			# as bar shrinkage. _update_hp_bar reads the accumulator
-			# meta and subtracts it from effective_hp.
-			if body.has_method("_update_hp_bar"):
-				body._update_hp_bar()
+		# arc-4 iter 139 (PLAYTEST-FIX-2): prefer the beam-pool path
+		# (take_beam_damage) so the beam drains a dedicated 10-HP pool
+		# for visible DPS-style drain. Falls back to take_damage for
+		# legacy bodies (arc-2/3 brick/enemy without the beam pool).
+		if body.has_method("take_beam_damage"):
+			body.take_beam_damage(BEAM_DAMAGE_PER_TICK)
+		elif body.has_method("take_damage"):
+			body.take_damage(BEAM_DAMAGE_PER_TICK)
 	_beam_dmg_timer = BEAM_DAMAGE_COOLDOWN
 
 
