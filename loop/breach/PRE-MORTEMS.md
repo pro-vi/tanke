@@ -24,6 +24,56 @@ Format:
 
 ---
 
+## iter 103 — BUILD — P1-E + P1-F + P2-A (level-up ceilings + AmmoPickup re-roll)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 7 (P1-E/F — caps prevent the
+  level-up boost path from drifting into "passive stat soup as
+  primary RPG layer"; once at ceiling, the level-up still gives
+  a tangible refill, but no longer inflates max_*_reserve /
+  max_hp without bound), 3 (P2-A — every shell pickup should
+  have a readable shell/positioning relationship to the player's
+  current state; a silently wasted pickup violates that)
+- CONSULT constraints risked: none. Caps are large enough
+  (HP=8 vs start=3 → +5 level-ups; HE=12 vs start=6; HEAT=8 vs
+  start=3; APCR=10 vs start=4) that a 20-min run still feels
+  rewarding before the ceiling kicks in.
+- 3 fixes:
+  - **P1-E + P1-F** (PlayerTank.gd substrate write ×39):
+    add MAX_HP_CEILING, MAX_HE_RESERVE_CEILING, MAX_HEAT_RESERVE_CEILING,
+    MAX_APCR_RESERVE_CEILING constants. In `_apply_level_boost`,
+    clamp max_hp increment to MAX_HP_CEILING; clamp each
+    max_*_reserve to its ceiling. If already at ceiling, the
+    level-up still grants the refill (HP heal / shell refill)
+    so the level-up isn't a no-op; only the max-cap inflation
+    is bounded. Toast text reflects ("LEVEL N  +1 MAX HP" vs
+    "LEVEL N  FULL HEAL").
+  - **P2-A** (AmmoPickup.gd, arc-4-owned): in `_on_body_entered`,
+    when the chosen `shell_class` is already at cap and at least
+    one of HE/HEAT/APCR is below cap, re-roll to a random
+    under-cap shell. Preserves the pickup's value (it actually
+    refills something). If all 3 are at cap, accept the no-op
+    (player is genuinely topped — that's an honest signal).
+- Predicted failure: re-roll in AmmoPickup at collect time
+  means the chip color the player saw doesn't match what they
+  got. Mitigation: the toast says what they actually got
+  ("HEAT +1") so the player learns the actual shell, and
+  "you saw HE chip but got HEAT" is a less-bad failure than
+  "you saw HE chip and got nothing."
+- Falsifiable claim: regression harnesses verify (a) level-up
+  doesn't inflate max_hp past CEILING when called repeatedly;
+  (b) at-cap level-ups still grant the refill (full heal /
+  full reserve top-up); (c) AmmoPickup with HE-at-cap re-rolls
+  to HEAT or APCR; (d) AmmoPickup with all-at-cap silently
+  no-ops without crashing.
+- Substrate touched: scripts/PlayerTank.gd (substrate write
+  ×39 — _apply_level_boost ceiling clamps).
+- Hash-anchor verification plan: post-edit verify (level-up
+  is loadout-gated, off the procedural baseline).
+
+---
+
 ## iter 102 — BUILD — P1-C + P1-D paired (BandBanner cleanup + fire-while-swap UX cue)
 
 - Date: 2026-05-24

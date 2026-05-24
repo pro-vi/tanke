@@ -512,6 +512,22 @@ check-breach-fire-while-swap:
 	@$(HEADLESS) --script res://loop/breach/test_breach_fire_while_swap.gd 2>&1 | grep -E "^(  (initial|after|rejected|panel|control|.skipping))|BREACH_FIRE_WHILE_SWAP_OK|FAIL|ERROR|SCRIPT ERROR"; \
 	$(HEADLESS) --script res://loop/breach/test_breach_fire_while_swap.gd 2>&1 | grep -q "^BREACH_FIRE_WHILE_SWAP_OK"
 
+# Arc-4 breach mode: P1-E + P1-F regression — _apply_level_boost
+# must clamp max_hp / max_*_reserve at ceilings (iter 103,
+# code-review-iter-100). Without this, long runs inflate stats
+# unboundedly — passive-stat-soup drift (CONSULT constraint 7).
+check-breach-level-up-ceilings:
+	@$(HEADLESS) --script res://loop/breach/test_breach_level_up_ceilings.gd 2>&1 | grep -E "^(  (max_|at-cap)|BREACH_LEVEL_UP_CEILINGS_OK|FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/breach/test_breach_level_up_ceilings.gd 2>&1 | grep -q "^BREACH_LEVEL_UP_CEILINGS_OK"
+
+# Arc-4 breach mode: P2-A regression — AmmoPickup must NOT silently
+# no-op when chosen shell is at cap (iter 103, code-review-iter-100).
+# Re-rolls to an under-cap shell at collect time; if all at cap,
+# silently consumes (honest "you're topped" signal).
+check-breach-ammo-pickup-no-waste:
+	@$(HEADLESS) --script res://loop/breach/test_breach_ammo_pickup_no_waste.gd 2>&1 | grep -E "^(  (HE-|all-)|BREACH_AMMO_PICKUP_NO_WASTE_OK|FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/breach/test_breach_ammo_pickup_no_waste.gd 2>&1 | grep -q "^BREACH_AMMO_PICKUP_NO_WASTE_OK"
+
 # Arc-4 breach mode: Round-11 Phase-2 SWARM SPIKE harness (iter 85).
 # Compares α/β/γ variants empirically; emits hierarchy verdict +
 # recommendation per Pro's H2 critique (best/costly/bad answer
@@ -521,7 +537,7 @@ check-breach-swarm-spike:
 	$(HEADLESS) --script res://loop/breach/test_breach_swarm_spike.gd 2>&1 | grep -q "^BREACH_SWARM_SPIKE_OK"
 
 # Arc-4 breach mode: all breach harnesses in one target.
-test-breach: check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness check-breach-recap check-breach-enemies check-breach-assets check-silhouette-gate check-breach-armor check-breach-dividend check-breach-swap check-breach-overdrive check-breach-hud check-breach-apcr check-breach-codex check-breach-shuffle check-breach-depot-roll check-breach-rulechangers check-breach-stakes check-breach-meta check-breach-route check-breach-xp check-breach-ammo check-breach-shield check-breach-hp check-breach-archetype check-breach-prism check-breach-mortar check-breach-ram check-breach-archetype-select check-breach-archetype-switch check-breach-distinctness-audit check-breach-pressure-probes check-breach-band-shape check-breach-band-shape-analyzer check-breach-swarm-spike check-breach-double-kill check-breach-archetype-select-pause check-breach-xp-reload-persistence check-breach-switch-archetype-validation check-breach-pick-archetype-and-mortar-guard check-breach-run-recap-archetype-contract check-breach-p2-batch1 check-breach-p2-batch2 check-breach-p2-batch3 check-breach-depot-lifetime-pick check-breach-steel-salvage-threshold check-breach-band-banner-stacking check-breach-fire-while-swap
+test-breach: check-breach-config check-breach-shells check-breach-depot check-breach-he-blast check-breach-loadout check-breach-depot-choice check-breach-level check-breach-harness check-breach-recap check-breach-enemies check-breach-assets check-silhouette-gate check-breach-armor check-breach-dividend check-breach-swap check-breach-overdrive check-breach-hud check-breach-apcr check-breach-codex check-breach-shuffle check-breach-depot-roll check-breach-rulechangers check-breach-stakes check-breach-meta check-breach-route check-breach-xp check-breach-ammo check-breach-shield check-breach-hp check-breach-archetype check-breach-prism check-breach-mortar check-breach-ram check-breach-archetype-select check-breach-archetype-switch check-breach-distinctness-audit check-breach-pressure-probes check-breach-band-shape check-breach-band-shape-analyzer check-breach-swarm-spike check-breach-double-kill check-breach-archetype-select-pause check-breach-xp-reload-persistence check-breach-switch-archetype-validation check-breach-pick-archetype-and-mortar-guard check-breach-run-recap-archetype-contract check-breach-p2-batch1 check-breach-p2-batch2 check-breach-p2-batch3 check-breach-depot-lifetime-pick check-breach-steel-salvage-threshold check-breach-band-banner-stacking check-breach-fire-while-swap check-breach-level-up-ceilings check-breach-ammo-pickup-no-waste
 
 # Arc-3 → arc-2 metric handshake: compute per-stage structural metrics
 # across all 35 BC stages and emit loop/originals/og-metrics.json.

@@ -1800,6 +1800,19 @@ func _grant_xp(amount: int) -> void:
 	_update_xp_hud()
 
 
+# arc-4 iter 103 (P1-E + P1-F fixes from code-review-iter-100):
+# cap the level-up max-cap growth at sane ceilings so a long run
+# can't inflate max_hp / max_*_reserve without bound. Starting
+# values: max_hp=3, max_he=6, max_heat=3, max_apcr=4. Ceilings
+# chosen for ~5-7 level-ups of headroom per axis. When at ceiling,
+# the level-up still grants a refill (full heal / full reserve
+# top-up) so the boost is never a silent no-op.
+const MAX_HP_CEILING: int = 8
+const MAX_HE_RESERVE_CEILING: int = 12
+const MAX_HEAT_RESERVE_CEILING: int = 8
+const MAX_APCR_RESERVE_CEILING: int = 10
+
+
 # arc-4 iter 56: the level-up stat boost — AUTOMATIC (no mid-combat
 # modal, so CONSULT constraint 1 holds), rotated across a small legible
 # set: max HP / reload speed / shell capacity.
@@ -1807,10 +1820,17 @@ func _apply_level_boost(level: int) -> void:
 	var kind: int = (level - 2) % 3  # level 2 is the first level-up
 	var msg: String = ""
 	if kind == 0:
-		max_hp += 1
-		hp += 1
+		# arc-4 iter 103 (P1-F fix): clamp max_hp to MAX_HP_CEILING;
+		# if at cap, fall back to full heal so the level-up still
+		# rewards the player.
+		if max_hp < MAX_HP_CEILING:
+			max_hp += 1
+			hp += 1
+			msg = "+1 MAX HP"
+		else:
+			hp = max_hp
+			msg = "FULL HEAL"
 		hp_changed.emit(hp, max_hp)
-		msg = "+1 MAX HP"
 	elif kind == 1:
 		# arc-4 iter 092 (P0-2 fix): accumulate the reload reduction
 		# in _reload_reduction (so it survives archetype switches),
@@ -1823,13 +1843,26 @@ func _apply_level_boost(level: int) -> void:
 		msg = "FASTER RELOAD"
 	else:
 		if loadout != null:
-			loadout.max_he_reserve += 1
-			loadout.max_heat_reserve += 1
-			loadout.max_apcr_reserve += 1
+			# arc-4 iter 103 (P1-E fix): per-shell ceiling clamp.
+			# Each max_*_reserve only grows if below its ceiling.
+			# The refill always fires (so an at-cap player still
+			# gets a full top-up — meaningful reward).
+			var grew: int = 0
+			if loadout.max_he_reserve < MAX_HE_RESERVE_CEILING:
+				loadout.max_he_reserve += 1
+				grew += 1
+			if loadout.max_heat_reserve < MAX_HEAT_RESERVE_CEILING:
+				loadout.max_heat_reserve += 1
+				grew += 1
+			if loadout.max_apcr_reserve < MAX_APCR_RESERVE_CEILING:
+				loadout.max_apcr_reserve += 1
+				grew += 1
 			loadout.refill_he(1)
 			loadout.refill_heat(1)
 			loadout.refill_apcr(1)
-		msg = "+SHELL CAP"
+			msg = "+SHELL CAP" if grew > 0 else "+SHELL REFILL"
+		else:
+			msg = "+SHELL CAP"
 	_show_pickup_toast("LEVEL %d  %s" % [level, msg], Color(1.0, 0.9, 0.35, 1.0))
 
 

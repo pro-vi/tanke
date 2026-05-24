@@ -172,8 +172,8 @@ operational gate but documented as awareness-tier:
 | 3 | P1-B codex dismiss → return | PlayerTank.gd | 1 line | **iter 101 ✓ FIXED** (substrate write ×36) |
 | 4 | P1-C BandBanner cleanup | PlayerTank.gd | small | **iter 102 ✓ FIXED** (harness: test_breach_band_banner_stacking, substrate ×37) |
 | 5 | P1-D fire-while-swap UX | PlayerTank.gd | medium | **iter 102 ✓ FIXED** (harness: test_breach_fire_while_swap, substrate ×38) |
-| 6 | P1-E + P1-F max ceilings | PlayerTank.gd | small | iter 103 |
-| 7 | P2-A AmmoPickup re-roll | AmmoPickup.gd | small | iter 103 |
+| 6 | P1-E + P1-F max ceilings | PlayerTank.gd | small | **iter 103 ✓ FIXED** (harness: test_breach_level_up_ceilings, substrate ×39) |
+| 7 | P2-A AmmoPickup re-roll | AmmoPickup.gd | small | **iter 103 ✓ FIXED** (harness: test_breach_ammo_pickup_no_waste) |
 | 8 | P2-B-D | various | small each | iter 104+ |
 
 Estimated total sprint: 4-5 iters for 11 findings.

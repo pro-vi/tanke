@@ -38,6 +38,12 @@ func _ready() -> void:
 
 # The player drives over the pickup: refill the dropped shell's reserve.
 # Defensive — a body with no Loadout (arc-2/3 player) is a no-op.
+# arc-4 iter 103 (P2-A fix from code-review-iter-100): if the chosen
+# shell_class is already at cap and another droppable shell isn't,
+# re-roll to that shell — preserves pickup value. A silent no-op pickup
+# violates CONSULT constraint 3 (every shell event must have a readable
+# meaning to the player's state). If ALL three are at cap, accept the
+# no-op honestly: the player is genuinely topped.
 func _on_body_entered(body: Node) -> void:
 	if _collected:
 		return
@@ -45,6 +51,10 @@ func _on_body_entered(body: Node) -> void:
 		return
 	_collected = true
 	var lo = body.loadout
+	if _is_at_cap(lo, shell_class):
+		var alt: int = _pick_under_cap(lo)
+		if alt != -1:
+			shell_class = alt
 	var nm: String = "HE"
 	if shell_class == BulletT.SHELL_CLASS_HE:
 		lo.refill_he(AMOUNT)
@@ -58,6 +68,28 @@ func _on_body_entered(body: Node) -> void:
 	if body.has_method("_show_pickup_toast"):
 		body._show_pickup_toast("%s +%d" % [nm, AMOUNT], _shell_color(shell_class))
 	queue_free()
+
+
+# Whether the loadout's reserve for `sc` is at its cap.
+func _is_at_cap(lo, sc: int) -> bool:
+	if sc == BulletT.SHELL_CLASS_HE:
+		return lo.he_reserve >= lo.max_he_reserve
+	if sc == BulletT.SHELL_CLASS_HEAT:
+		return lo.heat_reserve >= lo.max_heat_reserve
+	if sc == BulletT.SHELL_CLASS_APCR:
+		return lo.apcr_reserve >= lo.max_apcr_reserve
+	return false
+
+
+# Random under-cap droppable shell, or -1 if all 3 are at cap.
+func _pick_under_cap(lo) -> int:
+	var candidates: Array[int] = []
+	for sc in DROP_SHELLS:
+		if not _is_at_cap(lo, sc):
+			candidates.append(sc)
+	if candidates.is_empty():
+		return -1
+	return candidates[randi() % candidates.size()]
 
 
 # Per-shell colour — matches PlayerTank._shell_color / the Bullet modulate.

@@ -17,6 +17,49 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 103 — BUILD — code-review-iter-100 batch 3: P1-E + P1-F + P2-A (level-up ceilings + AmmoPickup re-roll)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 47/75 effective · 47/75 absolute   (Δ vs prior: 0 — bug
+  fixes with regression coverage; no rubric criterion lift)
+- Constraints respected: 7 (P1-E/F — ceilings prevent passive-stat
+  inflation in the level-up boost path; "verbs over passive stats"
+  preserved), 3 (P2-A — every shell pickup now has a readable
+  meaning to the player's state instead of silent waste)
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… verified (level-up path is loadout-gated;
+  AmmoPickup.gd is arc-4-owned, not substrate; baseline procedural
+  hash unaffected)
+- Falsifications: none added
+- Files: scripts/PlayerTank.gd (substrate write ×39 — added
+  MAX_HP_CEILING=8, MAX_HE_RESERVE_CEILING=12, MAX_HEAT_RESERVE_CEILING=8,
+  MAX_APCR_RESERVE_CEILING=10 constants + clamp logic in
+  _apply_level_boost with FULL HEAL / +SHELL REFILL fallback
+  toasts), scripts/AmmoPickup.gd (re-roll on cap in _on_body_entered
+  + _is_at_cap / _pick_under_cap helpers; arc-4-owned, not substrate),
+  loop/breach/test_breach_level_up_ceilings.gd (NEW — 4 assertions:
+  max_hp clamps at CEILING under 10 boosts; at-cap kind-0 → FULL
+  HEAL; max_*_reserve all clamp at their ceilings; at-cap kind-2
+  refills HE/HEAT/APCR by 1 each), loop/breach/test_breach_ammo_
+  pickup_no_waste.gd (NEW — 3 assertions: HE-at-cap → re-rolls to
+  HEAT/APCR; all-at-cap → silent no-op; HE-below-cap → refills HE
+  as before), Makefile (+check-breach-level-up-ceilings
+  +check-breach-ammo-pickup-no-waste; test-breach 53 → 55),
+  loop/breach/PRE-MORTEMS.md, loop/breach/STATE.md.
+- Finding: ceiling-choice sizing matters more than the cap itself.
+  Picked HP=8 (start 3, +5 levels of headroom), HE=12 (start 6),
+  HEAT=8 (start 3), APCR=10 (start 4) — chosen so a ~15-20-min
+  run hits the ceiling around the natural "I'm now established"
+  beat, not before. The FULL HEAL / +SHELL REFILL fallback toasts
+  keep the level-up event from feeling like a no-op once at cap
+  — the player still gets a tangible payoff, just not stat
+  inflation. Code-review-iter-100 queue is now 6 of 11 closed
+  (P0-A + P1-A + P1-B + P1-C + P1-D + P1-E + P1-F + P2-A = 8
+  fixed; only P2-B + P2-C + P2-D remain).
+
+---
+
 ## iter 102 — BUILD — code-review-iter-100 batch 2: P1-C + P1-D paired
 
 - Date: 2026-05-24
