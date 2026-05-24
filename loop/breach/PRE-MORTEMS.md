@@ -24,6 +24,43 @@ Format:
 
 ---
 
+## iter 107 — SPIKE — C9 recap rendering-shape POCs (3 parallel)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (every POC is graded against
+  the "tied to resource/build/route, not 'got overwhelmed'"
+  standard; γ specifically surfaces `band.canonical_answer` to
+  turn the recap into a diagnosis, not a stat dump).
+- CONSULT constraints risked: none (SPIKE iter, no production
+  code changes — only mock renderings + a recommendation).
+- Action: render 3 alternative recap shapes (α full-replace,
+  β append, γ sentence) against the SAME test death state
+  (MORTAR build dies in bunker_zone, depth 95, dry-on-HE).
+  Compare on 11 axes including line-budget fit (death panel
+  capacity ≤10 lines), arc-2 ASCENDER continuity, sentence-test
+  compatibility, and authoring complexity. Output SPIKE report
+  + recommendation.
+- Output: loop/breach/iter-107-c9-spike-report.md.
+- Predicted finding (confirmed): γ wins on verdict-grade
+  legibility + the canonical_answer diagnosis surfacing. β
+  overflows the panel. α loses arc-2 BEST tracking. The
+  `canonical_answer` field on every BreachBand (already in
+  configs/breach_default.tres) is the killer feature γ unlocks
+  that the other shapes don't — it turns the recap from "what
+  happened" into "what would have worked."
+- Falsifiable claim: the SPIKE report is implementable by iter
+  108 with ≤1 substrate write (PlayerTank.gd ×42), zero changes
+  to BreachBand / BreachConfig, and a `RunRecap.verdict_sentence()`
+  helper that uses already-captured fields plus the canonical_
+  answer string read from the killing band.
+- Substrate touched: none (research iter).
+- Hash-anchor verification: not required.
+- Next: iter 108 DECISION + BUILD — γ implementation per the
+  authoring spec at iter-107-c9-spike-report.md §Authoring spec.
+
+---
+
 ## iter 106 — DIAGNOSE — C9 death-recap surface map (next round bootstrap)
 
 - Date: 2026-05-24

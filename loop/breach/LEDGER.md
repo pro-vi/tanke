@@ -17,6 +17,38 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 107 — SPIKE — C9 recap rendering-shape POCs
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 47/75 effective · 47/75 absolute   (Δ vs prior: 0 —
+  SPIKE iter, no code changes; rubric movement comes at iter 108)
+- Constraints respected: 6
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… n/a (no substrate touch)
+- Falsifications: none added
+- Files: loop/breach/iter-107-c9-spike-report.md (NEW — 3 POCs
+  α/β/γ with concrete mock renderings against a representative
+  MORTAR-in-bunker death state; 11-axis comparison matrix;
+  recommendation γ + authoring spec for iter 108), loop/breach/
+  PRE-MORTEMS.md.
+- Finding: the SPIKE surfaced an asset the diagnosis didn't fully
+  weight — `BreachBand.canonical_answer` is already a field on
+  every band in configs/breach_default.tres, with strings like
+  "APCR 1-shots; HEAT 2-shots entrenched heavies" and "HE — open
+  vertical lanes; trade shells for time". Shape γ leverages this
+  by appending "(canonical answer: APCR)" to the verdict sentence,
+  turning the recap from a stat dump into a DIAGNOSIS the player
+  can learn from. This is the constraint-6-tied-to-route in its
+  strongest form: not just "you died here" but "you died here AND
+  here's what the band wanted." No new data needed — the field
+  has existed since iter 76 (PRESSURES.md canonical-answer doc
+  pass). The SPIKE recommendation is γ, with β as the structural
+  fallback if γ's sentence template proves brittle in iter 108
+  BUILD (e.g., 2+ null fields produce ungrammatical output).
+
+---
+
 ## iter 106 — DIAGNOSE — C9 death-recap surface map (next round bootstrap)
 
 - Date: 2026-05-24
