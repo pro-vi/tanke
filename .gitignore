@@ -5,6 +5,11 @@ export_presets.cfg
 *.translation
 *.mono/
 data_*/
+# arc-4 iter 130: ignore auto-generated .uid files (Godot 4 makes
+# one per .gd/.tres on first load). 27 already-tracked .uid files
+# stay tracked (UID references in scene files); new ones (~45 at
+# iter 130) no longer clutter `git status`.
+*.uid
 
 # Godot 3 legacy (kept for history)
 .import/
