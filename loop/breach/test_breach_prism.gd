@@ -64,51 +64,53 @@ func _initialize() -> void:
 	pt_d.queue_free()
 	await process_frame
 
-	# === Brick: damaged on cooldown (iter-098 P2-7 fix from
-	# code-review-iter-090 — was "every tick", now cooldown-gated
-	# uniformly with enemies to protect future multi-HP non-enemies
-	# from melting at framerate; bricks still die fast since hp=1).
+	# === Brick: drained over 4 cooldown ticks (iter-138 PLAYTEST-FIX
+	# from user feedback — was "1 damage per cooldown tick", now
+	# BEAM_DAMAGE_PER_TICK = 0.25 accumulator → 4 ticks per HP).
+	# This preserves visible HP-bar drain across the beam-active
+	# window. Cooldown still applies between accumulator ticks.
 	var brick := StubBrick.new()
 	root.add_child(brick)
 	await process_frame
 	pt._beam_dmg_timer = 0.0  # reset for clean cooldown trace
-	pt._apply_beam_to_body(0.1, brick)
+	# 4 ticks past cooldown each → accumulator hits 1.0 → 1 damage.
+	for i in 4:
+		pt._apply_beam_to_body(pt.BEAM_DAMAGE_COOLDOWN + 0.01, brick)
 	if brick.damage_taken != 1:
-		push_error("FAIL — brick stub not damaged on first tick (got %d)" % brick.damage_taken)
+		push_error("FAIL — brick after 4 beam ticks (each past cooldown): damage %d, want 1" % brick.damage_taken)
 		quit(1); return
-	# Second tick mid-cooldown: no damage.
-	pt._apply_beam_to_body(0.1, brick)
+	# Tick within cooldown: no accumulator add.
+	pt._beam_dmg_timer = pt.BEAM_DAMAGE_COOLDOWN  # arm cooldown so next call is mid-cooldown
+	pt._apply_beam_to_body(0.05, brick)
 	if brick.damage_taken != 1:
-		push_error("FAIL — brick mid-cooldown: damage %d, want 1 (cooldown should have blocked)" % brick.damage_taken)
+		push_error("FAIL — brick mid-cooldown: damage %d, want 1 (cooldown should have blocked accumulator)" % brick.damage_taken)
 		quit(1); return
-	# Advance past cooldown — next damage tick fires.
-	pt._apply_beam_to_body(0.2, brick)  # 0.25 - 0.1 - 0.1 - 0.2 = -0.15, fires
-	if brick.damage_taken != 2:
-		push_error("FAIL — brick post-cooldown: damage %d, want 2" % brick.damage_taken)
-		quit(1); return
-	print("  brick: cooldown-gated (1 hit, mid-cooldown skipped, 2 hits after cooldown — P2-7 universal cooldown)")
+	print("  brick: 4 cooldown-gated ticks → 1 damage (accumulator-based; iter-138)")
 
-	# === Enemy: damaged on cooldown.
+	# === Enemy: drained over 4 cooldown ticks per HP.
 	var enemy := StubEnemy.new()
 	root.add_child(enemy)
 	await process_frame
 	pt._beam_dmg_timer = 0.0  # reset for clean cooldown trace
-	# Tick 1: cooldown is 0 → damage, timer set to BEAM_DAMAGE_COOLDOWN.
-	pt._apply_beam_to_body(0.0, enemy)
+	# 4 ticks past cooldown → 1 damage.
+	for i in 4:
+		pt._apply_beam_to_body(pt.BEAM_DAMAGE_COOLDOWN + 0.01, enemy)
 	if enemy.damage_taken != 1:
-		push_error("FAIL — enemy: first tick should damage (got %d)" % enemy.damage_taken)
+		push_error("FAIL — enemy after 4 beam ticks: damage %d, want 1" % enemy.damage_taken)
 		quit(1); return
-	# Tick within cooldown (timer still positive): NO damage.
+	# Tick within cooldown: no damage.
+	pt._beam_dmg_timer = pt.BEAM_DAMAGE_COOLDOWN  # arm cooldown
 	pt._apply_beam_to_body(0.05, enemy)
 	if enemy.damage_taken != 1:
-		push_error("FAIL — enemy: tick within cooldown should NOT damage (got %d)" % enemy.damage_taken)
+		push_error("FAIL — enemy mid-cooldown: damage %d, want 1 (cooldown should have blocked)" % enemy.damage_taken)
 		quit(1); return
-	# Tick that drains the timer past zero: damages.
-	pt._apply_beam_to_body(pt.BEAM_DAMAGE_COOLDOWN, enemy)
+	# 4 more ticks past cooldown → +1 damage = 2 total.
+	for i in 4:
+		pt._apply_beam_to_body(pt.BEAM_DAMAGE_COOLDOWN + 0.01, enemy)
 	if enemy.damage_taken != 2:
-		push_error("FAIL — enemy: tick after cooldown should damage (got %d)" % enemy.damage_taken)
+		push_error("FAIL — enemy after 8 beam ticks: damage %d, want 2" % enemy.damage_taken)
 		quit(1); return
-	print("  enemy: damaged on %.2fs cooldown (%d after 3 ticks)" % [pt.BEAM_DAMAGE_COOLDOWN, enemy.damage_taken])
+	print("  enemy: accumulator drain — 4 ticks per HP via BEAM_DAMAGE_PER_TICK=%.2f (1.0 / 0.25)" % pt.BEAM_DAMAGE_PER_TICK)
 
 	# === Steel: no take_damage → no crash, no damage path.
 	var steel := StubSteel.new()

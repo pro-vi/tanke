@@ -580,9 +580,25 @@ func _build_beam_line() -> void:
 	add_child(_beam_line)
 
 
-# arc-4 iter 65 (Round 9c): per-frame beam tick — raycast from the
-# muzzle in the tank's facing direction, find the first body hit, apply
-# damage via _apply_beam_to_body, update the visual length.
+# arc-4 iter 138 (PLAYTEST-FIX from user): thick-beam tuning.
+# Replaces the iter-65 thin-ray cast with a 2-step approach:
+#   (1) ray-cast with mask=9 (Environment+Enemy, NOT water layer 10)
+#       to find the visual end-point of the beam (stops at first
+#       solid hit; passes through water as bullets do).
+#   (2) shape-intersect with an 8px-tall RectangleShape2D over the
+#       beam corridor → finds ALL damageable bodies in the path.
+#       When beam is aimed along a horizontal tile seam (player
+#       muzzle at Y multiple of 8), the rect overlaps 2 adjacent
+#       rows → both get damaged simultaneously (user spec: "4 tiles
+#       = 1 block; centered beam hits 2 horizontal tiles at the
+#       same time").
+#   (3) per-target damage accumulator via set_meta — each beam tick
+#       adds BEAM_DAMAGE_PER_TICK to the target's accumulator; when
+#       ≥ 1.0, take_damage(1) + decrement. HP bar drains visibly
+#       in discrete steps across the beam-active window.
+const BEAM_HEIGHT_PX: float = 8.0              # one tile tall = covers seam-adjacent rows
+const BEAM_DAMAGE_PER_TICK: float = 0.25       # 0.25 × 4 = 1 HP per second; matches iter-65 DPS
+const BEAM_ACCUM_META: String = "_beam_accum"  # per-target accumulator key
 func _tick_beam(delta: float) -> void:
 	if _beam_line == null:
 		return
@@ -591,40 +607,72 @@ func _tick_beam(delta: float) -> void:
 	var dir: Vector2 = Vector2(1.0, 0.0).rotated(rotation)
 	var end_pos: Vector2 = origin + dir * BEAM_RANGE
 	var ss := get_world_2d().direct_space_state
-	var q := PhysicsRayQueryParameters2D.create(origin, end_pos)
-	q.exclude = [self]
-	var hit: Dictionary = ss.intersect_ray(q)
-	var hit_body: Node = null
+	# (1) Ray-cast for the beam's visual endpoint. Mask=9 means the
+	# beam passes through water (layer 10) like bullets do, matching
+	# the iter-101 bullet target-mask pattern.
+	var ray_q := PhysicsRayQueryParameters2D.create(origin, end_pos)
+	ray_q.exclude = [self]
+	ray_q.collision_mask = 9
+	var ray_hit: Dictionary = ss.intersect_ray(ray_q)
 	var beam_dist: float = BEAM_RANGE
-	if not hit.is_empty():
-		hit_body = hit.collider
-		beam_dist = origin.distance_to(hit.position)
-	# Line points are local to PlayerTank — muzzle.position + along +X
-	# (the tank's transform rotates the line visually).
+	if not ray_hit.is_empty():
+		beam_dist = origin.distance_to(ray_hit.position)
 	_beam_line.points = [muzzle.position, muzzle.position + Vector2(beam_dist, 0.0)]
 	_beam_line.visible = true
-	_apply_beam_to_body(delta, hit_body)
+	# (2) Shape-intersect for damage application — covers the beam
+	# corridor including any horizontal-seam-adjacent rows. Width =
+	# the beam's visible length, height = one tile (BEAM_HEIGHT_PX).
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(beam_dist, BEAM_HEIGHT_PX)
+	var shape_q := PhysicsShapeQueryParameters2D.new()
+	shape_q.shape = shape
+	# Center of the rect at (origin + dir * beam_dist / 2.0), rotated
+	# to align with beam direction.
+	shape_q.transform = Transform2D(rotation, origin + dir * (beam_dist * 0.5))
+	shape_q.collision_mask = 9
+	shape_q.exclude = [self]
+	var bodies: Array = ss.intersect_shape(shape_q, 16)
+	_apply_beam_to_targets(delta, bodies)
 
 
-# arc-4 iter 65 (Round 9c): apply the beam's damage rule to whatever
-# body the raycast hit. Enemies take 1 damage every BEAM_DAMAGE_COOLDOWN
-# (HP-bar drain stays visible; the enemy has time to shoot back);
-# bricks (or other non-enemy damageable bodies) burn fast — 1 damage
-# every tick; steel-style bodies (no take_damage) block the beam
-# without taking damage. Pure-data — the harness drives this with
-# mock bodies.
-func _apply_beam_to_body(delta: float, hit_body: Node) -> void:
+# arc-4 iter 138 (PLAYTEST-FIX): per-target beam-damage accumulator.
+# Each beam tick adds BEAM_DAMAGE_PER_TICK to the target's stored
+# accumulator (via set_meta); when accumulator >= 1.0, take_damage(1)
+# fires + decrement by 1.0. Multiple targets each track independently
+# so a thick-beam multi-hit doesn't share the damage budget. Steel-
+# style bodies (no take_damage) are skipped (beam passes their cell
+# but they don't break).
+func _apply_beam_to_targets(delta: float, bodies: Array) -> void:
 	_beam_dmg_timer -= delta
-	if hit_body == null:
+	if _beam_dmg_timer > 0.0:
 		return
-	# arc-4 iter 098 (P2-7 fix from code-review-iter-090): apply the
-	# BEAM_DAMAGE_COOLDOWN to ALL bodies with take_damage, not just
-	# enemies. Bricks have hp=1 so they still die in one tick (intent
-	# preserved); the cooldown protects future multi-HP non-enemies
-	# (eagle base, destructible cover) from melting at framerate.
-	if _beam_dmg_timer <= 0.0 and hit_body.has_method("take_damage"):
-		hit_body.take_damage(1)
-		_beam_dmg_timer = BEAM_DAMAGE_COOLDOWN
+	for entry in bodies:
+		var body: Node = entry.get("collider")
+		if body == null or not body.has_method("take_damage"):
+			continue
+		var accum: float = body.get_meta(BEAM_ACCUM_META, 0.0) + BEAM_DAMAGE_PER_TICK
+		var dmg: int = int(accum)
+		if dmg > 0:
+			body.take_damage(dmg)
+			accum -= float(dmg)
+		if is_instance_valid(body):
+			body.set_meta(BEAM_ACCUM_META, accum)
+			# arc-4 iter 138: refresh the HP bar so sub-1 damage shows
+			# as bar shrinkage. _update_hp_bar reads the accumulator
+			# meta and subtracts it from effective_hp.
+			if body.has_method("_update_hp_bar"):
+				body._update_hp_bar()
+	_beam_dmg_timer = BEAM_DAMAGE_COOLDOWN
+
+
+# arc-4 iter 138 (PLAYTEST-FIX): thin back-compat shim — harness
+# test_breach_prism still drives the single-body path via this
+# method. Forwards to the new array-of-bodies pipeline.
+func _apply_beam_to_body(delta: float, hit_body: Node) -> void:
+	if hit_body == null:
+		_apply_beam_to_targets(delta, [])
+	else:
+		_apply_beam_to_targets(delta, [{"collider": hit_body}])
 
 
 # arc-4 iter 65 (Round 9c): hide the beam visual + reset the damage

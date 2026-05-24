@@ -533,12 +533,21 @@ func _build_hp_bar() -> void:
 # + fg width tracks the damage ratio. Called from take_damage on every
 # non-fatal hit; a no-op if the bar was never built (arc-2/3 or
 # max_hp = 1).
+# arc-4 iter 138 (PLAYTEST-FIX from user): subtract the PRISM beam's
+# pending accumulator from the displayed ratio so the bar drains
+# VISIBLY across the multi-tick beam-damage window. Bullets continue
+# to land integer-step damage; this only adds smooth drain when the
+# player has the beam on a single enemy. Sub-1 damage is shown
+# as bar shrinkage but doesn't yet trigger take_damage.
+const BEAM_ACCUM_META: String = "_beam_accum"
 func _update_hp_bar() -> void:
 	if _hp_bar_bg == null or _hp_bar_fg == null or max_hp <= 0:
 		return
 	_hp_bar_bg.visible = true
 	_hp_bar_fg.visible = true
-	var ratio: float = clampf(float(hp) / float(max_hp), 0.0, 1.0)
+	var beam_accum: float = get_meta(BEAM_ACCUM_META, 0.0)
+	var effective_hp: float = maxf(0.0, float(hp) - beam_accum)
+	var ratio: float = clampf(effective_hp / float(max_hp), 0.0, 1.0)
 	_hp_bar_fg.size = Vector2(HP_BAR_WIDTH * ratio, 2.0)
 
 

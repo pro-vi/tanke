@@ -24,6 +24,58 @@ Format:
 
 ---
 
+## iter 138 — PLAYTEST-FIX — PRISM beam fixes from user playtest (water / thick beam / drain visibility)
+
+- Date: 2026-05-24
+- Tag: [FEEL]
+- USER PLAYTEST signal received iter 138 (10 status-checks
+  after iter 128 saturation) — first user-direction signal
+  since the playtest gate opened at iter 71. Loop pivots
+  from STATUS-CHECK back to substantive BUILD.
+- CONSULT constraints respected: 6 (the recap-legibility
+  side-benefit: bar-drain visible per-tick supports the
+  "diagnosis-not-stat-soup" surface); 7 (beam stays a verb
+  affordance, not a damage-stat boost).
+- CONSULT constraints risked: none.
+- Three playtest findings → three fixes batched into one
+  substrate write ×47:
+  - **Fix 1 (water mask)**: `_tick_beam` raycast uses
+    default collision_mask (all layers); water is on layer
+    10 (`collision_layer = 512`). Bullets pass water via
+    `target_mask = 9` (Environment + Enemy only); beam
+    should match. 1-line: `q.collision_mask = 9`.
+  - **Fix 2 (thick beam)**: replace ray-cast with shape
+    intersect using a 8px-tall RectangleShape2D. When the
+    beam is aimed along a horizontal tile seam (= player
+    muzzle at Y multiple of 8), the rect overlaps 2 adjacent
+    rows of tiles → damages BOTH simultaneously. Matches
+    user's "4 tiles = 1 block; centered beam hits 2
+    horizontal tiles" spec. Visual end-point still uses
+    the closest blocking hit for length.
+  - **Fix 3 (drain visibility)**: per-target beam-damage
+    accumulator using `set_meta("_beam_accum", float)`.
+    Each beam tick adds BEAM_DAMAGE_PER_TICK = 0.25 to the
+    target's accumulator; when ≥ 1.0, `take_damage(1)` and
+    decrement. Net DPS unchanged (1 damage / second per
+    target with BEAM_DAMAGE_COOLDOWN = 0.25s, since
+    0.25 × 4 = 1). Per-target so thick-beam multi-targets
+    each accumulate independently. Bullets unchanged.
+- Predicted failure: shape intersect may include `self`
+  (player) in results, causing self-damage; need exclude.
+  Mitigation: `q.exclude = [self]` like the raycast.
+- Falsifiable claim: post-fix the user can (a) shoot beam
+  through water; (b) see a centered beam through a 2-row
+  brick wall break BOTH rows simultaneously; (c) see HP
+  bar drain in visible discrete steps when beaming an enemy
+  (Light = 2 visible drops, Heavy = 3 visible drops).
+- Substrate touched: scripts/PlayerTank.gd (substrate write
+  ×47).
+- Hash-anchor verification plan: post-edit verify (PRISM
+  beam path is loadout-gated via archetype check — arc-2/3
+  player has no archetype, no beam, bit-identical).
+
+---
+
 ## iter 128 — META — Round 19 close-out + ★ HONEST SATURATION + cadence shift
 
 - Date: 2026-05-24
