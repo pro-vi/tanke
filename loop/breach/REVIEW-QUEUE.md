@@ -444,6 +444,30 @@ Format per item:
     and deferred IDENTITY-PROTECTED calls (C15-5 rephrase, the
     identity-vs-weapons question) to user direction.
 
+#24 — Round 18 — ARC-4-checkpoint.md cross-rounds catch-up doc — iters 125-126 — closed (1 BUILD-QUALITY + 1 META)
+  Finding: iter 125 shipped loop/breach/ARC-4-checkpoint.md —
+    a ~270-line single-read consolidation of 17 rounds of arc-4
+    work. TL;DR + round-by-round table + score trajectory +
+    per-criterion final state + substrate log + harness
+    inventory + open REVIEW-QUEUE items + 8 loop-process
+    findings.
+  Affordance: when you return to the project, you can read
+    one file (ARC-4-checkpoint.md) instead of walking through
+    7+ per-round summary files. The 8 loop-process findings
+    (F006/F007 + dual-step + honest-re-tag + structural-
+    ceiling + etc.) are worth carrying into arc 5 if/when it
+    opens.
+  Risk: no rubric movement; score stays ★ 50/75. Pattern note:
+    documentation-pass rounds are the natural transition between
+    substantive arcs (cf. arc 1/2/3 META-RETROs); arc-4 isn't
+    closed but the structural ceiling makes this checkpoint a
+    similar role.
+  Next round: iter 127 Audio cues DIAGNOSE — fresh substantive
+    surface to investigate. Either opens new BUILD work (if
+    audio has constraint-6 surface) or surfaces the "no audio
+    surface worth building without user direction" finding.
+    Full summary: loop/breach/round-18-summary.md.
+
 #23 — Round 17 — Gap 5 regret-quote backlog closure — iters 123-124 — closed (1 BUILD-QUALITY + 1 META) — **★ ITER-106 BACKLOG COMPLETE (5 of 5)**
   Finding: iter 123 BUILD-QUALITY closed the LAST iter-106
     backlog item (Gap 5 regret-quote). Added `RunRecap.regret_

@@ -24,6 +24,27 @@ Format:
 
 ---
 
+## iter 126 — META — Round 18 close-out (documentation-pass round)
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- CONSULT constraints respected: none directly (META).
+- CONSULT constraints risked: none.
+- Action: write loop/breach/round-18-summary.md (2-iter
+  documentation-pass round timeline + 2 loop-process findings
+  on documentation-pass-as-arc-transition + checkpoint-vs-
+  rubric-gaming distinction); append REVIEW-QUEUE #24
+  (lighter framing of doc-pass round); update STATE →
+  "18-closed" + queue iter 127 Audio cues DIAGNOSE.
+- META-trigger cited: round-close.
+- Falsifiable claim: round-18-summary surfaces the documentation-
+  pass-as-arc-transition pattern + names iter 127's Audio
+  DIAGNOSE as the substantive next step.
+- Substrate touched: none.
+- Hash-anchor verification: not required.
+
+---
+
 ## iter 125 — BUILD-QUALITY — ARC-4-checkpoint.md cross-rounds catch-up doc
 
 - Date: 2026-05-24

@@ -17,6 +17,35 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 126 — META — Round 18 close-out (documentation-pass round)
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Constraints respected: none directly (META)
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… n/a
+- Falsifications: none added
+- Files: loop/breach/round-18-summary.md (NEW — 2-iter
+  documentation-pass round close-out + 2 loop-process
+  findings: (1) documentation-pass rounds are the natural
+  transition between substantive arcs (cf. arc 1/2/3 META-
+  RETROs); (2) checkpoint-as-summary distinguishes from
+  rubric-gaming — claims no new points, only consolidates),
+  loop/breach/REVIEW-QUEUE.md (+#24 doc-pass round close),
+  loop/breach/PRE-MORTEMS.md.
+- Finding: Round 18 is a documentation-pass round — the
+  ARC-4-checkpoint.md exists for user-return. Closes cleanly
+  in 2 iters. Iter 127 Audio cues DIAGNOSE is the substantive
+  next step; gives the loop a fresh question to investigate
+  with clear deliverable (1-page audio constraint-6 surface
+  assessment). If DIAGNOSE finds substantive surface →
+  BUILD; if not → "no audio surface without user direction"
+  is itself honest output that surfaces the diminishing-
+  returns reality.
+
+---
+
 ## iter 125 — BUILD-QUALITY — ARC-4-checkpoint.md cross-rounds catch-up doc
 
 - Date: 2026-05-24
