@@ -51,10 +51,17 @@ static func compare_signatures(sigs: Array) -> Dictionary:
 				min_d = d
 			if d > max_d:
 				max_d = d
+	# arc-4 iter 096 (P2-1 fix from code-review-iter-090):
+	# distinguish "insufficient_data" (< 2 sigs to compare) from
+	# the actual "similar" verdict. Previous code reported "similar"
+	# for empty/single-sig inputs, falsely signaling convergence.
+	var verdict: String
 	if sigs.size() < 2:
 		min_d = 0
 		max_d = 0
-	var verdict: String = "distinct" if min_d >= 2 else "similar"
+		verdict = "insufficient_data"
+	else:
+		verdict = "distinct" if min_d >= 2 else "similar"
 	return {
 		"pairs": pairs,
 		"min_seq_distance": min_d,

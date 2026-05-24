@@ -17,6 +17,49 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 096 — BUILD — P2 batch 1: P2-1 + P2-3 + P2-8 (analyzer verdict, MORTAR init, MortarShell t-clamp)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0 — small fixes; no rubric lift).
+- Constraints respected: 6 (analyzer verdict no longer
+  misleads), 7 (MORTAR/Shell timing fixes preserve verb integrity).
+- Constraints risked: none.
+- 3 P2 fixes paired:
+  - **P2-1** (RunRecapAnalyzer.gd arc-4-owned): `verdict` is
+    `"insufficient_data"` for `sigs.size() < 2`, `"distinct"` for
+    min_d >= 2, `"similar"` otherwise. Was misleading
+    "similar" for empty/single-sig inputs.
+  - **P2-3** (PlayerTank.gd substrate write ×33): _init_archetype
+    MORTAR branch stops GunTimer + sets can_shoot=true before
+    setting wait_time. Mirrors iter-88's _revert_archetype
+    hygiene. Prevents DEFAULT→MORTAR from carrying a stale
+    cooldown.
+  - **P2-8** (MortarShell.gd arc-4-owned): _physics_process
+    clamps `t = minf(1.0, _elapsed / TRAVEL_TIME)` before lerp.
+    Prevents frame-spike overshoot.
+- Regression harness test_breach_p2_batch1.gd with 5 assertions:
+  - P2-1: empty input → "insufficient_data"
+  - P2-1: single sig → "insufficient_data"
+  - P2-1: 2 distinct sigs → "distinct" (legitimate verdict preserved)
+  - P2-3: DEFAULT→MORTAR stops GunTimer + sets can_shoot=true
+  - P2-8: frame-spike delta=10.0 → t clamped to 1.0, _explode fires
+- Hash anchor: `23d6a2ec3bf2821f` preserved (PlayerTank substrate
+  write ×33; flag-off unchanged). test-all 5/5; test-breach 46 → 47.
+- Falsifications: none.
+- Substrate writes this arc: 51 → 52 (PlayerTank.gd ×33).
+- Files: scripts/PlayerTank.gd, scripts/MortarShell.gd,
+  scripts/RunRecapAnalyzer.gd,
+  loop/breach/test_breach_p2_batch1.gd (NEW), Makefile,
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **3 of 10 P2 items closed. 10 of 18 anchored code-
+  review findings now closed (2 P0 + 6 P1 + 3 P2 = 11 + ... wait,
+  recount: 2 P0 + 6 P1 + 3 P2 = 11; 8 anchored findings P0+P1 +
+  10 P2 = 18 total; 11 closed so far). Iter 97 = next P2 batch:
+  P2-4 (_stop_beam in _die) + P2-6 (Depot filter same-archetype
+  SWITCH_TO_*) + P2-2 (enum constant pinning).**
+
 ## iter 095 — BUILD — P1-4 fix: RunRecap.archetype contract
 
 - Date: 2026-05-24

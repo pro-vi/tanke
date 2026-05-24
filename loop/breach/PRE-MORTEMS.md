@@ -24,6 +24,39 @@ Format:
 
 ---
 
+## iter 096 — BUILD — P2 batch 1: P2-1 + P2-3 + P2-8 (analyzer verdict, MORTAR init, MortarShell t-clamp)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (better analyzer verdict
+  prevents misleading "similar" reports from sparse data), 7
+  (MORTAR/Shell timing fixes preserve archetype verb integrity).
+- CONSULT constraints risked: none.
+- Three small fixes paired:
+  - P2-1: RunRecapAnalyzer returns "insufficient_data" for
+    sigs.size() < 2 instead of "similar". 4 lines.
+  - P2-3: _init_archetype MORTAR branch stops GunTimer before
+    setting wait_time (mirrors iter-88 _revert_archetype hygiene).
+    2 lines.
+  - P2-8: MortarShell._physics_process clamps t = min(1.0,
+    _elapsed/TRAVEL_TIME) before lerp — prevents frame-spike
+    overshoot. 1 line.
+- Predicted failure: P2-1 verdict change breaks existing
+  test_breach_band_shape_analyzer assertions which probably
+  assume "similar" for the empty case. Mitigation: extend the
+  existing harness for the new verdict; one-line update.
+- Falsifiable claim: new test_breach_p2_batch.gd verifies all 3
+  fixes; existing test_breach_band_shape_analyzer harness still
+  passes after the verdict semantics shift (because the existing
+  test cases all have ≥2 signatures — only the empty-input branch
+  changes).
+- Substrate touched: scripts/PlayerTank.gd (substrate write ×33,
+  2-line MORTAR init); scripts/MortarShell.gd (1-line clamp);
+  scripts/RunRecapAnalyzer.gd (arc-4-owned, 4-line verdict logic).
+- Hash-anchor verification plan: post-edit verify.
+
+---
+
 ## iter 095 — BUILD — P1-4 fix: RunRecap.archetype contract
 
 - Date: 2026-05-24

@@ -42,7 +42,11 @@ func _physics_process(delta: float) -> void:
 	if _exploded:
 		return
 	_elapsed += delta
-	var t: float = _elapsed / TRAVEL_TIME
+	# arc-4 iter 096 (P2-8 fix from code-review-iter-090): clamp t
+	# to [0, 1] so a frame-spike (large delta) doesn't overshoot
+	# the lerp + arc math. t >= 1.0 still triggers _explode/queue_free
+	# on the next branch.
+	var t: float = minf(1.0, _elapsed / TRAVEL_TIME)
 	if t >= 1.0:
 		_explode()
 		queue_free()

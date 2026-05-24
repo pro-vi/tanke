@@ -654,7 +654,13 @@ func _init_archetype() -> void:
 	elif archetype == TankArchetype.MORTAR:
 		# arc-4 iter 092 (P0-2 fix): apply accumulated FASTER_RELOAD
 		# reduction to MORTAR's base cooldown (not just hard-set).
-		$GunTimer.wait_time = maxf(RELOAD_MIN, MORTAR_GUN_COOLDOWN - _reload_reduction)
+		# arc-4 iter 096 (P2-3 fix): stop the GunTimer before setting
+		# wait_time so DEFAULT→MORTAR doesn't carry stale cooldown
+		# (mirrors the iter-88 _revert_archetype hygiene).
+		var gt: Timer = $GunTimer
+		gt.stop()
+		gt.wait_time = maxf(RELOAD_MIN, MORTAR_GUN_COOLDOWN - _reload_reduction)
+		can_shoot = true
 	elif archetype == TankArchetype.RAM:
 		speed += RAM_SPEED_BONUS
 	# DEFAULT — no per-archetype init.
