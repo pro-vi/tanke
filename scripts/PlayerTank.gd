@@ -71,6 +71,11 @@ var _shift_was_pressed: bool = false
 # mode is active (loadout != null). Null in arc-2/3 — those code paths
 # never touch run_recap, so behavior stays bit-identical.
 var run_recap = null
+# arc-4 iter 109 (Round 12 Gap 2): the source string for the most
+# recent damage event, set by `set_last_damage_source` just before
+# `take_damage`. Read in `_die()` to stamp `run_recap.killer`.
+# Empty string = no attribution → falls back to "shell impact".
+var _last_damage_source: String = ""
 
 @onready var sprite: Sprite2D = $Sprite2D
 
@@ -871,6 +876,16 @@ func take_damage(amount: int) -> void:
 		_start_screen_shake()
 
 
+# arc-4 iter 109 (Round 12 Gap 2): receives the source taxon from
+# the damaging bullet (Bullet._on_body_entered) just before
+# take_damage. Stored in `_last_damage_source` so `_die()` can
+# stamp `run_recap.killer` with a concrete cause instead of the
+# "shell impact" placeholder. Empty string = no attribution (the
+# default; preserves "shell impact" fallback).
+func set_last_damage_source(label: String) -> void:
+	_last_damage_source = label
+
+
 # iter 78 (Q5 priority 4): heal called by HP pickup overlap. Clamped to max_hp.
 # No effect if already dead.
 func heal(amount: int) -> void:
@@ -1022,6 +1037,11 @@ func _die() -> void:
 	if lvl != null and "_current_breach_band" in lvl:
 		band = lvl._current_breach_band
 	if run_recap != null:
+		# arc-4 iter 109 (Round 12 Gap 2): stamp the killer from the
+		# last damage event's source taxon. Empty fallback preserves the
+		# placeholder so the verdict still reads cleanly.
+		if not _last_damage_source.is_empty():
+			run_recap.killer = _last_damage_source
 		run_recap.capture_death(depth, band, loadout)
 	var t: int = int(_run_time)
 	var ascent_rate: float = 0.0

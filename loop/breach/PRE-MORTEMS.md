@@ -24,6 +24,59 @@ Format:
 
 ---
 
+## iter 109 — BUILD — Gap 2 kill-source tracking (Round 12 Phase 3)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 ("every run produces a death
+  reason tied to resource/build/route — not 'got overwhelmed'");
+  the recap's `killed by:` field is no longer a "shell impact"
+  placeholder but names the actual source ("light bullet" /
+  "heavy bullet" / "fast bullet" depending on enemy_type).
+- CONSULT constraints risked: none.
+- 4 changes:
+  - **Bullet.gd** (substrate write ×9): add `source_label:
+    String = ""` field. In `_on_body_entered`, before
+    `body.take_damage(deal)`, if body has `set_last_damage_source`
+    method, call it with `source_label`. Default-on gated by the
+    method check — arc-2/3 player has no such method, no change.
+  - **Enemy.gd** (substrate write ×3): in `_fire()`, after
+    `bullet.start(...)`, set `bullet.source_label = "%s bullet"
+    % enemy_type.to_lower()`. The string is "light bullet" /
+    "heavy bullet" / "fast bullet" matching the small taxonomy
+    in iter-106 diagnosis Gap 2.
+  - **PlayerTank.gd** (substrate write ×43): add `_last_damage
+    _source: String = ""` field + `set_last_damage_source(label:
+    String)` method. In `_die()`, before
+    `run_recap.capture_death(...)`, set `run_recap.killer =
+    _last_damage_source` if non-empty, else fall back to "shell
+    impact".
+  - **test_breach_run_recap_killer.gd** (NEW): 3 assertions —
+    light bullet kill → "light bullet"; heavy bullet → "heavy
+    bullet"; no source set → "shell impact" fallback.
+- Predicted failure: the `set_last_damage_source` method-check
+  adds a method-call per bullet hit (cheap, but pervasive).
+  Mitigation: it's a single `has_method` check per body-enter
+  event; Godot's has_method is O(1) on script-defined methods.
+- Falsifiable claim: after the build, `run_recap.killer` reflects
+  the actual enemy_type-tagged source string when an enemy bullet
+  kills the player. The recap verdict (iter 108) was already a
+  one-sentence diagnosis; this fix completes the "killed by"
+  line so the verdict's first-line attribution is meaningful,
+  not placeholder.
+- Substrate touched: scripts/Bullet.gd (substrate write ×9),
+  scripts/Enemy.gd (substrate write ×3), scripts/PlayerTank.gd
+  (substrate write ×43).
+- Hash-anchor verification plan: post-edit verify. The Bullet
+  change is a method-existence check + conditional call (false
+  on arc-2/3 player → bit-identical). Enemy change adds a
+  `source_label` write per bullet spawn but Bullet's start()
+  doesn't read `source_label` on the procedural baseline (only
+  PlayerTank reads it via set_last_damage_source which arc-2/3
+  player doesn't have). Both are off-baseline.
+
+---
+
 ## iter 108 — DECISION + BUILD — γ recap verdict sentence (Gap 1 wire)
 
 - Date: 2026-05-24

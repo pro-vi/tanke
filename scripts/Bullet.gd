@@ -23,6 +23,15 @@ const SHELL_CLASS_APCR: int = 3
 
 var velocity: Vector2 = Vector2.ZERO
 var _steel_drilled: int = 0  # arc-4 iter 49: steel blocks this APCR shell has drilled
+# arc-4 iter 109 (Round 12 Gap 2): kill-source attribution. Set by
+# the spawner (Enemy._fire) to a short taxon string like "light
+# bullet" / "heavy bullet" / "fast bullet". When the bullet damages
+# a body with `set_last_damage_source`, that source string is
+# propagated so RunRecap.killer can name a concrete cause instead
+# of the "shell impact" placeholder. Empty string = no attribution
+# (arc-2/3 baseline; PlayerTank-fired bullets default to "" since
+# the player doesn't shoot itself).
+var source_label: String = ""
 # arc-4 iter 101 (P1-A fix from code-review-iter-100): once-per-shot
 # Steel Salvage refund latch. Without this, _steel_drilled == THRESHOLD
 # strict equality would skip the refund if 2 steel blocks were
@@ -120,6 +129,12 @@ func _on_body_entered(body: Node) -> void:
 			and body.is_in_group("armored"):
 		deal = max(0, deal - ARMOR_MITIGATION)
 	if body.has_method("take_damage"):
+		# arc-4 iter 109 (Round 12 Gap 2): propagate the source taxon
+		# string so the body's recap can attribute the kill. The method
+		# exists only on the arc-4 player; arc-2/3 bodies don't define
+		# it, so this is a no-op on the baseline.
+		if body.has_method("set_last_damage_source"):
+			body.set_last_damage_source(source_label)
 		body.take_damage(deal)
 	if shell_class == SHELL_CLASS_HE:
 		var radius_hits: int = _apply_he_blast(body)

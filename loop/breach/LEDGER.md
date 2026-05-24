@@ -17,6 +17,60 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 109 — BUILD — Gap 2 kill-source tracking (Round 12 Phase 3)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 49/75 effective · 49/75 absolute   (Δ vs prior: +1 — C9
+  lifts 3 → 4 effective; absolute 5/5 unlocks at Gap 3 + playtest
+  cite per R3)
+- Constraints respected: 6 (the recap's `killed by:` line is no
+  longer a placeholder; it names the actual enemy taxon — "light
+  bullet" / "heavy bullet" / "fast bullet" — completing the
+  constraint-6 "tied to source" attribution chain)
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… verified (Bullet's source-propagation
+  is method-existence-gated; arc-2/3 player has no
+  set_last_damage_source method, so the conditional is false +
+  the code path is bit-identical. Enemy's source_label write
+  is a `set()` call that hits Bullet.gd's new arc-4 field —
+  doesn't change Bullet's start() or any of the baseline
+  collision behaviors. PlayerTank's killer-stamp is gated
+  inside the existing `if run_recap != null:` block — arc-2/3
+  unchanged.)
+- Falsifications: none added
+- Files: scripts/Bullet.gd (substrate write ×9 — added
+  `source_label: String = ""` field + method-existence-gated
+  `body.set_last_damage_source(source_label)` call before
+  take_damage), scripts/Enemy.gd (substrate write ×3 — _fire
+  sets `bullet.set("source_label", "%s bullet" % enemy_type
+  .to_lower())` after bullet.start), scripts/PlayerTank.gd
+  (substrate write ×43 — added `_last_damage_source: String = ""`
+  field + `set_last_damage_source(label)` method + killer-stamp
+  in _die before run_recap.capture_death; empty fallback
+  preserves "shell impact" placeholder for legacy paths),
+  loop/breach/test_breach_run_recap_killer.gd (NEW — 3
+  assertions: light bullet kill → "light bullet"; heavy bullet
+  kill → "heavy bullet"; legacy take_damage → "shell impact"
+  fallback), Makefile (+check-breach-run-recap-killer;
+  test-breach 58 → 59), loop/breach/PRE-MORTEMS.md,
+  loop/breach/STATE.md.
+- Finding: kill-source attribution works end-to-end via a small
+  method-existence-gated propagation pattern — no new signal,
+  no new singleton, just a defensive duck-typed method call from
+  Bullet to its damage target. The pattern is reusable for
+  future damage sources (PRISM beam, HE blast, MORTAR splash,
+  RAM impact — each can set source_label or call
+  set_last_damage_source equivalently). For now those paths
+  stay at the "shell impact" fallback; piping them through is
+  cheap follow-on work but not required for C9 = 4/5. The
+  verdict sentence now reads concretely: "killed by: heavy
+  bullet" instead of the "shell impact" placeholder. Three
+  substrate writes (Bullet ×8→×9, Enemy ×2→×3, PlayerTank
+  ×42→×43) all default-on gated; hash anchor preserved.
+
+---
+
 ## iter 108 — DECISION + BUILD — γ recap verdict sentence (Round 12 Phase 2, Gap 1 wire)
 
 - Date: 2026-05-24

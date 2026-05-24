@@ -736,5 +736,11 @@ func _fire() -> void:
 	var muzzle_offset: Vector2 = _direction_vector(direction) * 8.0
 	var spawn_pos: Vector2 = global_position + muzzle_offset
 	bullet.set("damage", bullet_damage)  # iter 52: per-type damage
+	# arc-4 iter 109 (Round 12 Gap 2): tag the bullet with its source
+	# enemy type so the player's RunRecap.killer names the actual
+	# cause instead of "shell impact". The field is on Bullet.gd
+	# (arc-4 substrate write ×9); set() is defensive in case a
+	# non-Bullet scene is wired here.
+	bullet.set("source_label", "%s bullet" % enemy_type.to_lower())
 	get_parent().add_child(bullet)
 	bullet.start(spawn_pos, direction, bullet_target_mask)
