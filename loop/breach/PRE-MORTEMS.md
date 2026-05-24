@@ -24,6 +24,47 @@ Format:
 
 ---
 
+## iter 145 — BUILD — atlas pack (img/archetype_sprites.png) — Pro Consult 011 step 3/5
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 4 (silhouette grammar gate enforced
+  on every cell via --check before save).
+- CONSULT constraints risked: none (atlas is purely additive — a NEW
+  image file `img/archetype_sprites.png`; existing sprites_0.png is
+  untouched, so DEFAULT tank rendering is bit-identical and the cross-
+  arc hash anchor is unaffected).
+- Plan: extend tools/gen_archetype_sprites.py with `--atlas` flag that:
+  (a) builds a 256×48 PNG (16 hframes × 3 vframes); 3 rows = PRISM
+      (row 0), MORTAR (row 1), RAM (row 2); each row uses cells
+      0..7 only (frames 8..15 left transparent for future expansion).
+  (b) per row, lays cells in the SAME frame layout as DEFAULT
+      TankSprite.gd uses: U=[0,1], L=[2,3], D=[4,5], R=[6,7].
+  (c) runs check_readability() before save; aborts if any fails.
+  (d) writes to `img/archetype_sprites.png` (the actual asset path
+      iter 146 will load via PlayerTank archetype-swap).
+- Predicted failure: the frame-pair scheme `[frame0, frame1]` means
+  each direction has 2 cells. TankSprite.gd cycles via `dir_set =
+  [2, 3]` for LEFT — so cell 2 = LEFT frame 0, cell 3 = LEFT frame 1.
+  My rotate_grid produces frame 0 only by default; I need to call
+  the builder with frame=0 and frame=1 to populate both cells per
+  direction.
+- Falsifiable claim:
+  - `--check` exits 0 BEFORE save (precondition).
+  - `img/archetype_sprites.png` is exactly 256×48 px.
+  - Cell 0 (PRISM U f0) and cell 1 (PRISM U f1) differ in at least
+    4 pixels (the tread-cleat parity toggle).
+  - Cells 8..15 in each row are fully transparent (alpha 0).
+- Sentence test (n/a — asset pipeline).
+- Substrate touched: NONE. img/archetype_sprites.png is a NEW file,
+  not listed in any Layer 1-4 substrate inventory. PlayerTank.tscn
+  unchanged this iter.
+- Hash-anchor verification plan: n/a (no scripts/ writes; substrate
+  untouched). The hash anchor pertains to procedural baseline output,
+  which is rendered from sprites_0.png — that file is bit-identical.
+
+---
+
 ## iter 144 — BUILD — 2nd animation frame + silhouette/readability checks (Pro Consult 011 step 2/5)
 
 - Date: 2026-05-24

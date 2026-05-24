@@ -17,6 +17,40 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 145 — BUILD — atlas pack (img/archetype_sprites.png) — Pro Consult 011 step 3/5
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Constraints respected: 4 (readability gate runs BEFORE atlas save —
+  bad sprites can't be written to img/).
+- Constraints risked: none — atlas is additive (img/archetype_sprites.png
+  is a NEW file; sprites_0.png untouched; hash anchor unaffected).
+- Hash anchor: 23d6a2ec… n/a (no scripts/ writes; sprites_0.png
+  bit-identical to pre-iter state).
+- Falsifications: none added.
+- Files: tools/gen_archetype_sprites.py (added write_archetype_atlas,
+  DIR_CELL_OFFSETS, --atlas CLI flag, _paste_cell helper); FIXED
+  tread-cleat no-op bug in _add_chassis_and_treads (cleat code was
+  setting cells that already had those colors; redesigned as a SWAP
+  so cleat pixels are visible and animate); img/archetype_sprites.png
+  (NEW asset, 256×48 RGBA); PRE-MORTEMS.md + LEDGER.md.
+- Finding: Atlas integration deliverable shipped. All 4 falsifiable
+  claims now pass: (1) readability check exits 0 before save; (2)
+  PNG is exactly 256×48; (3) PRISM-U f0 vs f1 differ in 24 pixels
+  (after cleat-bug fix; was 0 before); (4) cells 8..15 row 0 fully
+  transparent. The cleat-no-op bug is iter 145's main lesson: the
+  iter-144 "frame param" addition was COSMETICALLY shipped but
+  FUNCTIONALLY a no-op — caught only when the f0-vs-f1 falsifiable
+  claim ran. Lesson: pixel-level falsifiable claims catch bugs that
+  visual-eye review misses (the 2-frame preview looked "subtly
+  different" in iter 144 but was actually identical). Score
+  unchanged. Pro's plan continues: iter 146 wires PlayerTank.gd
+  archetype→texture-swap (loadout+archetype gated; verify flag-off
+  hash); iter 147 META in-game verification + REVIEW-QUEUE #13 close.
+
+---
+
 ## iter 144 — BUILD — 2nd animation frame + silhouette/readability check (Pro Consult 011 step 2/5)
 
 - Date: 2026-05-24

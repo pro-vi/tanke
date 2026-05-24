@@ -144,17 +144,19 @@ def _add_chassis_and_treads(grid: List[List[int]], frame: int = 0) -> None:
     # Left tread
     _fill_rect(grid, 6, 1, 14, 4, B)
     _outline_rect(grid, 6, 1, 14, 4)
-    # Tread cleats: frame 0 = odd rows (7,9,11), frame 1 = even rows (8,10,12)
+    # Tread cleats: frame 0 = odd rows (7,9,11), frame 1 = even rows (8,10,12).
+    # Default at col 1 = O (outline border) and col 2 = B (interior body).
+    # Cleat SWAPS these so a visible 2-pixel marker scrolls across frames.
     cleat_rows = range(7, 13, 2) if frame == 0 else range(8, 13, 2)
     for r in cleat_rows:
-        grid[r][1] = O
-        grid[r][2] = B
+        grid[r][1] = B
+        grid[r][2] = O
     # Right tread (mirror)
     _fill_rect(grid, 6, 12, 14, 15, B)
     _outline_rect(grid, 6, 12, 14, 15)
     for r in cleat_rows:
-        grid[r][14] = O
-        grid[r][13] = B
+        grid[r][14] = B
+        grid[r][13] = O
 
 
 def make_prism_up(frame: int = 0) -> List[List[int]]:
@@ -317,6 +319,68 @@ def write_sprite_preview(out_path: Path, scale: int = 8) -> None:
 
 
 # ============================================================
+# Iter 145 — atlas pack
+# ============================================================
+#
+# Builds img/archetype_sprites.png — a 256x48 PNG (16 hframes x 3
+# vframes) holding PRISM (row 0), MORTAR (row 1), RAM (row 2). Each
+# row uses cells 0..7 only, in the same frame layout TankSprite.gd
+# expects for DEFAULT:
+#   U: dir_set = [0, 1] -> cells 0, 1
+#   L: dir_set = [2, 3] -> cells 2, 3
+#   D: dir_set = [4, 5] -> cells 4, 5
+#   R: dir_set = [6, 7] -> cells 6, 7
+# Cells 8..15 left transparent for future expansion.
+#
+# Additive: existing sprites_0.png is NOT touched, so DEFAULT
+# rendering is bit-identical and the cross-arc hash anchor unaffected.
+# iter 146 will wire PlayerTank.gd to swap textures by archetype.
+
+ARCHETYPE_ATLAS_PATH = REPO / "img" / "archetype_sprites.png"
+ATLAS_HFRAMES = 16
+ATLAS_VFRAMES = 3
+
+# Per TankSprite.gd: each direction occupies 2 contiguous cells
+# (the [primary, secondary] frame pair the cycler alternates).
+DIR_CELL_OFFSETS = {
+    "U": 0,
+    "L": 2,
+    "D": 4,
+    "R": 6,
+}
+
+
+def _paste_cell(atlas, cell_img, col: int, row: int) -> None:
+    """Paste a 16x16 cell at (col, row) in the atlas (no scale)."""
+    atlas.paste(cell_img, (col * CELL, row * CELL), cell_img)
+
+
+def write_archetype_atlas(out_path: Path) -> None:
+    """Build the 256x48 archetype sprite atlas (3 archetypes x 8 cells).
+
+    Runs check_readability() first; raises SystemExit if any check
+    fails so a broken atlas is never written to disk."""
+    from PIL import Image
+    failures = check_readability()
+    if failures:
+        for f in failures:
+            print(f"  - {f}")
+        raise SystemExit("FAIL — readability checks failed; atlas not written")
+
+    atlas = Image.new("RGBA", (ATLAS_HFRAMES * CELL, ATLAS_VFRAMES * CELL), (0, 0, 0, 0))
+    archetypes = ["prism", "mortar", "ram"]
+    dirs = ["U", "L", "D", "R"]
+    for row_idx, arch in enumerate(archetypes):
+        for d in dirs:
+            base_col = DIR_CELL_OFFSETS[d]
+            for frame in (0, 1):
+                grid = rotate_grid(ARCHETYPE_BUILDERS[arch](frame=frame), d)
+                cell_img = render_cell(grid, PALETTES[arch], scale=1)
+                _paste_cell(atlas, cell_img, base_col + frame, row_idx)
+    atlas.save(out_path)
+
+
+# ============================================================
 # Iter 144 — readability / silhouette gate
 # ============================================================
 #
@@ -414,6 +478,8 @@ def main() -> None:
                         help="iter 143/144: write 2-frame procedural sprite preview sheet (3 archetypes x 4 directions x 2 frames)")
     parser.add_argument("--check", action="store_true",
                         help="iter 144: run silhouette/readability assertions; exit nonzero on failure")
+    parser.add_argument("--atlas", action="store_true",
+                        help="iter 145: write img/archetype_sprites.png (256x48 atlas — 3 archetypes x 8 cells); runs readability checks first")
     args = parser.parse_args()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     if args.extract:
@@ -443,6 +509,9 @@ def main() -> None:
                 print(f"  - {f}")
             raise SystemExit(1)
         print("OK — 12 archetype×direction combinations pass silhouette/readability checks; motif-region pairwise distinctness ≥ 10 cells")
+    if args.atlas:
+        write_archetype_atlas(ARCHETYPE_ATLAS_PATH)
+        print(f"wrote {ARCHETYPE_ATLAS_PATH} (256x48; 3 archetypes x 8 cells; cells 8..15 transparent)")
 
 
 if __name__ == "__main__":
