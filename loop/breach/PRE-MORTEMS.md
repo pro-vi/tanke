@@ -24,6 +24,45 @@ Format:
 
 ---
 
+## iter 151 — META — REVIEW-QUEUE hygiene sweep (loop-internal items only)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 (META — no code changes).
+- CONSULT constraints risked: none. User-authority items (#14 ★
+  PLAYTEST REQUEST, #15 design-direction question) explicitly
+  PRESERVED — only loop-authored informational/internal items get
+  closed.
+- Background: STATE.md review_queue_open lists 12 items; 9 are
+  loop-authored historical artifacts (Round-1-to-Round-10 findings
+  + 5 "playtest verdict + Round N launch" informational logs) that
+  haven't been formally closed. Reading them gives "12 open items"
+  but only 2 actually need user attention. Signal-to-noise is the
+  real cost.
+- Plan:
+  (a) Add "## Sweep close iter 151" section at the top of
+      REVIEW-QUEUE.md listing each closed item with a 1-line
+      supersession reason.
+  (b) Update STATE.md review_queue_open list to [#14 playtest gate,
+      #15 design question] only.
+  (c) Do NOT mutate individual item bodies (preserves audit trail).
+- Predicted failure: I close an item that actually contains an
+  unresolved question the user hasn't seen. Mitigation: only close
+  items tagged "(informational)" or "(loop-internal)" in their
+  header; ★ PLAYTEST REQUEST and "(design-direction question)"
+  stay open.
+- Falsifiable claim:
+  - STATE.md review_queue_open reduces from 12 items to 2 items.
+  - REVIEW-QUEUE.md gains a "Sweep close iter 151" header section.
+  - No individual item body is mutated (git diff shows only the
+    new sweep section + a status-list update).
+- Sentence test (n/a).
+- Substrate touched: none (REVIEW-QUEUE, STATE, LEDGER are loop
+  docs).
+- Hash-anchor verification plan: n/a.
+
+---
+
 ## iter 149 — BUILD-QUALITY — iter-148 sub-75 nits (N1 tautology + N2 chain coverage)
 
 - Date: 2026-05-24

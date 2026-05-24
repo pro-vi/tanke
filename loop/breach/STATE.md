@@ -2,7 +2,7 @@
 
 ```yaml
 phase: running
-iter: 149
+iter: 151
 hash_anchor_at_iter_146: 23d6a2ec3bf2821f  # bit-identical through 70 substrate writes — PlayerTank archetype sprite swap is gated on loadout != null + archetype != DEFAULT; procedural baseline (loadout=null) keeps sprites_0.png + frame_base=0; TankSprite.gd frame_base field defaults to 0 (bit-identical at default)
 hash_anchor_at_iter_147: 23d6a2ec3bf2821f  # re-verified bit-identical (META iter, no code edits)
 substrate_writes_iter_146: 70
@@ -46,7 +46,7 @@ round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 round9_blueprint: loop/breach/iter-062-round9-architect.md
 new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike,double-kill,archetype-select-pause,xp-reload-persistence,switch-archetype-validation,pick-archetype-and-mortar-guard,run-recap-archetype-contract,p2-batch1,p2-batch2,p2-batch3,depot-lifetime-pick,steel-salvage-threshold,band-banner-stacking,fire-while-swap,level-up-ceilings,ammo-pickup-no-waste,toast-stagger,route-strip-max-cleared,run-recap-verdict-sentence,run-recap-killer,run-recap-resource-sentence,scout-telegraph,rear-guard,run-recap-route-diff,run-recap-regret-quote} + check-silhouette-gate (64 in test-breach aggregate)
-review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch, #13 archetype-sprite integration path (decision-needed), #14 ★ PLAYTEST REQUEST Round 9 complete (playtest gate), #15 archetypes-as-identities vs archetypes-as-weapons (design-direction question), #16 pressure matrix + distinctness audit (Round 10 internal)]  # #3, #7, #9, #11 CLOSED — playtests delivered
+review_queue_open: [#14 ★ PLAYTEST REQUEST (playtest 5 gate; Pro Consult 011 visual layer now included), #15 archetypes-as-identities vs archetypes-as-weapons (design-direction question)]  # iter 151 sweep close — #1, #2, #4, #5, #6, #8, #10, #12, #16 closed as loop-internal/informational artifacts long-superseded. #3, #7, #9, #11 CLOSED earlier (playtests delivered). #13 CLOSED iter 147 (Pro Consult 011 path d shipped).
 ```
 
 ---

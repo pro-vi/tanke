@@ -15,6 +15,55 @@ Format per item:
 
 ---
 
+## Sweep close iter 151 (2026-05-24) — loop-internal items historical
+
+Per the iter-128 saturation posture's hardening-over-shipping value
+discipline: closing 9 loop-authored informational/internal items
+that have been long-superseded by later rounds. The closures DO NOT
+mutate the original entries (audit trail preserved); items are simply
+considered historical for review-queue tracking purposes. The two
+items requiring user attention — #14 ★ PLAYTEST REQUEST + #15 design
+direction — remain OPEN.
+
+  - #1 Breach scaffolding (round 1) → CLOSED · scaffolding shipped;
+    substrate freeze in effect; Rounds 2-19 built on it.
+  - #2 Round 2 atomic verb → CLOSED · "spend a shell to alter a route"
+    fully realized via Loadout.gd + Bullet.gd shell-class economy
+    (rounds 2-8) + breach economy is now the arc identity.
+  - #4 Round 3 + structural ceiling → CLOSED · the 50-point ceiling
+    was extended to 65 (Round 5 +C11/C12/C13) then 70 (Round 8 +C14)
+    then 75 (Round 9 +C15); current score 50/75 acknowledges the
+    new structural ceiling (iter 119).
+  - #5 Playtest verdict + Round 5 launch → CLOSED · Round 5 ran
+    iters 33-37 with the override (APCR + rogue-lite extension);
+    arc-4 amendments recorded in STATE.md.
+  - #6 Round 5 close: shell legibility → CLOSED · shell-class
+    legibility verified via test_breach_shells + test_breach_armor;
+    Round 6 (iter 38-42) hardened it.
+  - #8 Playtest verdict + Round 7 launch → CLOSED · Round 7 ran
+    iters 47-53; APCR steel-penetration redesigned per playtest
+    direction (recorded in STATE arc-4 amendments).
+  - #10 Playtest verdict + Round 8 launch → CLOSED · Round 8 ran
+    iters 55-60 with XP level-up + roguelite overrides; arc-4
+    amendment recorded.
+  - #12 Playtest verdict + Round 9 launch → CLOSED · Round 9 ran
+    iters 62-71 — tank archetype program shipped (PRISM/MORTAR/RAM);
+    arc-4 amendment recorded. Visuals deferred to Pro Consult 011
+    plan (iters 142-149).
+  - #16 Pressure matrix + distinctness audit (Round 10 internal) →
+    CLOSED · matrix shipped iter 76 (PRESSURES.md); distinctness
+    audit shipped iter 74-75 (test_breach_distinctness_audit);
+    Phase 1+2 of Round 10 documented in iter 79 META.
+
+Items remaining OPEN (require user signal):
+  - #14 ★ PLAYTEST REQUEST — Round 9 + 10 + code-review fix sprint +
+    Pro Consult 011 visual layer ALL complete and ready for playtest 5.
+  - #15 Archetypes-as-identities vs archetypes-as-weapons — design
+    question Pro Consult 008 surfaced; needs user direction or
+    playtest evidence to settle.
+
+---
+
 #1 — Breach scaffolding (round 1) — iters 2-5 — SHA 9e0b088 — open
   Finding: Four-piece structural scaffolding for breach economy shipped:
     (a) ProceduralLevel.gd default-on `breach_mode_enabled` flag (iter 2);

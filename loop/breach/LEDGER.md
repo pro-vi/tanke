@@ -17,6 +17,36 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 151 — META — REVIEW-QUEUE hygiene sweep (loop-internal items closed)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Constraints respected: all 7 (META — no code).
+- Constraints risked: none.
+- Hash anchor: 23d6a2ec3bf2821f… n/a (no code edits).
+- Falsifications: none added.
+- Files: loop/breach/REVIEW-QUEUE.md (new "Sweep close iter 151"
+  section listing 9 closures with supersession rationale; original
+  entries preserved for audit trail); loop/breach/STATE.md (
+  review_queue_open list reduced from 12 items to 2: #14 + #15);
+  PRE-MORTEMS.md + LEDGER.md.
+- Finding: Closed 9 long-superseded loop-internal items (#1, #2,
+  #4, #5, #6, #8, #10, #12, #16) that were inflating the open-items
+  count without representing actual user attention surfaces. Net
+  effect: review_queue_open went 12 → 2; the remaining 2 are the
+  ones that genuinely require user signal (#14 playtest gate +
+  #15 design question). Signal-to-noise improvement is the value
+  delivered. Audit trail preserved — original entries untouched;
+  only added a summary section + STATE list reduction. Score
+  unchanged (META). The iter-128 saturation posture's
+  "hardening-over-shipping" pattern continues — 2 of 2 productive
+  META iters since plan-close (148 review + 151 queue sweep)
+  delivered audit/hygiene value at no substrate cost. Loop
+  continues per PROMPT.
+
+---
+
 ## iter 150 — STATUS-CHECK — no change · hash ok · tests green · awaiting user signal
 
 - Date: 2026-05-24 14:37 PDT
