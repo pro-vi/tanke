@@ -17,6 +17,48 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 127 — DIAGNOSE — Audio cues surface assessment ("no surface without user direction")
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0 —
+  DIAGNOSE iter)
+- Constraints respected: 6
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… n/a
+- Falsifications: none added
+- Files: loop/breach/iter-127-audio-diagnose.md (NEW — 6-
+  candidate walk: swap-reject / HE-blast / shell-class
+  timbres / low-HP heartbeat / band-sting / depot-chime;
+  each evaluated against constraint-6 surface, asset-gen
+  gating (audio gen NOT sanctioned), substrate impact, and
+  rubric-lift potential; honest conclusion "NO audio surface
+  worth building without user direction"; surfaces the
+  second-consecutive-empty-DIAGNOSE finding as evidence the
+  loop has reached honest saturation), loop/breach/PRE-MORTEMS.md.
+- Finding: The audio DIAGNOSE concludes that all 6 candidates
+  fail the cost-benefit test absent user direction. Three
+  reasons: (1) asset-gen for audio is NOT sanctioned by
+  PROMPT (Round-9 amendment is image-only); (2) the visual
+  layer already satisfies constraint-6 across every candidate
+  (5-layer death-overlay diagnosis + shell-class triple-
+  visible + visual band-banner + iter-102 panel-flash);
+  (3) rubric movement would be zero per the structural-
+  ceiling reality. **This is the second consecutive
+  substantive DIAGNOSE to conclude "no scope worth building
+  without user direction"** — iter-118 4-option walk reached
+  the same conclusion via different reasoning. Combined with
+  iter-106 backlog exhaustion + iter-117 structural-ceiling
+  + iter-120 50/75 milestone + iter-124 backlog-complete,
+  the loop is at the honest saturation point. Per
+  ScheduleWakeup cache-window discipline, iter 128+ should
+  shift to ≥1500s wakeups + META-only scope (status checks,
+  REVIEW-QUEUE maintenance) until user direction arrives.
+  Iter 128 META Round 19 close-out + cadence shift +
+  PushNotification surfacing the state.
+
+---
+
 ## iter 126 — META — Round 18 close-out (documentation-pass round)
 
 - Date: 2026-05-24

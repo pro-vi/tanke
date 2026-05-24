@@ -24,6 +24,38 @@ Format:
 
 ---
 
+## iter 127 — DIAGNOSE — Audio cues surface assessment
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (the DIAGNOSE evaluates
+  each audio candidate against constraint-6 tie-in — the
+  honest answer is "the visual layer already does the work").
+- CONSULT constraints risked: none (DIAGNOSE iter, no code).
+- Action: walk 6 audio-cue candidates (swap-reject, HE-blast,
+  shell-class timbres, low-HP heartbeat, band-sting, depot-
+  chime); evaluate each on (1) constraint-6 surface, (2)
+  implementation cost including audio-asset-gen gating, (3)
+  substrate impact, (4) honest forward-value-without-user-
+  direction.
+- Predicted finding: NO audio surface worth building without
+  user direction. Asset-gen for audio is NOT sanctioned by
+  PROMPT (Round-9 amendment is image-only); the visual layer
+  already satisfies constraint-6 across all candidates; the
+  rubric movement would be zero (structural ceiling reached).
+- Falsifiable claim: iter-127 doc concludes "no audio surface
+  without user direction" with citation of: (a) PROMPT asset-
+  gen sanction limits, (b) visual-layer already-covers-the-
+  surface evidence per iter-115 audit, (c) zero rubric lift
+  per per-criterion ceiling analysis.
+- Substrate touched: none (research iter).
+- Hash-anchor verification: not required.
+- Next: iter 128 META Round 19 close-out + honest cadence
+  shift to ≥1500s wakeups per ScheduleWakeup cache-window
+  discipline.
+
+---
+
 ## iter 126 — META — Round 18 close-out (documentation-pass round)
 
 - Date: 2026-05-24
