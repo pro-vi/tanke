@@ -67,6 +67,13 @@ var _player_loadout: LoadoutT = null
 # SWITCH_TO_* upgrades to call switch_archetype on the player. Duck-typed.
 var _player: Node = null
 var _picked: bool = false
+# arc-4 iter 100 (P0-A fix from code-review-iter-100): lifetime
+# pick latch. Without this, re-entering a depot resets _picked
+# (in _on_body_entered) and allows the same depot's 3 offers to be
+# picked again — exploit lets player unboundedly pick
+# HE_REFILL_2 / HE_MAX_EXPAND_2 / FULL_RESUPPLY on re-entry.
+# Set once in apply_choice; never cleared.
+var _lifetime_picked: bool = false
 var _rolled_kinds: Array[int] = []  # arc-4 iter 40: drawn offers (lazy)
 
 
@@ -81,7 +88,11 @@ func _on_body_entered(body: Node) -> void:
 	if not _is_player(body):
 		return
 	get_tree().paused = true
-	_picked = false
+	# arc-4 iter 100 (P0-A fix): only reset _picked if this depot
+	# hasn't been picked in this run. Re-entering a picked depot
+	# stays in "PICKED" state — no second pick possible.
+	if not _lifetime_picked:
+		_picked = false
 	# Capture loadout if the body has one. Duck-typed.
 	if body.has_method("get") and "loadout" in body:
 		_player_loadout = body.loadout
@@ -315,6 +326,9 @@ func apply_choice(idx: int) -> void:
 	var kind: int = _choice_kind(idx)
 	apply_upgrade(kind, _player_loadout)
 	_picked = true
+	# arc-4 iter 100 (P0-A fix): set the lifetime latch so re-entry
+	# can't reset _picked + offer the same 3 picks again.
+	_lifetime_picked = true
 	# iter 29: pick locked — clear the panel so the player reads "done"
 	# and moves on (depot dwell stays short).
 	_hide_panel()

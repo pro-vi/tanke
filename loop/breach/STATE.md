@@ -2,18 +2,18 @@
 
 ```yaml
 phase: running
-iter: 99
+iter: 100
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_99: 23d6a2ec3bf2821f  # bit-identical through 54 substrate writes
+hash_anchor_at_iter_100: 23d6a2ec3bf2821f  # bit-identical through 54 substrate writes (Depot.gd is arc-4-owned)
 substrate_writes_this_arc: 54  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×35 + Level.gd + Spawner.gd ×4 + Enemy.gd ×2
-current_round: 11-CLOSED on code-review queue; sprint retrospective shipped iter 99 (CONSULT 010); awaiting playtest 5 or user direction
-current_round_phase: BETWEEN-PHASES — fix sprint complete; substrate is playtest-5-ready; Phase 2 candidates B/C/D still gated on playtest 5
+current_round: 11-open — code-review-iter-100 surfaced 11 findings (1 P0 + 6 P1 + 4 P2); P0-A fixed iter 100; 10 remain
+current_round_phase: BUILD — Round 11 Phase 3 fix queue from code-review-iter-100.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30, 88]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER); 88 = state-hygiene fix per iter-87 audit
-falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved, F005-open, F006-open]  # F006 (iter 90): iter-87 single-pass audit missed 18 real bugs; /code-review delegation at every round close is the discipline fix
+falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved, F005-open, F006-open, F007-open]  # F007 (iter 100): F006's /code-review discipline should retroactively cover prior-round substrate; Round 5-8 sat with 11 latent findings (including a 60-iter-latent P0 depot exploit) until iter-100 review
 reachability_status: all 5 bands verified — 12/12-seed sweep (100%, floor ≥80%) — refreshed iter 61 post-Round-8
 audit_candidates: []
 last_audit: iter 26
@@ -21,7 +21,7 @@ last_consult: iter 79  # CONSULT 009 — written self-pre-mortem, Round 10 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 100 — IDLE-HEARTBEAT awaiting playtest 5 or user direction. Sprint retrospective shipped iter 99 (3 META artifacts). Substrate is playtest-5-ready. Per CONSULT 010's honest framing: "substrate-hardening doesn't move cognitive anchors. Score 47/75 unchanged; playtest 5 remains the only signal that can shift the score." Idle 1800s per iter-54/61/72 reconciliation. If user playtests or directs explicitly within the window: respond to that signal. If silent: iter 101 extends to 3600s; iter 102 pauses cleanly per loop-skill step 6. No substrate work.
+next_action: iter 101 — BUILD — code-review-iter-100 fix sprint continues. Paired fixes: P1-A (APCR _steel_drilled == → >= + paid-once latch in Bullet.gd) + P1-B (PlayerTank shell-codex dismiss → add return so same-frame doesn't leak to _fire). Both small (≤5 lines each). Add regression harness test_breach_steel_salvage_threshold + extend test_breach_codex if it exists or add new. Substrate write #36 on PlayerTank.gd (P1-B). Hash-anchor verify; test-all + test-breach green. Then iter 102 = P1-C BandBanner cleanup + P1-D fire-while-swap UX cue paired. iter 103 = P1-E + P1-F max ceilings + P2-A AmmoPickup re-roll. iter 104+ = remaining P2s.
 score: 47/75 absolute · 47/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4 (iter 76 lifts C5 2→3 via PRESSURES.md canonical-answer doc)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -30,7 +30,7 @@ round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 round9_blueprint: loop/breach/iter-062-round9-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike,double-kill,archetype-select-pause,xp-reload-persistence,switch-archetype-validation,pick-archetype-and-mortar-guard,run-recap-archetype-contract,p2-batch1,p2-batch2,p2-batch3} + check-silhouette-gate (49 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike,double-kill,archetype-select-pause,xp-reload-persistence,switch-archetype-validation,pick-archetype-and-mortar-guard,run-recap-archetype-contract,p2-batch1,p2-batch2,p2-batch3,depot-lifetime-pick} + check-silhouette-gate (50 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch, #13 archetype-sprite integration path (decision-needed), #14 ★ PLAYTEST REQUEST Round 9 complete (playtest gate), #15 archetypes-as-identities vs archetypes-as-weapons (design-direction question), #16 pressure matrix + distinctness audit (Round 10 internal)]  # #3, #7, #9, #11 CLOSED — playtests delivered
 ```
 
@@ -140,6 +140,20 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-24 — **iter 100 (META + BUILD).** /code-review on
+  Round 5-8 substrate (fresh scope). 3 personas dispatched
+  (correctness + adversarial + invariance) in parallel against
+  ~560 LoC across 6 files. After merge pipeline: **11 anchored
+  findings (1 P0 + 6 P1 + 4 P2)**, full report in
+  code-review-iter-100.md. **F007 codified**: F006's
+  /code-review discipline should retroactively cover prior-round
+  substrate; Round 5-8 sat with 11 latent findings (P0 depot
+  exploit ~60 iters latent). **P0-A fixed inline** (Depot
+  re-entry → `_lifetime_picked` latch; without it, picking
+  HE_MAX_EXPAND_2 / FULL_RESUPPLY twice = unbounded growth /
+  free resupply). New harness test_breach_depot_lifetime_pick
+  with 5 assertions, all pass. Hash preserved; test-all 5/5;
+  test-breach 49 → 50. Δ 0. 47/75.
 - 2026-05-24 — **iter 99 (META).** Sprint retrospective for the
   iters 89-98 code-review fix work. 3 artifacts: (1) code-review-
   iter-090.md gets a status table showing 17 of 18 anchored
@@ -502,22 +516,30 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 100 — IDLE-HEARTBEAT awaiting playtest 5 or user direction.**
+**Iter 101 — BUILD — code-review-iter-100 fix sprint batch 1.**
 
-The code-review-iter-090 fix sprint completed iter 98 + CONSULT
-010 retrospective shipped iter 99. The substrate is playtest-5-
-ready: 17 of 18 anchored findings fixed + 9 new regression
-harnesses + hash anchor `23d6a2ec3bf2821f` preserved through 54
-substrate writes.
+Read `loop/breach/code-review-iter-100.md` "P1-A" and "P1-B"
+sections.
 
-Per CONSULT 010's honest framing: substrate-hardening doesn't
-move cognitive anchors. Score 47/75 is unchanged despite the
-sprint; playtest 5 remains the only signal that can shift it.
+Paired fixes:
+- **P1-A** (Bullet.gd `_on_body_entered` APCR branch): change
+  `if _steel_drilled == STEEL_SALVAGE_THRESHOLD` to `if
+  _steel_drilled >= THRESHOLD and not _salvage_paid: _salvage_paid =
+  true; _try_steel_salvage()`. Add `var _salvage_paid: bool = false`.
+  Also move `_steel_drilled` increment INSIDE the
+  `body.has_method("breach")` guard so inert steel doesn't tick.
+- **P1-B** (PlayerTank.gd `_physics_process` codex dismiss):
+  after `_dismiss_codex()` call, add `return` so the same frame
+  doesn't continue to `_fire()` input processing.
 
-Idle heartbeat 1800s per the iter-54/61/72 reconciliation. If
-user playtests or directs within the window: respond to the
-signal. If silent: iter 101 extends to 3600s; iter 102 pauses
-cleanly per loop-skill step 6.
+Regression harness `loop/breach/test_breach_steel_salvage_threshold.gd`
+verifies P1-A (≥-threshold + latch behavior); extend test_breach_codex
+OR add a new check for P1-B (verify `_fire` not invoked on dismiss
+frame).
+
+Substrate write #36 on PlayerTank.gd (P1-B). Bullet.gd is arc-4
+extended (substrate, sanctioned). Hash-anchor verify; test-all +
+test-breach green.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.

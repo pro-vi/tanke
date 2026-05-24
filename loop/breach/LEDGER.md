@@ -17,6 +17,59 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 100 — META + BUILD — /code-review on Round 5-8 substrate + P0-A inline fix
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0 — discovery + fix; no rubric lift).
+- Constraints respected: 6 (sharper death recap from depot
+  exploit closure — players can no longer game the economy);
+  per-finding review documented.
+- Constraints risked: H5 — mitigated by the user's iter-89
+  explicit directive ("u havent done enough to deserve a
+  pause; delegate /code-review"). Round 5-8 is a fresh
+  un-reviewed scope; the call is non-speculative per F007.
+- 3 personas (correctness + adversarial + invariance)
+  dispatched in parallel on Round 5-8 substrate diff
+  (`d9b33b4^..ae53f12`, ~560 LoC across 6 files). After
+  fingerprint dedup + cross-reviewer promotion + 75-anchor
+  gate: **11 anchored findings** (1 P0 + 6 P1 + 4 P2). Full
+  report `loop/breach/code-review-iter-100.md`.
+- **F007 codified**: F006's discipline (/code-review at round
+  close) should retroactively cover all prior-round substrate,
+  not just future rounds. Round 5-8 had never received persona
+  review — 11 findings sat latent for 50+ iters.
+- **P0-A FIXED inline (iter 100)**: Depot re-entry exploit.
+  Added `_lifetime_picked: bool` field set once in apply_choice,
+  never cleared. `_on_body_entered` only resets `_picked` if
+  `_lifetime_picked` is false. Without this, picking a depot,
+  exiting, and re-entering allowed picking the SAME offer
+  again — HE_MAX_EXPAND_2 → unbounded max_he_reserve;
+  FULL_RESUPPLY → free on-demand resupply; HE_REFILL_2 → +4 HE
+  per cycle. **Live in codebase since iter 38 (Round 6c) ≈ 60
+  iters latent.**
+- Regression harness test_breach_depot_lifetime_pick.gd with 5
+  assertions, all pass: first entry _picked=false; apply_choice
+  latches both _picked AND _lifetime_picked; re-entry _picked
+  STAYS true; 2nd apply_choice no-ops (loadout untouched);
+  apply_choice(2) on picked depot no-ops.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (Depot.gd is
+  arc-4-owned, not substrate; no substrate write this iter
+  despite the deep fix). test-all 5/5; test-breach 49 → 50.
+- Falsifications: F007 added.
+- Substrate writes this arc: 54 → 54 (Depot.gd arc-4-owned).
+- Files: scripts/Depot.gd (P0-A fix, 3 inserts),
+  loop/breach/code-review-iter-100.md (NEW),
+  loop/breach/test_breach_depot_lifetime_pick.gd (NEW),
+  Makefile, loop/breach/FALSIFICATIONS.md (F007 added),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **/code-review on Round 5-8 surfaced 11 anchored
+  findings including a 60-iter-latent P0 depot exploit. F007
+  codifies the retroactive-review lesson. P0-A fixed inline.
+  10 findings (6 P1 + 4 P2) queued for iters 101-104+ per the
+  iter-96→98 paired-fix pattern.**
+
 ## iter 099 — META — code-review-iter-090 status doc + CONSULT 010 sprint retrospective
 
 - Date: 2026-05-24

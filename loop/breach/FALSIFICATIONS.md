@@ -17,6 +17,45 @@ Format:
 
 ---
 
+## F007 — Round 5-8 substrate had a critical depot re-entry exploit nobody noticed for 50+ iters — iter 100
+
+- Predicted (implicit, by omission): Round 5-8 substrate (iters 33-61)
+  shipped end-to-end Round 6 (depots + rule-changers + meta) +
+  Round 7 (shell-economy retune) + Round 8 (XP/levels + ammo
+  drops). After the iter-90 code-review delegation on Round 9-11,
+  it was assumed the EARLIER substrate was "less broken" because
+  it had been around longer + had its own SWEEP iters.
+- Observed (iter 100 /code-review on Round 5-8): 1 P0 + 6 P1 + 4 P2
+  anchored findings. **The P0 is a CRITICAL exploit: re-entering
+  a randomized depot allows the player to pick the same offer
+  again because `_picked` resets on `_on_body_entered` but
+  `_rolled_kinds` is sticky.** Picking HE_MAX_EXPAND_2 twice
+  unboundedly grows max_he_reserve; FULL_RESUPPLY twice = free
+  on-demand resupply; HE_REFILL_2 twice = +4 HE. Has been in the
+  codebase since iter 38 (Round 6c).
+- Root cause: instrumentation gap. The iter-87 SWEEP audit
+  reviewed ONLY Round 9-11; iter-90 /code-review reviewed ONLY
+  Round 9-11. Round 5-8 substrate had never received a persona
+  review pipeline. F006 ("delegate /code-review at every round
+  close") was forward-looking from iter 89; it didn't trigger a
+  retroactive sweep on earlier rounds.
+- Lesson: **F006's "/code-review at every round close" should be
+  retroactively applied to ALL prior-round substrate at least
+  once, not just future rounds.** The iter-100 review surfaced
+  11 anchored findings across 6 files — comparable scale to
+  iter-90 (which surfaced 18 across 8). Older substrate is NOT
+  safer; it's just had more time to accumulate latent bugs.
+- Codified where: this file (F007); loop/breach/code-review-iter-100.md
+  (full report); LEDGER iter 100; new harness
+  test_breach_depot_lifetime_pick.gd (regression for P0-A
+  specifically).
+- Fixed in iter 100: P0-A (Depot lifetime-pick latch). Remaining:
+  6 P1 + 4 P2 queued for iters 101-104+ per the code-review fix
+  queue. The same paired-fix batching pattern from iter 96-98
+  applies.
+
+---
+
 ## F006 — iter-87 substrate audit missed 18 real bugs surfaced by /code-review delegation — iter 89-90
 
 - Predicted (iter-87 LEDGER): "Round 9-10-11 substrate is

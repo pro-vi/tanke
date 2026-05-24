@@ -24,6 +24,32 @@ Format:
 
 ---
 
+## iter 100 — META — /code-review on Round 5-8 substrate (fresh scope)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (death recap will be sharper
+  if Round 5-8 bugs are found + fixed — shell economy + depots +
+  XP/levels all feed recap accuracy).
+- CONSULT constraints risked: H5 — keep dispatching /code-review
+  on scopes that have NOT been reviewed; iter-87 self-audit proved
+  insufficient. Round 5-8 substrate (iters 33-61) predates the
+  iter-90 discipline update + iter-89 user feedback. Fair target.
+- Predicted failure: scope diff is ~560 LoC, comparable to iter-
+  90's ~800 LoC. Risk: 3-persona dispatch (correctness +
+  adversarial + invariance) returns fewer findings than the
+  5-persona+codex pipeline at iter 90 (which returned 18). If
+  fewer than 5 anchored findings emerge, the leaner scope was
+  correct; if >10, I'm undersized.
+- Falsifiable claim: 3 personas in parallel return ≥1 anchored
+  P0/P1 finding within ~5 min wall-clock. If 0 anchored P0/P1,
+  Round 5-8 substrate is either correctness-clean OR the leaner
+  pipeline missed real bugs.
+- Substrate touched: none in this iter (META dispatch + capture).
+- Hash-anchor verification plan: trivial (no edits).
+
+---
+
 ## iter 099 — META — code-review-iter-090 status doc + CONSULT 010 sprint retrospective
 
 - Date: 2026-05-24
