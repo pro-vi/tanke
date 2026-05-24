@@ -180,6 +180,35 @@ func verdict_sentence(canonical_answer: String = "") -> String:
 #     the parenthetical canonical aside)
 #
 # Returns "" when no dry-on-X clause applies.
+# arc-4 iter 121 (Round 16 BUILD-QUALITY, Gap 4 from iter-106
+# diagnosis): the route-diff clause. Given the run's FULL band
+# route (PlayerTank._route_bands names) and the band_visit_log,
+# return a one-line summary naming both the visited path AND
+# the path-not-taken. Strongest constraint-6 form for ROUTE
+# attribution — "you went here, skipped here."
+#
+# Returns:
+#   - "Visited: A > B; skipped: C, D."  when partial route walked
+#   - "Route: A > B > C (full clear)." when no skips
+#   - "" when either input is empty (degenerate; caller skips)
+func route_diff_clause(full_route_names: Array) -> String:
+	if full_route_names.is_empty() or band_visit_log.is_empty():
+		return ""
+	var visited: Array[String] = []
+	for v in band_visit_log:
+		visited.append(String(v["band"]))
+	var skipped: Array[String] = []
+	for r in full_route_names:
+		var r_str: String = String(r)
+		if not (r_str in visited):
+			skipped.append(r_str)
+	var v_label: String = " > ".join(visited)
+	if skipped.is_empty():
+		return "Route: %s (full clear)." % v_label
+	var s_label: String = ", ".join(skipped)
+	return "Visited: %s; skipped: %s." % [v_label, s_label]
+
+
 func resource_sentence(canonical_answer: String) -> String:
 	var dry: Array[String] = _dry_shells_list()
 	if dry.is_empty():

@@ -1193,11 +1193,24 @@ func _die() -> void:
 		# Per CONSULT 009 — band-shape distinctness is the open
 		# axis; the visible sequence anchors the user's recall.
 		var prompt_text: String = "— playtest prompt —\nwhich moment did you regret?  right archetype?  would switching help?"
+		# arc-4 iter 121 (Round 16 BUILD-QUALITY, Gap 4 from iter-106):
+		# replace the simple "bands visited" line with the route-diff
+		# clause that names BOTH the visited path AND the path-not-
+		# taken — strongest constraint-6 form for ROUTE attribution.
+		# Falls back to the iter-83 simple line if route data missing.
 		if run_recap != null and run_recap.band_visit_log.size() > 0:
-			var seq_names: Array = []
-			for v in run_recap.band_visit_log:
-				seq_names.append(String(v["band"]))
-			prompt_text += "\nbands visited: %s" % " > ".join(seq_names)
+			var route_names: Array = []
+			for b in _route_bands:
+				if "band_name" in b:
+					route_names.append(String(b.band_name))
+			var diff: String = run_recap.route_diff_clause(route_names)
+			if not diff.is_empty():
+				prompt_text += "\n" + diff
+			else:
+				var seq_names: Array = []
+				for v in run_recap.band_visit_log:
+					seq_names.append(String(v["band"]))
+				prompt_text += "\nbands visited: %s" % " > ".join(seq_names)
 		_breach_prompt_label.text = prompt_text
 		_breach_prompt_label.visible = true
 	died.emit()

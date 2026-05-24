@@ -17,6 +17,49 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 121 — BUILD-QUALITY — Gap 4 route-diff (Round 16 default-D scope)
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0 —
+  BUILD-QUALITY iter; the path-not-taken line adds info that
+  feeds C6 anchor 4 but C6 effective is already at ceiling
+  pending playtest cite for absolute)
+- Constraints respected: 6 (the route-diff names ROUTE
+  attribution in the strongest form — visited path + path-
+  not-taken, both visible in the breach-prompt label)
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… verified (PlayerTank substrate write
+  ×45 extends the existing breach-prompt build path which is
+  already loadout-gated)
+- Falsifications: none added
+- Files: scripts/RunRecap.gd (added route_diff_clause helper;
+  arc-4-owned), scripts/PlayerTank.gd (substrate write ×45 —
+  replaces the iter-83 simple "bands visited" line in the
+  breach_prompt_label with the route-diff clause that names
+  both visited AND skipped; falls back to the iter-83 line
+  if route data is missing), loop/breach/test_breach_run_
+  recap_route_diff.gd (NEW — 5 assertions: partial walk,
+  full clear, empty visit-log degenerate, empty full-route
+  degenerate, out-of-order visit preserves visit order in
+  label + skipped names in full-route order), Makefile
+  (+check-breach-run-recap-route-diff; test-breach 62 → 63),
+  loop/breach/PRE-MORTEMS.md.
+- Finding: Round 16 opens with the BUILD-QUALITY default-(D)
+  path per iter-120 close-out — Gap 4 route-diff from the
+  iter-106 recap-legibility-deferred backlog. Closes a
+  documented deferral cleanly: ROUTE attribution joins
+  BUILD/RESOURCE/CANONICAL attribution as a constraint-6-
+  shaped diagnosis the player can read post-death. No rubric
+  movement (C6 effective at ceiling already; route-diff is
+  info-density addition, not new anchor surface) but extends
+  an already-strong surface in a sentence-test-spirit way.
+  Next: iter 122 META Round 16 close-out (since the scope
+  was 1-iter); then iter 123+ continues the BUILD-QUALITY
+  default rotation with another backlog item or QoL surface.
+
+---
+
 ## iter 120 — META — Round 15 close-out (★ 50/75 milestone published)
 
 - Date: 2026-05-24

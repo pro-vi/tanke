@@ -24,6 +24,39 @@ Format:
 
 ---
 
+## iter 121 — BUILD-QUALITY — Gap 4 route-diff (path-not-taken) in RunRecap
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- CONSULT constraints respected: 6 (the path-not-taken line
+  ties the death recap to ROUTE choices the player made +
+  didn't make — strongest constraint-6 form for route
+  attribution).
+- CONSULT constraints risked: none.
+- Action: extend RunRecap.gd with `route_diff_clause(full_
+  route_names)` helper that returns "Visited: A > B; skipped:
+  C, D." or "Route: A > B (full clear)." or "" (degenerate).
+  Wire into PlayerTank.gd's breach_prompt_label build path
+  (the iter-83 "bands visited" line near line 1196) — replace
+  the simple visit-only line with the full diff.
+- Predicted failure: the existing breach_prompt_label is a
+  separate panel from the death-overlay verdict; the user
+  reads both. Risk: the route-diff sentence MIGHT be redundant
+  with the verdict's "killing band" naming. Mitigation: the
+  diff adds info the verdict doesn't have (skipped bands +
+  visit ORDER). Distinct value.
+- Falsifiable claim: with `band_visit_log = [{band:
+  "warmup"}, {band: "bunker"}]` and `full_route_names =
+  ["warmup", "maze", "bunker", "killbox", "endgame"]`,
+  route_diff_clause returns "Visited: warmup > bunker;
+  skipped: maze, killbox, endgame."
+- Substrate touched: scripts/PlayerTank.gd (substrate write
+  ×45 — sanctioned; just extends the breach-prompt build path
+  which is already loadout-gated).
+- Hash-anchor verification plan: post-edit verify.
+
+---
+
 ## iter 120 — META — Round 15 close-out (★ 50/75 milestone published)
 
 - Date: 2026-05-24
