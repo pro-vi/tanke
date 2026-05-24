@@ -180,6 +180,34 @@ func verdict_sentence(canonical_answer: String = "") -> String:
 #     the parenthetical canonical aside)
 #
 # Returns "" when no dry-on-X clause applies.
+# arc-4 iter 123 (Round 17 BUILD-QUALITY, Gap 5 from iter-106
+# diagnosis): auto-generated regret-quote candidate. Surfaces a
+# CANDIDATE QUESTION the player can confirm or deny in the
+# playtest debrief — per iter-106 anti-pattern note: better to
+# generate a question than a statement (avoids putting words in
+# the player's mouth).
+#
+# Question forms (strongest signal first):
+#   - dry-on-X AND X matches canonical → "Could you have held
+#     more X for BAND?" (under-budgeted the right resource)
+#   - dry-on-X AND canonical is Y → "Did your [BUILD_TAG] build
+#     fit BAND?" (wrong build for the pressure)
+#   - else → "" (caller falls back to iter-78 generic prompt)
+func regret_quote_candidate(canonical_answer: String) -> String:
+	if not captured:
+		return ""
+	var dry: Array[String] = _dry_shells_list()
+	if dry.is_empty():
+		return ""
+	var band_up: String = killing_band.to_upper().replace("_", " ") \
+			if not killing_band.is_empty() else "the band"
+	var dry_label: String = ", ".join(dry)
+	var brief: String = _canonical_answer_brief(canonical_answer)
+	if _dry_matches_canonical(brief, dry):
+		return "Could you have held more %s for %s?" % [dry_label, band_up]
+	return "Did your %s build fit %s?" % [build_tag().to_upper(), band_up]
+
+
 # arc-4 iter 121 (Round 16 BUILD-QUALITY, Gap 4 from iter-106
 # diagnosis): the route-diff clause. Given the run's FULL band
 # route (PlayerTank._route_bands names) and the band_visit_log,

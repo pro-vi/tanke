@@ -24,6 +24,46 @@ Format:
 
 ---
 
+## iter 123 — BUILD-QUALITY — Gap 5 regret-quote candidate (last iter-106 backlog)
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- CONSULT constraints respected: 6 (the regret-quote turns the
+  death recap into a hypothesis the player can confirm/deny;
+  strongest constraint-6 form for "tied to resource/build/route").
+- CONSULT constraints risked: none.
+- Action: extend RunRecap.gd with
+  `regret_quote_candidate(canonical_answer) -> String` —
+  auto-generates a CANDIDATE QUESTION based on dry-shell vs
+  canonical match. Per iter-106 §Gap 5 anti-pattern note:
+  better to GENERATE A QUESTION than a STATEMENT.
+- Two question forms:
+  - **Dry matches canonical** → "Could you have held more HE
+    for BUNKER_ZONE?" (asks if you under-budgeted the right
+    resource)
+  - **Dry mismatches canonical** → "Did your X-heavy build fit
+    BUNKER_ZONE?" (asks if you brought the wrong build)
+- Wire into PlayerTank breach_prompt build path — REPLACE the
+  generic playtest prompt question when candidate is non-empty;
+  fall back to the iter-78 generic prompt otherwise.
+- Predicted failure: the build_tag-mismatch sentence ("Did your
+  MIXED BREACHER build fit BUNKER_ZONE?") reads awkwardly when
+  build_tag is "mixed breacher" or "lane sniper" (no specific
+  X mentioned). Mitigation: substitute build_tag's plain words
+  even when generic — "Did your mixed breacher build fit..."
+  reads OK as a question.
+- Falsifiable claim: with dry-on-HE + canonical brief "HE",
+  regret_quote returns "Could you have held more HE for
+  [BAND]?". With dry-on-HE + canonical brief "APCR 1-shots",
+  returns "Did your [BUILD_TAG] build fit [BAND]?". With
+  no dry-shells, returns "".
+- Substrate touched: scripts/PlayerTank.gd (substrate write
+  ×46 — extends existing iter-83 breach-prompt loadout-gated
+  path).
+- Hash-anchor verification plan: post-edit verify.
+
+---
+
 ## iter 122 — META — Round 16 close-out (Gap 4 backlog item closed)
 
 - Date: 2026-05-24

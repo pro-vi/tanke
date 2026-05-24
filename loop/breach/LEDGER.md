@@ -17,6 +17,51 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 123 — BUILD-QUALITY — Gap 5 regret-quote (LAST iter-106 backlog item)
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0 —
+  BUILD-QUALITY iter; the regret-quote adds info-density to
+  the playtest-prompt label but no rubric anchor moves)
+- Constraints respected: 6 (the regret-quote turns the death
+  recap into a CANDIDATE HYPOTHESIS the player can confirm or
+  deny in the playtest debrief — strongest constraint-6 form
+  for "tied to resource/build/route")
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… verified (PlayerTank substrate write
+  ×46 extends existing iter-83 breach-prompt loadout-gated
+  path; no baseline change)
+- Falsifications: none added
+- Files: scripts/RunRecap.gd (added regret_quote_candidate
+  helper; arc-4-owned), scripts/PlayerTank.gd (substrate write
+  ×46 — REPLACES the iter-78 generic playtest prompt with the
+  candidate question when regret_quote returns non-empty;
+  falls back to the generic prompt otherwise), loop/breach/
+  test_breach_run_recap_regret_quote.gd (NEW — 5 assertions:
+  match form / mismatch form / comfortable→empty / not-captured
+  defensive / underscore→space band-label conversion), Makefile
+  (+check-breach-run-recap-regret-quote; test-breach 63 → 64),
+  loop/breach/PRE-MORTEMS.md.
+- Finding: **All 5 iter-106 backlog items now closed.** The
+  recap-legibility-deferred backlog (Gaps 1-5 from the iter-106
+  diagnosis) has been worked through across Rounds 12-17:
+    Gap 1 (verdict_sentence wire) — iter 108
+    Gap 2 (kill-source) — iter 109
+    Gap 3 (resource_sentence) — iter 110
+    Gap 4 (route-diff) — iter 121
+    Gap 5 (regret-quote) — iter 123 ★ THIS ITER
+  The death-overlay diagnosis surface is now 5-layer:
+  verdict + killed-by + resource + route + candidate-question.
+  No more iter-106 backlog. The loop has shipped EVERY
+  high-value structural addition the iter-106 diagnosis
+  identified. Iter 124 META Round 17 close-out + acknowledges
+  this milestone. Iter 125+ will need genuinely new scope
+  (documentation pass, audio research DIAGNOSE, or honest
+  PushNotification to surface the structural exhaustion).
+
+---
+
 ## iter 122 — META — Round 16 close-out (Gap 4 backlog item closed)
 
 - Date: 2026-05-24

@@ -1192,7 +1192,25 @@ func _die() -> void:
 		# the actual run-shape next to the reflection questions.
 		# Per CONSULT 009 — band-shape distinctness is the open
 		# axis; the visible sequence anchors the user's recall.
-		var prompt_text: String = "— playtest prompt —\nwhich moment did you regret?  right archetype?  would switching help?"
+		# arc-4 iter 123 (Round 17 BUILD-QUALITY, Gap 5 from iter-106):
+		# REPLACE the generic playtest prompt with an auto-generated
+		# regret-quote candidate when one is available (dry-on-shell
+		# signal present). Falls back to the iter-78 generic prompt
+		# when no signal. Loadout-gated entire block.
+		var regret: String = ""
+		if run_recap != null:
+			var rb = null
+			if lvl != null and "_current_breach_band" in lvl:
+				rb = lvl._current_breach_band
+			var rc: String = ""
+			if rb != null and "canonical_answer" in rb:
+				rc = String(rb.canonical_answer)
+			regret = run_recap.regret_quote_candidate(rc)
+		var prompt_text: String
+		if not regret.is_empty():
+			prompt_text = "— playtest prompt —\n" + regret
+		else:
+			prompt_text = "— playtest prompt —\nwhich moment did you regret?  right archetype?  would switching help?"
 		# arc-4 iter 121 (Round 16 BUILD-QUALITY, Gap 4 from iter-106):
 		# replace the simple "bands visited" line with the route-diff
 		# clause that names BOTH the visited path AND the path-not-
