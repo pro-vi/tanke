@@ -17,6 +17,32 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 157 — META — ARC-4-checkpoint.md extension (iters 125-156)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Constraints respected: all 7 (META — no code).
+- Constraints risked: none.
+- Hash anchor: 23d6a2ec3bf2821f… n/a (no scripts/ writes).
+- Falsifications: none added.
+- Files: loop/breach/ARC-4-checkpoint.md (TL;DR updated to iter
+  157 baseline; "Forward direction" pointer to extension; new
+  "Round 18-22 extension" section appended covering iters 125-156
+  with score trajectory, substrate log, harness inventory, new
+  assets, consult records, lessons 9-13, forward direction);
+  PRE-MORTEMS.md + LEDGER.md.
+- Finding: Cross-session pickup doc now current through iter 156.
+  32 iters of work (Round 18-22) documented in single-read form
+  per L2 compaction discipline. 5 new lessons added (#9-13):
+  pixel-level falsifiable claims; machine-checkable asset gates;
+  Godot --import discipline for new PNGs; F006 review value even
+  on clean rounds; honest-saturation as stable steady-state.
+  Score unchanged. Now genuinely no known forward-direction
+  surface without user signal.
+
+---
+
 ## iter 156 — CAPABILITY — wire archetype-sprite silhouette gate into test-breach
 
 - Date: 2026-05-24

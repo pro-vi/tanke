@@ -1,26 +1,30 @@
-# Arc-4 Checkpoint (iter 124)
+# Arc-4 Checkpoint (iter 157 — updates iter 124 baseline)
 
 A single-read catch-up doc for the user's return. Covers
-rounds 1-17 with 1-line outcomes, score trajectory, substrate
+rounds 1-22 with 1-line outcomes, score trajectory, substrate
 log, harness inventory, open user-decision items, and loop-
-process findings to carry into arc 5.
+process findings to carry into arc 5. Iters 1-124 are the
+original baseline; iters 125-156 are the extension at the
+bottom (rounds 18-22).
 
 ---
 
-## TL;DR
+## TL;DR (iter 157)
 
 - **Score**: ★ **50/75 absolute · 50/75 effective** (saturated
-  structural ceiling; FEEL anchors playtest-gated)
-- **Iters**: 0 → 124 (17 rounds)
-- **Substrate writes**: 69 (PlayerTank ×46 + Bullet ×9 + Spawner ×5
-  + ProceduralLevel ×5 + Enemy ×4 + Level ×1) — **hash anchor
-  `23d6a2ec3bf2821f` preserved every commit**
-- **Harnesses**: 64 in `make test-breach` (was 0 at iter 0; full
-  list in STATE.new_harness_targets)
-- **Open user-decision items**: REVIEW-QUEUE #13 (asset-gen
-  integration), #14 (★ playtest gate since iter 71), #21 (50/75
-  milestone + 4 forward-direction options), #23 (iter-106
-  backlog complete)
+  structural ceiling; FEEL anchors playtest-gated; unchanged
+  since iter 119 ★ 50/75 MILESTONE)
+- **Iters**: 0 → 156 (22 rounds)
+- **Substrate writes**: 71 (PlayerTank ×47 + TankSprite ×1 + Bullet ×9
+  + Spawner ×5 + ProceduralLevel ×5 + Enemy ×4 + Level ×1) — **hash
+  anchor `23d6a2ec3bf2821f` preserved every commit through iter 156**
+- **Harnesses**: 67 in `make test-breach` (was 64 at iter 124; +
+  iter-146 archetype-sprite + iter-156 silhouette-gate-CI +
+  iter-145-via-make-target)
+- **Open user-decision items**: REVIEW-QUEUE #14 (★ playtest gate;
+  Pro Consult 011 visual layer NOW included), #15 (archetypes-as-
+  identities vs archetypes-as-weapons design question). Other
+  legacy items closed iter 151 (sweep).
 
 ## Round-by-round arc (1-17)
 
@@ -193,16 +197,134 @@ highest-value forward path.
    action, fresh DIAGNOSE on new surface, or cognitive-max
    claims (which the loop has exhausted on C6 + C8).
 
-## Forward direction (iter 125+)
+## Forward direction (iter 125+) — superseded; see iter-157 extension below
 
-The loop runs non-stop per PROMPT. Iter 125 is this checkpoint
-doc; iter 126 META; iter 127+ pivots to:
+---
 
-- (i) Audio cues DIAGNOSE — would open a fresh substantive
-  surface for the loop to explore
-- (ii) Honest cadence shift — longer wakeups + smaller scope
-  acknowledging the structural saturation
-- (iii) Wait for user signal on REVIEW-QUEUE #14 (playtest gate)
+# Round 18-22 extension (iters 125-156, written at iter 157)
 
-The user can pick a direction at any time by responding to
-this doc + REVIEW-QUEUE items above.
+## Round-by-round (18-22)
+
+| Round | Iters | Surface | 1-line outcome |
+|-------|-------|---------|----------------|
+| 18 | 125-126 | this checkpoint doc + META carry | iter-124 checkpoint shipped; iter-126 META |
+| 19 | 127-128 | Audio cues DIAGNOSE (empty) + Round 19 close + ★ HONEST SATURATION | iter-127 DIAGNOSE returned no surface; iter-128 named saturation explicitly; cadence shift advised |
+| 20 | 130-139 | gitignore fix + PRISM playtest fixes (user iter 138-139 feedback) | iter-130 .uid gitignore; iter-138 PRISM water pass-through + thick beam + drain visibility; iter-139 separate beam_hp pool for DPS feel |
+| 21 | 140-149 | Pro Consult 011 visual sprint (user iter-140 directive) | iter-140 user override "i want them to be the actual 8 bit tank i drive" + 240s cron + /second-opinion to GPT Pro same-thread; iter-141 deferred; iter-142 SPIKE Consult 011 + palette extraction; iter-143 procedural masks; iter-144 frame-2 + readability gate; iter-145 atlas pack img/archetype_sprites.png; iter-146 PlayerTank wiring (substrate write #70); iter-147 META plan close + REVIEW-QUEUE #13 close; iter-148 F006 review CLEAN; iter-149 BUILD-QUALITY sub-75 nits |
+| 22 | 150-156 | Honest-saturation idle pattern + pipeline hardening | iter-150/152/153/154/155 STATUS-CHECK (5 idle cron cycles, iter-154 PushNotification); iter-151 REVIEW-QUEUE sweep close (12 → 2 open items); iter-156 CAPABILITY wire silhouette gate into test-breach |
+
+## Score trajectory (iters 125-156)
+
+- Iter 125 entry: 50/75 (locked at iter-119 milestone)
+- Iter 156 close: 50/75 — UNCHANGED through 32 iters
+- C4 anchor 3 HARDENED (machine-checkable silhouette gate now in CI)
+- All other anchors unchanged; cognitive max consumed for C6 + C8;
+  remaining cognitive/playtest anchors stay user-gated
+- 50/75 represents the structural ceiling absent playtest cite or
+  new mechanical scope (Pro Consult 011 added visual layer but
+  C15 anchor 5 is playtest-gated)
+
+## Substrate writes (iters 125-156)
+
+Net +2 writes (69 → 71):
+- iter 138: PlayerTank.gd #47 (PRISM beam fix: water pass-through,
+  thick beam, drain visibility)
+- iter 139: PlayerTank.gd path + Enemy.gd #5 (separate beam_hp
+  pool; take_beam_damage method)
+- iter 145: BrickBlock.gd extended (take_beam_damage; sanctioned
+  per Round-9 extension)
+- iter 146: PlayerTank.gd #70 (archetype → texture swap helper);
+  TankSprite.gd ×1 (additive frame_base field, default-on gating)
+- iter 149: PlayerTank.gd #71 (3-guard tautology removal — bit-
+  identical no-op)
+
+Hash anchor `23d6a2ec3bf2821f` verified bit-identical at iter 138,
+139, 145, 146, 149, 156 — all flag-off codepaths preserved.
+
+## New harnesses (iters 125-156)
+
+- `check-breach-archetype-sprite` (iter 146) — 8 cases covering
+  loadout-null gating, all 4 archetypes, switch chains
+- `check-archetype-sprite-silhouettes` (iter 156) — 12 archetype ×
+  direction silhouette gate; pixel-level falsifiable checks
+
+## New assets (iters 125-156)
+
+- `img/archetype_sprites.png` (iter 145) — 256×48 RGBA atlas;
+  PRISM/MORTAR/RAM × 4 dirs × 2 frames; motif-first procedural
+  per Pro Consult 011 H5; identity beats as SYMBOLS (cyan
+  aperture / olive offset tube / red plow)
+- `tools/gen_archetype_sprites.py` (iter 142-145) — palette
+  extraction + procedural mask generator + readability gate
+- `tools/out/archetype_sprites_preview.png` — 8× scaled preview
+  sheet for eye-readability check
+- `tools/out/archetype_palettes.json` + per-archetype palette
+  swatches — clamped NES-style palettes per archetype
+
+## New consult records
+
+- CONSULT 011 (iter 142) — GPT Pro extended thinking, same-thread
+  continuation of CONSULT 008; recommended H5 motif-first
+  procedural atlas. 5-iter plan executed iters 142-146; closed
+  iter 147 META.
+
+## Lessons added (rounds 18-22)
+
+9. **Pixel-level falsifiable claims catch what visual review
+   misses.** Iter 145 caught a tread-cleat no-op that looked
+   "subtly different" in the 8× preview but was actually
+   identical. Pixel-diff assertion (≥ 4 differing pixels)
+   forced the catch.
+
+10. **Machine-checkable asset gates beat per-iter prose.** Iter
+    144's readability gate caught 2 design defects on first run
+    (RAM over-solid; PRISM↔MORTAR weak distinctness in whole-
+    grid hamming). Both fixed by REDESIGN, not threshold
+    tuning. The gate is now in CI (iter 156).
+
+11. **NEW PNGs need a Godot --import pass before preload()
+    resolves them.** The .import file (not the .png alone)
+    defines the resource loader. Caught at iter 146 first
+    parse-error; godot --import --quit generated the file;
+    preload worked after.
+
+12. **F006 discipline pays off even on clean rounds.** Iter
+    148 delegated /code-review on iter-142-147 substrate
+    returned NO ANCHORED FINDINGS at 75+; surfaced 2 sub-75
+    nits that became iter 149 BUILD-QUALITY value. Without
+    the review, those would have been silent latent debt.
+
+13. **Honest saturation is a stable steady-state, not a bug.**
+    Iters 150-155 ran 6 consecutive STATUS-CHECK iters as the
+    loop genuinely exhausted self-directable surfaces. iter-154
+    PushNotification surfaced this to the user; iter 156 found
+    one more CAPABILITY surface (pipeline polish). No iter
+    above 156 is guaranteed substantive — that needs user
+    signal on #14 or #15.
+
+## Forward direction (iter 157+)
+
+The loop runs non-stop per PROMPT. After iter 156, the honest
+state is:
+
+- **Pro Consult 011 visual layer COMPLETE** — the player will see
+  distinct PRISM/MORTAR/RAM sprites in-game at playtest 5.
+- **All self-directable hygiene closed** — review (iter 148),
+  sub-75 nits (149), queue sweep (151), CAPABILITY polish (156).
+- **Open user-direction surfaces** — REVIEW-QUEUE #14 (playtest
+  gate, now with visual layer) + #15 (identities-vs-weapons design
+  question).
+- **No more known speculative-safe BUILD candidates** — Round-11
+  enemy roster expansion (DENSE SWARM / LONG-LOS sniper / HEAVY
+  ARMOR bastion / TRUE SUPPRESSION suppressor) remains gated on
+  playtest 5 data per F005 (the iter-77-style probe doesn't extend
+  to sustained-DPS hierarchy verification without play data).
+
+The cron `66ab60b5` continues firing at 240s per the user's
+explicit iter-140 directive; loop authority does not extend to
+unilateral CronDelete. The user can pick a direction by:
+  - Writing `playtest` (loop pauses; surfaces REVIEW-QUEUE)
+  - Writing `halt` or `stop` (loop terminates)
+  - Pointing the loop at #14 OR #15 OR a new surface
+  - Running `CronDelete 66ab60b5` to stop the recurring tick
+  - Doing nothing — STATUS-CHECK pattern continues honestly

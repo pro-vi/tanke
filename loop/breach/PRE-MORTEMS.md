@@ -24,6 +24,41 @@ Format:
 
 ---
 
+## iter 157 — META — ARC-4-checkpoint.md extension (iters 125-156)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 (META — no code).
+- CONSULT constraints risked: none.
+- Per L2 compaction discipline: the checkpoint doc was last updated
+  at iter 124. 32 iters have shipped since (rounds 18-22 — checkpoint
+  doc work, Round 19 close, PRISM playtest fixes, Pro Consult 011
+  visual sprint, F006 review-clean, REVIEW-QUEUE sweep, CAPABILITY
+  polish). Cross-session pickup currently requires reading 32
+  LEDGER entries; a checkpoint extension reduces that to 1 read.
+- Plan:
+  (a) Append section at the end of ARC-4-checkpoint.md covering
+      iters 125-156 with the same round-table + score-trajectory
+      + substrate-log + harness-inventory format.
+  (b) Replace the "Forward direction (iter 125+)" section with a
+      "Forward direction (iter 157+)" pointing to current open
+      items (#14 + #15).
+  (c) Update the TL;DR header to reflect: 71 substrate writes (was
+      69), 67 harnesses (was 64), score still 50/75, hash anchor
+      preserved through 156 iters.
+- Predicted failure: doc bloat — the file grows from 208 lines to
+  ~280; this is acceptable for a single-read catch-up doc since
+  the extension is monotonic-append (history preserved).
+- Falsifiable claim:
+  - ARC-4-checkpoint.md gains a "Round 18-22 extension" section.
+  - TL;DR updated with current numbers.
+  - Forward-direction section pointed at iter-157+ realities.
+- Sentence test (n/a).
+- Substrate touched: none (loop doc).
+- Hash-anchor verification plan: n/a.
+
+---
+
 ## iter 156 — CAPABILITY — wire archetype-sprite silhouette gate into test-breach
 
 - Date: 2026-05-24
