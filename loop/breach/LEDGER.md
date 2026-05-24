@@ -17,6 +17,14 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 161 — STATUS-CHECK — 4th post-checkpoint idle iter
+
+- Date: 2026-05-24
+- Hash: 23d6a2ec3bf2821f… (no edits since iter 156)
+- Status: 4 idle iters post-checkpoint; cron continues; awaiting signal.
+
+---
+
 ## iter 160 — STATUS-CHECK — 3rd post-checkpoint idle iter
 
 - Date: 2026-05-24
