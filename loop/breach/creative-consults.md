@@ -20,6 +20,83 @@ Format:
 
 ---
 
+## Consult 010 — iter 99 — written self-pre-mortem — code-review fix sprint retrospective (iters 89-98)
+
+- Date: 2026-05-24
+- Tab status: n/a — written self-pre-mortem.
+- Three permanent questions answered? PARTIAL (held over to playtest 5).
+- Key reframe: regression-harness-per-fix is the right discipline,
+  even at ~30% iter-time overhead. The 9 new harnesses (test-breach
+  40 → 49) are what buys the user confidence to playtest with
+  substrate-correctness as a non-issue.
+- Adopted into: code-review-iter-090.md status table; REVIEW-QUEUE
+  #14 status note; STATE next_action for iter 100.
+
+### Sprint review (iters 90-98): 17 of 18 fixes shipped + 9 harnesses
+
+9 iters; +13 substrate writes (PlayerTank ×27 → ×35 + Enemy
+×1 → ×2 + arc-4-owned files); hash anchor `23d6a2ec3bf2821f`
+preserved throughout; test-all 5/5 throughout.
+
+Fix-per-iter rhythm:
+- 90: P1-1 Enemy double-kill (1-line inline)
+- 91: P0-1 selector pause
+- 92: P0-2 FASTER_RELOAD cache
+- 93: P1-3 + P1-5 paired
+- 94: P1-2 + P1-6 paired
+- 95: P1-4 RunRecap.archetype contract
+- 96: P2-1 + P2-3 + P2-8 paired
+- 97: P2-4 + P2-6 + P2-2 paired
+- 98: P2-7 + P2-9 + P2-5 paired (queue CLOSED)
+
+Paired-fix iters (93/94/96/97/98) shipped 11 of 17 fixes in 5
+iters — 65% of volume in 56% of iter count. Pairing scales.
+
+### Q1 / Q2 — substrate sharper, gameplay unchanged
+
+CONSULT 010 doesn't move the playtest-gated questions. C15
+distinctness, depot pacing, identity-vs-weapons all stay open
+exactly where CONSULT 009 left them.
+
+### Q3 — what's seductive-but-hollow about the fix sprint?
+
+The sharp finding. **17 fixes + 9 harnesses harden the SUBSTRATE
+but the gameplay loop is unchanged.** Score 47/75 didn't move
+during the sprint. The risk: reading "lots of fixes shipped"
+as "the game is in much better shape" when in fact the
+structural game is identical and the playtest question hasn't
+moved. The user has the honest framing in this LEDGER +
+status doc.
+
+Omission that would look stupid in 6 months: assuming substrate
+hardening is sufficient to ship. Without playtest 5, none of
+the identity-protected cognitive anchors land. The sprint was
+necessary, not sufficient.
+
+### Q4 — discipline updates beyond F006
+
+F006 (iter 90) codified "delegate /code-review at every round
+close." CONSULT 010 adds three operational lessons:
+
+1. **Regression-harness-per-fix** — costs ~30% of fix-iter time;
+   buys future-refactor safety. Keep the discipline.
+2. **Paired-fix batching** for small P2s — 3-per-iter when each
+   gets a single regression assertion. Prefer pairing when
+   fixes don't share a surface.
+3. **Substrate-write counter as velocity proxy** — PlayerTank ×8
+   over 9 iters with hash intact = healthy substrate gating
+   discipline at scale.
+
+### Verdict
+
+The sprint did exactly what the user asked. The substrate is
+materially harder. The GAMEPLAY question is unchanged and still
+playtest-5-gated. Honest next step: **actually playtest 5**.
+If the user can't soon, the loop should idle rather than
+fabricate more iters.
+
+---
+
 ## Consult 009 — iter 79 — written self-pre-mortem — Round 10 close
 
 - Date: 2026-05-23

@@ -324,7 +324,16 @@ Format per item:
   Default if no answer: (b) — algorithmic tint+overlay via
     gen_tile.py preserves BC grammar and is the most loop-native path.
 
-#14 — ★ PLAYTEST REQUEST — Round 9 + Round 10 complete — round 9-10 — iter 71+79 — open (playtest gate, UPGRADED iter 79)
+#14 — ★ PLAYTEST REQUEST — Round 9 + Round 10 + code-review fix sprint complete — round 9-11 — iter 71+79+99 — open (playtest gate, UPGRADED iter 99)
+  ⇒ **Sprint-hardening update (iter 99):** since the original
+     iter-71 request, the iter-90 /code-review delegation surfaced
+     18 anchored findings; iters 90-98 fixed 17 of them (2 P0 +
+     6 P1 + 9 P2) + added 9 new regression harnesses (test-breach
+     40 → 49). Substrate is now materially harder. Hash anchor
+     intact; test-all 5/5. See loop/breach/code-review-iter-090.md
+     for the per-finding status table. **Score 47/75 UNCHANGED**
+     — fixes harden substrate but don't lift rubric anchors; the
+     C15/C9/identity-protected anchors all remain playtest-gated.
   ⇒ Read loop/breach/PLAYTEST-5-BRIEF.md for the 5-run brief
      (one normal run per archetype + 1 mid-run switch run).
   ⇒ On-death overlay (breach mode) now shows three diagnostic

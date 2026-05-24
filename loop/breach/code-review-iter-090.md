@@ -255,7 +255,42 @@ After fingerprint-dedup + cross-reviewer agreement promotion at the
 
 ---
 
-## Fix queue (recommended order)
+## Sprint outcome (iter 99 status update — queue CLOSED)
+
+**All 17 anchored findings (2 P0 + 6 P1 + 9 P2) closed across
+iters 90-98** (9 iters). The 18th (P2-10 MORTAR friendly-fire at
+composition-anchor 70) fell below the 75 gate and stays as
+awareness-tier documentation.
+
+| Finding | Status | Iter | Regression harness |
+|---------|--------|------|--------------------|
+| P0-1 selector pause | CLOSED | 91 | check-breach-archetype-select-pause |
+| P0-2 FASTER_RELOAD survives switches | CLOSED | 92 | check-breach-xp-reload-persistence |
+| P1-1 Enemy double-kill idempotency | CLOSED | 90 | check-breach-double-kill |
+| P1-2 _pick_archetype bypass | CLOSED | 94 | check-breach-pick-archetype-and-mortar-guard |
+| P1-3 switch_archetype value validation | CLOSED | 93 | check-breach-switch-archetype-validation |
+| P1-4 RunRecap.archetype contract | CLOSED | 95 | check-breach-run-recap-archetype-contract |
+| P1-5 Depot._player is_instance_valid | CLOSED | 93 | check-breach-switch-archetype-validation |
+| P1-6 MortarShell parent guard | CLOSED | 94 | check-breach-pick-archetype-and-mortar-guard |
+| P2-1 Analyzer "insufficient_data" verdict | CLOSED | 96 | check-breach-p2-batch1 |
+| P2-2 TankArchetype enum pin | CLOSED | 97 | check-breach-meta (extension) |
+| P2-3 MORTAR init GunTimer hygiene | CLOSED | 96 | check-breach-p2-batch1 |
+| P2-4 _stop_beam in _die when PRISM | CLOSED | 97 | check-breach-p2-batch2 |
+| P2-5 HEAT vs breach Heavy doc fix | CLOSED | 98 | check-breach-p2-batch3 |
+| P2-6 Depot filters same-archetype SWITCH_TO_* | CLOSED | 97 | check-breach-p2-batch2 |
+| P2-7 beam burn cooldown universal | CLOSED | 98 | check-breach-p2-batch3 |
+| P2-8 MortarShell t clamp | CLOSED | 96 | check-breach-p2-batch1 |
+| P2-9 MetaProgress archetype_ladder | CLOSED | 98 | check-breach-p2-batch3 |
+| P2-10 MORTAR friendly-fire (below 75 gate) | NOT-IN-QUEUE | — | — |
+
+Total deliverables: **9 new regression harnesses** (test-breach
+40 → 49), **13 substrate writes** (PlayerTank ×27 → ×35; Enemy
+×1 → ×2; configs/breach_default.tres text edit; MetaProgress
++archetype_ladder()). Hash anchor `23d6a2ec3bf2821f` preserved
+throughout. Score 47/75 unchanged — fixes don't lift rubric
+anchors but they harden the substrate for playtest 5.
+
+## Fix queue (original — historical record)
 
 | Order | Finding | File | Effort | Iter |
 |-------|---------|------|--------|------|

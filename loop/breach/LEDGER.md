@@ -17,6 +17,52 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 099 — META — code-review-iter-090 status doc + CONSULT 010 sprint retrospective
+
+- Date: 2026-05-24
+- Tag: [MIXED]
+- Score: **47/75** (Δ 0 — META).
+- Constraints respected: 6 (sprint retrospective is death-
+  attribution-grade), 7 (each fix tied to its game surface).
+- Constraints risked: none.
+- Three META artifacts shipped:
+  - **code-review-iter-090.md status table**: 17 anchored
+    findings closed across iters 90-98; 18th below 75 gate
+    documented. Each entry tagged with iter + harness reference.
+    Sprint outcome: 9 new harnesses (test-breach 40 → 49); 13
+    substrate writes (PlayerTank ×27 → ×35, Enemy ×1 → ×2 + arc-4
+    -owned scripts); hash `23d6a2ec3bf2821f` preserved throughout.
+  - **CONSULT 010** (creative-consults.md): sprint retrospective
+    with 3 NEW operational lessons beyond F006:
+    - Regression-harness-per-fix is right discipline (~30% iter-
+      time overhead; buys future-refactor safety)
+    - Paired-fix batching for small P2s scales (5 paired iters
+      shipped 11/17 fixes — 65% of volume in 56% of iters)
+    - Substrate-write counter is a useful velocity proxy (+8
+      PlayerTank writes in 9 iters with hash intact)
+    Sharp Q3 finding: **substrate-hardening doesn't move
+    cognitive anchors.** Score 47/75 unchanged; playtest 5
+    remains the only signal that can shift the score.
+  - **REVIEW-QUEUE #14 upgrade**: re-headed with the sprint-
+    hardening update. Surfaces "Score 47/75 UNCHANGED — fixes
+    harden substrate but don't lift rubric anchors."
+- Hash anchor: `23d6a2ec3bf2821f` preserved (META + docs only).
+  test-all + test-breach not re-run.
+- Falsifications: none. The PRE-MORTEM falsifiable claim
+  ("CONSULT 010 names ≥1 lesson NOT already in F006") cleared
+  — 3 new lessons (harness-per-fix discipline; paired-fix
+  scaling; substrate-write counter as velocity proxy).
+- Substrate writes this arc: 54 → 54.
+- Files: loop/breach/code-review-iter-090.md (status table),
+  loop/breach/creative-consults.md (CONSULT 010),
+  loop/breach/REVIEW-QUEUE.md (#14 upgrade),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **Sprint retrospective shipped. Honest framing
+  delivered: substrate harder, gameplay unchanged, playtest 5
+  is the gate. Iter 100 = idle heartbeat awaiting playtest or
+  user direction.**
+
 ## iter 098 — BUILD — P2 batch 3 (final): P2-7 + P2-9 + P2-5 — code-review-iter-090 queue CLOSED
 
 - Date: 2026-05-24

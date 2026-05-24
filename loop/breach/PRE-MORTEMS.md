@@ -24,6 +24,33 @@ Format:
 
 ---
 
+## iter 099 — META — code-review-iter-090 status doc + CONSULT 010 sprint retrospective
+
+- Date: 2026-05-24
+- Tag: [MIXED]
+- CONSULT constraints respected: 6 (sprint retrospective is
+  death-attribution-grade — it codifies why the iter-89→98 work
+  matters for future iters), 7 (the retrospective stays
+  verb-and-affordance-grounded — every fix tied to its game
+  surface).
+- CONSULT constraints risked: none — META + docs only.
+- Predicted failure: the retrospective writes itself as a victory
+  lap. Mitigation: explicit "what we should have done earlier"
+  section — F006 already codified the discipline gap; CONSULT
+  010 must NOT just restate it. Find new lesson, or admit there
+  isn't a new one beyond F006.
+- Falsifiable claim: CONSULT 010 names at least one lesson NOT
+  already in F006. Candidates: (a) regression-harness-per-fix is
+  worth the iter overhead — verified via the 9 new harnesses;
+  (b) paired-fix batching for small P2s scales (3-fix iters
+  fit in 240s cadence cleanly); (c) the substrate-write counter
+  is a useful sprint-velocity proxy (+13 PlayerTank writes in
+  9 iters with hash anchor intact across all).
+- Substrate touched: none — META + docs only.
+- Hash-anchor verification plan: trivial (no substrate).
+
+---
+
 ## iter 098 — BUILD — P2 batch 3 (final): P2-7 + P2-9 + P2-5 (beam cooldown universal + archetype ladder + HEAT/Heavy doc)
 
 - Date: 2026-05-24
