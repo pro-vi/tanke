@@ -17,6 +17,18 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 153 — STATUS-CHECK — 4th at-idle iter · hash ok · awaiting user signal
+
+- Date: 2026-05-24 14:49 PDT
+- Hash: 23d6a2ec3bf2821f… verified
+- Tests: make test exit 0
+- Status: 4 consecutive at-idle iters (150-153). Next iter (154)
+  reaches the iter-128 "≥5 status-checks → consider wakeup extension"
+  threshold; cron is user-set at 240s so adjustment is user authority.
+  Open user-signal items: #14 playtest gate, #15 design direction.
+
+---
+
 ## iter 152 — STATUS-CHECK — no change · hash ok · tests green · idle-polling at 240s cron
 
 - Date: 2026-05-24 14:45 PDT
