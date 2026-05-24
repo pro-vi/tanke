@@ -17,6 +17,10 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 175 — STATUS-CHECK — 18th post-checkpoint idle iter · hash ok · awaiting signal
+
+---
+
 ## iter 174 — STATUS-CHECK — 17th post-checkpoint idle iter · hash ok · awaiting signal
 
 ---
