@@ -40,6 +40,13 @@ enum UpgradeKind {
 	# spot and pre-aim. Sentence: "helps me climb tutorial_choke
 	# by changing how I see Light scouts."
 	SCOUT_TELEGRAPH,
+	# arc-4 iter 116 (Round 14 Phase 2, C8 anchor 3): closes the
+	# open_killbox gap deferred from Round 13. REAR_GUARD auto-fires
+	# AP at the closest enemy in the rear 90° cone — commitment-
+	# change affordance for "rear-flank patrols" pressure. Sentence:
+	# "helps me climb open_killbox by changing how I commit to facing
+	# — rear scouts no longer demand a turn."
+	REAR_GUARD,
 }
 
 signal depot_entered(depot: Node)
@@ -265,6 +272,9 @@ func _upgrade_pool(best: int = -1, current_archetype: int = -1) -> Array[int]:
 	# arc-4 iter 113 (Round 13): SCOUT_TELEGRAPH always-available
 	# (no meta-gate; small perceptual affordance for tutorial_choke).
 	pool.append(UpgradeKind.SCOUT_TELEGRAPH)
+	# arc-4 iter 116 (Round 14): REAR_GUARD always-available
+	# (no meta-gate; commitment-change affordance for open_killbox).
+	pool.append(UpgradeKind.REAR_GUARD)
 	return pool
 
 
@@ -310,6 +320,7 @@ func _label_for_kind(kind: int) -> String:
 		UpgradeKind.SWITCH_TO_MORTAR: return "Switch to MORTAR  (lobbed AoE)"
 		UpgradeKind.SWITCH_TO_RAM: return "Switch to RAM  (collision + sprint)"
 		UpgradeKind.SCOUT_TELEGRAPH: return "Scout Telegraph  (see Light scouts earlier)"
+		UpgradeKind.REAR_GUARD: return "Rear Guard  (auto-fires at rear scouts)"
 	return "upgrade"
 
 
@@ -398,6 +409,8 @@ func apply_upgrade(kind: int, loadout) -> void:
 				_player.switch_archetype(3)
 		UpgradeKind.SCOUT_TELEGRAPH:
 			loadout.has_scout_telegraph = true
+		UpgradeKind.REAR_GUARD:
+			loadout.has_rear_guard = true
 
 
 func _is_player(body: Node) -> bool:

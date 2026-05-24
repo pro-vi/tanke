@@ -38,6 +38,14 @@ const Bullet = preload("res://scripts/Bullet.gd")
 # the player can see them earlier and pre-aim. Sentence:
 # "helps me climb tutorial_choke by changing how I see Light scouts."
 @export var has_scout_telegraph: bool = false
+# arc-4 iter 116 (Round 14 Phase 2, C8 anchor 3): REAR_GUARD —
+# closes the open_killbox band-coverage gap deferred from Round 13.
+# When true, an AP shot auto-fires at the closest enemy in the
+# rear 90° cone (range REAR_GUARD_RANGE, cooldown REAR_GUARD_
+# COOLDOWN) when one enters it. Costs no shell. Sentence:
+# "helps me climb open_killbox by changing how I commit to facing
+# — rear scouts no longer demand a turn."
+@export var has_rear_guard: bool = false
 
 
 # Returns true if the player can fire the given shell class. AP is

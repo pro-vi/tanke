@@ -30,21 +30,21 @@ func _initialize() -> void:
 	# iter 69 (Round 9g): 12 entries total — 9 original (refills /
 	# expands / resupply / 4 rule-changers) + 3 SWITCH_TO_* archetype
 	# kinds.
-	# arc-4 iter 113 (Round 13 Phase 2, C8 anchor 3): SCOUT_TELEGRAPH
-	# added → 13 entries; closes the tutorial_choke band-coverage gap
-	# surfaced by iter-112 audit.
+	# arc-4 iter 116 (Round 14 Phase 2, C8 anchor 3): REAR_GUARD
+	# added → 14 entries; closes the open_killbox band-coverage gap
+	# deferred from Round 13 (passive auto-defense in rear cone).
 	var UK = depot.UpgradeKind
-	if UK.size() != 13:
-		push_error("FAIL — catalog has %d entries, want 13" % UK.size()); quit(1); return
-	# Each category has a representative; OVERDRIVE = positioning, the
-	# previously-uncovered open_killbox pressure; SCOUT_TELEGRAPH =
-	# perceptual aid for tutorial_choke (closes 1 of 2 iter-112 gaps).
-	for kind in [UK.HE_REFILL_2, UK.HEAT_REFILL_1, UK.OVERDRIVE, UK.FULL_RESUPPLY, UK.SCOUT_TELEGRAPH]:
+	if UK.size() != 14:
+		push_error("FAIL — catalog has %d entries, want 14" % UK.size()); quit(1); return
+	# Each category has a representative; OVERDRIVE = positioning;
+	# SCOUT_TELEGRAPH = perceptual aid for tutorial_choke;
+	# REAR_GUARD = commitment-change for open_killbox rear-flanks.
+	for kind in [UK.HE_REFILL_2, UK.HEAT_REFILL_1, UK.OVERDRIVE, UK.FULL_RESUPPLY, UK.SCOUT_TELEGRAPH, UK.REAR_GUARD]:
 		var probe: LoadoutT = LoadoutT.new()
 		probe.he_reserve = 0
 		probe.heat_reserve = 0
 		depot.apply_upgrade(kind, probe)  # must not crash; effect applied
-	print("  catalog: 13 upgrades — refills + 4 rule-changers + 3 archetype-switches + SCOUT_TELEGRAPH (tutorial_choke perception)")
+	print("  catalog: 14 upgrades — refills + 4 rule-changers + 3 archetype-switches + SCOUT_TELEGRAPH + REAR_GUARD (all 5 bands covered)")
 	depot.queue_free()
 
 	# === Test 3: a breach PlayerTank with OVERDRIVE sprints; speed

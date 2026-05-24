@@ -17,6 +17,51 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 116 — DECISION + BUILD — REAR_GUARD (Round 14 Phase 2; closes open_killbox C8 anchor-3 gap)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 49/75 absolute · 49/75 effective   (Δ vs prior: +1
+  absolute on C8: 3 → 4. C8 anchor 3 now FULLY met — all 5
+  bands have dedicated upgrade coverage. Effective stays 4
+  per iter-113 cognitive-max claim. C8 absolute lift makes
+  the effective-vs-absolute gap close at this axis.)
+- Constraints respected: 7, 5, 3
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… verified (rear-guard is loadout-gated
+  via `if loadout != null and loadout.has_rear_guard:`; arc-2/3
+  player has no loadout → flag never true → bit-identical)
+- Falsifications: none added
+- Files: scripts/Loadout.gd (added has_rear_guard: bool = false;
+  arc-4-owned), scripts/Depot.gd (added REAR_GUARD to UpgradeKind
+  enum + label + apply_upgrade routing + pool entry; arc-4-
+  owned), scripts/PlayerTank.gd (substrate write ×44 — added
+  REAR_GUARD_RANGE/COOLDOWN/CONE_COS constants + _rear_guard_cd
+  field + per-frame rear-guard tick in _physics_process +
+  _find_rear_cone_enemy helper + _fire_rear_guard helper),
+  loop/breach/test_breach_rear_guard.gd (NEW — 6 assertions:
+  flag default + apply + rear-cone detection (in/front/range) +
+  fire signal direction & shell), loop/breach/test_breach_
+  overdrive.gd (catalog 13 → 14), loop/breach/test_breach_meta.gd
+  (pool sizes per-tier +1; 6→7/8→9/10→11/12→13/13→14/13→14),
+  Makefile (+check-breach-rear-guard; test-breach 61 → 62),
+  loop/breach/PRE-MORTEMS.md.
+- Finding: REAR_GUARD closes the open_killbox C8 gap that
+  Round 13 deferred. Now all 5 bands (tutorial_choke, brick_
+  maze, bunker_zone, open_killbox, endgame_mixed) have at
+  least one dedicated upgrade serving their dominant pressure.
+  The chassis-mechanic surface for open_killbox turned out to
+  be smaller than the iter-115 audit feared — a per-frame
+  rear-cone scan + free AP backshot + cooldown is structurally
+  the same shape as OVERDRIVE/QUICK_SWAP (Loadout flag +
+  PlayerTank handler). The substrate write went clean despite
+  the interleaved Edit ordering that triggered transient parse
+  errors during the batch — verified via grep-after-Edit
+  discipline. C8 absolute 3 → 4 (rubric movement; closes
+  Round 14 cleanly). Iter 117 META close-out next.
+
+---
+
 ## iter 115 — DIAGNOSE — Structural-ceiling audit (Round 14 bootstrap)
 
 - Date: 2026-05-24

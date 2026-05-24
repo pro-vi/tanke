@@ -24,6 +24,55 @@ Format:
 
 ---
 
+## iter 116 — DECISION + BUILD — REAR_GUARD (Round 14 Phase 2; closes open_killbox C8 anchor-3 gap)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 7 (commitment-change verb
+  affordance — rear-flank scouts no longer force a turn);
+  5 (open_killbox's "rear-flank patrols" pressure now has a
+  dedicated upgrade); 3 (Light/Fast scouts are existing roles
+  the upgrade scaffolds player response around, not new enemies).
+- CONSULT constraints risked: none.
+- DECISION confirms iter-115 REAR_GUARD recommendation.
+- Implementation:
+  - **Loadout.gd** (arc-4-owned): `has_rear_guard: bool = false`.
+  - **Depot.gd** (arc-4-owned): UpgradeKind.REAR_GUARD enum
+    value, label "Rear Guard  (auto-fires at rear scouts)",
+    apply_upgrade routing, pool entry (unconditional).
+  - **PlayerTank.gd** (substrate write ×44): constants
+    REAR_GUARD_RANGE=96.0, REAR_GUARD_COOLDOWN=2.5,
+    REAR_GUARD_CONE_COS=0.707 (cos 45° = 90° total cone);
+    `_rear_guard_cd: float = 0.0`; in `_physics_process` after
+    existing iframe-tick logic, decrement cd + if loadout has
+    flag + cd ≤ 0 + a rear-cone enemy exists, emit shoot signal
+    with rear direction + AP shell + arm cooldown. Two helpers:
+    `_find_rear_cone_enemy()` walks the "enemy" group; returns
+    the closest in the rear 90° cone within RANGE.
+    `_rear_dir()` opposites the current direction enum.
+  - **test_breach_overdrive.gd**: catalog 13 → 14; pool entries.
+  - **test_breach_meta.gd**: pool sizes per-tier +1.
+  - **test_breach_rear_guard.gd** (NEW): 6 assertions covering
+    flag default + apply; rear-cone detection (enemy behind →
+    found); cooldown arms after fire; front-cone-no-fire
+    regression; out-of-range no-fire; no-loadout no-op.
+- Predicted failure: the `_physics_process` rear-guard logic
+  might race the existing input/movement code. Mitigation:
+  place the rear-guard block AFTER the existing tick logic so
+  the player's actions in the current frame are honored first;
+  rear-guard fires next physics tick if applicable.
+- Falsifiable claim: with `loadout.has_rear_guard = true` and
+  an enemy at position (-32, 0) relative to player facing R,
+  `_find_rear_cone_enemy()` returns that enemy. With the same
+  enemy at (+32, 0) (in front), the helper returns null.
+- Substrate touched: scripts/PlayerTank.gd (substrate write
+  ×44 — sanctioned).
+- Hash-anchor verification plan: post-edit verify (rear-guard
+  code path is loadout-gated; arc-2/3 player has no loadout
+  → has_rear_guard never true → bit-identical).
+
+---
+
 ## iter 115 — DIAGNOSE — Structural-ceiling audit + Round 14 bootstrap
 
 - Date: 2026-05-24

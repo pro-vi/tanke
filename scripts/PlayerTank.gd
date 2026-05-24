@@ -100,6 +100,14 @@ var _shell_slot_bgs: Array[ColorRect] = []
 var _shell_slot_chips: Array[ColorRect] = []
 var _shell_slot_labels: Array[Label] = []
 var _shell_codex: ColorRect = null  # arc-4 iter 36: run-start shell primer
+# arc-4 iter 116 (Round 14 Phase 2): REAR_GUARD cooldown timer +
+# tunables. _rear_guard_cd ticks down to 0.0; when 0.0 + an enemy
+# is in the rear cone + loadout has the flag, fires an AP backward
+# at no shell cost, then re-arms the cooldown.
+const REAR_GUARD_RANGE: float = 96.0          # max distance to scan
+const REAR_GUARD_COOLDOWN: float = 2.5        # seconds between auto-fires
+const REAR_GUARD_CONE_COS: float = 0.707      # cos(45°) → 90° total cone
+var _rear_guard_cd: float = 0.0
 # arc-4 iter 102 (P1-C fix from code-review-iter-100): track the live
 # band-arrival banner so a Y-boundary-oscillating player can't stack
 # Labels indefinitely. Each new band crossing frees the prior banner
@@ -362,6 +370,20 @@ func _physics_process(delta: float) -> void:
 	# arc-4 iter 59 (Round 8d): the shield HUD indicator tracks the timer.
 	if _shield_label != null:
 		_shield_label.visible = _shield_timer > 0.0
+	# arc-4 iter 116 (Round 14 Phase 2, substrate write ×44): REAR_GUARD
+	# auto-defense tick. Closes the open_killbox C8 anchor-3 gap. When
+	# the loadout has has_rear_guard AND the cooldown is clear AND an
+	# enemy is in the rear 90° cone within REAR_GUARD_RANGE, fire an
+	# AP shell backward (free; no shell consumed) and arm the cooldown.
+	# Loadout-gated → arc-2/3 player (no loadout) is bit-identical.
+	if loadout != null and loadout.has_rear_guard:
+		if _rear_guard_cd > 0.0:
+			_rear_guard_cd = maxf(0.0, _rear_guard_cd - delta)
+		if _rear_guard_cd <= 0.0:
+			var target = _find_rear_cone_enemy()
+			if target != null:
+				_fire_rear_guard()
+				_rear_guard_cd = REAR_GUARD_COOLDOWN
 
 	if _dead:
 		_handle_restart_input()
@@ -858,6 +880,47 @@ func _ram_swing() -> void:
 		if to_target.length() > RAM_SWING_RANGE:
 			continue  # out of range
 		sibling.take_damage(RAM_SWING_DAMAGE)
+
+
+# arc-4 iter 116 (Round 14 Phase 2): scan the "enemy" group for the
+# closest enemy in the player's rear 90° cone within REAR_GUARD_RANGE.
+# Returns null if none. Used by the REAR_GUARD auto-defense tick in
+# _physics_process. Pure read — does not mutate state.
+func _find_rear_cone_enemy() -> Node:
+	var rear_vec: Vector2 = -Vector2(1, 0).rotated(rotation)
+	var closest: Node = null
+	var closest_d: float = REAR_GUARD_RANGE
+	for enemy in get_tree().get_nodes_in_group("enemy"):
+		if not (enemy is Node2D) or not is_instance_valid(enemy):
+			continue
+		var to_enemy: Vector2 = (enemy as Node2D).global_position - global_position
+		var dist: float = to_enemy.length()
+		if dist > REAR_GUARD_RANGE or dist < 0.1:
+			continue
+		var cos_angle: float = to_enemy.normalized().dot(rear_vec)
+		if cos_angle < REAR_GUARD_CONE_COS:
+			continue
+		if dist < closest_d:
+			closest_d = dist
+			closest = enemy
+	return closest
+
+
+# arc-4 iter 116 (Round 14 Phase 2): fire an AP shell backward (180°
+# from current facing) via the shoot signal. No shell consumed; the
+# REAR_GUARD upgrade is a free auto-defense per cooldown window.
+# Public so the harness can drive it directly.
+func _fire_rear_guard() -> void:
+	var rear_dir: int
+	match direction:
+		Constants.Dir.L: rear_dir = Constants.Dir.R
+		Constants.Dir.R: rear_dir = Constants.Dir.L
+		Constants.Dir.U: rear_dir = Constants.Dir.D
+		Constants.Dir.D: rear_dir = Constants.Dir.U
+		_: rear_dir = Constants.Dir.L
+	var rear_offset: Vector2 = -Vector2(1, 0).rotated(rotation) * 8.0
+	var spawn_pos: Vector2 = global_position + rear_offset
+	shoot.emit(Bullet, spawn_pos, rear_dir, BulletT.SHELL_CLASS_AP)
 
 
 func take_damage(amount: int) -> void:
