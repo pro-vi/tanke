@@ -24,6 +24,33 @@ Format:
 
 ---
 
+## iter 114 — META — Round 13 close-out + Round 14 bootstrap
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- CONSULT constraints respected: none directly (process iter);
+  indirect: the silent-Edit-failure discipline + scoped-
+  reduction pattern (codified in round-13-summary §findings)
+  protect against process drift in future BUILD iters.
+- CONSULT constraints risked: none.
+- Action: write round-13-summary.md (timeline + scoring + 4
+  loop-process findings + Round 14 candidates). Append
+  REVIEW-QUEUE #19 honestly framing C8 → 4 effective + the
+  open_killbox deferral. Update STATE current_round to
+  "13-closed-partial" + queue iter 115 DIAGNOSE.
+- META-trigger cited: round-close (small-round variant —
+  1 DIAGNOSE + 1 BUILD; same close-out pattern as iter-105
+  and iter-111).
+- Falsifiable claim: round-13-summary names exactly the work
+  shipped (SCOUT_TELEGRAPH + the SNAP_TURRET deferral) and
+  the corrected score (C8 3 → 4 effective; total 48 → 49);
+  REVIEW-QUEUE #19 surfaces the open_killbox gap as an
+  acknowledged-not-closed item for the user.
+- Substrate touched: none.
+- Hash-anchor verification: not required.
+
+---
+
 ## iter 113 — DECISION + BUILD — Round 13 Phase 2: SCOUT_TELEGRAPH (close 1 of 2 C8 gaps; defer open_killbox)
 
 - Date: 2026-05-24

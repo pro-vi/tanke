@@ -17,6 +17,44 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 114 — META — Round 13 close-out (C8 3 → 4 effective via SCOUT_TELEGRAPH)
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- Score: 48/75 absolute · 49/75 effective   (Δ vs prior: 0 —
+  META iter, no rubric movement; the +1 effective happened at
+  iter 113)
+- Constraints respected: none directly (process iter)
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… n/a (no substrate touch)
+- Falsifications: none added
+- Files: loop/breach/round-13-summary.md (NEW — small-round
+  close-out: timeline + scoring + 4 loop-process findings:
+  (1) scoped reduction beats scope-creep when SPIKE meets
+  reality; (2) silent Edit-string failure pattern + grep-
+  verification discipline; (3) test-side assertions need
+  updating when catalog grows; (4) small rounds are valid —
+  F006/F007 discipline scales to single-feature scope),
+  loop/breach/REVIEW-QUEUE.md (+#19 honest framing of C8
+  3 → 4 effective + open_killbox deferral as acknowledged
+  not-closed), loop/breach/PRE-MORTEMS.md.
+- Finding: Round 13 is a 3-iter validation that the F006/F007
+  + DIAGNOSE-then-BUILD discipline scales DOWN cleanly. Round
+  12 was 5 iters of substrate-heavy work; Round 13 was 1
+  DIAGNOSE + 1 BUILD + 1 META and lifted exactly the targeted
+  rubric anchor (C8 3 → 4 effective). The "small rounds are
+  valid" finding (round-13-summary §finding 4) is worth
+  carrying forward as a session-learning candidate: rounds
+  don't need 5+ substrate changes to count — a tightly-
+  scoped 1-feature round can earn +1 effective per axis. The
+  silent-edit-failure recovery via grep (finding 2) is also
+  a permanent process discipline now. Iter 115 DIAGNOSE C2
+  (Field depot deterministic placement, 3/5 — likely quick
+  effective re-score) with C7 silhouette-grammar re-audit on
+  the SCOUT_TELEGRAPH tint as a side path.
+
+---
+
 ## iter 113 — DECISION + BUILD — Round 13 Phase 2: SCOUT_TELEGRAPH (close tutorial_choke gap; defer open_killbox)
 
 - Date: 2026-05-24

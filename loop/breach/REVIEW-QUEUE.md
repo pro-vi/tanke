@@ -444,6 +444,41 @@ Format per item:
     and deferred IDENTITY-PROTECTED calls (C15-5 rephrase, the
     identity-vs-weapons question) to user direction.
 
+#19 — Round 13 — C8 sentence test compliance (lifted 3 → 4 effective) — iters 112-114 — closed (1 DIAGNOSE + 1 BUILD + 1 META)
+  Finding: iter-112 audit of the 12-item UpgradeKind catalog
+    found 9/12 strict-PASS + 3 MARGINAL (inventory-scaling) and
+    2 of 5 bands lacking dedicated upgrades (tutorial_choke
+    LIGHT scouts + open_killbox FAST scouts/facing). iter 113
+    shipped SCOUT_TELEGRAPH — a perceptual affordance that tints
+    Light enemies warm yellow on spawn when the player owns the
+    upgrade. Loadout flag + Depot enum/label/pool/apply (arc-4-
+    owned) + Spawner pre-spawn check (substrate ×5) + Enemy
+    self_modulate override (substrate ×4). 7-assertion regression
+    harness; test-breach 60 → 61.
+  Affordance: closes the tutorial_choke gap with a sentence-
+    test-compliant verb framing ("see Light scouts earlier"); the
+    player now has a depot pick that DIRECTLY addresses the band's
+    most legible pressure (LIGHT scout density).
+  Risk: SNAP_TURRET was dropped after substrate review revealed
+    PlayerTank rotation is already instant — open_killbox FAST
+    scout / rear-flank gap remains. Honest scoring: 4 of 5 bands
+    covered, not 5 of 5. Deferring open_killbox to a future round
+    with a dedicated chassis-level mechanic DIAGNOSE (potential
+    Round 14 candidate). The scope reduction is the right call —
+    shipping 1 of 2 with quality > shipping 2 with one as a
+    stretch.
+  Process note: 3 silent Edit-string failures during iter 113
+    (field add, enum add, second-pass edit) — recovered via grep
+    verification. New discipline going forward: when an Edit
+    reports success but a subsequent build fails on a
+    field-not-found / parse error, immediately grep to confirm
+    the field actually landed.
+  Next round: iter 115 DIAGNOSE on C2 (Field depot deterministic
+    placement audit, 3/5 — likely quick re-score given existing
+    harness coverage) with C7 silhouette-grammar re-audit on the
+    SCOUT_TELEGRAPH tint as a side path. Full summary:
+    loop/breach/round-13-summary.md.
+
 #18 — Round 12 — death-recap legibility (C6 lifted 3 → 4 effective) + scoring-label correction — iters 106-111 — closed (4 BUILDs + 1 SPIKE + 1 META)
   Finding: the weakest legibility surface was the on-screen death
     overlay still showing arc-2 ASCENDER stats (DEPTH/TIME/KILLS/
