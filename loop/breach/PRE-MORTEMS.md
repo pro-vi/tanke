@@ -24,6 +24,28 @@ Format:
 
 ---
 
+## iter 125 — BUILD-QUALITY — ARC-4-checkpoint.md cross-rounds catch-up doc
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- CONSULT constraints respected: none directly (documentation
+  iter). Indirect: the checkpoint exists to make the user's
+  return easy — preserves user-action-surface clarity.
+- CONSULT constraints risked: none.
+- Action: write loop/breach/ARC-4-checkpoint.md — a single-
+  read cross-rounds catch-up doc that consolidates: round-by-
+  round arc (1-17 with 1-line outcomes), score trajectory,
+  per-criterion final state, substrate write log, harness
+  inventory, open REVIEW-QUEUE items, and 8 loop-process
+  findings to carry into arc 5.
+- Falsifiable claim: the checkpoint accurately summarizes
+  arc 4 in <400 lines; future-user can grok arc 4 state in
+  one read; open user-decision items are explicit.
+- Substrate touched: none.
+- Hash-anchor verification: not required.
+
+---
+
 ## iter 124 — META — Round 17 close-out (★ iter-106 backlog exhaustion milestone)
 
 - Date: 2026-05-24

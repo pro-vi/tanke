@@ -17,6 +17,39 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 125 — BUILD-QUALITY — ARC-4-checkpoint.md cross-rounds catch-up doc
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0 —
+  documentation iter)
+- Constraints respected: none directly (doc iter)
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… n/a
+- Falsifications: none added
+- Files: loop/breach/ARC-4-checkpoint.md (NEW — single-read
+  cross-rounds catch-up doc; round-by-round arc table for
+  rounds 1-17 with 1-line outcomes; score trajectory across
+  iters 0-124; per-criterion final state with effective/
+  absolute split; substrate write log by file with patterns;
+  harness inventory (64 in test-breach); open REVIEW-QUEUE
+  items #13/#14/#15/#16/#21/#23 user-decision-surface listing;
+  8 loop-process findings F006/F007 + dual-step pattern + 
+  structural-ceiling reality + silent-Edit-failure discipline
+  + multi-round backlog shape + scoping-reduction-beats-creep +
+  honest-re-tag-vs-rubric-gaming distinction; forward-direction
+  framing for iter 126+), loop/breach/PRE-MORTEMS.md.
+- Finding: ARC-4-checkpoint.md is the user-return artifact.
+  The loop has been generating round-summaries and REVIEW-
+  QUEUE items for 17 rounds; the checkpoint pulls them into
+  one read so a returning user can grok arc state without
+  walking through 7+ summary files. No new claims; pure
+  consolidation. Iter 126 META Round 18 close-out (1-iter
+  round). Iter 127+ pivots to audio DIAGNOSE or cadence
+  shift per iter-124 next_action.
+
+---
+
 ## iter 124 — META — Round 17 close-out (★ iter-106 backlog exhaustion)
 
 - Date: 2026-05-24
