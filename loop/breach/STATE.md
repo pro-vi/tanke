@@ -2,13 +2,13 @@
 
 ```yaml
 phase: running
-iter: 91
+iter: 92
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_91: 23d6a2ec3bf2821f  # bit-identical through 47 substrate writes
-substrate_writes_this_arc: 47  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×28 + Level.gd + Spawner.gd ×4 + Enemy.gd ×2
-current_round: 11-open — fix queue running; P1-1 + P0-1 done (iters 90-91); next P0-2 FASTER_RELOAD cache
+hash_anchor_at_iter_92: 23d6a2ec3bf2821f  # bit-identical through 48 substrate writes
+substrate_writes_this_arc: 48  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×29 + Level.gd + Spawner.gd ×4 + Enemy.gd ×2
+current_round: 11-open — fix queue running; P1-1 + P0-1 + P0-2 done (iters 90-92); next P1-3 + P1-5 paired
 current_round_phase: BUILD — Round 11 Phase 2 fix queue from code-review-iter-090.md
 consult_001_status: adopted
 consult_002_status: adopted
@@ -21,7 +21,7 @@ last_consult: iter 79  # CONSULT 009 — written self-pre-mortem, Round 10 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 92 — BUILD — P0-2 fix from code-review-iter-090.md: cache base GunTimer wait_time so FASTER_RELOAD XP bonus survives archetype switches. Read code-review-iter-090.md "P0-2" section. Add `var _base_gun_wait_time: float = 1.0` field (captured in `_ready` from the scene's GunTimer.wait_time before any archetype init). Modify `_apply_level_boost` (FASTER_RELOAD branch) to mutate `_base_gun_wait_time` AND apply to current GunTimer.wait_time. Modify `_init_archetype` MORTAR branch to use `MORTAR_GUN_COOLDOWN * (_base_gun_wait_time / 1.0)` — or simply use MORTAR's own multiplier so reload boosts compose. Modify `_revert_archetype` MORTAR branch to restore `_base_gun_wait_time` (not hardcoded 1.0). Add regression harness `test_breach_xp_reload_persistence.gd` verifying: pick MORTAR, simulate FASTER_RELOAD boost, switch to RAM, switch back to MORTAR, GunTimer.wait_time still reflects the boost. Substrate write #29 on PlayerTank.gd. Hash-anchor verify; test-all + test-breach green.
+next_action: iter 93 — BUILD — P1-3 + P1-5 paired (both are 3-line additions from code-review-iter-090). P1-3: `switch_archetype` value validation — at top of function, `if value < TankArchetype.DEFAULT or value > TankArchetype.RAM: push_warning + return`. P1-5: Depot.apply_upgrade SWITCH_TO_* branches must wrap `_player.switch_archetype(N)` with `if _player != null and is_instance_valid(_player) and _player.has_method(...)`. New harness `test_breach_switch_archetype_validation.gd` verifying: out-of-range value rejected (no state change), value == current is no-op, is_instance_valid guard prevents crash on freed _player. Substrate write #30 on PlayerTank.gd + Depot.gd extension. Hash-anchor verify; test-all + test-breach green.
 score: 47/75 absolute · 47/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4 (iter 76 lifts C5 2→3 via PRESSURES.md canonical-answer doc)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -30,7 +30,7 @@ round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 round9_blueprint: loop/breach/iter-062-round9-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike,double-kill,archetype-select-pause} + check-silhouette-gate (42 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike,double-kill,archetype-select-pause,xp-reload-persistence} + check-silhouette-gate (43 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch, #13 archetype-sprite integration path (decision-needed), #14 ★ PLAYTEST REQUEST Round 9 complete (playtest gate), #15 archetypes-as-identities vs archetypes-as-weapons (design-direction question), #16 pressure matrix + distinctness audit (Round 10 internal)]  # #3, #7, #9, #11 CLOSED — playtests delivered
 ```
 
@@ -140,6 +140,19 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-24 — **iter 92 (BUILD).** P0-2 fix from code-review-
+  iter-090: FASTER_RELOAD XP bonus survives archetype switches.
+  New cumulative-reduction model: `_base_default_gun_wait_time`
+  (captured _ready) + `_reload_reduction` (accumulated). Per-
+  archetype wait_time = max(RELOAD_MIN, arch_base − reduction).
+  Modified `_apply_level_boost` FASTER_RELOAD branch,
+  `_init_archetype` MORTAR branch, `_revert_archetype` MORTAR
+  branch. New harness test_breach_xp_reload_persistence with 8
+  assertions (DEFAULT fresh, 1 boost, DEFAULT→MORTAR carry,
+  MORTAR→RAM→MORTAR round-trip, 2nd boost composes, floor).
+  Empirical: 1.00 → 0.90 → 1.40 → 0.90 → 1.40 → 1.30 → 0.35.
+  Substrate write ×29. Hash preserved; test-all 5/5; test-breach
+  42 → 43. Δ 0. 47/75.
 - 2026-05-23 — **iter 91 (BUILD).** P0-1 fix from code-review-
   iter-090: archetype-select now pauses the world. Three changes
   in PlayerTank.gd (substrate write ×28): `_show_archetype_select`
@@ -396,38 +409,34 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**Iter 92 — BUILD — P0-2 fix: cache base GunTimer wait_time so FASTER_RELOAD XP bonus survives archetype switches.**
+**Iter 93 — BUILD — P1-3 + P1-5 paired (both are 3-line additions).**
 
-Read `loop/breach/code-review-iter-090.md` "P0-2" section.
+P1-3 (`switch_archetype` value validation):
+- At top of `switch_archetype(value: int)` in PlayerTank.gd:
+  ```gdscript
+  if value < TankArchetype.DEFAULT or value > TankArchetype.RAM:
+      push_warning("switch_archetype invalid value: %d" % value)
+      return
+  ```
 
-Implement:
-1. Add `var _base_gun_wait_time: float = 1.0` field
-2. In `_ready` (BEFORE `_init_archetype`), capture
-   `_base_gun_wait_time = $GunTimer.wait_time`
-3. Modify `_apply_level_boost` FASTER_RELOAD branch to mutate
-   `_base_gun_wait_time` AND propagate to current GunTimer if
-   the archetype uses base cooldown (DEFAULT)
-4. Modify `_init_archetype` MORTAR branch:
-   `$GunTimer.wait_time = MORTAR_GUN_COOLDOWN` becomes
-   `$GunTimer.wait_time = MORTAR_GUN_COOLDOWN + (_base_gun_wait_time - 1.0)`
-   (preserve XP-earned reduction additively)
-5. Modify `_revert_archetype` MORTAR branch: restore
-   `_base_gun_wait_time` instead of hardcoded 1.0
+P1-5 (`Depot._player` `is_instance_valid` guard):
+- In Depot.gd's `apply_upgrade` SWITCH_TO_* branches, wrap the
+  `_player.switch_archetype(N)` call with:
+  ```gdscript
+  if _player != null and is_instance_valid(_player) \
+          and _player.has_method("switch_archetype"):
+      _player.switch_archetype(N)
+  ```
 
-Regression harness `loop/breach/test_breach_xp_reload_persistence.gd`:
-- Spawn PlayerTank with MORTAR archetype + loadout
-- Simulate FASTER_RELOAD boost (call `_apply_level_boost` with
-  the right kind)
-- Verify GunTimer.wait_time decreased
-- Switch to RAM via `switch_archetype(3)` — verify
-  `_base_gun_wait_time` preserved
-- Switch back to MORTAR — verify GunTimer.wait_time still
-  reflects the boost
-- Repeat with DEFAULT instead of MORTAR
+New harness `loop/breach/test_breach_switch_archetype_validation.gd`:
+- value < 0 → no state change
+- value > RAM → no state change
+- value == current → early no-op
+- valid value → normal switch
+- Stub Depot with `_player` freed → apply_upgrade no-op (no crash)
 
-Substrate write #29 on PlayerTank.gd. Hash-anchor verify
-(flag-off unchanged — XP only fires when loadout != null);
-test-all + test-breach green.
+Substrate write #30 on PlayerTank.gd; Depot.gd is arc-4-owned
+(not substrate). Hash-anchor verify; test-all + test-breach green.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.

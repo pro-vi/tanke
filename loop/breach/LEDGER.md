@@ -17,6 +17,53 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 092 — BUILD — P0-2 fix: FASTER_RELOAD XP bonus survives archetype switches
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0 — bug fix, no rubric anchor lift).
+- Constraints respected: 6 (XP progression coherent across
+  switches), 7 (archetype verb-distinction preserved — each
+  archetype's BASE cadence stays distinct; XP reduction layers).
+- Constraints risked: none.
+- P0-2 from code-review-iter-090.md FIXED. New cumulative-reduction
+  model:
+  - New fields `_base_default_gun_wait_time` (captured in `_ready`
+    from scene's GunTimer.wait_time BEFORE _init_archetype) and
+    `_reload_reduction` (accumulated XP-earned reduction).
+  - `_apply_level_boost` FASTER_RELOAD branch now mutates
+    `_reload_reduction += RELOAD_STEP` then derives
+    GunTimer.wait_time = max(RELOAD_MIN, arch_base − reduction)
+    where arch_base = MORTAR_GUN_COOLDOWN if MORTAR else
+    _base_default_gun_wait_time.
+  - `_init_archetype` MORTAR branch: same derivation.
+  - `_revert_archetype` MORTAR branch: restores default base −
+    reduction (not hardcoded 1.0).
+- Verified by regression harness (8 assertions): DEFAULT fresh,
+  1 boost reduces wait_time, switch DEFAULT→MORTAR carries
+  reduction, MORTAR→RAM→MORTAR round-trip preserves reduction,
+  2nd boost composes additively, RELOAD_MIN floor saturates.
+  Empirical values: 1.00 → 0.90 (1 boost) → 1.40 (MORTAR) → 0.90
+  (RAM revert) → 1.40 (MORTAR re-enter) → 1.30 (2nd boost MORTAR)
+  → 0.35 (after many boosts, floored).
+- Hash anchor: `23d6a2ec3bf2821f` preserved (PlayerTank substrate
+  write ×29; flag-off codepath unchanged — XP path gated on
+  loadout != null). test-all 5/5; test-breach 42 → 43.
+- Falsifications: none. The PRE-MORTEM's predicted-failure scenario
+  (FASTER_RELOAD reduction model interacts badly with iter-88
+  SWITCH-cancels-MORTAR-reload) was specifically mitigated by
+  having the FASTER_RELOAD branch recompute from per-archetype
+  base − reduction rather than mutating current gt.wait_time.
+- Substrate writes this arc: 47 → 48 (PlayerTank.gd ×29).
+- Files: scripts/PlayerTank.gd,
+  loop/breach/test_breach_xp_reload_persistence.gd (NEW),
+  Makefile, loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **P0-2 fixed + regression-guarded. Both P0s from
+  code-review-iter-090 now closed. Next: iter 93 — P1-3
+  switch_archetype validation + P1-5 Depot._player is_instance_valid
+  (paired in one iter since both are 3-line additions).**
+
 ## iter 091 — BUILD — P0-1 fix: archetype-select now pauses the world
 
 - Date: 2026-05-23

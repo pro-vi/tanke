@@ -165,6 +165,16 @@ var _restart_hint_label: Label = null  # iter 76: pulsing [R] RESTART hint
 var _breach_prompt_panel: ColorRect = null
 var _breach_prompt_label: Label = null
 var _restart_hint_tween: Tween = null
+
+# arc-4 iter 092 (P0-2 fix from code-review-iter-090): cache the
+# scene's default GunTimer.wait_time + track cumulative XP-earned
+# reload reduction. The previous design hard-reset wait_time to 1.0
+# on archetype switches, wiping FASTER_RELOAD level-up bonuses.
+# New model: reduction is a "savings" that persists across switches;
+# each archetype's effective wait_time = archetype_base − reduction
+# (floored at RELOAD_MIN).
+var _base_default_gun_wait_time: float = 1.0
+var _reload_reduction: float = 0.0
 # Roguelike ascender state (iter 11 — Pro Consult 003 reframe)
 var _start_y: float = 0.0
 var _min_y_reached: float = 0.0
@@ -248,6 +258,12 @@ func _ready() -> void:
 		call_deferred("_build_route_strip")
 	hp_changed.emit(hp, max_hp)
 	_update_run_hud()
+	# arc-4 iter 092 (P0-2 fix): capture the scene's default GunTimer
+	# wait_time BEFORE any per-archetype init mutates it. MORTAR
+	# overrides to MORTAR_GUN_COOLDOWN, so we must capture the
+	# DEFAULT base first for the FASTER_RELOAD bonus math to compose.
+	if has_node("GunTimer"):
+		_base_default_gun_wait_time = ($GunTimer as Timer).wait_time
 	# arc-4 iter 68 (Round 9f): per-archetype init is extracted into a
 	# single function — also called after _pick_archetype (post-_ready)
 	# when the user picks a non-DEFAULT archetype from the start-pick
@@ -587,7 +603,10 @@ func _revert_archetype() -> void:
 	elif archetype == TankArchetype.MORTAR and has_node("GunTimer"):
 		var gt: Timer = $GunTimer
 		gt.stop()  # S3: cancel any pending 1.5s cooldown before reset
-		gt.wait_time = 1.0
+		# arc-4 iter 092 (P0-2 fix): restore default-archetype base
+		# minus any accumulated FASTER_RELOAD reduction, instead of
+		# hardcoded 1.0 (which wiped the XP bonus).
+		gt.wait_time = maxf(RELOAD_MIN, _base_default_gun_wait_time - _reload_reduction)
 		can_shoot = true  # consistent post-stop state
 	elif archetype == TankArchetype.RAM:
 		speed -= RAM_SPEED_BONUS
@@ -617,7 +636,9 @@ func _init_archetype() -> void:
 	if archetype == TankArchetype.PRISM:
 		_build_beam_line()
 	elif archetype == TankArchetype.MORTAR:
-		$GunTimer.wait_time = MORTAR_GUN_COOLDOWN
+		# arc-4 iter 092 (P0-2 fix): apply accumulated FASTER_RELOAD
+		# reduction to MORTAR's base cooldown (not just hard-set).
+		$GunTimer.wait_time = maxf(RELOAD_MIN, MORTAR_GUN_COOLDOWN - _reload_reduction)
 	elif archetype == TankArchetype.RAM:
 		speed += RAM_SPEED_BONUS
 	# DEFAULT — no per-archetype init.
@@ -1699,8 +1720,14 @@ func _apply_level_boost(level: int) -> void:
 		hp_changed.emit(hp, max_hp)
 		msg = "+1 MAX HP"
 	elif kind == 1:
+		# arc-4 iter 092 (P0-2 fix): accumulate the reload reduction
+		# in _reload_reduction (so it survives archetype switches),
+		# then derive the current GunTimer.wait_time from per-archetype
+		# base − reduction (floored at RELOAD_MIN).
+		_reload_reduction += RELOAD_STEP
 		var gt: Timer = $GunTimer
-		gt.wait_time = maxf(RELOAD_MIN, gt.wait_time - RELOAD_STEP)
+		var arch_base: float = MORTAR_GUN_COOLDOWN if archetype == TankArchetype.MORTAR else _base_default_gun_wait_time
+		gt.wait_time = maxf(RELOAD_MIN, arch_base - _reload_reduction)
 		msg = "FASTER RELOAD"
 	else:
 		if loadout != null:

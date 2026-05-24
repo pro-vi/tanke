@@ -24,6 +24,38 @@ Format:
 
 ---
 
+## iter 092 — BUILD — P0-2 fix: FASTER_RELOAD XP bonus survives archetype switches
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (XP/level progression stays
+  coherent across switches — fixes a death-attribution-adjacent
+  surprise where "reload feels slower after switch" wouldn't show
+  up in recap), 7 (the fix preserves the verb-distinction —
+  each archetype's BASE cadence stays distinct; the XP reduction
+  layers on top).
+- CONSULT constraints risked: none.
+- Predicted failure: the FASTER_RELOAD reduction model interacts
+  badly with the iter-88 SWITCH-cancels-MORTAR-reload side effect.
+  When `_revert_archetype` MORTAR stops the timer and sets
+  wait_time to the new value (now computed from
+  _base_default_gun_wait_time - _reload_reduction), the cumulative
+  reduction is preserved. Good. But: what if `_apply_level_boost`
+  fires during MORTAR (level-up mid-fight as MORTAR), the current
+  gt.wait_time is MORTAR-base-minus-reduction; mutating it
+  directly should still work because we recompute via the formula.
+  Mitigation: the FASTER_RELOAD branch in `_apply_level_boost`
+  computes the new wait_time from per-archetype base − reduction,
+  not gt.wait_time − RELOAD_STEP.
+- Falsifiable claim: regression harness verifies (a) FASTER_RELOAD
+  reduces DEFAULT's wait_time; (b) switching DEFAULT→MORTAR
+  applies reduction to MORTAR base; (c) switching MORTAR→RAM→
+  MORTAR keeps the reduction; (d) RELOAD_MIN floor enforced.
+- Substrate touched: scripts/PlayerTank.gd (substrate write ×29).
+- Hash-anchor verification plan: post-edit verify.
+
+---
+
 ## iter 091 — BUILD — P0-1 fix: `_archetype_selecting` must pause the world
 
 - Date: 2026-05-23
