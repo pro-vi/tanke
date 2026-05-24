@@ -17,6 +17,37 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 106 — DIAGNOSE — C9 death-recap surface map (next round bootstrap)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 47/75 effective · 47/75 absolute   (Δ vs prior: 0 —
+  DIAGNOSE iter, no code changes; rubric movement comes in
+  iters 108-110)
+- Constraints respected: 6
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… n/a (no substrate touch)
+- Falsifications: none added
+- Files: loop/breach/iter-106-c9-diagnose.md (NEW — surface map
+  of C9 death-recap, names 5 gaps + 3-iter BUILD plan with
+  rubric projection 2/5 → 5/5 effective), loop/breach/PRE-MORTEMS.md.
+- Finding: the C9 gap is a UI integration gap, not a data-model
+  gap. RunRecap.gd has been the right shape since iter 31 (depth
+  + band + pressure + build_tag + shells_fired + reserve_left +
+  band_visit_log) — it's just that the on-screen death panel
+  never wired `run_recap.format()` into `_death_label.text`. The
+  arc-2-era ASCENDER stat block (DEPTH/TIME/KILLS/CANCELS/STALL/
+  BEST) is what the player sees, which is exactly the "got
+  overwhelmed" surface CONSULT constraint 6 says to avoid. Root
+  cause is one substrate write (Gap 1: format() → _death_label);
+  three follow-on writes lift C9 to 5/5 effective (Gap 2 kill-
+  source, Gap 3 resource-sentence, Gap 4 route-diff). Gap 5
+  (auto-regret-quote) is optional polish that also feeds C15
+  anchor 5 evidence + REVIEW-QUEUE #14 playtest gate. The 3-iter
+  BUILD plan is queued; iter 107 SPIKE picks the rendering shape.
+
+---
+
 ## iter 105 — META — code-review-iter-100 sprint CLOSE-OUT + bootstrap diagnosis
 
 - Date: 2026-05-24

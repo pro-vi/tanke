@@ -24,6 +24,42 @@ Format:
 
 ---
 
+## iter 106 — DIAGNOSE — C9 death-recap surface map (next round bootstrap)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (the entire diagnosis is
+  framed around "every run produces a death reason tied to
+  resource/build/route, not 'got overwhelmed'" — the surface
+  map names exactly the gaps the recap currently has against
+  that standard).
+- CONSULT constraints risked: none (DIAGNOSE iter, no code
+  changes).
+- Action: read RunRecap.gd in full, read PlayerTank.gd death
+  overlay code (lines 1000-1100), produce a 1-page surface map
+  documenting what the recap currently tells the player vs what
+  the constraint-6 spec requires.
+- Output: loop/breach/iter-106-c9-diagnose.md — 5 named gaps
+  ordered by leverage: (1) RunRecap.format() unwired from
+  _death_label = ROOT CAUSE; (2) killer field placeholder
+  never updated; (3) resource-attribution sentence missing;
+  (4) route-attribution (path-not-taken) missing; (5) auto-
+  generated regret-quote candidate. Each gap mapped to a
+  BUILD-iter target (iter 107 SPIKE → iter 108-110 BUILD).
+- Falsifiable claim: the diagnosis correctly identifies the
+  ROOT CAUSE of C9=2/5 as a UI integration gap, not a missing
+  data model. RunRecap.gd already has the structure; the
+  death-overlay UI just doesn't render format() output. The
+  iter-107 SPIKE will confirm by demonstrating 3 rendering
+  shapes against the SAME RunRecap data model — no schema
+  changes needed.
+- Substrate touched: none (process/research iter).
+- Hash-anchor verification: not required.
+- Next: iter 107 SPIKE — 3 parallel POCs for the recap rendering
+  shape (full-replace α / append β / sentence γ).
+
+---
+
 ## iter 105 — META — code-review-iter-100 sprint close-out + bootstrap diagnosis
 
 - Date: 2026-05-24
