@@ -190,7 +190,12 @@ func _ensure_rolled() -> void:
 		seed_val = int(lvl.level_seed)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_val + int(global_position.y)
-	var pool: Array[int] = _upgrade_pool()
+	# arc-4 iter 097 (P2-6): pass current archetype to filter out
+	# same-archetype SWITCH_TO_* picks (no-op picks).
+	var current_arch: int = -1
+	if _player != null and is_instance_valid(_player) and "archetype" in _player:
+		current_arch = int(_player.archetype)
+	var pool: Array[int] = _upgrade_pool(-1, current_arch)
 	for i in range(pool.size() - 1, 0, -1):
 		var j: int = rng.randi_range(0, i)
 		var t: int = pool[i]
@@ -205,9 +210,14 @@ func _ensure_rolled() -> void:
 # best-depth threshold (MetaProgress) — OPTIONS earned by climbing, not
 # power. `best` defaults to the live best-depth; a caller may pass an
 # explicit value (harnesses).
-func _upgrade_pool(best: int = -1) -> Array[int]:
+func _upgrade_pool(best: int = -1, current_archetype: int = -1) -> Array[int]:
 	if best < 0:
 		best = MetaProgressT.best_depth()
+	# arc-4 iter 097 (P2-6 fix from code-review-iter-090): if the
+	# caller passes the player's CURRENT archetype, filter the
+	# SWITCH_TO_X entry for that archetype out of the pool — picking
+	# it would be a no-op (switch_archetype returns early on
+	# value == archetype).
 	# 5 core economy upgrades — always available.
 	var pool: Array[int] = [
 		UpgradeKind.HE_REFILL_2, UpgradeKind.HEAT_REFILL_1,
@@ -226,11 +236,13 @@ func _upgrade_pool(best: int = -1) -> Array[int]:
 	# arc-4 iter 69 (Round 9g): archetype-switch entries — gated on the
 	# same MetaProgress tiers as the start-pick screen (PRISM@20,
 	# MORTAR@40, RAM@60).
-	if MetaProgressT.prism_unlocked(best):
+	# arc-4 iter 097 (P2-6): also gate by current_archetype to avoid
+	# offering SWITCH_TO_X when X == current.
+	if MetaProgressT.prism_unlocked(best) and current_archetype != 1:
 		pool.append(UpgradeKind.SWITCH_TO_PRISM)
-	if MetaProgressT.mortar_unlocked(best):
+	if MetaProgressT.mortar_unlocked(best) and current_archetype != 2:
 		pool.append(UpgradeKind.SWITCH_TO_MORTAR)
-	if MetaProgressT.ram_unlocked(best):
+	if MetaProgressT.ram_unlocked(best) and current_archetype != 3:
 		pool.append(UpgradeKind.SWITCH_TO_RAM)
 	return pool
 

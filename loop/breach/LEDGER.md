@@ -17,6 +17,47 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 097 — BUILD — P2 batch 2: P2-4 + P2-6 + P2-2 (_stop_beam in _die, Depot same-archetype filter, enum pin)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0).
+- Constraints respected: 6 (death overlay no longer visually
+  deceives), 7 (Depot pool stays meaningful), 5 (enum pin
+  protects the Depot↔TankArchetype contract).
+- Constraints risked: none.
+- 3 P2 fixes paired:
+  - **P2-4** (PlayerTank.gd substrate write ×34, 3 lines): `_die`
+    calls `_stop_beam()` if archetype == PRISM. Previously the
+    beam stayed drawn across the death overlay.
+  - **P2-6** (Depot.gd, arc-4-owned, ~8 lines across two changes):
+    `_upgrade_pool` now takes optional `current_archetype` param;
+    filters SWITCH_TO_X entries when X matches current archetype.
+    `_build_choice_panel` (line 193) passes `_player.archetype`
+    via `is_instance_valid` + `"archetype" in _player` guard.
+  - **P2-2** (test_breach_meta.gd, arc-4-owned, ~13 lines):
+    asserts MetaProgress._ARCHETYPE_DEFAULT/PRISM/MORTAR/RAM
+    each equals the matching PlayerTank.TankArchetype enum
+    value. Catches enum-reorder divergence at test time.
+- Regression harness test_breach_p2_batch2.gd with 4 assertions
+  (P2-4 BeamLine.visible=false after PRISM _die; P2-6 pool with
+  current=PRISM excludes SWITCH_TO_PRISM; pool with current=RAM
+  excludes SWITCH_TO_RAM; pool with no current_archetype
+  includes all 3). Plus test_breach_meta extension verifies all
+  4 enum pin equalities.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (PlayerTank substrate
+  write ×34). test-all 5/5; test-breach 47 → 48.
+- Falsifications: none.
+- Substrate writes this arc: 52 → 53 (PlayerTank.gd ×34).
+- Files: scripts/PlayerTank.gd, scripts/Depot.gd,
+  loop/breach/test_breach_meta.gd, loop/breach/test_breach_p2_batch2.gd
+  (NEW), Makefile, loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md
+- Finding: **14 of 18 anchored code-review findings closed (2 P0
+  + 6 P1 + 6 P2). Remaining: P2-5 (HEAT vs breach Heavy HP design
+  call), P2-7 (beam burn cooldown universal), P2-9 (MetaProgress
+  unlock_ladder archetype tiers). Iter 98 = P2 batch 3.**
+
 ## iter 096 — BUILD — P2 batch 1: P2-1 + P2-3 + P2-8 (analyzer verdict, MORTAR init, MortarShell t-clamp)
 
 - Date: 2026-05-24

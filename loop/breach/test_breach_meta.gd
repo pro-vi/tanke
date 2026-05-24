@@ -63,5 +63,25 @@ func _initialize() -> void:
 	print("  depot pool widens: 5 (fresh) -> 7/9/11 -> 12 (all tiers; incl. archetype switches)")
 	depot.queue_free()
 
-	print("BREACH_META_OK 4-rung unlock ladder; depth-gated pool widens 5->9 (options, not power)")
+	# === Arc-4 iter 097 (P2-2): enum-pin assertion. MetaProgress's
+	# _ARCHETYPE_* constants MUST equal PlayerTank.TankArchetype
+	# enum values. If the TankArchetype enum is reordered, this
+	# guard catches the divergence at test time instead of producing
+	# silently-wrong SWITCH_TO_* picks in Depot.
+	var PlayerTankT = load("res://scripts/PlayerTank.gd")
+	if MetaProgressT._ARCHETYPE_DEFAULT != PlayerTankT.TankArchetype.DEFAULT:
+		push_error("FAIL — P2-2: _ARCHETYPE_DEFAULT %d != TankArchetype.DEFAULT %d" % [MetaProgressT._ARCHETYPE_DEFAULT, PlayerTankT.TankArchetype.DEFAULT])
+		quit(1); return
+	if MetaProgressT._ARCHETYPE_PRISM != PlayerTankT.TankArchetype.PRISM:
+		push_error("FAIL — P2-2: _ARCHETYPE_PRISM %d != TankArchetype.PRISM %d" % [MetaProgressT._ARCHETYPE_PRISM, PlayerTankT.TankArchetype.PRISM])
+		quit(1); return
+	if MetaProgressT._ARCHETYPE_MORTAR != PlayerTankT.TankArchetype.MORTAR:
+		push_error("FAIL — P2-2: _ARCHETYPE_MORTAR %d != TankArchetype.MORTAR %d" % [MetaProgressT._ARCHETYPE_MORTAR, PlayerTankT.TankArchetype.MORTAR])
+		quit(1); return
+	if MetaProgressT._ARCHETYPE_RAM != PlayerTankT.TankArchetype.RAM:
+		push_error("FAIL — P2-2: _ARCHETYPE_RAM %d != TankArchetype.RAM %d" % [MetaProgressT._ARCHETYPE_RAM, PlayerTankT.TankArchetype.RAM])
+		quit(1); return
+	print("  P2-2 enum-pin: MetaProgress._ARCHETYPE_* == TankArchetype enum (DEFAULT=0/PRISM=1/MORTAR=2/RAM=3) — Depot SWITCH_TO_* coupling safe")
+
+	print("BREACH_META_OK 4-rung unlock ladder; depth-gated pool widens 5->9 (options, not power); enum pin verified")
 	quit(0)

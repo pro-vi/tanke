@@ -949,6 +949,11 @@ func _die() -> void:
 	_dead = true
 	sprite.stop()
 	velocity = Vector2.ZERO
+	# arc-4 iter 097 (P2-4 fix from code-review-iter-090): stop the
+	# PRISM beam on death so the death overlay doesn't have a beam
+	# line still drawn across the screen.
+	if archetype == TankArchetype.PRISM and _beam_line != null:
+		_stop_beam()
 	# iter 31: ascender run summary on death (Pro Consult 005 H4)
 	var depth: int = int(maxf(0.0, (_start_y - _min_y_reached) / 16.0))
 	# arc-4: capture death attribution. Passes the killing BreachBand

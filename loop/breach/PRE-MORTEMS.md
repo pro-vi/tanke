@@ -24,6 +24,37 @@ Format:
 
 ---
 
+## iter 097 — BUILD — P2 batch 2: P2-4 + P2-6 + P2-2 (_stop_beam in _die, Depot same-archetype filter, enum pin)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (death overlay no longer
+  visually deceives — beam stops), 7 (Depot pool stays
+  meaningful — no dead-weight no-op picks), 5 (enum pin protects
+  the Depot↔TankArchetype contract documented at iter 76).
+- CONSULT constraints risked: none.
+- 3 small fixes:
+  - P2-4 (PlayerTank.gd ×34, 3 lines): in `_die` after `_dead =
+    true`, if `archetype == PRISM` call `_stop_beam()`.
+  - P2-6 (Depot.gd, ~6 lines): in `_upgrade_pool`, take an
+    optional `current_archetype` parameter; filter SWITCH_TO_X
+    entries when X matches.
+  - P2-2 (test_breach_meta.gd extension, ~6 lines): assert
+    `MetaProgressT._ARCHETYPE_PRISM == PlayerTankT.TankArchetype.PRISM`
+    and same for MORTAR/RAM. Sanity test pins the cross-file
+    enum coupling.
+- Predicted failure: P2-6 requires changing _upgrade_pool's
+  signature; callers (Depot.apply_choice / harness) need updating.
+  Mitigation: optional parameter with default `-1` (or `null`)
+  preserves existing call sites' semantics.
+- Falsifiable claim: harness verifies (a) PRISM death hides
+  BeamLine; (b) _upgrade_pool with current_archetype=PRISM
+  excludes SWITCH_TO_PRISM; (c) the 3 enum pin assertions hold.
+- Substrate touched: scripts/PlayerTank.gd (substrate write ×34).
+- Hash-anchor verification plan: post-edit verify.
+
+---
+
 ## iter 096 — BUILD — P2 batch 1: P2-1 + P2-3 + P2-8 (analyzer verdict, MORTAR init, MortarShell t-clamp)
 
 - Date: 2026-05-24
