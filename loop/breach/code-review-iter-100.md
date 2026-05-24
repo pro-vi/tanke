@@ -174,6 +174,10 @@ operational gate but documented as awareness-tier:
 | 5 | P1-D fire-while-swap UX | PlayerTank.gd | medium | **iter 102 ✓ FIXED** (harness: test_breach_fire_while_swap, substrate ×38) |
 | 6 | P1-E + P1-F max ceilings | PlayerTank.gd | small | **iter 103 ✓ FIXED** (harness: test_breach_level_up_ceilings, substrate ×39) |
 | 7 | P2-A AmmoPickup re-roll | AmmoPickup.gd | small | **iter 103 ✓ FIXED** (harness: test_breach_ammo_pickup_no_waste) |
-| 8 | P2-B-D | various | small each | iter 104+ |
+| 8 | P2-B toast stacking | PlayerTank.gd | small | **iter 104 ✓ FIXED** (harness: test_breach_toast_stagger, substrate ×40) |
+| 9 | P2-C route-strip backward | PlayerTank.gd | small | **iter 104 ✓ FIXED** (harness: test_breach_route_strip_max_cleared, substrate ×41) |
+| 10 | P2-D MetaProgress option revocation | MetaProgress.gd | design call | **NO-OP** — accept as intended per iter-100 review note (re-tiering reflects honest re-tuning, not a bug to migrate around) |
+
+**SPRINT COMPLETE** — 10 of 11 actionable findings fixed across iters 100-104. P2-D is a no-op design call.
 
 Estimated total sprint: 4-5 iters for 11 findings.

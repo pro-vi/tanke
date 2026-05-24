@@ -114,6 +114,11 @@ var _route_panel: ColorRect = null
 var _route_cell_bgs: Array[ColorRect] = []
 var _route_cell_labels: Array[Label] = []
 var _route_bands: Array = []
+# arc-4 iter 104 (P2-C fix from code-review-iter-100): highest band
+# idx ever visited this run. Cells <= this idx (excluding the
+# current cell) keep their "cleared" tint, even after the player
+# retreats to a lower band. -1 = no band visited yet.
+var _route_max_cleared_idx: int = -1
 # arc-4 iter 56 (Round 8a): XP + level-up — the roguelite power curve
 # (playtest-3). Breach-mode only (gated on loadout != null).
 const XP_PER_KILL: int = 12
@@ -896,13 +901,27 @@ func apply_shield(duration: float) -> void:
 
 # iter 80: brief HUD toast on pickup activation. Confirmation feedback.
 # Label spawned at top-center, fades over 1.5s, then self-frees.
+# arc-4 iter 104 (P2-B fix from code-review-iter-100): stagger Y
+# offset based on live-toast count so multi-level-up XP bursts
+# don't pile 3 toasts at the same position. Cap stagger at TOAST_
+# STAGGER_MAX (4) — beyond that, wrap to 0; concurrent toasts
+# beyond 4 are a different problem (likely a bug worth seeing).
+const TOAST_BASE_Y: float = 28.0
+const TOAST_STAGGER_PX: float = 12.0
+const TOAST_STAGGER_MAX: int = 4
 func _show_pickup_toast(text: String, color: Color) -> void:
 	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
 	if canvas == null:
 		return
 	var toast: Label = Label.new()
 	toast.text = text
-	toast.position = Vector2(140, 28)
+	# Stagger Y by counting live (non-deletion-queued) toasts on the
+	# canvas — those tagged with our metadata key. Caps at
+	# TOAST_STAGGER_MAX so the stack doesn't push off-HUD.
+	var live: int = _count_live_toasts(canvas)
+	var stagger: int = mini(live, TOAST_STAGGER_MAX)
+	toast.position = Vector2(140, TOAST_BASE_Y + float(stagger) * TOAST_STAGGER_PX)
+	toast.set_meta("is_pickup_toast", true)
 	toast.add_theme_color_override("font_color", color)
 	toast.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 	toast.add_theme_constant_override("outline_size", 2)
@@ -912,6 +931,18 @@ func _show_pickup_toast(text: String, color: Color) -> void:
 	tween.tween_property(toast, "modulate:a", 0.0, 1.5)
 	tween.tween_property(toast, "position:y", 16.0, 1.5)
 	tween.chain().tween_callback(toast.queue_free)
+
+
+# arc-4 iter 104 (P2-B fix): count toasts on the HUD that are
+# tagged with our is_pickup_toast meta key and not queued for
+# deletion. Used to compute the stagger offset for the next toast.
+func _count_live_toasts(canvas: CanvasLayer) -> int:
+	var n: int = 0
+	for child in canvas.get_children():
+		if child is Label and child.has_meta("is_pickup_toast"):
+			if is_instance_valid(child) and not child.is_queued_for_deletion():
+				n += 1
+	return n
 
 
 # Visual damage cue (iter 19): bright red pulse + alternating alpha blink
@@ -1702,12 +1733,19 @@ func _build_route_strip() -> void:
 
 # arc-4 iter 50: paint the route strip — cleared bands behind `idx`
 # tinted, the current band bright, bands ahead plain.
+# arc-4 iter 104 (P2-C fix from code-review-iter-100): track the
+# highest idx ever reached so cells visited then retreated-from
+# keep their "cleared" tint. Before: `i < idx` lost the cleared
+# tint on retreat; now `i <= _route_max_cleared_idx and i != idx`
+# preserves the cleared-band visual across non-monotonic Y motion.
 func _highlight_route_cell(idx: int) -> void:
+	if idx > _route_max_cleared_idx:
+		_route_max_cleared_idx = idx
 	for i in _route_cell_bgs.size():
 		if i == idx:
 			_route_cell_bgs[i].color = Color(0.95, 0.95, 0.55, 0.5)
 			_route_cell_labels[i].modulate = Color(1, 1, 1, 1)
-		elif i < idx:
+		elif i <= _route_max_cleared_idx:
 			_route_cell_bgs[i].color = Color(0.32, 0.55, 0.36, 0.4)
 			_route_cell_labels[i].modulate = Color(1, 1, 1, 0.6)
 		else:

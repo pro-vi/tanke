@@ -17,6 +17,53 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 104 — BUILD — code-review-iter-100 FINAL batch: P2-B + P2-C (toast stagger + route-strip max-cleared)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 47/75 effective · 47/75 absolute   (Δ vs prior: 0 — UX
+  cleanups with regression coverage; no rubric criterion lift)
+- Constraints respected: 6 (P2-B — stacking toasts obscured the
+  moment-to-moment HUD events), 5 (P2-C — visited bands stay
+  visually marked as cleared, reading as a sequence of solved
+  problems instead of flickering on retreat)
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… verified (both fixes live in arc-4-only
+  HUD codepaths: toast spawner is loadout-bounded by call sites,
+  route strip is loadout-gated entirely)
+- Falsifications: none added
+- Files: scripts/PlayerTank.gd (substrate writes ×40 + ×41 —
+  added TOAST_BASE_Y / TOAST_STAGGER_PX / TOAST_STAGGER_MAX
+  constants + `is_pickup_toast` meta tag + `_count_live_toasts`
+  helper; added `_route_max_cleared_idx: int = -1` field +
+  monotonic update + `i <= _route_max_cleared_idx` branch in
+  `_highlight_route_cell`), loop/breach/test_breach_toast_stagger.gd
+  (NEW — 3 assertions: 3 rapid toasts at y 28/40/52; Y diffs match
+  TOAST_STAGGER_PX; after clearing live toasts, next restarts at
+  BASE_Y), loop/breach/test_breach_route_strip_max_cleared.gd (NEW
+  — 3 assertions: climb 0→3 leaves max_cleared=3 + correct tints;
+  retreat to 1 preserves cells 2-3 cleared; climb back to 2 keeps
+  the chain intact), Makefile (+check-breach-toast-stagger
+  +check-breach-route-strip-max-cleared; test-breach 55 → 57),
+  loop/breach/PRE-MORTEMS.md, loop/breach/STATE.md,
+  loop/breach/code-review-iter-100.md.
+- Finding: code-review-iter-100 fix sprint is now COMPLETE
+  on actionable findings. 11 findings → 10 fixed (P0-A + P1-A/B/
+  C/D/E/F + P2-A/B/C); P2-D is a design-call no-op per the iter-
+  100 review note ("accept as intended — the retiering reflects
+  an honest re-tuning"). 5-iter sprint (100-104) closed 10 latent
+  bugs across Round 5-8 substrate, with regression harness
+  coverage for each. F006 + F007 discipline now has 28 anchored
+  findings closed across two reviews (iter-90 + iter-100) — the
+  "delegate /code-review at round close, retroactively if needed"
+  pattern is the loop's primary defense against silent substrate
+  drift. Iter 105 will CLOSE the sprint with a META status doc
+  + REVIEW-QUEUE append, then bootstrap the next exploration
+  round on the weakest axis (C9 death attribution at 2/5, or
+  C5 depth-band pressure at 3/5).
+
+---
+
 ## iter 103 — BUILD — code-review-iter-100 batch 3: P1-E + P1-F + P2-A (level-up ceilings + AmmoPickup re-roll)
 
 - Date: 2026-05-24

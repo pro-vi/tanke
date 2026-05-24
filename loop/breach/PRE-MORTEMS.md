@@ -24,6 +24,48 @@ Format:
 
 ---
 
+## iter 104 — BUILD — P2-B + P2-C (toast stacking + route-strip backward)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (P2-B — each toast is a
+  death-recap-adjacent legibility surface; stacking toasts
+  obscure the moment-to-moment "what just happened" signal),
+  5 (P2-C — each band is a specific climb problem; visited
+  bands should stay visually marked as "cleared" so the player
+  reads the route as a sequence of solved problems, not as a
+  flickering-tint mess on retreat)
+- CONSULT constraints risked: none
+- 2 small fixes:
+  - **P2-B** (PlayerTank.gd substrate write ×40): track an
+    `_active_toasts: Array[Label]` list. Each new toast's Y
+    position is base + 12 * live count; tween_callback removes
+    self from list before queue_free. Prevents the multi-level-up
+    XP burst from layering 3 toasts at the same (140, 28).
+  - **P2-C** (PlayerTank.gd substrate write ×41): track
+    `_route_max_cleared_idx: int = -1`. In `_highlight_route_cell`,
+    update max to the highest idx ever reached. Cleared-tint
+    applies to cells <= max_cleared_idx that aren't the current
+    cell. Retreating to band 1 after reaching band 3 leaves
+    bands 2-3 with their "cleared" tint instead of losing it.
+- Predicted failure: P2-B's stagger could push toasts off the
+  visible HUD area if too many fire at once. Mitigation: each
+  toast also tweens to position.y = 16 over 1.5s, so the stack
+  collapses upward naturally. Cap stagger at 4 (5+ toasts is a
+  bug, not a UX surface).
+- Falsifiable claim: regression harnesses verify (a) 3 toasts
+  in quick succession have distinct Y positions (28, 40, 52),
+  not the same Y; (b) `_highlight_route_cell(3)` then
+  `_highlight_route_cell(1)` leaves cells 2-3 with the cleared
+  tint, not the plain tint.
+- Substrate touched: scripts/PlayerTank.gd (substrate writes
+  ×40 + ×41).
+- Hash-anchor verification plan: post-edit verify (toast +
+  route are both loadout-gated HUD codepaths, off the procedural
+  baseline).
+
+---
+
 ## iter 103 — BUILD — P1-E + P1-F + P2-A (level-up ceilings + AmmoPickup re-roll)
 
 - Date: 2026-05-24
