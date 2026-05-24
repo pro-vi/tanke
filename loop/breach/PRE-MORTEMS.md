@@ -24,6 +24,31 @@ Format:
 
 ---
 
+## iter 124 — META — Round 17 close-out (★ iter-106 backlog exhaustion milestone)
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- CONSULT constraints respected: none directly (META).
+- CONSULT constraints risked: none.
+- Action: write round-17-summary.md (2-iter timeline + iter-106
+  backlog completion table across rounds 12-17 + death-overlay
+  diagnosis surface final-state listing + 2 loop-process
+  findings); append REVIEW-QUEUE #23 with the ★ iter-106
+  backlog COMPLETE framing; update STATE → "17-closed" +
+  queue iter 125 BUILD-QUALITY on ARC-4-checkpoint.md.
+- META-trigger cited: round-close + backlog-exhaustion
+  milestone (iter-106 spec drove 5 items across 6 rounds;
+  all closed iter 123; honest milestone worth surfacing).
+- Falsifiable claim: round-17-summary names the 5/5 iter-106
+  gap closure with per-gap shipped-iter dates; REVIEW-QUEUE
+  #23 frames the milestone without bloat; STATE.next_action
+  picks iter 125 ARC-4-checkpoint.md as the most-honest
+  next-scope.
+- Substrate touched: none.
+- Hash-anchor verification: not required.
+
+---
+
 ## iter 123 — BUILD-QUALITY — Gap 5 regret-quote candidate (last iter-106 backlog)
 
 - Date: 2026-05-24

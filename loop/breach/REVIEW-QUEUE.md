@@ -444,6 +444,36 @@ Format per item:
     and deferred IDENTITY-PROTECTED calls (C15-5 rephrase, the
     identity-vs-weapons question) to user direction.
 
+#23 — Round 17 — Gap 5 regret-quote backlog closure — iters 123-124 — closed (1 BUILD-QUALITY + 1 META) — **★ ITER-106 BACKLOG COMPLETE (5 of 5)**
+  Finding: iter 123 BUILD-QUALITY closed the LAST iter-106
+    backlog item (Gap 5 regret-quote). Added `RunRecap.regret_
+    quote_candidate(canonical_answer)` helper that returns a
+    CANDIDATE QUESTION (not statement — per the iter-106
+    anti-pattern note that "QUESTION beats STATEMENT" for
+    avoiding putting words in the player's mouth). Two
+    question forms based on dry-shell signal vs canonical
+    match.
+  Affordance: post-death breach-prompt now reads e.g.
+    "— playtest prompt —
+     Could you have held more HE for BUNKER ZONE?
+     Visited: warmup > bunker; skipped: maze, killbox, endgame."
+    The candidate question primes the player to confirm or
+    deny a specific hypothesis (build-vs-pressure or
+    under-budget), making the post-death debrief sharper.
+  Risk: no rubric movement (score stays ★ 50/75). The 5-layer
+    death-overlay diagnosis surface (verdict + killed-by +
+    resource + route + candidate-question) is now feature-
+    complete per the iter-106 spec. **All forward direction
+    now requires user signal (REVIEW-QUEUE #13/#14/#21) OR
+    fresh DIAGNOSE on a new surface OR explicit user-directed
+    scope.** Round size contraction continues (5/3/3/3/2/2/2)
+    — the loop has exhausted easily-cited backlog work.
+  Next round: iter 125 BUILD-QUALITY on ARC-4-checkpoint.md
+    (cross-rounds catch-up doc; future-user-value artifact);
+    iter 127+ likely Audio cues DIAGNOSE for a fresh substantive
+    surface OR explicit saturation acknowledgement. Full
+    summary: loop/breach/round-17-summary.md.
+
 #22 — Round 16 — Gap 4 route-diff (path-not-taken) backlog closure — iters 121-122 — closed (1 BUILD-QUALITY + 1 META)
   Finding: iter 121 BUILD-QUALITY closed the iter-106 Gap 4
     deferral. Added `RunRecap.route_diff_clause(full_route_

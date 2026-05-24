@@ -17,6 +17,44 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 124 — META — Round 17 close-out (★ iter-106 backlog exhaustion)
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Constraints respected: none directly (META)
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… n/a
+- Falsifications: none added
+- Files: loop/breach/round-17-summary.md (NEW — 2-iter
+  timeline + iter-106 backlog table showing all 5 gaps
+  shipped across rounds 12-17 + death-overlay diagnosis
+  surface final-state listing (5-layer: verdict + killed-by
+  + resource + route + candidate-question) + 2 loop-process
+  findings: (1) multi-round backlog closure is a valid
+  program shape when the DIAGNOSE produces numbered gaps
+  with per-gap implementation sketches; (2) structural-
+  ceiling + backlog exhaustion = genuine forward-direction
+  question for the loop), loop/breach/REVIEW-QUEUE.md (+#23
+  ★ ITER-106 BACKLOG COMPLETE framing), loop/breach/
+  PRE-MORTEMS.md.
+- Finding: ★ The iter-106 backlog is COMPLETE. 5 of 5 gaps
+  shipped (verdict_sentence wire iter 108; kill-source iter
+  109; resource_sentence iter 110; route-diff iter 121;
+  regret-quote iter 123). Death-overlay diagnosis surface
+  is now 5-layer + feature-complete per the iter-106 spec.
+  CONSULT constraint 6 ("death reason tied to resource/build/
+  route") is over-satisfied. The loop has exhausted easily-
+  cited backlog work — Round 18+ requires either fresh
+  DIAGNOSE on a new surface (audio cues candidate), user
+  signal (REVIEW-QUEUE #13/#14/#21), OR explicit user-
+  directed scope. Iter 125 BUILD-QUALITY pivots to ARC-4-
+  checkpoint.md (cross-rounds catch-up doc; future-user-
+  value artifact); iter 126 META; iter 127+ will likely
+  surface the saturation explicitly OR open audio DIAGNOSE.
+
+---
+
 ## iter 123 — BUILD-QUALITY — Gap 5 regret-quote (LAST iter-106 backlog item)
 
 - Date: 2026-05-24
