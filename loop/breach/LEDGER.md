@@ -17,6 +17,38 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 115 — DIAGNOSE — Structural-ceiling audit (Round 14 bootstrap)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 48/75 absolute · 49/75 effective   (Δ vs prior: 0 —
+  DIAGNOSE iter, no code; rubric movement comes at iter 116+
+  if REAR_GUARD ships)
+- Constraints respected: 6, 7
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… n/a (no substrate touch)
+- Falsifications: none added
+- Files: loop/breach/iter-115-structural-ceiling-audit.md (NEW —
+  per-axis structural-ceiling table covering all 8 axes at 3/5;
+  3 candidate chassis mechanics for open_killbox completion;
+  REAR_GUARD recommendation; forward-path summary), loop/breach/
+  PRE-MORTEMS.md.
+- Finding: **8 of 8 audited axes (C2, C4, C5, C7, C11, C12,
+  C13, C14) are at structural ceiling** — anchor 3 fully met,
+  anchors 4-5 [FEEL] playtest-only with no structural surrogate.
+  Combined with Round 12 C6 effective 4 + Round 13 C8 effective
+  4, the structural ceiling is 49/75 effective. This is the
+  natural "playtest gate" moment — REVIEW-QUEUE #14 is the
+  open user-action surface. WITHOUT a playtest signal, the
+  loop can still earn +1 effective via REAR_GUARD (closes the
+  open_killbox C8 anchor-3 gap → C8 absolute 3 → 4) and
+  possibly +1 via C12 anchor-4 cognitive-max re-score
+  (marginal — depth-vs-BEST visible on the death overlay).
+  Round 14 BUILD recommendation: REAR_GUARD. The loop
+  CONTINUES non-stop per PROMPT.
+
+---
+
 ## iter 114 — META — Round 13 close-out (C8 3 → 4 effective via SCOUT_TELEGRAPH)
 
 - Date: 2026-05-24

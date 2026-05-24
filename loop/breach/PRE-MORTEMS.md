@@ -24,6 +24,38 @@ Format:
 
 ---
 
+## iter 115 — DIAGNOSE — Structural-ceiling audit + Round 14 bootstrap
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (audit grounds in citable
+  evidence per anchor), 7 (proposed REAR_GUARD is a commitment-
+  change verb affordance, not a passive stat).
+- CONSULT constraints risked: none.
+- Action: walk all 3/5-axis criteria (C2, C4, C5, C7, C11, C12,
+  C13, C14) to determine which have remaining structural surface
+  vs which are at ceiling (anchors 4-5 [FEEL] playtest-only).
+  Re-audit C2 + C7 per round-13-summary §Round-14-bootstrap.
+  Identify open_killbox C8-anchor-3 completion as the cleanest
+  Round 14 BUILD-able surface.
+- Output: loop/breach/iter-115-structural-ceiling-audit.md —
+  per-axis ceiling table (8 of 8 at structural ceiling); 3
+  candidate chassis mechanics for open_killbox (REAR_GUARD /
+  TWIN_TURRET / FACING_BURST) with sentence-test comparison;
+  recommendation REAR_GUARD; honest forward-path summary.
+- Falsifiable claim: the structural ceiling is at 49/75
+  effective (after Round 12 C6 + Round 13 C8 cognitive-max
+  lifts); the only structurally-unlockable path without a
+  playtest signal is the open_killbox completion (+1 to C8
+  absolute) plus possibly a C12 anchor-4 cognitive-max
+  re-score (marginal).
+- Substrate touched: none (research iter).
+- Hash-anchor verification: not required.
+- Next: iter 116 DECISION + BUILD on REAR_GUARD (Round 14
+  Phase 2); iter 117 META Round 14 close-out.
+
+---
+
 ## iter 114 — META — Round 13 close-out + Round 14 bootstrap
 
 - Date: 2026-05-24
