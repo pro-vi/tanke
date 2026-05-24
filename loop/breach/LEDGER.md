@@ -17,6 +17,16 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 158 — STATUS-CHECK — checkpoint shipped iter 157; loop at honest idle
+
+- Date: 2026-05-24
+- Hash: 23d6a2ec3bf2821f… verified iter 156; no edits this iter.
+- Status: 1 idle iter since iter-157 checkpoint extension shipped.
+  Per iter-157 finding, no forward-direction surface remains
+  without user signal. Cron continues.
+
+---
+
 ## iter 157 — META — ARC-4-checkpoint.md extension (iters 125-156)
 
 - Date: 2026-05-24
