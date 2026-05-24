@@ -17,6 +17,45 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 120 — META — Round 15 close-out (★ 50/75 milestone published)
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0 —
+  META iter; +1 absolute happened at iter 119)
+- Constraints respected: none directly (META)
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… n/a
+- Falsifications: none added
+- Files: loop/breach/round-15-summary.md (NEW — 3-iter sprint
+  close-out: timeline + scoring + per-anchor citation table
+  for C10 + 4 loop-process findings: (1) honest re-tag is not
+  rubric-gaming when substance is satisfied; (2) 2-iter rounds
+  work for re-tag-only scope; (3) ★ 50/75 is the structural
+  ceiling; (4) loop continues non-stop per PROMPT); loop/
+  breach/REVIEW-QUEUE.md (+#21 ★ 50/75 MILESTONE prominently
+  surfacing the structural ceiling reality + Round 16+ user-
+  decision request for the 4 forward-direction options);
+  loop/breach/PRE-MORTEMS.md.
+- Finding: Round 15 is the shortest substantive round of arc 4
+  — 3 iters (118 + 119 + 120) — but lifts the cleanest +1
+  remaining at the structural ceiling. The DIAGNOSE → BUILD-
+  QUALITY → META cadence works for re-tag-only scope; the
+  iter-118 diagnosis was load-bearing (prevented impulsive
+  rubric-gaming via the declined Option C, established the
+  honest re-tag rationale that distinguishes Option D from
+  Option C). The ★ 50/75 milestone is structurally meaningful
+  — represents the maximum lift available absent user
+  playtest or scope expansion. All forward progress now
+  requires user action (REVIEW-QUEUE #13 / #14 / #21) OR
+  the loop's default fallback (D) of continuing on BUILD-
+  QUALITY scope additions per L3+R4 cap. Iter 121+ defaults
+  to (D) per the iter-89 directive ("u havent done enough"),
+  shipping QoL/polish work that doesn't lift rubric anchors
+  but doesn't violate the cap rule either.
+
+---
+
 ## iter 119 — BUILD-QUALITY — RUBRIC.md C10 anchor 5 re-tag (★ 50/75 milestone)
 
 - Date: 2026-05-24

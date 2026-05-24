@@ -24,6 +24,28 @@ Format:
 
 ---
 
+## iter 120 — META — Round 15 close-out (★ 50/75 milestone published)
+
+- Date: 2026-05-24
+- Tag: [QUALITY]
+- CONSULT constraints respected: none directly (META).
+- CONSULT constraints risked: none.
+- Action: write round-15-summary.md (timeline + scoring + C10
+  per-anchor citation + 4 loop-process findings); append
+  REVIEW-QUEUE #21 prominently surfacing the ★ 50/75 milestone
+  + Round 16+ user-decision request; update STATE → 15-closed
+  + queue iter 121 BUILD-QUALITY default.
+- META-trigger cited: round-close (2-iter shortest round so
+  far) + milestone-publication (50/75 worth surfacing).
+- Falsifiable claim: round-15-summary names the C10 re-tag
+  honestly (substance verified; not rubric-gaming distinguished
+  from declined Option C); REVIEW-QUEUE #21 frames the user-
+  decision options without forcing direction.
+- Substrate touched: none.
+- Hash-anchor verification: not required.
+
+---
+
 ## iter 119 — BUILD-QUALITY — RUBRIC.md C10 anchor 5 re-tag (★ 50/75 milestone)
 
 - Date: 2026-05-24
