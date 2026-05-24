@@ -24,6 +24,31 @@ Format:
 
 ---
 
+## iter 090 — META + BUILD — /code-review delegation + P1-1 fix (resume loop per user feedback)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- User feedback iter 89: pause was premature; the loop hadn't been
+  exhaustive; delegating agents for /code-review would surface
+  real bugs.
+- CONSULT constraints respected: 6 (the Enemy double-kill fix
+  restores death-attribution accuracy — killed signal fires
+  exactly once per enemy), all others touched by F006-codified
+  18 findings.
+- CONSULT constraints risked: none — verification + fix work.
+- Predicted failure: the /code-review pipeline returns a mountain
+  of low-confidence findings drowning the actually-important ones.
+  Mitigation: skill's merge pipeline (fingerprint dedup +
+  cross-reviewer agreement promotion + 75-anchor gate) filters to
+  18 anchor-≥75 findings, prioritized P0 → P1 → P2.
+- Falsifiable claim: ≥1 P0 finding emerges. **Observed: 2 P0 +
+  6 P1 + 10 P2.** F006 codified.
+- Substrate touched: scripts/Enemy.gd (sanctioned per arc-4
+  amendment — HP-bar HUD + iter-090 idempotency guard).
+- Hash-anchor verification plan: post-edit verify.
+
+---
+
 ## iter 089 — META — clean loop pause (per loop-skill step 6 + iter-54/61/72 reconciliation)
 
 - Date: 2026-05-23

@@ -460,6 +460,14 @@ func _update_forest_hide() -> void:
 
 
 func take_damage(amount: int) -> void:
+	# arc-4 iter 090 (P1-1 from code-review-iter-090.md): idempotency
+	# guard. queue_free() is deferred, so a same-frame second damage
+	# source (MORTAR AoE + bullet, RAM swing + collision, beam tick
+	# overlap) can re-enter take_damage on an already-dying enemy.
+	# Without this guard, killed.emit() fires twice → Spawner counts
+	# double, ammo drops re-roll, XP doubles.
+	if hp <= 0:
+		return
 	hp -= amount
 	if hp <= 0:
 		killed.emit()  # iter 101: synchronous kill notification (Spawner counts here)

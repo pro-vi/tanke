@@ -17,6 +17,74 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 090 — META + BUILD — /code-review delegation + P1-1 fix (resume loop per user feedback)
+
+- Date: 2026-05-23
+- Tag: [STRUCTURE]
+- Score: **47/75** (Δ 0 — bug fix, no rubric anchor lift).
+- User feedback iter 89: "in the loop u gotta start asking
+  delegating agents for /code-review because there are bugs. it
+  means the loop is not exhaistive. u havent done enough to
+  deserve a pause." Resumed the loop; invoked /code-review on
+  Round 9-10-11 substrate.
+- /code-review pipeline ran 5 personas (correctness, adversarial,
+  composition, invariance, reliability) + codex cross-model in
+  parallel against `721ff8d^..HEAD` diff (~800 LoC across 8 GDScript
+  files, 28 commits).
+- After fingerprint dedup + cross-reviewer agreement promotion +
+  75-anchor gate: **18 findings** (2 P0, 6 P1, 10 P2). Full report
+  in `loop/breach/code-review-iter-090.md`.
+- Highlights:
+  - **P0-1**: `_archetype_selecting` doesn't pause the world →
+    enemies spawn/shoot while player reads pick screen
+  - **P0-2**: `_revert_archetype` / `_init_archetype` hard-reset
+    `GunTimer.wait_time` → FASTER_RELOAD XP bonus wiped on every
+    archetype switch
+  - **P1-1**: Enemy.take_damage double-kill on same-frame
+    overlapping damage (deferred queue_free window)
+  - **P1-4**: RunRecap.archetype reassigned on every band change →
+    contradicts "at run start" contract → Round-11 distinctness
+    analysis corrupted by any mid-run switch
+  - **P1-5**: Depot `_player` reference not `is_instance_valid`
+    checked → crashes on freed PlayerTank
+  - **P1-6**: MortarShell `_explode`/`_spawn_burst` no parent guard
+    → crashes on scene-reload mid-flight
+- F006 codified in FALSIFICATIONS.md: iter-87 single-pass audit
+  missed all 18 findings. **Lesson: delegate /code-review at every
+  round close — discipline update for future rounds.**
+- **Fixed inline in iter 090: P1-1** — added 1-line idempotency
+  guard `if hp <= 0: return` at top of `Enemy.take_damage`. New
+  regression harness `test_breach_double_kill.gd` verifies a
+  same-frame triple-damage-source scenario doesn't double-emit
+  killed. `BREACH_DOUBLE_KILL_OK`.
+- Hash anchor: `23d6a2ec3bf2821f` preserved (Enemy.gd substrate
+  write — HUD/death-attribution logic, sanctioned per arc-4
+  amendment; hash bit-identical because the new guard is
+  defensive — same hp values still trigger queue_free on the FIRST
+  lethal call, identical to pre-fix behavior).
+- test-all 5/5; test-breach 40 → 41 (new check-breach-double-kill).
+- Falsifications: **F006 added.**
+- Substrate writes this arc: 45 → 46 (Enemy.gd ×2).
+- Files: scripts/Enemy.gd (P1-1 fix),
+  loop/breach/test_breach_double_kill.gd (NEW regression),
+  loop/breach/code-review-iter-090.md (NEW — full 18-finding
+  report), loop/breach/FALSIFICATIONS.md (F006),
+  loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md,
+  loop/breach/STATE.md, Makefile
+- Fix queue for iters 091-096+:
+  - iter 091: P0-1 (selector pause)
+  - iter 092: P0-2 (FASTER_RELOAD cache)
+  - iter 093: P1-3 + P1-5 (switch_archetype validation +
+    Depot._player guard)
+  - iter 094: P1-2 + P1-6 (_pick_archetype bypass + MortarShell
+    parent guard)
+  - iter 095: P1-4 (RunRecap.archetype contract)
+  - iter 096+: 10 P2s
+- Finding: **/code-review delegation surfaced 18 real bugs.
+  iter-87 self-audit was wrong; F006 codifies the lesson. P1-1
+  fixed inline; P0/P1 fix queue spans iters 091-095. Loop
+  resumed; substantive work for the next ~6 iters.**
+
 ## iter 089 — META — clean loop pause (per loop-skill step 6 + iter-54/61/72 reconciliation)
 
 - Date: 2026-05-23

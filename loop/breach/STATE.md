@@ -1,19 +1,19 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: paused
-iter: 89
+phase: running
+iter: 90
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
-hash_anchor_at_iter_89: 23d6a2ec3bf2821f  # bit-identical through 45 substrate writes
-substrate_writes_this_arc: 45  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×27 + Level.gd + Spawner.gd ×4 + Enemy.gd ×1
-current_round: 11-open — paused at iter 89 awaiting user signal (playtest / halt / stop / specific direction)
-current_round_phase: PAUSED — loop cleanly halted per loop-skill step 6; all pre-playtest deliverables shipped; resume on user signal
+hash_anchor_at_iter_90: 23d6a2ec3bf2821f  # bit-identical through 46 substrate writes
+substrate_writes_this_arc: 46  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×27 + Level.gd + Spawner.gd ×4 + Enemy.gd ×2
+current_round: 11-open — RESUMED iter 90 per user feedback; /code-review surfaced 18 findings (2 P0, 6 P1, 10 P2); P1-1 fixed
+current_round_phase: BUILD — Round 11 Phase 2 fix queue (iter 91+) from code-review-iter-090.md
 consult_001_status: adopted
 consult_002_status: adopted
 build_quality_iters: [10, 24, 29, 30, 88]  # 29+30 back-to-back = the ceiling signal (see iter-30 LEDGER); 88 = state-hygiene fix per iter-87 audit
-falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved, F005-open]  # F005 (iter 85): single-event stub probes don't scale to sustained-DPS hierarchy verification — need real playtest data via iter-82/83 RunRecap analyzer
+falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved, F005-open, F006-open]  # F006 (iter 90): iter-87 single-pass audit missed 18 real bugs; /code-review delegation at every round close is the discipline fix
 reachability_status: all 5 bands verified — 12/12-seed sweep (100%, floor ≥80%) — refreshed iter 61 post-Round-8
 audit_candidates: []
 last_audit: iter 26
@@ -21,7 +21,7 @@ last_consult: iter 79  # CONSULT 009 — written self-pre-mortem, Round 10 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: AWAITING USER SIGNAL — loop paused at iter 89. Resume options: (a) `playtest` invokes the playtest 5 brief (PLAYTEST-5-BRIEF.md) and surfaces REVIEW-QUEUE #14; (b) `halt` / `stop` terminates the session; (c) explicit direction (e.g. "start armor universal", "do sprite integration via gen_tile.py", "work on (something else)") bootstraps that specific iter. The loop has shipped Round 9 (4 archetypes) + Round 10 (distinctness instrumentation) + Round 11 Phase 1 (band-shape recorder/analyzer) + iter-86 armor design doc + iter-87 audit + iter-88 hygiene fix. Score 47/75 (C5=3 lifted at iter 76). No more wakeup scheduled; the next /loop invocation re-reads this STATE and proceeds per user direction.
+next_action: iter 91 — BUILD — P0-1 fix from code-review-iter-090.md: `_archetype_selecting` must pause the world. Read code-review-iter-090.md "P0-1" section. Add `get_tree().paused = true` in `_show_archetype_select`; set `process_mode = PROCESS_MODE_ALWAYS` on the archetype panel + picker code; clear `get_tree().paused = false` in `_pick_archetype`. Reorder `_physics_process` so `_dead` is checked before `_archetype_selecting`. Add a regression harness `test_breach_archetype_select_pause.gd` verifying: (a) tree paused while selector visible; (b) tree unpaused after pick; (c) Enemy ticks blocked while paused. Substrate write #28 on PlayerTank.gd. Hash-anchor verify; test-all + test-breach green.
 score: 47/75 absolute · 47/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4 (iter 76 lifts C5 2→3 via PRESSURES.md canonical-answer doc)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -30,7 +30,7 @@ round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 round9_blueprint: loop/breach/iter-062-round9-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike} + check-silhouette-gate (40 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike,double-kill} + check-silhouette-gate (41 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch, #13 archetype-sprite integration path (decision-needed), #14 ★ PLAYTEST REQUEST Round 9 complete (playtest gate), #15 archetypes-as-identities vs archetypes-as-weapons (design-direction question), #16 pressure matrix + distinctness audit (Round 10 internal)]  # #3, #7, #9, #11 CLOSED — playtests delivered
 ```
 
@@ -140,6 +140,18 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Last action
 
+- 2026-05-23 — **iter 90 (META + BUILD).** Resumed loop per user
+  feedback ("u havent done enough to deserve a pause"). Invoked
+  /code-review on Round 9-10-11 substrate: 5 personas + codex
+  cross-model in parallel returned 18 anchor-≥75 findings (2 P0,
+  6 P1, 10 P2). Full report in code-review-iter-090.md. F006
+  codified: iter-87 single-pass self-audit missed all 18.
+  **Discipline update: /code-review at every round close, not
+  self-audit.** Fixed P1-1 inline (Enemy.take_damage idempotency
+  guard, 1 line). New regression harness test_breach_double_kill
+  (41 in test-breach). Fix queue for iters 091-096+ enumerated.
+  Substrate write Enemy.gd ×2. Hash preserved; test-all 5/5;
+  test-breach 40 → 41. Δ 0. 47/75.
 - 2026-05-23 — **iter 89 (META).** Clean loop pause per loop-skill
   step 6 + iter-54/61/72 reconciliation. Meta-trigger: user keeps
   invoking /loop; loop keeps manufacturing work; both are weak
@@ -372,40 +384,30 @@ Not yet scored. All 10 criteria at 0/5. Absolute ceiling: 50.
 
 ## Next action
 
-**LOOP PAUSED at iter 89.**
+**Iter 91 — BUILD — P0-1 fix: `_archetype_selecting` must pause the world.**
 
-All pre-playtest deliverables shipped. No further wakeup scheduled.
-Resume options (write any of these to bootstrap the next iter):
+Read `loop/breach/code-review-iter-090.md` "P0-1" section.
 
-- **`playtest`** — invokes the playtest 5 flow: surfaces
-  `PLAYTEST-5-BRIEF.md` (5-run brief covering all 4 archetypes +
-  one mid-run switch run + characteristic-mistake temptations to
-  watch for) and the open ★ REVIEW-QUEUE #14 gate.
-- **`halt`** / **`stop`** — terminates the session.
-- **Explicit direction** — e.g.:
-  - "start (c) armor universal" → implements reading (a) from
-    `iter-086-armor-asymmetry-design.md`
-  - "do REVIEW-QUEUE #13 sprite integration" → starts the
-    algorithmic tint+overlay path via `tools/gen_tile.py`
-  - "work on <other surface>" → bootstraps that direction
+Implement:
+1. Add `get_tree().paused = true` in `_show_archetype_select`
+2. Set `process_mode = PROCESS_MODE_ALWAYS` on the archetype panel
+   + picker code (so they process while tree paused)
+3. Clear `get_tree().paused = false` in `_pick_archetype`
+4. Reorder `_physics_process` so `_dead` is checked BEFORE
+   `_archetype_selecting`
 
-State summary:
-- Round 9 (iters 63-71): 4-archetype tank program
-  (DEFAULT/PRISM/MORTAR/RAM) + start-pick selection + mid-run
-  depot switching + concept sprites
-- Round 10 (iters 73-79): distinctness instrumentation
-  (10-axis audit, PRESSURES matrix, pressure probes, on-death
-  prompt, PLAYTEST-5-BRIEF)
-- Round 11 Phase 1 (iters 82-83): band-shape recorder
-  (RunRecap extension) + analyzer + death-screen surface
-- iter 85: F005 — sustained-DPS hierarchy needs real playtest data
-- iter 86: armor-asymmetry design doc — linked to REVIEW-QUEUE #15
-- iter 87: substrate audit — 3 cleanup-tier observations
-- iter 88: S1/S2/S3 resolved — state-hygiene clean
+Add regression harness `loop/breach/test_breach_archetype_select_pause.gd`:
+- Spawn BreachLevel with force_archetype_select=true
+- Verify `get_tree().paused == true` after _show_archetype_select
+- Verify a stub Enemy's _physics_process doesn't tick while paused
+- Verify pause cleared after _pick_archetype call
 
-Score 47/75 (C5 lifted 2→3 at iter 76). Hash anchor
-`23d6a2ec3bf2821f` preserved across all 45 substrate writes.
-test-all 5/5; test-breach 40/40.
+Substrate write #28 on PlayerTank.gd. Hash-anchor verify
+(flag-off codepath unchanged — force_archetype_select default
+false); test-all + test-breach green.
+
+The loop runs non-stop until the user writes `playtest` / `halt` /
+`stop`, or a correctness violation fires.
 
 The loop runs non-stop until the user writes `playtest` / `halt` /
 `stop`, or a correctness violation fires.
