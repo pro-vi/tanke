@@ -95,6 +95,19 @@ var _shell_slot_bgs: Array[ColorRect] = []
 var _shell_slot_chips: Array[ColorRect] = []
 var _shell_slot_labels: Array[Label] = []
 var _shell_codex: ColorRect = null  # arc-4 iter 36: run-start shell primer
+# arc-4 iter 102 (P1-C fix from code-review-iter-100): track the live
+# band-arrival banner so a Y-boundary-oscillating player can't stack
+# Labels indefinitely. Each new band crossing frees the prior banner
+# before spawning the next.
+var _band_banner: Label = null
+# arc-4 iter 102 (P1-D fix): default + flash colors for the shell-panel
+# BG. When _fire is rejected by _swap_cooldown > 0, the panel briefly
+# flashes warm-orange — making the input rejection visible. Preserves
+# the iter-27 swap-cost design (the reload beat IS the commitment cost);
+# only the silent-drop UX failure is fixed.
+const SHELL_PANEL_BG_DEFAULT: Color = Color(0.07, 0.07, 0.09, 0.82)
+const SHELL_PANEL_BG_REJECTED: Color = Color(1.0, 0.35, 0.15, 0.95)
+const SHELL_PANEL_REJECT_FADE_S: float = 0.18
 # arc-4 iter 50 (Round 7c): persistent run-route strip — one cell per
 # depth band, in this run's shuffled order, the current band highlighted.
 var _route_panel: ColorRect = null
@@ -455,7 +468,12 @@ func _fire() -> void:
 		return
 	# arc-4 iter 27: a shell swap imposes a reload beat — no fire until
 	# it elapses. The pre-commitment cost of choosing a shell.
+	# arc-4 iter 102 (P1-D fix): flash the shell-panel BG so the reject
+	# is visible. Without this the input is silently dropped and the
+	# player reads it as a broken input, not as the commitment-cost
+	# design surface.
 	if _swap_cooldown > 0.0:
+		_flash_shell_panel_reject()
 		return
 	# arc-4 iter 66 (Round 9d): MORTAR fires a lobbed shell, not a
 	# discrete bullet — branch before the shell-consume + shoot.emit path.
@@ -1356,7 +1374,7 @@ func _build_shell_panel(canvas: CanvasLayer) -> void:
 	_shell_panel.name = "ShellPanel"
 	_shell_panel.position = Vector2(2, 209)
 	_shell_panel.size = Vector2(316, 26)
-	_shell_panel.color = Color(0.07, 0.07, 0.09, 0.82)
+	_shell_panel.color = SHELL_PANEL_BG_DEFAULT
 	canvas.add_child(_shell_panel)
 	_shell_slot_classes = [
 		BulletT.SHELL_CLASS_AP, BulletT.SHELL_CLASS_HE,
@@ -1385,6 +1403,22 @@ func _build_shell_panel(canvas: CanvasLayer) -> void:
 		_shell_panel.add_child(lbl)
 		_shell_slot_labels.append(lbl)
 	_update_shell_panel()
+
+
+# arc-4 iter 102 (P1-D fix from code-review-iter-100): a brief
+# warm-orange flash on the shell-panel BG when `_fire` is rejected
+# because `_swap_cooldown > 0`. Preserves the iter-27 swap-cost
+# reload-beat design (constraint 7 — verbs over passive stats), only
+# fixes the silent-input-drop UX failure (player would otherwise
+# read the rejection as a broken input). Tween fades back to default
+# over SHELL_PANEL_REJECT_FADE_S (~0.18s).
+func _flash_shell_panel_reject() -> void:
+	if _shell_panel == null:
+		return
+	_shell_panel.color = SHELL_PANEL_BG_REJECTED
+	var t: Tween = _shell_panel.create_tween()
+	t.tween_property(_shell_panel, "color", SHELL_PANEL_BG_DEFAULT,
+		SHELL_PANEL_REJECT_FADE_S)
 
 
 # arc-4 iter 35: refresh the shell panel — reserve counts, the selection
@@ -1553,6 +1587,13 @@ func _show_band_banner(band) -> void:
 		nm = String(band.band_name).to_upper().replace("_", " ")
 	if "dominant_pressure" in band:
 		pressure = String(band.dominant_pressure)
+	# arc-4 iter 102 (P1-C fix): free any prior live banner before
+	# spawning the next. A Y-boundary-oscillating player can emit
+	# breach_band_changed every few frames; the tween's 1.3s interval
+	# + 0.9s fade meant Labels stacked on the HUD layer until the
+	# slowest tween finished. Track + free.
+	if _band_banner != null and is_instance_valid(_band_banner):
+		_band_banner.queue_free()
 	var banner: Label = Label.new()
 	banner.name = "BandBanner"
 	banner.text = "ENTERING:  %s\n%s" % [nm, pressure]
@@ -1564,6 +1605,7 @@ func _show_band_banner(band) -> void:
 	banner.add_theme_constant_override("outline_size", 2)
 	banner.add_theme_font_size_override("font_size", 11)
 	canvas.add_child(banner)
+	_band_banner = banner
 	var tween: Tween = banner.create_tween()
 	tween.tween_interval(1.3)
 	tween.tween_property(banner, "modulate:a", 0.0, 0.9)

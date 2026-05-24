@@ -24,6 +24,43 @@ Format:
 
 ---
 
+## iter 102 — BUILD — P1-C + P1-D paired (BandBanner cleanup + fire-while-swap UX cue)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 5 (P1-C — band-arrival banner
+  is the canonical pressure-name beat; stacking banners visually
+  pollutes the legibility this beat is built for), 1 (P1-D —
+  shell-swap is a depot/safe-gate-style commitment, but the cost
+  must be VISIBLE; a silent input drop reads as "broken", not as
+  "you have to wait")
+- CONSULT constraints risked: none.
+- 2 small fixes:
+  - **P1-C** (PlayerTank.gd substrate write ×37): add
+    `_band_banner: Label = null` field. In `_show_band_banner`,
+    free any prior live banner before spawning the next. Prevents
+    HUD-layer Label leak on Y-boundary oscillation.
+  - **P1-D** (PlayerTank.gd substrate write ×38): when `_fire`
+    rejects due to `_swap_cooldown > 0`, flash the shell-panel
+    background with a warm-orange tint that tweens back to default
+    over ~0.18s. The swap-cost behavior is preserved (constraint 7's
+    "verbs over passive stats" + iter-27 design); only the silent
+    drop is fixed. Behavior unchanged; legibility added.
+- Predicted failure: P1-D's tween-driven color animation might
+  not be observable in headless harness (no frame stepping during
+  the tween). Mitigation: check `_shell_panel.color` immediately
+  after the rejected `_fire()` call — before the tween steps —
+  for the flash-start color.
+- Falsifiable claim: regression harnesses verify (a) two band
+  crossings in succession leave exactly 1 BandBanner on the HUD;
+  (b) `_fire()` while `_swap_cooldown > 0` triggers the flash
+  color on `_shell_panel`.
+- Substrate touched: scripts/PlayerTank.gd (substrate writes ×37
+  + ×38).
+- Hash-anchor verification plan: post-edit verify.
+
+---
+
 ## iter 101 — BUILD — P1-A + P1-B paired (APCR salvage latch + codex dismiss return)
 
 - Date: 2026-05-24

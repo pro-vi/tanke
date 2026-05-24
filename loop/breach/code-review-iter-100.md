@@ -170,8 +170,8 @@ operational gate but documented as awareness-tier:
 | 1 | **P0-A** Depot re-entry exploit | Depot.gd | small (4 lines) | **iter 100 ✓ FIXED** |
 | 2 | P1-A APCR steel_drilled >= + latch | Bullet.gd | small (3 lines) | **iter 101 ✓ FIXED** (harness: test_breach_steel_salvage_threshold) |
 | 3 | P1-B codex dismiss → return | PlayerTank.gd | 1 line | **iter 101 ✓ FIXED** (substrate write ×36) |
-| 4 | P1-C BandBanner cleanup | PlayerTank.gd | small | iter 102 |
-| 5 | P1-D fire-while-swap UX | PlayerTank.gd | medium | iter 102 |
+| 4 | P1-C BandBanner cleanup | PlayerTank.gd | small | **iter 102 ✓ FIXED** (harness: test_breach_band_banner_stacking, substrate ×37) |
+| 5 | P1-D fire-while-swap UX | PlayerTank.gd | medium | **iter 102 ✓ FIXED** (harness: test_breach_fire_while_swap, substrate ×38) |
 | 6 | P1-E + P1-F max ceilings | PlayerTank.gd | small | iter 103 |
 | 7 | P2-A AmmoPickup re-roll | AmmoPickup.gd | small | iter 103 |
 | 8 | P2-B-D | various | small each | iter 104+ |

@@ -2,14 +2,15 @@
 
 ```yaml
 phase: running
-iter: 101
+iter: 102
 preloop_complete: yes
 substrate_baseline_verified: yes
 hash_anchor_at_iter_0: 23d6a2ec3bf2821f  # seed 42, default procedural config
 hash_anchor_at_iter_100: 23d6a2ec3bf2821f  # bit-identical through 54 substrate writes (Depot.gd is arc-4-owned)
 hash_anchor_at_iter_101: 23d6a2ec3bf2821f  # bit-identical through 55 substrate writes — Bullet.gd APCR branch + PlayerTank.gd codex-dismiss are both off the default procedural codepath
-substrate_writes_this_arc: 55  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×36 + Level.gd + Spawner.gd ×4 + Enemy.gd ×2
-current_round: 11-open — code-review-iter-100 surfaced 11 findings (1 P0 + 6 P1 + 4 P2); P0-A fixed iter 100; P1-A + P1-B fixed iter 101; 8 remain
+hash_anchor_at_iter_102: 23d6a2ec3bf2821f  # bit-identical through 57 substrate writes — PlayerTank.gd HUD-layer additions (_band_banner field + shell-panel flash helper) are arc-4-only codepaths (breach level + loadout-gated)
+substrate_writes_this_arc: 57  # ProceduralLevel.gd ×5 + Bullet.gd ×8 + PlayerTank.gd ×38 + Level.gd + Spawner.gd ×4 + Enemy.gd ×2
+current_round: 11-open — code-review-iter-100 surfaced 11 findings (1 P0 + 6 P1 + 4 P2); P0-A + P1-A + P1-B + P1-C + P1-D fixed iters 100-102; 6 remain
 current_round_phase: BUILD — Round 11 Phase 3 fix queue from code-review-iter-100.md
 consult_001_status: adopted
 consult_002_status: adopted
@@ -22,7 +23,7 @@ last_consult: iter 79  # CONSULT 009 — written self-pre-mortem, Round 10 close
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 9 opened at iter 62. The user playtested Round 8 (positive — "getting to an interesting spot") and named the next bottleneck: the "tank that shoots discrete bullets" primitive is too thin. Via AskUserQuestion (override authority) the user chose the "Full archetype program" scope — Round 9 builds 4 mechanically-distinct tanks (Default + Prism + Mortar + Ram, Red Alert / Into-the-Breach inspired) + enemy HP primitive + HP bars + BOTH selection paths + asset visuals via /agentify image_gen. Two PROMPT overrides recorded in §Arc-4 amendments (Enemy.gd HUD writes sanctioned for HP-bar; /agentify image_gen sanctioned for assets). Blueprint iter-062-round9-architect.md. The non-stop loop builds Round 9 (9a-9h + close) until the user writes playtest / halt / stop.
-next_action: iter 102 — BUILD — code-review-iter-100 fix sprint continues. Paired fixes: P1-C (BandBanner stacking — multiple band transitions can spawn overlapping banners; need to free prior banner before spawning the next) + P1-D (fire-while-swap silent drop — pressing fire during the swap cooldown silently consumes the press; need either queue-the-press or a visible UX cue). Both small. Add regression harnesses test_breach_band_banner_stacking + test_breach_fire_while_swap. Hash-anchor verify; test-all + test-breach green. Then iter 103 = P1-E + P1-F max ceilings (max_*_reserve + max_hp unbounded) + P2-A AmmoPickup re-roll. iter 104+ = remaining P2s (toast stacking, route-strip backward repaints, MetaProgress option revocation).
+next_action: iter 103 — BUILD — code-review-iter-100 fix sprint continues. Paired fixes: P1-E (max_*_reserve unbounded growth via level-up SHELL_CAP — every 3 levels increments max_he/heat/apcr_reserve by 1, no ceiling) + P1-F (max_hp unbounded — same level-up pattern, no ceiling) + P2-A (AmmoPickup random pick wastes when player at cap — pick HE while at max_he_reserve = silent no-op). P1-E/F are paired by shared root cause (level-up SHELL_CAP/HP boost path without ceiling); pick a small constant cap (e.g. MAX_RESERVE_CEILING = 12, MAX_HP_CEILING = 10) and clamp. P2-A: re-roll on cap-hit OR weight pick by (reserve/max) deficit (lowest fill wins). Substrate writes ×39 (PlayerTank.gd P1-E/F) and AmmoPickup.gd is arc-4-owned (not substrate-counted). Add regression harnesses test_breach_level_up_ceilings + test_breach_ammo_pickup_no_waste. Hash-anchor verify; test-all + test-breach green. Then iter 104+ = remaining P2s (toast stacking, route-strip backward repaints, MetaProgress option revocation design call).
 score: 47/75 absolute · 47/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=3,C7=3,C8=3,C9=2,C10=4,C11=3,C12=3,C13=3,C14=3,C15=4 (iter 76 lifts C5 2→3 via PRESSURES.md canonical-answer doc)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -31,7 +32,7 @@ round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 round9_blueprint: loop/breach/iter-062-round9-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike,double-kill,archetype-select-pause,xp-reload-persistence,switch-archetype-validation,pick-archetype-and-mortar-guard,run-recap-archetype-contract,p2-batch1,p2-batch2,p2-batch3,depot-lifetime-pick,steel-salvage-threshold} + check-silhouette-gate (51 in test-breach aggregate)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike,double-kill,archetype-select-pause,xp-reload-persistence,switch-archetype-validation,pick-archetype-and-mortar-guard,run-recap-archetype-contract,p2-batch1,p2-batch2,p2-batch3,depot-lifetime-pick,steel-salvage-threshold,band-banner-stacking,fire-while-swap} + check-silhouette-gate (53 in test-breach aggregate)
 review_queue_open: [#1 round-1 scaffolding, #2 round-2 atomic verb, #4 round-3 + ceiling, #5 playtest verdict + Round 5 launch, #6 Round 5 close, #8 playtest verdict + Round 7 launch, #10 playtest verdict + Round 8 launch, #12 playtest verdict + Round 9 launch, #13 archetype-sprite integration path (decision-needed), #14 ★ PLAYTEST REQUEST Round 9 complete (playtest gate), #15 archetypes-as-identities vs archetypes-as-weapons (design-direction question), #16 pressure matrix + distinctness audit (Round 10 internal)]  # #3, #7, #9, #11 CLOSED — playtests delivered
 ```
 

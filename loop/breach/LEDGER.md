@@ -17,6 +17,48 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 102 — BUILD — code-review-iter-100 batch 2: P1-C + P1-D paired
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 47/75 effective · 47/75 absolute   (Δ vs prior: 0 — UX/HUD
+  cleanups with regression coverage; no rubric criterion lift)
+- Constraints respected: 5 (P1-C — band-arrival banner stays
+  legible as the canonical per-band pressure-name beat; oscillation
+  no longer pollutes the HUD), 1 (P1-D — shell-swap commitment-cost
+  is now VISIBLE, matching the depot/safe-gate "cost surfaces are
+  readable" spirit; the silent-input-drop failure mode is closed)
+- Constraints risked: none
+- Hash anchor: 23d6a2ec… verified (both fixes live in arc-4-only
+  HUD codepaths — band-banner is breach-level only, shell-panel
+  is loadout-gated; baseline procedural hash unaffected)
+- Falsifications: none added
+- Files: scripts/PlayerTank.gd (substrate writes ×37 + ×38 — added
+  _band_banner: Label tracking field + free-prior-before-spawn
+  cleanup in _show_band_banner; added SHELL_PANEL_BG_DEFAULT/
+  REJECTED/FADE_S constants + _flash_shell_panel_reject() helper;
+  _fire calls the flash before returning on swap-cooldown reject),
+  loop/breach/test_breach_band_banner_stacking.gd (NEW — 3
+  assertions: 1st crossing → 1 banner, 4 rapid oscillations → 1
+  alive banner, surviving banner is the latest),
+  loop/breach/test_breach_fire_while_swap.gd (NEW — 4 assertions:
+  initial panel = default, rejected fire → flash color, no shell
+  consumed + GunTimer not armed, tween fades back),
+  Makefile (+check-breach-band-banner-stacking +check-breach-fire-
+  while-swap; test-breach 51 → 53), loop/breach/PRE-MORTEMS.md,
+  loop/breach/STATE.md.
+- Finding: Godot auto-renames same-name children when the prior
+  is queued_for_deletion but not yet culled — discovered while
+  building the BandBanner test. The substrate fix works correctly
+  (queue_free properly cleans up the prior banner) but the new
+  banner's `name = "BandBanner"` assignment gets clobbered to
+  `@Label@37` because the name is still reserved. Test counts by
+  text-signature ("ENTERING:" prefix) as the stable identity.
+  Recorded as a generic Godot HUD gotcha worth knowing for any
+  future short-lived-Label cleanup pattern.
+
+---
+
 ## iter 101 — BUILD — code-review-iter-100 batch 1: P1-A + P1-B paired
 
 - Date: 2026-05-24
