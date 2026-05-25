@@ -28,13 +28,15 @@ Test it lands: a stranger watching the screen should be able to name the current
 
 Render every existing system to the player without them taking action.
 
+**Asset pipeline (iter-271 amendment):** /agentify image_gen is the FIRST CHOICE for HUD widget icons — it's a confirmed standing capability (Round 9 archetype concept sprites + Pro Consult 011 motif-first masks both shipped end-to-end). Use the same loop: prompt → image → palette extraction → 16×16 / 8×8 silhouette compliance → atlas pack. Procedural PIL (`tools/gen_tile.py`, `tools/gen_archetype_sprites.py`) remains the same-iter fallback if /agentify is unavailable. Hand-coded solid-color stubs only if BOTH paths fail.
+
 **Deliverables (5 widgets):**
 
-1. **Shell chips (WoT-style)** — chip row showing AP / HE / HEAT / APCR icons + reserve counts; currently-selected highlighted. Replaces the existing shell HUD with a more legible row layout. Position: top-left, under HP.
-2. **Reload bar** — linear bar OR radial arc; fills 0→100% as cooldown progresses; color matches current shell. Position: under tank sprite (so player's eye stays on combat).
-3. **Speed meter** — small numeric badge or bar showing current speed normalized to baseline (1.0× / 1.2× / 1.5× tier marks). Reflects current Loadout speed boosts. Position: top-right HUD corner.
-4. **Active cards ribbon** — current upgrade cards as small chips with 1-word labels + icon. Updates as cards stack. Position: bottom-left, above route strip.
-5. **Kill-flash** — when an enemy dies, briefly show the shell icon at hit point (~0.5s). Reinforces "which shell did this."
+1. **Shell chips (WoT-style)** — chip row showing AP / HE / HEAT / APCR icons + reserve counts; currently-selected highlighted. Icons via /agentify (4 small shell-type sprites referencing the existing palette). Replaces the existing shell HUD with a more legible row layout. Position: top-left, under HP.
+2. **Reload bar** — linear bar OR radial arc; fills 0→100% as cooldown progresses; color matches current shell. Position: under tank sprite (so player's eye stays on combat). Likely procedural (no asset gen needed — it's a colored rect).
+3. **Speed meter** — small numeric badge or bar showing current speed normalized to baseline (1.0× / 1.2× / 1.5× tier marks). Reflects current Loadout speed boosts. Position: top-right HUD corner. Likely procedural.
+4. **Active cards ribbon** — current upgrade cards as small chips with 1-word labels + icon. Updates as cards stack. Position: bottom-left, above route strip. Icons via /agentify (14 small card-art sprites, one per UpgradeKind — re-uses Round-9 archetype palette).
+5. **Kill-flash** — when an enemy dies, briefly show the shell icon at hit point (~0.5s). Reinforces "which shell did this." Re-uses the shell chip icons from widget 1.
 
 **Folded scope:** Round 23's `pick_card_on_levelup` flag (REVIEW-QUEUE #14) flips to default `true` as part of this phase — cards are now visibly part of the loop and the pick UI is part of the HUD legibility story.
 

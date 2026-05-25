@@ -17,6 +17,23 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 271 — META — asset-gen standing capability + Round 25 queued + longer-running discipline
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; capability lift + scope refinement)
+- Cron: 240s active-build pattern; explicit "no auto-pivot to 1500s STATUS-CHECK"
+- Files: STATE.md, REVIEW-QUEUE.md, iter-270-round24-architect.md, LEDGER.md
+- Finding: **User-directed amendment** — "i want the loop to be longer running... and explore how the system has figured out a way to install assets? they got new tanks image asset from chat gpt. meaning we can produce all sorts of assets now."
+- Two coupled refinements:
+  (1) **/agentify image_gen lifted from Round-9-specific to STANDING capability.** The full pipeline (prompt → image → palette extraction → 16×16/8×8 silhouette compliance → atlas pack → in-game render) shipped end-to-end at iters 142-149 via Pro Consult 011 H5. Sanctioned for HUD icons, card art, enemy variants, depot art, banner art, level decorations. Procedural PIL (`tools/gen_tile.py`, `tools/gen_archetype_sprites.py`) remains the same-iter fallback. Round 24 Phase A blueprint amended: /agentify is now FIRST CHOICE for HUD widget icons (shell chips, card ribbon, kill-flash).
+  (2) **Round 25 candidate queued: Visual identity layer.** Re-skin existing systems with /agentify-generated assets where they currently use stubs/palette swaps. Est. 30-50 iters. Opens after Round 24 Phase C ships. Six candidate surfaces logged in REVIEW-QUEUE #27 (card art, enemy variants, depot art, banner art, floor decoration, particle sprites).
+- **Longer-running discipline:** "Longer-running loop" is NOT solved by cron extension — it's solved by ensuring the loop is always in active build. Saturation (e.g. iter-200-268 70-iter idle pattern) = bug, not feature. Cron stays at 240s active-build; queued substantive surfaces (Round 25 + open-ended surface list) keep the loop bootstrapping forward without slipping into STATUS-CHECK idle.
+- The asset-gen capability also opens audio-gen as a future candidate (if /agentify or sibling MCP exposes a TTS or music backend) — flagged in iter-127 DIAGNOSE as previously-NO-GO; re-examine if user expresses interest.
+- Next iter: Phase A of Round 24 — likely shell chips first (4 icons via /agentify), reload bar (procedural), then iterate.
+
+---
+
 ## iter 270 — META — Round 24 OPEN — Stardew delta scope
 
 - Date: 2026-05-24

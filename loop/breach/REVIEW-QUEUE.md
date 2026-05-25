@@ -816,6 +816,23 @@ Items remaining OPEN (require user signal):
     table + 5 loop-process findings:
     loop/breach/round-12-summary.md.
 
+#27 — Round 25 candidate: Visual identity layer (asset-gen capability lifted to standing) — round 25 — iter 271 — open (queued, opens after Round 24)
+  Trigger: user message 2026-05-24 — "i want the loop to be longer running... and explore how the system has figured out a way to install assets? they got new tanks image asset from chat gpt. meaning we can produce all sorts of assets now."
+  Finding: /agentify image_gen is now a confirmed standing capability — the full pipeline (prompt → image → palette extraction → 16×16/8×8 silhouette compliance → atlas pack → in-game render) shipped end-to-end at iters 142-149 via Pro Consult 011 H5. Round 9 + Round 23 already used it for archetype sprites. Round 25 surface: re-skin existing systems with /agentify-generated assets where they currently use stubs or palette swaps.
+  Candidate surfaces (loop picks within the round):
+    - Upgrade card art (each of 14 cards gets its own icon, beyond the Round-24-Phase-A inline chips)
+    - Enemy role variants (depth-tier visual differentiation per role: LIGHT t1 vs LIGHT t3, etc.)
+    - Depot art (currently undifferentiated; could vary per band — bunker depot vs killbox depot)
+    - Banner / transition art (band-change banners, depot entry flourish, death overlay icon)
+    - Background/floor decoration (currently flat tile color; could be band-themed)
+    - Particle / impact sprites (shell-type-specific impact bursts; armor-bypass spark; ram-collision plume)
+  Affordance: opens a substantive multi-iter surface (est. 30-50 iters) that the loop can self-direct WITHIN once Round 24 ships. Addresses the iter-271 "longer running" directive by queueing real work, not extending idle.
+  Cadence: 240s active-build (same as Round 24).
+  Opens: after Round 24 Phase C ships, OR earlier if user redirects to it.
+  Anti-patterns: don't generate assets the player can't see meaningfully (asset volume as success metric — CONSULT §4 trap); silhouette grammar gate (CONSULT constraint 4) still applies to every generated enemy / particle / icon.
+
+---
+
 #26 — Round 24 direction: Stardew delta (HUD legibility + scaling curve + enemy-HP recurve) — round 24 — iter 270 — open (active-build)
   Trigger: user message 2026-05-24 — "i want more distinction from raw BC.. start feel more modern.. Stardew Valley delta against 牧场物語." User-named gap: systems shipped but the player can't SEE them (ammo invisible, reload invisible, speed invisible, cards implicit) + flat scaling (depth 50+ plays like depth 5).
   Finding: 3-phase sequenced program — same BC primitives, modern HUD + progression feel.
