@@ -17,6 +17,10 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 217 — STATUS-CHECK — awaiting flag-flip decision
+
+---
+
 ## iter 216 — STATUS-CHECK — awaiting flag-flip decision
 
 ---
