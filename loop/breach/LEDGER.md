@@ -17,6 +17,25 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 292 — BUILD — consult-001 reload-bar tank-adjacent pip (combat-timing UI near combat focus)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; pip mirrors top-left reload bar at combat focus; tests consult prediction 2).
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — consult-001 conf 0.84 directly: "duplicate the critical timing signal near the tank and test which one players use." Direct downstream of user's Option B + consult-001 prediction 2 framework. Gate passes.
+- Same-family check: iter 291 BUILD → 292 BUILD. Both consult-001 application; productive same-family.
+- Constraints respected: 1 (passive HUD), 7 (verb surfaced — pip IS the cooldown verb at combat focus).
+- Constraints risked: none — visual noise mitigated by alpha 0.4 when ready (faint), alpha 1.0 while filling (eye-catching).
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** post PlayerTank.gd substrate write #54. Pip built only inside `if loadout != null:` block (joins shell-panel / shell-codex / reload-bar / shell-chips / active-cards-ribbon in the same gated section). `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 85/85 PASS.
+- Falsifications: none. Predicted "pip could overlap tank sprite" — Y offset 10 (clear of 16-px sprite centered at tank position; pip starts at y=10 which is 2 px below the bottom edge of the sprite). Verified by harness Case 3.
+- Files: scripts/PlayerTank.gd (+2 field decls + 4 constants + 1 _setup_hud call + 1 _update_run_hud call + new `_build_reload_pip()` + `_update_reload_pip()` helpers — substrate write #54), loop/breach/test_breach_reload_pip.gd (NEW — 6 cases: procedural-baseline-empty / world-space-children-of-PlayerTank / Y offset / idle faint-alpha / mid-cooldown bright-alpha / shell-cycle color follows), Makefile (.PHONY + check-breach-reload-pip + test-breach aggregate; 85 targets now), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: pip is 8×2 px at (-4, +10) relative to tank center; idle width 8.0 at alpha 0.4 (faint, ready-to-fire); mid-cooldown width shrinks toward 0 at alpha 1.0 (eye-catching while filling). HE shell-cycle: fg RGB (1.0, 0.85, 0.25) matches _shell_color(HE). Children are direct PlayerTank children (NOT HUD canvas), so they follow the tank's transform during play.
+- Finding: **consult-001 reload-bar tank-adjacent dup (conf 0.84) ships.** A small reload pip lives below the tank sprite, mirroring the top-left bar's reload progress + shell color at combat focus. This is the structural test of consult prediction 2 ("top-left reload read AFTER combat, not USED during"). With both readouts present, the user can observe in playtest which they actually consult under pressure. consult_001_progress: 5-of-8-applied; backlog 3 remaining (H6 visibility classes, H1 acceptance-gate strengthen, Stardew-pacing-reframe).
+- substrate_writes_this_arc: 91 (PlayerTank.gd ×54).
+- quiet_signal_counter stays at 0 (downstream of iter-283 source).
+
+---
+
 ## iter 291 — BUILD — consult-001 Q3 recap-surfacing: route-currency on death overlay
 
 - Date: 2026-05-25

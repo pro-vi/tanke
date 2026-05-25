@@ -123,6 +123,18 @@ var _shell_codex: ColorRect = null  # arc-4 iter 36: run-start shell primer
 # block in _setup_hud, so arc-2/3 HUD is bit-identical to before.
 var _reload_bar_bg: ColorRect = null
 var _reload_bar_fg: ColorRect = null
+# arc-4 iter 292 (consult-001 conf 0.84): reload-bar tank-adjacent pip.
+# A second, smaller reload bar attached BELOW the tank sprite (world-
+# space child) so combat-focused gaze gets the cue too. Per consult:
+# "Do not move the whole HUD yet; duplicate the critical timing signal
+# near the tank and test which one players use." Both fields null on
+# arc-2/3 baseline (loadout-gated).
+var _reload_pip_bg: ColorRect = null
+var _reload_pip_fg: ColorRect = null
+const RELOAD_PIP_W: float = 8.0
+const RELOAD_PIP_H: float = 2.0
+const RELOAD_PIP_X: float = -4.0   # centered horizontally on tank
+const RELOAD_PIP_Y: float = 10.0   # 2 px clear of tank's 16-px sprite
 # arc-4 iter 275 (Round 24 Phase A widget 3): speed meter. Top-right
 # column under BEST; displays SPD N.N× normalized to BC baseline (32).
 # Built only inside loadout-gated block — arc-2/3 bit-identical.
@@ -2017,6 +2029,7 @@ func _setup_hud() -> void:
 		_build_reload_bar(canvas)
 		_build_shell_chips(canvas)
 		_build_active_cards_ribbon(canvas)
+		_build_reload_pip()
 		# arc-4 iter 42 (Round 6d, stakes): the live best-depth readout —
 		# the depth chase, always visible (not just on the death recap).
 		_run_best_depth = _load_best_depth()
@@ -2308,6 +2321,49 @@ func _update_shell_chips() -> void:
 			_shell_chip_labels[i].text = "AP"
 		else:
 			_shell_chip_labels[i].text = "%d" % _shell_reserve(sc)
+
+
+# arc-4 iter 292 (consult-001 conf 0.84): build the tank-adjacent
+# reload pip as a child of the PlayerTank (world-space, follows the
+# tank's transform). Caller gates on loadout != null, so arc-2/3 mode
+# never builds either ColorRect.
+func _build_reload_pip() -> void:
+	_reload_pip_bg = ColorRect.new()
+	_reload_pip_bg.name = "ReloadPipBG"
+	_reload_pip_bg.position = Vector2(RELOAD_PIP_X, RELOAD_PIP_Y)
+	_reload_pip_bg.size = Vector2(RELOAD_PIP_W, RELOAD_PIP_H)
+	_reload_pip_bg.color = Color(0.07, 0.07, 0.09, 0.7)
+	_reload_pip_bg.z_index = 60
+	add_child(_reload_pip_bg)
+	_reload_pip_fg = ColorRect.new()
+	_reload_pip_fg.name = "ReloadPipFG"
+	_reload_pip_fg.position = Vector2(RELOAD_PIP_X, RELOAD_PIP_Y)
+	_reload_pip_fg.size = Vector2(RELOAD_PIP_W, RELOAD_PIP_H)
+	_reload_pip_fg.color = _shell_color(current_shell)
+	_reload_pip_fg.z_index = 61
+	add_child(_reload_pip_fg)
+
+
+# arc-4 iter 292: per-frame width + color update for the pip. Mirrors
+# the top-left reload bar's logic (iter 274). Faint when ready (alpha
+# 0.4 at full width — confirms readiness without competing); bright
+# while filling (alpha 1.0 — eye-catching cooldown).
+func _update_reload_pip() -> void:
+	if _reload_pip_fg == null:
+		return
+	var progress: float = 1.0
+	if has_node("GunTimer"):
+		var gt: Timer = $GunTimer
+		if gt.time_left > 0.0 and gt.wait_time > 0.0:
+			progress = clampf(1.0 - (gt.time_left / gt.wait_time), 0.0, 1.0)
+	_reload_pip_fg.size.x = RELOAD_PIP_W * progress
+	var base: Color = _shell_color(current_shell)
+	if progress >= 1.0:
+		# Ready-to-fire: fade to avoid sprite-competing visual noise.
+		_reload_pip_fg.color = Color(base.r, base.g, base.b, 0.4)
+	else:
+		# Mid-cooldown: full saturation, eye-catching.
+		_reload_pip_fg.color = Color(base.r, base.g, base.b, 1.0)
 
 
 # arc-4 iter 275: per-frame text update for the speed meter. Computes
@@ -2757,6 +2813,9 @@ func _update_run_hud() -> void:
 	# arc-4 iter 274 (Round 24 Phase A widget 2): refresh reload bar.
 	if _reload_bar_fg != null and loadout != null:
 		_update_reload_bar()
+	# arc-4 iter 292 (consult-001 conf 0.84): refresh tank-adjacent pip.
+	if _reload_pip_fg != null and loadout != null:
+		_update_reload_pip()
 	# arc-4 iter 275 (Round 24 Phase A widget 3): refresh speed meter.
 	if _speed_label != null and loadout != null:
 		_update_speed_meter()

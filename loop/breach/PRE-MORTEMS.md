@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 292 — BUILD — consult-001 reload-bar tank-adjacent pip (combat-timing UI near combat focus)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1, 7 (verb-not-stat — reload pip surfaces the COOLDOWN verb visually). Consult prediction 2 (0.84): "Top-left is coherent, but probably not optimal as the only reload readout. Keep the top-left reload bar paired with shell chips, but add a tiny tank-adjacent reload affordance: a 6-10px cooldown pip, ring, or under-tank bar that fills in the current shell color. Do not move the whole HUD yet; duplicate the critical timing signal near the tank and test which one players use."
+- CONSULT constraints risked: visual noise — tank-adjacent pip could compete with the tank sprite. Mitigated by: small size (6-8 px wide, 1-2 px tall), faint alpha when full (ready to fire), brighter color while filling.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — consult-001's prediction 2 says the top-left bar will be IGNORED under pressure; the tank-adjacent pip is the structural test of that prediction. Direct downstream of user's Option B (Q1 sprint) + the iter-290 brief's prediction-scoring framework. Gate passes.
+- Same-family check: iter 291 BUILD → 292 BUILD. Both downstream of consult-001 application; productive same-family.
+- Predicted failure: pip placement could overlap the tank sprite badly (sprite is 16×16 centered at tank position; pip below at y=+10 should be 2 px clear of the bottom edge). Mitigation: harness verifies bg.position.y is ≥+9 (offset from tank center).
+- Falsifiable claim: post-edit, when loadout != null, PlayerTank has `_reload_pip_bg` + `_reload_pip_fg` ColorRect children positioned below the tank sprite. `_reload_pip_fg.size.x` updates in `_update_run_hud` matching the same progress formula as the top-left bar. fg color matches current shell. Procedural baseline: pip not built (loadout-gated; both fields null).
+- Sentence test: n/a.
+- Substrate touched: scripts/PlayerTank.gd (substrate write #54 — loadout-gated additions: 2 fields + 1 build method + 1 update method + 1 call site in _update_run_hud).
+- Hash-anchor verification plan: post-edit `make test` + procedural oracle on seed 42 → must equal 23d6a2ec3bf2821f… (pip built only inside `if loadout != null:` block; procedural baseline never reaches the build code).
+
+---
+
 ## iter 291 — BUILD — consult-001 Q3 recap-surfacing: route-currency on death overlay
 
 - Date: 2026-05-25
