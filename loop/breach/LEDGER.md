@@ -17,6 +17,10 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 203 — STATUS-CHECK — awaiting flag-flip decision on pick_card_on_levelup
+
+---
+
 ## iter 202 — STATUS-CHECK — Round 23 closed; awaiting user decision on pick_card_on_levelup flag
 
 ---
