@@ -24,6 +24,23 @@ Format:
 
 ---
 
+## iter 287 — BUILD — Q1 sprint mid-correction: Q1ProofRoom parser module + grid helpers (sprint extends 4 → 6-7 iters)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1, 5 (proof room dominant pressure preserved in grid layout), 7 (verbs not stats — helpers expose VERB-ONLY queries like gate_lanes() / player_starts()).
+- CONSULT constraints risked: scope drift — original blueprint had iter 287 as REVIEW (playtest brief). This iter is correcting course because iter 284 under-shipped the "spawn gate elements" deliverable. Mitigation: the correction is transparent (PRE-MORTEM + LEDGER both name the slip); the user-authorized sprint estimate was 8-15 iters → 6-7 is well within budget.
+- Honest gap admission: iter 284 said "Playable scene integration is iter 285+" but iters 285-286 turned out to be storage + wiring, not the scene integration. Iter 287 starts the actual playable integration with the smallest unbroken-unit work (a parser module). Iters 288-289 will build the scene + spawn logic + per-lane harness. Iter 290 closes with the brief.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — the parser module is the foundation that lets iter 288's playable scene instantiate the 4 lanes. Without it, the playable claim stays vapor. Gate passes; the work directly serves the Q1 reframe the user chose.
+- Same-family check: iter 284-286 BUILD streak (3 BUILDs) → iter 287 BUILD. 4 consecutive BUILDs, all anchor-tied to the Q1 sprint. Permitted (rule forbids NO-SIGNAL families). Framing-audit gate explicitly re-checked above with citable evidence.
+- Predicted failure: parser could disagree with the ASCII layout file's narrative (the canonical design doc); diff between embedded grid + narrative doc could drift over time. Mitigation: harness asserts the embedded grid has 30 rows + 21 cols + the 4 lane gates at row 14 + player starts at row 29 — these properties match the narrative file.
+- Falsifiable claim: post-edit, Q1ProofRoom.TILE_GRID is a PackedStringArray with 30 entries each 21 chars wide; helpers terrain_at(col, row), gate_lanes(), player_start_columns() return the expected values per the ASCII narrative.
+- Sentence test: n/a (no upgrade introduced).
+- Substrate touched: NONE — scripts/Q1ProofRoom.gd is arc-4-owned, NEW file.
+- Hash-anchor verification plan: no substrate write → hash preserved. Re-verify post-edit.
+
+---
+
 ## iter 286 — BUILD — Q1 sprint 3/4: wire Bullet → PlayerTank → RunRecap route-currency hit recording
 
 - Date: 2026-05-25

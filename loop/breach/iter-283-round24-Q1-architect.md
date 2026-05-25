@@ -72,7 +72,21 @@ A single visible REWARD at the goal (a depot cache containing 2-3 cards + a shel
 
 ---
 
-## Deliverables (per-iter)
+## Deliverables (per-iter) — REVISED iter 287 (sprint extends 4 → 6-7 iters)
+
+**Original 4-iter plan was over-optimistic.** Iter 284 shipped the design artifact + design-verification harness but punted "spawn the gate elements" forward. Iters 285-286 took storage + wiring (per plan). At iter 287 mid-correction, the playable scene integration still needs ≥2 iters of work. Revised plan below; total 6-7 iters, well within user's iter-283 estimate of 8-15.
+
+| Iter | Phase | Shipped |
+|---|---|---|
+| 284 | BUILD | BreachBand resource + ASCII narrative layout + design-verification harness |
+| 285 | BUILD | RunRecap route-currency dicts + record_shot_hit API |
+| 286 | BUILD | Bullet→PlayerTank→RunRecap wiring (is_route_gate meta routing) |
+| 287 | BUILD | Q1ProofRoom parser module (TILE_GRID + lane helpers; foundation for scene) |
+| 288 | BUILD | scenes/Q1ProofRoom.tscn + spawn logic (terrain + enemies + player + goal) |
+| 289 | BUILD | per-lane playthrough harness (sim drives a virtual player through each lane) |
+| 290 | REVIEW | playtest brief + REVIEW-QUEUE close |
+
+Original per-iter sections preserved below for traceability:
 
 ### iter 284 — BUILD — proof room as a new BreachBand
 

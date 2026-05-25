@@ -17,6 +17,26 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 287 — BUILD — Q1 sprint mid-correction: Q1ProofRoom parser module + sprint plan revised (4 → 6-7 iters)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; scaffold iter; anchor lift deferred to playable harness in iter 289).
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — the parser module is the foundation for iter 288's playable scene; without it the "playable proof room" claim stays vapor. Continues serving Option B explicitly chosen at iter 283. Gate passes.
+- Same-family check: iters 284-287 = 4 consecutive BUILDs all anchor-tied to the Q1 sprint blueprint. Permitted (rule targets NO-SIGNAL families).
+- HONEST GAP NAMED: iter 284 said "Playable scene integration is iter 285+" but iters 285-286 turned out to be storage + wiring (per plan), not scene integration. The "spawn gate elements" deliverable from iter-284's blueprint section was effectively skipped. Iter 287 starts the actual playable integration. The blueprint iter-283-round24-Q1-architect.md is REVISED this iter with a 7-iter sprint table (instead of 4) and a verbatim note explaining the mid-correction.
+- Constraints respected: 1, 5 (proof room dominant pressure preserved in TILE_GRID), 7 (helpers expose verb queries: gate_cells_for_lane / player_start_col / terrain_at).
+- Constraints risked: scope correction — addressed by explicit naming in LEDGER + blueprint, and the user-authorized estimate (8-15 iters) accommodates the revised 7-iter plan.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** — Q1ProofRoom.gd is arc-4-owned (NEW file, not in any of the 4 substrate freeze layers). `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 81/81 PASS.
+- Falsifications: none. Predicted "parser could disagree with the ASCII narrative file" — TILE_GRID has its own coverage (this iter's harness) AND the narrative file has its own coverage (iter-284's harness via check-breach-q1-proof). Both verify the same DESIGN PROPERTY (5 bricks at HE gate, 5 steel at APCR gate, 1 Heavy at HEAT gate, ≥1 Light at AP gate, no overlap). Drift between the two would be caught by either harness.
+- Files: scripts/Q1ProofRoom.gd (NEW; class_name Q1ProofRoom with const TILE_GRID 30×21 + LANES dict + helpers terrain_at / player_start_col / gate_cells_for_lane / validate_grid / grid_to_pixel), loop/breach/test_breach_q1_proof_parser.gd (NEW; 6 cases — grid valid, player starts per lane, gate cells per lane, goal row span, OOB defensive, pixel math), Makefile (.PHONY + check-breach-q1-proof-parser + test-breach aggregate; 81 targets now), loop/breach/iter-283-round24-Q1-architect.md (REVISED with 7-iter sprint table), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: TILE_GRID is 30 rows × 21 cols. Player starts: HE@col2, APCR@col5, HEAT@col10, AP@col18. Gate cells: HE=5B / APCR=5S / HEAT=1H / AP=2L (matches the design property). Goal row has X spans across all 4 lanes. Out-of-bounds reads return "". 16-px grid math correct.
+- Finding: **Q1 sprint mid-correction lands.** Q1ProofRoom parser module is the foundation for iter 288's playable scene. Sprint plan revised from 4 iters to 7 iters; new plan in blueprint. Honest read: iter 287 was *supposed to be* REVIEW (brief); building the parser was the work I should have done in iter 284 but didn't. The framing-audit gate caught the gap at iter-287 start (when I went to write the brief and realized there was nothing to brief about). Per /meta from iter 282: "execution discipline substituting for direction-audit discipline" — this iter's correction is exactly the kind of mid-sprint re-audit that gate was added to encourage.
+- substrate_writes_this_arc: unchanged at 88 (Q1ProofRoom.gd is NEW arc-4-owned, not a substrate write).
+- quiet_signal_counter stays at 0 (downstream of iter-283 source).
+
+---
+
 ## iter 286 — BUILD — Q1 sprint 3/4: wire Bullet → PlayerTank → RunRecap route-currency hit recording
 
 - Date: 2026-05-25
