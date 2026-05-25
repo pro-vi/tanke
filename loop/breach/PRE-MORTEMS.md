@@ -24,6 +24,27 @@ Format:
 
 ---
 
+## iter 289 — BUILD — Q1 sprint 6/7: per-lane gate-clearance + route-currency verification harness
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1, 2 (4 shell classes), 3 (each shell has its lane), 5 (proof room dominant pressure), 6 (route attribution → recap), 7 (verbs not stats — the harness asserts VERB-LEVEL properties: "HE blasts brick cluster", "AP bounces off steel", "HEAT 2-shots armored Heavy", "APCR drills steel").
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — this is the CLOSING verification of "shells are route currency, not just damage flavor" as a runtime property, not a design claim. Final structural assertion before user playtest. Gate passes.
+- Same-family check: iters 284-289 = 6 consecutive BUILDs all anchor-tied to Q1 sprint. Permitted (rule targets NO-SIGNAL families); framing-audit gate continues to verify user-trigger alignment.
+- Predicted failure: bullet body-collision may not directly trigger via `_on_body_entered` in headless mode without proper Area2D setup, OR the bullet's iter-286 wiring (`_try_record_shot_hit`) may not see lvl.player if scene is the bullet's parent rather than Q1ProofRoomScene. Mitigation: use the iter-286 FakeLevel pattern OR fire bullets via player.shoot signal so the bullet ends up as child of Q1ProofRoomScene which (we need to verify) has a `player` property — actually Q1ProofRoomScene doesn't have a `player` property (just `spawned_player`). Risk: route-currency wiring may silently no-op due to missing parent.player lookup. Mitigation 2: I'll add a `player` property to Q1ProofRoomScene that aliases spawned_player. Substrate touch only on arc-4-owned Q1ProofRoomScene.gd.
+- Falsifiable claim: harness asserts per-lane:
+  - HE shot at brick cluster center → ≥1 brick destroyed + run_recap.shells_spent_on_routes[HE] >= 1
+  - AP shot at steel gate → steel NOT destroyed (cross-pollination: AP bounces) + route hit NOT recorded
+  - APCR shot at steel gate → steel destroyed + run_recap.shells_spent_on_routes[APCR] >= 1
+  - HEAT shot at entrenched Heavy → Heavy hp reduced by 2× (= 2 damage; with hp=3 takes 2 HEAT shots) + route hit recorded
+  - AP shot at clearance-row Light (NOT gate row) → Light dies + run_recap.shells_spent_on_combat[AP] >= 1 (combat, not route)
+- Sentence test: n/a.
+- Substrate touched: scripts/Q1ProofRoomScene.gd (arc-4-owned, NOT in substrate freeze list) — add `var player: Node = null` alias so Bullet's `lvl.player` reach works in this scene. NO Layer 1/2/3/4 substrate writes.
+- Hash-anchor verification plan: post-edit `make test` + procedural oracle on seed 42 → must equal 23d6a2ec3bf2821f… (Q1ProofRoomScene.gd is arc-4-owned; ProceduralLevel never loads it).
+
+---
+
 ## iter 288 — BUILD — Q1 sprint 5/7: Q1ProofRoom playable scene + spawn logic (first playable artifact)
 
 - Date: 2026-05-25

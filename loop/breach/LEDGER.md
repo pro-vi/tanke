@@ -17,6 +17,28 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 289 — BUILD — Q1 sprint 6/7: per-lane gate playthrough harness + APCR-steel route-currency wiring fix
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; verification + bug fix found via the verification).
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — final structural verification of "shells are route currency" claim at runtime, AND closes a wiring gap the harness itself surfaced. Gate passes.
+- Same-family check: iters 284-289 = 6 consecutive BUILDs all anchor-tied to Q1 sprint. Permitted; framing-audit gate continues to verify user-trigger alignment per iter-283 amendment.
+- Constraints respected: 1, 2 (4 shells), 3, 5 (route currency), 6 (route attribution), 7 (verb-not-stat — APCR-drill IS the canonical route-verb, now properly tracked).
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** post Bullet.gd substrate write #12 (added `_try_record_shot_hit(body)` inside `body.has_method("breach")` branch of APCR-steel path). Both gates hold:
+  - APCR-steel branch only fires when shell_class == SHELL_CLASS_APCR (procedural baseline fires AP, never APCR)
+  - `_try_record_shot_hit` itself is gated on `player.has_method("record_shot_hit")` + `body.has_meta("is_route_gate")` (arc-2/3 bodies and players miss either gate)
+  - Net: arc-2/3 path unchanged. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 83/83 PASS.
+- Falsifications: harness surfaced an honest wiring gap mid-iter — APCR drilling steel was NOT recording as route-currency because Bullet.gd's APCR-steel branch returns early (line 136) BEFORE the standard `_try_record_shot_hit` call site (line 168). The drill IS the canonical "shells are route currency" verb (APCR is the ONLY shell that can pass steel, per consult-001 Q1), so missing its record was a real bug. Fixed inline: added `_try_record_shot_hit(body)` inside the steel-drill branch right after `body.breach()`. Harness now ASSERTS the APCR route hit (was a print, now a hard check). The same pattern that caught iter-284's brick-count mismatch caught this gap.
+- Files: scripts/Bullet.gd (substrate write #12 — APCR-steel branch route-record fix; gated on body.has_method("breach") so SteelBlock instances that respond to breach are tracked; SteelTileMap cells that don't have breach skip silently), scripts/Q1ProofRoomScene.gd (+ `var player: Node = null` alias + assignment after spawn_player so Bullet's `"player" in lvl` reach pattern works in this scene), loop/breach/test_breach_q1_proof_playthrough.gd (NEW — 5 per-lane runtime assertions: HE blasts brick / AP bounces off steel / APCR drills steel + route hit / HEAT 2× armored Heavy / AP combat-records on clearance Light), Makefile (.PHONY + check-breach-q1-proof-playthrough + test-breach aggregate; 83 targets now), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: at runtime in Q1ProofRoom.tscn, 1 HE shot at brick (col 2, row 14) → brick destroyed + shells_spent_on_routes[HE] 0→1; 1 AP shot at steel (col 6, row 14) → steel INTACT (cross-pollination preserved); 1 APCR shot at steel (col 7, row 14) → steel breached + shells_spent_on_routes[APCR] 0→1; 1 HEAT shot at Heavy (col 12, row 14) → hp 3→1 (2× damage) + shells_spent_on_routes[HEAT] 0→1; 1 AP shot at clearance Light (row 3 or 4) → shells_spent_on_combat[AP] 0→1, NOT routes.
+- Finding: **"Shells are route currency" is now a RUNTIME ASSERTION, not a design slogan.** The harness verifies — at the scene level, on the real playable artifact — that each shell class has exactly its expected effect on each gate type, including the critical cross-pollination claim (AP CANNOT pass steel; only APCR drills it). Plus the iter-286 wiring gap (APCR-steel not recording) was surfaced + fixed in the same iter. Q1 sprint 6/7 done. Iter 290: playtest brief + REVIEW-QUEUE close + CONSULT-LEDGER prediction-scoring trigger; sprint completes.
+- substrate_writes_this_arc: 89 (Bullet.gd ×12; PlayerTank.gd ×52; etc — Bullet.gd incremented this iter).
+- quiet_signal_counter stays at 0 (downstream of iter-283 user-direction source).
+
+---
+
 ## iter 288 — BUILD — Q1 sprint 5/7: Q1ProofRoom.tscn playable scene + spawn logic
 
 - Date: 2026-05-25

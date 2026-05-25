@@ -124,6 +124,14 @@ func _on_body_entered(body: Node) -> void:
 		if body.has_method("breach"):
 			body.breach()
 			_steel_drilled += 1
+			# arc-4 iter 289 (Q1 sprint 6/7): APCR drilling steel IS
+			# the canonical "shells as route currency" verb. Record it
+			# as a route hit when the body carries is_route_gate meta
+			# (set by Q1ProofRoomScene at gate-row spawns). Without this,
+			# the iter-286 wiring missed the APCR-steel path because the
+			# steel branch returns early before the standard hit-record
+			# call site. Method-existence-gated via _try_record_shot_hit.
+			_try_record_shot_hit(body)
 		# Steel Salvage (iter 41, retuned iter 49): drilling
 		# >=STEEL_SALVAGE_THRESHOLD blocks with one shot refunds 1 APCR
 		# — once per shot — if the player owns the upgrade.

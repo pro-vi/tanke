@@ -41,6 +41,13 @@ var spawned_terrain: Array[Node] = []
 var spawned_enemies: Array[Node] = []
 var spawned_player: Node = null
 
+# arc-4 iter 289: `player` alias matches Level.gd's @onready var player
+# so Bullet's iter-24 `"player" in lvl` reach works in this scene
+# (Bullet's _try_record_shot_hit needs lvl.player to forward shot-hit
+# events to RunRecap). Without this alias, the route-currency wiring
+# silently no-ops on bullets fired in the proof room.
+var player: Node = null
+
 
 func _ready() -> void:
 	_spawn_grid()
@@ -111,3 +118,5 @@ func _spawn_player() -> void:
 	spawned_player.loadout = LoadoutT.new()
 	spawned_player.add_to_group("player")
 	add_child(spawned_player)
+	# arc-4 iter 289: expose alias for Bullet's lvl.player reach.
+	player = spawned_player
