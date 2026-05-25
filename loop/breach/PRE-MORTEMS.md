@@ -24,6 +24,29 @@ Format:
 
 ---
 
+## iter 288 — BUILD — Q1 sprint 5/7: Q1ProofRoom playable scene + spawn logic (first playable artifact)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1 (no combat modal — scene runs combat directly), 4 (silhouette/grammar — gate cells use existing BrickBlock + SteelBlock + Enemy assets; no new silhouettes), 5 (proof room is the specific climb problem per CONSULT 5), 7 (verbs — gate-row spawns get is_route_gate meta so the wiring fires verb-correctly per iter-286).
+- CONSULT constraints risked: 4 if I forget to use existing assets — mitigated by preloading BrickBlock.tscn / SteelBlock.tscn / Enemy.tscn / PlayerTank.tscn.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — this is the first artifact the user can actually launch and play. Without it, the prior 4 iters (284-287) are pure infrastructure. Gate passes.
+- Same-family check: iters 284-288 = 5 consecutive BUILDs all anchor-tied to the Q1 sprint blueprint. Permitted (rule targets NO-SIGNAL families); framing-audit gate continues to track user trigger.
+- Predicted failure: spawn loops over TILE_GRID's 630 cells could spam errors if grid coords don't map cleanly to body positions. Mitigation: harness asserts exactly the right number of bodies of each type (5 bricks at HE gate, 5 steel at APCR gate, 1 Heavy at HEAT gate, 2 Lights at AP gate, ≥1 Light + 1 Heavy in clearance rows). Off-by-one in row/col indexing would be caught immediately.
+- Falsifiable claim: post-edit, the harness instantiates Q1ProofRoom.tscn; after one frame the scene contains:
+  - 5 BrickBlock instances at gate row 14, cols 0-4 (HE lane)
+  - 5 SteelBlock instances at gate row 14, cols 5-9 (APCR lane)
+  - 1 Heavy Enemy instance at gate row 14, col 12 (HEAT lane)
+  - 2 Light Enemy instances at gate row 14, cols 15+17 (AP lane patrol)
+  - Some grass/Light clearance instances scattered in rows 3-5 and 16-23
+  - Exactly 1 PlayerTank, positioned at the HE lane's player-start (col 2, row 29) for V1 auto-pick
+  - All gate-row bodies (bricks, steels, Heavy, Lights at gate row) have set_meta("is_route_gate", true)
+- Sentence test: n/a.
+- Substrate touched: NONE — scenes/Q1ProofRoom.tscn and scripts/Q1ProofRoomScene.gd are arc-4-owned (NEW). No Layer 1/2/3 substrate writes.
+- Hash-anchor verification plan: post-edit `make test` + procedural oracle on seed 42 → must equal 23d6a2ec3bf2821f… (the scene is standalone; ProceduralLevel never references it; procedural baseline path unchanged).
+
+---
+
 ## iter 287 — BUILD — Q1 sprint mid-correction: Q1ProofRoom parser module + grid helpers (sprint extends 4 → 6-7 iters)
 
 - Date: 2026-05-25

@@ -17,6 +17,26 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 288 — BUILD — Q1 sprint 5/7: Q1ProofRoom.tscn playable scene + spawn logic
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; first playable artifact, but anchor lift deferred until iter 289's per-lane playthrough harness + iter 290's user playtest).
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — Q1ProofRoom.tscn is the first artifact the user can actually launch and feel. Without it, iters 284-287 were pure infrastructure with no playable surface. Gate passes.
+- Same-family check: iters 284-288 = 5 consecutive BUILDs all anchor-tied to the Q1 sprint blueprint (now extended to 7 iters per iter-287 mid-correction). Permitted (rule targets NO-SIGNAL families); framing-audit gate continues to track user trigger.
+- Constraints respected: 1 (no combat modal — scene runs combat directly), 4 (silhouette/grammar preserved — reused BrickBlock/SteelBlock/Enemy assets), 5 (proof room IS the specific climb problem), 7 (gate-row spawns get is_route_gate meta so verbs map correctly via iter-286 wiring).
+- Constraints risked: none — V1 auto-picks HE lane for the player; iter 289 adds a pick UI.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** — scenes/Q1ProofRoom.tscn + scripts/Q1ProofRoomScene.gd are NEW arc-4-owned files; ProceduralLevel never references them; procedural baseline path unchanged. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 82/82 PASS.
+- Falsifications: 1 mid-iter, caught by harness:
+  - First harness run reported "HE gate has 1 bricks, want 5" — Godot auto-renames duplicate child node names to "@StaticBody2D@N" form, losing the "BrickBlock"/"SteelBlock" substring the harness used for disambiguation. Fix: Q1ProofRoomScene.gd now sets stable per-cell names like "BrickBlock_0_14", "SteelBlock_5_14", "Enemy_Heavy_12_14". Harness's substring match now reliably distinguishes types. (NO F-number — caught + fixed within one iter, no structural bug.)
+- Files: scenes/Q1ProofRoom.tscn (NEW; Node2D root + Camera2D + attached script), scripts/Q1ProofRoomScene.gd (NEW; _ready spawns BrickBlocks at B cells / SteelBlocks at S cells / Enemy at L/H cells with type-correct hp+armored group / PlayerTank at HE lane start with Loadout assigned; gate-row spawns marked is_route_gate=true via set_meta), loop/breach/test_breach_q1_proof_scene.gd (NEW; 8 cases — instantiation / gate composition 5B/5S/1H/2L / 13 gate bodies all meta-tagged / 1 PlayerTank at HE start (16, 232) / loadout assigned), Makefile (.PHONY + check-breach-q1-proof-scene + test-breach aggregate; 82 targets now), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: scene spawns 10 terrain bodies (5 bricks + 5 steel) + 6 enemies (1 Heavy + 2 Lights at gate row + 3 Lights at clearance rows 3-5) + 1 PlayerTank at (16, 232). All 13 gate-row bodies carry `is_route_gate=true` meta. PlayerTank.loadout assigned → loadout-gated HUD + RunRecap activate when player fires.
+- Finding: **Q1 proof room is now PLAYABLE.** Iter-286's Bullet→PlayerTank→RunRecap wiring + iter-285's storage + iter-284's design intent + iter-287's parser module + iter-288's scene + spawn logic compose into an end-to-end playable artifact. The user can run `godot --path . scenes/Q1ProofRoom.tscn` and walk into the 4-lane proof room. iter 289 adds the per-lane playthrough harness (sim drives a virtual player through each lane verifying gate-clearance times match the design property). iter 290 closes with the playtest brief.
+- substrate_writes_this_arc: unchanged at 88 (no substrate touch — new arc-4-owned files only).
+- quiet_signal_counter stays at 0 (downstream of iter-283 user-direction source).
+
+---
+
 ## iter 287 — BUILD — Q1 sprint mid-correction: Q1ProofRoom parser module + sprint plan revised (4 → 6-7 iters)
 
 - Date: 2026-05-25
