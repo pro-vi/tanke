@@ -17,6 +17,34 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 197 — BUILD — Round 23 Phase 1 — UpgradeCatalog data module
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Hash anchor: 23d6a2ec3bf2821f… VERIFIED (NEW file scripts/
+  UpgradeCatalog.gd; arc-4-owned; not in any substrate freeze list;
+  not loaded by procedural baseline).
+- Files: scripts/UpgradeCatalog.gd (NEW — 14-CardKind enum + 4
+  per-archetype pool arrays + pool_for/label_for/sentence_for
+  static helpers); Makefile (+ check-breach-upgrade-catalog target);
+  loop/breach/test_breach_upgrade_catalog.gd (NEW harness, 4 cases).
+- Finding: Phase 1 of Round 23 blueprint shipped. Each archetype
+  pool has exactly 4 cards (v1 scope cap):
+    DEFAULT: HP+1, FASTER_RELOAD, SHELL_CAP+1, MOMENTUM
+    PRISM:   BEAM_DPS_UP, BEAM_RANGE_UP, BEAM_PIERCE, HP+1
+    MORTAR:  AOE_DAMAGE_UP, AOE_RADIUS_UP, FASTER_LOB, HP+1
+    RAM:     SWING_DMG_UP, COLLISION_UP, LONGER_SPRINT, HP+2
+  14 unique CardKinds (HP+1 shared by 3 pools). pool_for(arch)
+  has DEFAULT-fallback for out-of-range values (matches iter-93
+  P1-3 defensive pattern). Each card has label + sentence-test
+  description; harness verifies non-empty coverage. test-all 5/5;
+  test-breach 69/69 (was 68). Score 50/75 unchanged.
+  Next: iter 198 BUILD Phase 2 — pick-1-of-3 card UI (reuse iter-68
+  _build_archetype_panel pattern + pause discipline from iter-91).
+
+---
+
 ## iter 196 — META — Round 23 blueprint (class-specific upgrade cards)
 
 - Date: 2026-05-24
