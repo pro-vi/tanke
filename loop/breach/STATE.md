@@ -2,7 +2,8 @@
 
 ```yaml
 phase: running
-iter: 195
+iter: 196
+round23_blueprint: loop/breach/iter-196-round23-architect.md
 hash_anchor_at_iter_146: 23d6a2ec3bf2821f  # bit-identical through 70 substrate writes — PlayerTank archetype sprite swap is gated on loadout != null + archetype != DEFAULT; procedural baseline (loadout=null) keeps sprites_0.png + frame_base=0; TankSprite.gd frame_base field defaults to 0 (bit-identical at default)
 hash_anchor_at_iter_147: 23d6a2ec3bf2821f  # re-verified bit-identical (META iter, no code edits)
 substrate_writes_iter_146: 70

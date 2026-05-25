@@ -17,6 +17,30 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 196 — META — Round 23 blueprint (class-specific upgrade cards)
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Hash anchor: 23d6a2ec3bf2821f… n/a (no code edits this iter).
+- Files: loop/breach/iter-196-round23-architect.md (NEW — 5-phase
+  blueprint for class-specific 3-choice upgrade cards at level-up).
+- Finding: Round 23 opens per user iter-195 directive ("class specific
+  3 choices upgrade to choose from. so yeah, an upgrade system").
+  Investigation revealed: current level-up is AUTOMATIC 3-cycle
+  (`_apply_level_boost` HP/RELOAD/SHELLS), NOT pick-1-of-3 as
+  inferred. The depot pick-1-of-3 exists and is already partially
+  archetype-aware (iter-97 P2-6 SWITCH_TO_* filter). User's directive
+  is to add **pick-1-of-3 at level-up time, class-specific to current
+  archetype**. Blueprint phases: P1 data model (UpgradeCatalog.gd
+  with per-archetype pools); P2 pick UI (reuse iter-68 archetype-
+  panel pattern); P3 PRISM+MORTAR content; P4 RAM+DEFAULT content;
+  P5 close. ~6 iters total. F005 reminder addressed (cards LIFT
+  existing verbs, user-directed surface, pre-playtest justified).
+  Next: iter 197 BUILD UpgradeCatalog.gd + per-archetype pool data.
+
+---
+
 ## iter 195 — PLAYTEST-FIX — MORTAR charge-lob mechanic + landing reticle
 
 - Date: 2026-05-24
