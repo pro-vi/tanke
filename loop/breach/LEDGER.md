@@ -17,6 +17,10 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 192 — STATUS-CHECK — awaiting user direction on UI density redesign
+
+---
+
 ## iter 191 — STATUS-CHECK — iter-190 fix shipped; awaiting user direction on UI density redesign
 
 ---
