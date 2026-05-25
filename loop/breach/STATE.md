@@ -1,8 +1,8 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: round-24-phase-A-shipped + CONSULT-001-pending
-iter: 279
+phase: round-24-phase-A-shipped + consult-001-resolved + consult-driven-refinements-in-progress
+iter: 280
 round24_blueprint: loop/breach/iter-270-round24-architect.md
 round24_status: opening — Phase A (HUD-as-status) → Phase B (scaling + tier breakthroughs) → Phase C (enemy-HP recurve). Stardew delta — same BC primitives, modern HUD + progression feel. User-directed iter 270 (2026-05-24).
 asset_gen_standing_capability: /agentify image_gen (ChatGPT) is the standing visual-asset pipeline — confirmed via Round 9 (4 tank archetype concept sprites) and Pro Consult 011 (motif-first procedural masks per H5). The full pipeline (prompt → image → palette extraction → 16×16 / 8×8 silhouette compliance → atlas pack) shipped end-to-end at iters 142-149. Sanctioned for HUD icons, card art, enemy variants, depot art, banner art, level decorations. Procedural PIL (`tools/gen_tile.py`, `tools/gen_archetype_sprites.py`) remains the same-iter fallback. iter 271 amendment lifts this from Round-9-specific to standing.
@@ -20,6 +20,12 @@ quiet_signal_source_ids_used:  # iter 273 — list of source_ids that have alrea
     consumed_by_iter: 273
     changed_next_action: yes
     resulting_artifact: loop/breach/PROMPT.md (8-patch amendment) + loop/breach/CONSULT-LEDGER.md (NEW) + loop/breach/RUBRIC.md tag-legend overhaul
+  - kind: consult
+    source_id: consult-001-response-iter-280 (queryId 28d4afe9-3038-4cf7-af0a-96708ec88acb)
+    first_seen_iter: 280
+    consumed_by_iter: 280
+    changed_next_action: yes
+    resulting_artifact: scripts/PlayerTank.gd _card_chip_short remap (14 entries) + chip width const 18→28 + CONSULT-LEDGER consult-001 § fully captured with verdict table + 3 player predictions + 7 backlogged recommendations
 consult_calibration: {hits: 0, partial: 0, misses: 0, untested: 0}  # iter 273 — score of consult predictions against later real playtests; updated when user plays + scores. ≥2 hits AND hit rate ≥50% → calibrated_cap can rise to 4. Repeated misses → uncalibrated_cap lowers further or [FEEL-CONSULT] disabled.
 round23_status: closed-iter-201 (5 phases shipped; pick_card_on_levelup default false ABSORBED into Round 24 Phase A — flag flips true as part of HUD legibility work since cards are now visibly part of the loop)
 round23_blueprint: loop/breach/iter-196-round23-architect.md
@@ -47,7 +53,8 @@ hash_anchor_at_iter_275: 23d6a2ec3bf2821f  # bit-identical through 80 substrate 
 hash_anchor_at_iter_276: 23d6a2ec3bf2821f  # bit-identical through 81 substrate writes — PlayerTank shell chips v1 (iter 276, Round 24 Phase A widget 1) `_shell_chip_bgs` array stays empty on procedural baseline; chip row + panel never built outside loadout-gated block
 hash_anchor_at_iter_277: 23d6a2ec3bf2821f  # bit-identical through 83 substrate writes — Bullet.gd shell_modulate_color() + method-existence-gated set_last_damage_shell call + Enemy.gd _last_damage_shell field + setter + tinted burst all addtive; procedural baseline burst stays Color(1.0,0.9,0.3,0.9) yellow when _last_damage_shell == -1
 hash_anchor_at_iter_278: 23d6a2ec3bf2821f  # bit-identical through 84 substrate writes — PlayerTank active-cards ribbon (iter 278, Round 24 Phase A widget 4 v1 — PHASE A CLOSES) panel + 8 chip slots built only inside loadout-gated _setup_hud block; _apply_card append path is only reachable via levelup pick UI which is loadout-gated
-substrate_writes_this_arc: 84  # ProceduralLevel.gd ×5 + Bullet.gd ×10 + PlayerTank.gd ×50 (+iter 278 active-cards ribbon) + Level.gd + Spawner.gd ×5 + Enemy.gd ×5 + TankSprite.gd + MortarShell.gd
+hash_anchor_at_iter_280: 23d6a2ec3bf2821f  # bit-identical through 85 substrate writes — PlayerTank.gd _card_chip_short label remap (consult-001 H5 fix) + chip width const 18 → 28; relabel lives inside loadout-gated ribbon path, procedural baseline never reaches _card_chip_short
+substrate_writes_this_arc: 85  # ProceduralLevel.gd ×5 + Bullet.gd ×10 + PlayerTank.gd ×51 (+iter 280 consult-001 H5 fix) + Level.gd + Spawner.gd ×5 + Enemy.gd ×5 + TankSprite.gd + MortarShell.gd
 current_round: 24-phase-A-shipped — Stardew delta Phase A complete at iter 278 (5/5 widgets). 5 consecutive procedural BUILDs (iters 274-278). Phase A pending playtest acceptance; loop continues into Phase B per blueprint sequencing. Active-build cadence 240s (per L16). Blueprint: loop/breach/iter-270-round24-architect.md.
 current_round_phase: PHASE-A-SHIPPED-PENDING-ACCEPTANCE → PHASE-B-OPENING. Widgets shipped (all 5): [reload-bar (iter 274), speed-meter (iter 275), shell-chips-v1 (iter 276), kill-flash (iter 277), active-cards-ribbon-v1 (iter 278)]. Stranger-on-screen test: PENDING (REVIEW-QUEUE #28 — requires real playtest). Phase B (scaling-curve audit + tier-breakthrough card conversion) opens at iter 279 — does NOT block on acceptance per blueprint pattern "A ships before B starts" (A has shipped — acceptance is a parallel review).
 consult_001_status: adopted
@@ -57,14 +64,18 @@ falsifications: [F001-resolved, F002-resolved, F003-open, F004-resolved, F005-op
 reachability_status: all 5 bands verified — 12/12-seed sweep (100%, floor ≥80%) — refreshed iter 61 post-Round-8
 audit_candidates: []
 last_audit: iter 26
-last_consult: iter 279  # consult-001 — adversarial-over-artifact, Phase A close — stop-hook Nat-2 trigger — agentify queryId 28d4afe9-3038-4cf7-af0a-96708ec88acb — pending response (~10-30 min Pro extended thinking ETA)
-pending_consult_key: tanke-arc4-phase-a-second-opinion  # next /loop wake must agentify_status this before proceeding to Phase B
-pending_consult_query_id: 28d4afe9-3038-4cf7-af0a-96708ec88acb
-pending_consult_opened_iter: 279
+last_consult: iter 280  # consult-001 — adversarial-over-artifact, Phase A close — Pro extended-thinking 5m29s — RESOLVED iter 280 with full verdict table + 3 falsifiable predictions captured to CONSULT-LEDGER. iter 280 applied H5 fix (highest confidence 0.95 reject of 2-letter labels) → 3-5 char semantic tokens.
+consult_001_status: resolved-applied-h5-only  # 5 other recommendations (H4 / H6 / Q1 / Q3 / H1-gate-strengthen / reload-bar-dup / Stardew-pacing) backlogged in CONSULT-LEDGER; Phase B opening deferred pending breach-economy-proof-room (Q1) decision.
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Round 24 Phase A CLOSED at iter 278 (5/5 widgets shipped: reload bar, speed meter, shell chips v1, kill-flash, active-cards ribbon v1). 5 consecutive procedural BUILDs (iters 274-278) without an asset-gen detour. REVIEW-QUEUE #28 opened with Phase A summary + stranger-on-screen acceptance test for user. Loop continues into Phase B per blueprint sequencing. Hash anchor `23d6a2ec3bf2821f` preserved bit-identical through all 6 substrate writes (PlayerTank ×4 + Bullet ×1 + Enemy ×1). test-breach 77 targets PASS.
-next_action: iter 280 — consult-001 check + Phase B opening. (1) `agentify_status({key: "tanke-arc4-phase-a-second-opinion"})` — if activeQuery == null then `agentify_read_page` + capture to CONSULT-LEDGER consult-001 § (Concrete recommendations + Player predictions + Affected anchors + Scoring TBD) + decide whether Phase B opens unchanged OR with consult-flagged pivot. If still active → proceed Phase B in parallel; consult does NOT block Phase B per iter-273 amendment (the second-opinion is a parallel review, not a gate). (2) Phase B work: AUDIT iter — read UpgradeCatalog.gd + _apply_card, classify each of 14 cards as linear-bonus / tier-breakthrough / qualitative-change. Write loop/breach/iter-280-round24-phase-B-audit.md with the 14×3 classification. Per blueprint Phase B acceptance: PASS when sim harness shows unupgraded vs fully-upgraded depth-50 has ≥2× kill-time ratio AND each archetype has ≥1 mechanic-changing card. Phase A's stranger-on-screen test (REVIEW-QUEUE #28) and consult-001 predictions are both parallel reviews; loop does not idle on either.
+next_action: iter 281 — apply next consult-001 recommendation OR open Phase B with reframed scope. Consult-001 has shifted Phase B's framing significantly: Q1 verdict (0.90) names a pre-Phase-B requirement — "breach-economy proof room" — that BLOCKS Phase B from being a pure tier-breakthrough sprint. The blueprint's Phase B is now arguably the wrong scope (consult-001 Q3 at 0.92 says "phase can pass screen-reading test while failing play test" — tier-breakthroughs on top of an unproven breach economy compound the seductive-but-hollow risk). Candidate next iters:
+  (a) **H4 fix** (1 iter, conf 0.74) — bump kill-flash to 24×24 outer ring + 16×16 core; cheap procedural BUILD, completes Phase A's consult-driven refinements
+  (b) **H6 fix** (2-3 iters, conf 0.81) — split HUD into visibility classes (combat-on / conditional / breath-beat); route + cards ribbon fade during high-pressure
+  (c) **pickup-toast** (1-2 iters) — consult-001 sub-recommendation paired with H5 fix; show full UpgradeCatalog.label_for() for 1-2s on card pickup
+  (d) **Q1 pivot** (3-5 iters, conf 0.90) — pre-Phase-B breach-economy proof room; HE opens loot lane at AoE cost / HEAT punches bunker at armor cost / APCR saves time at escape-ammo cost. Bigger architectural shift; rewrites Phase B's stakes.
+  (e) **HUD pressure test** (1 iter) — consult-001 H3 advice: record 90s of play with enemies active, mark whether player gaze/behavior uses top-left/top-right/bottom-left. Probably needs human (cannot self-test).
+  Recommended order: (a) → (c) → (b) → (d) — finish consult-driven Phase A refinements before opening any Phase B variant. The Stardew-delta finding (consult Q's verdict 0.87 "pacing/rhythm/economy not HUD legibility") is queued for user direction at REVIEW-QUEUE #29 (TBD).
 score: 50/75 absolute · 50/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=4eff/3abs,C7=3,C8=4,C9=2,C10=5,C11=3,C12=3,C13=3,C14=3,C15=4  (iter 119 BUILD-QUALITY re-tags C10 anchor 5 from "arc-4 close" → "iter-N+ checkpoint (N ≥ 100)" — original anchor text was structurally unreachable after PROMPT's non-stop amendment; substantive cross-arc invariant overwhelmingly verified at iter-117 audit. C10 = 5 absolute. ★ 50/75 milestone reached — represents the structural ceiling absent playtest cite or new mechanical scope.)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md

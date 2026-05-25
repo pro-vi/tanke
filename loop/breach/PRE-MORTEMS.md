@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 280 — BUILD — consult-001 H5 fix: ribbon labels 2-char → 3-5 char semantic tokens
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1 (no combat modal), 5 (chip categories preserved), 7 (verb tokens — RLD/BEAM/AOE/SWNG are verbs/affordances).
+- CONSULT constraints risked: none.
+- Same-family admissibility: iter 279 was META (consult fire); iter 280 BUILD breaks any same-family risk. The streak is iter 274-278 = 5 BUILDs, broken by iter 279 META.
+- Trigger: consult-001 verdict on H5 was "NO — honest scaffolding for you, not for a fresh player" at confidence 0.95 (highest of all H verdicts). Specific recommendation: "Replace BD/BR/BP/AD/AR/LB/SW/CL/SP with clearer 3–5 char tokens where possible: BEAM, RNG, PIER, AOE, RAD, CD, SWNG, COL, SPRT, RLD, CAP, MOVE."
+- Predicted failure: chip width 18px is too narrow for "BEAM" (4 chars × ~5px each ≈ 20px). May need chip width 28-32px → fewer chips fit in the same 8-slot panel. OR labels may visually clip.
+- Falsifiable claim: post-edit, _card_chip_short() returns "RLD" for FASTER_RELOAD, "BEAM" for BEAM_DPS_UP, etc. (the consult-mapped tokens). Chip width 28px accommodates 4-char tokens without clipping. Harness test_breach_active_cards_ribbon updated label assertions to match the new tokens; 8 slot capacity preserved.
+- Sentence test: n/a.
+- Substrate touched: scripts/PlayerTank.gd (Layer 2 — substrate write #85, additive label remap inside arc-4-only function `_card_chip_short()`; PROC baseline never reaches this code path).
+- Hash-anchor verification plan: `make test` + procedural oracle on seed 42 = 23d6a2ec3bf2821f… (the relabel + chip-width-bump live inside the loadout-gated ribbon path; procedural baseline does not build the ribbon).
+
+---
+
 ## iter 278 — BUILD — Round 24 Phase A widget 4 (v1): active-cards ribbon (procedural)
 
 - Date: 2026-05-25

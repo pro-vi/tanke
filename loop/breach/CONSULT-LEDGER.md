@@ -113,22 +113,51 @@ Pending response read (~10-30 min from fire time per Pro extended thinking).
 ### Delta (blind vs informed)
 - N/A — single-stage. Mitigation: hypotheses H1-H6 were framed NEUTRALLY (per /second-opinion skill rule — no preloaded conclusions), so the model is invited to challenge each without anchoring.
 
-### Concrete recommendations from consult
-- *Pending response.*
+### Concrete recommendations from consult (response received iter 280)
+
+Bottom line (verbatim): "Phase A was real progress, not fake shipping — but it is now one step away from becoming self-validating HUD work. It solved 'the systems are invisible.' It did not yet solve 'the systems create a modern breach identity.'"
+
+| Hypothesis | Verdict | Confidence | Action |
+|---|---|---|---|
+| H1: HUD legibility is right Phase A scope | mostly yes | 0.86 | Strengthen acceptance gate: state → decision (not just naming) |
+| H2: Procedural V1 acceptable scaffolding | depends | 0.83 | Strong for shell/reload/speed; weak for active cards (labels are debug, not semiotics) |
+| H3: 5-BUILD streak was productive same-family | technically yes, strategically suspect | 0.89 | **Stop adding HUD widgets before Phase B. Add HUD pressure test instead.** |
+| H4: 16×16 kill-flash sufficient | probably no for attribution | 0.74 | Bump to 24×24 outer ring + 16×16 core, same 0.3s lifetime |
+| H5: 2-letter ribbon labels honest | **NO** | 0.95 | **Replace with 3-5 char semantic tokens: RLD/CAP/MOVE/BEAM/RNG/PIER/AOE/RAD/CD/SWNG/COL/SPRT/HP/H+.** Add pickup toast with full name. |
+| H6: 3-strip bottom-left stacking acceptable | depends | 0.81 | Visibility classes: always-on combat (HP/reload/shell) / conditional (speed only when buffed) / breath-beat (route + cards fade except low-pressure) |
+| Q1: Breach economy distinct from BC? | NOT YET — UI reveals identity, cannot manufacture it | 0.90 | Pre-Phase-B "breach-economy proof room": HE opens loot lane but costs AoE safety; HEAT punches bunker shortcut at armor cost; APCR saves time at escape-ammo cost. Make shells route currency. |
+| Q2: Earned breath beats or HUD bloat? | leaning bloat until modal behavior added | 0.80 | Stardew's deeper rhythm is day/energy loop, NOT just legible HUD |
+| Q3: Seductive-but-hollow? | "phase can pass screen-reading test while failing play test" | 0.92 | Build diagnostic room + recap metric: kills-by-shell, terrain-opened-by-shell, shells-spent-opening-lanes, cards-affecting-run |
+| Reload bar placement | top-left coherent but not optimal alone | 0.84 | Add tank-adjacent 6-10px reload pip; do NOT move whole HUD yet — duplicate critical timing signal near tank |
+| Kill-flash drama | slightly louder, not full spectacle | 0.77 | A/B: legacy 16×16 core + 24×24 faint outer shell-color ring, 0.3s fade |
+| 2-letter abbreviations parseable? | NO — "BD not parseable after 5s" | 0.95 | Progressive disclosure: short chip + full pickup toast/legend |
+| Stardew delta — HUD or pacing? | **PACING/RHYTHM/ECONOMY, not HUD legibility** | 0.87 | Define tanke equivalent of Stardew's day/energy loop BEFORE Phase B: breach budget = limited specials + reload tempo + terrain + route + post-room cards |
 
 ### Player predictions (falsifiable)
-- *Pending response — explicitly requested as 3 falsifiable predictions in prompt response-format block.*
+
+**Prediction 1** — Shell/reload legibility will PASS; active build legibility will FAIL.
+- expected_observation: Fresh player names current shell + reload state within 3s on static screen; CANNOT explain BD/BR/BP/AD/AR/LB/SW/CL/SP during combat without prior teaching.
+- falsified_if: ≥80% of fresh testers correctly identify current shell + reload state + meaning of ≥5 active card chips DURING combat without legend.
+
+**Prediction 2** — Top-left reload bar will be read AFTER combat, not USED during combat.
+- expected_observation: Players notice reload bar when asked OR when screen is calm; in fights they fire by rhythm / failed input / projectile observation rather than top-left glance.
+- falsified_if: Testers visibly delay shots based on the bar during enemy pressure AND can later cite using it to time ≥2 shots per run.
+
+**Prediction 3** — Bottom-left 3-strip stacking will be IGNORED under pressure.
+- expected_observation: During combat, players attend to tank position / enemies / bullets / HP / current shell ONLY; route strip + active-card ribbon become post-hoc info.
+- falsified_if: Fresh testers make ≥1 route/build/shell decision during combat AND explicitly cite the ribbon or route strip as the reason without prompting.
 
 ### What CANNOT be known from this consult
 - Tactile feel of the reload bar / shell chips / kill-flash IN MOTION at 60fps
 - Whether the player notices the cards ribbon DURING combat (attention budget under pressure)
-- Whether 2-letter ribbon labels parse in <5s for a fresh player (cognitive load under stress)
+- Whether 2-letter ribbon labels parse in <5s for a fresh player (cognitive load under stress) — though the consult predicts NO with 0.95 confidence
 - Whether the bottom-left 3-strip stacking obscures bricks / enemies in tight chokes
-- Whether Phase A actually shifts feel toward "Stardew Valley delta" or just makes BC's HUD denser
+- Whether Phase A actually shifts feel toward "Stardew Valley delta" or just makes BC's HUD denser — though the consult predicts the latter at 0.87 confidence
 - Death recap experience post-kill-flash (does shell-tinted burst land emotionally?)
 
 ### Affected anchors
-- *Pending response — will list which RUBRIC anchors the consult lifts to [FEEL-CONSULT] (cap 3 uncalibrated) OR explicitly cannot lift.*
+- C8 (HUD legibility): could lift to 4 [FEEL-CONSULT] after Phase A widget set complete IF Predictions 1+2+3 are SCORED hits. Per cap=3 uncalibrated → NO lift yet; require real playtest scoring first.
+- Other RUBRIC anchors: the consult explicitly says HUD work does NOT lift Q1 (breach economy distinctness) — that lift requires the "breach-economy proof room" work, not Phase A.
 
 ### Expiration
 - max_iters_without_real_playtest: 30 (default)

@@ -91,6 +91,8 @@ func _initialize() -> void:
 	if not pt._active_cards_chip_bgs[0].visible:
 		push_error("FAIL — after 1 pick, chip 0 should be visible")
 		quit(1); return
+	# iter 280 (consult-001 H5 fix): HP token retained as "HP" (3-letter
+	# tokens for others; HP is conventional + universally parseable).
 	if pt._active_cards_chip_labels[0].text != "HP":
 		push_error("FAIL — chip 0 label = '%s', want 'HP'" \
 				% pt._active_cards_chip_labels[0].text)
@@ -111,17 +113,17 @@ func _initialize() -> void:
 		if not pt._active_cards_chip_bgs[i].visible:
 			push_error("FAIL — chip %d should be visible after 3 picks" % i)
 			quit(1); return
-	# chip 1 = BEAM_DPS_UP = "BD" + cyan
-	if pt._active_cards_chip_labels[1].text != "BD":
-		push_error("FAIL — chip 1 label = '%s', want 'BD'" % pt._active_cards_chip_labels[1].text)
+	# iter 280 (consult-001 H5 fix): chip 1 = BEAM_DPS_UP = "BEAM" (was "BD")
+	if pt._active_cards_chip_labels[1].text != "BEAM":
+		push_error("FAIL — chip 1 label = '%s', want 'BEAM' (consult-001 H5 relabel)" % pt._active_cards_chip_labels[1].text)
 		quit(1); return
 	if not _color_close(pt._active_cards_chip_bgs[1].color, Color(0.6, 0.85, 1.0, 1.0)):
 		push_error("FAIL — BEAM_DPS_UP chip color = %s, want cyan" \
 				% str(pt._active_cards_chip_bgs[1].color))
 		quit(1); return
-	# chip 2 = MOMENTUM = "MV" + AP-pale
-	if pt._active_cards_chip_labels[2].text != "MV":
-		push_error("FAIL — chip 2 label = '%s', want 'MV'" % pt._active_cards_chip_labels[2].text)
+	# iter 280 (consult-001 H5 fix): chip 2 = MOMENTUM = "MOVE" (was "MV") + AP-pale
+	if pt._active_cards_chip_labels[2].text != "MOVE":
+		push_error("FAIL — chip 2 label = '%s', want 'MOVE' (consult-001 H5 relabel)" % pt._active_cards_chip_labels[2].text)
 		quit(1); return
 	if not _color_close(pt._active_cards_chip_bgs[2].color, Color(0.92, 0.92, 0.95, 1.0)):
 		push_error("FAIL — MOMENTUM chip color = %s, want AP-pale" \
@@ -132,7 +134,7 @@ func _initialize() -> void:
 		if pt._active_cards_chip_bgs[i].visible:
 			push_error("FAIL — chip %d should still be hidden (only 3 picks)" % i)
 			quit(1); return
-	print("  3 picks: chips [HP green, BD cyan, MV AP-pale] visible; chips 3-7 hidden")
+	print("  3 picks: chips [HP green, BEAM cyan, MOVE AP-pale] visible; chips 3-7 hidden")
 
 	# === Case E: _applied_cards history preserved in order.
 	if pt._applied_cards != [

@@ -151,7 +151,10 @@ var _active_cards_chip_labels: Array[Label] = []
 var _applied_cards: Array[int] = []
 const ACTIVE_CARDS_X: float = 2.0
 const ACTIVE_CARDS_Y: float = 180.0
-const ACTIVE_CARD_CHIP_W: float = 18.0
+# iter 280 (consult-001 H5 fix, conf 0.95): chip width widened 18 → 28
+# to fit 3-5 char semantic tokens. Per consult: "BD not parseable after
+# 5s; abbreviations are recall aids, not first-read affordances."
+const ACTIVE_CARD_CHIP_W: float = 28.0
 const ACTIVE_CARD_CHIP_H: float = 12.0
 const ACTIVE_CARD_CHIP_GAP: float = 2.0
 const ACTIVE_CARDS_MAX_VISIBLE: int = 8
@@ -2157,23 +2160,29 @@ func _build_active_cards_ribbon(canvas: CanvasLayer) -> void:
 		_active_cards_chip_labels.append(lbl)
 
 
-# arc-4 iter 278: per-card 2-letter abbreviation for the ribbon chip.
+# arc-4 iter 280 (consult-001 H5 fix, conf 0.95): per-card 3-5 char
+# semantic token for the ribbon chip. /agentify CONSULT explicitly
+# called the prior 2-letter scheme "not parseable after 5 seconds —
+# abbreviations are recall aids, not first-read affordances." Tokens
+# below are semantic stems (verb/noun) chosen so a player reading
+# cold can guess the meaning. Pickup toast (iter 281+ planned) shows
+# the full UpgradeCatalog.label_for() name for 1-2s when card lands.
 func _card_chip_short(kind: int) -> String:
 	match kind:
 		UpgradeCatalogT.CardKind.HP_PLUS_1: return "HP"
-		UpgradeCatalogT.CardKind.HP_PLUS_2: return "H+"
-		UpgradeCatalogT.CardKind.FASTER_RELOAD: return "RL"
-		UpgradeCatalogT.CardKind.SHELL_CAP_PLUS_1: return "SC"
-		UpgradeCatalogT.CardKind.MOMENTUM: return "MV"
-		UpgradeCatalogT.CardKind.BEAM_DPS_UP: return "BD"
-		UpgradeCatalogT.CardKind.BEAM_RANGE_UP: return "BR"
-		UpgradeCatalogT.CardKind.BEAM_PIERCE: return "BP"
-		UpgradeCatalogT.CardKind.AOE_DAMAGE_UP: return "AD"
-		UpgradeCatalogT.CardKind.AOE_RADIUS_UP: return "AR"
-		UpgradeCatalogT.CardKind.MORTAR_COOLDOWN_DOWN: return "LB"
-		UpgradeCatalogT.CardKind.SWING_DAMAGE_UP: return "SW"
-		UpgradeCatalogT.CardKind.COLLISION_DAMAGE_UP: return "CL"
-		UpgradeCatalogT.CardKind.SPRINT_DURATION_UP: return "SP"
+		UpgradeCatalogT.CardKind.HP_PLUS_2: return "HP+"
+		UpgradeCatalogT.CardKind.FASTER_RELOAD: return "RLD"
+		UpgradeCatalogT.CardKind.SHELL_CAP_PLUS_1: return "CAP"
+		UpgradeCatalogT.CardKind.MOMENTUM: return "MOVE"
+		UpgradeCatalogT.CardKind.BEAM_DPS_UP: return "BEAM"
+		UpgradeCatalogT.CardKind.BEAM_RANGE_UP: return "RNG"
+		UpgradeCatalogT.CardKind.BEAM_PIERCE: return "PIER"
+		UpgradeCatalogT.CardKind.AOE_DAMAGE_UP: return "AOE"
+		UpgradeCatalogT.CardKind.AOE_RADIUS_UP: return "RAD"
+		UpgradeCatalogT.CardKind.MORTAR_COOLDOWN_DOWN: return "CD"
+		UpgradeCatalogT.CardKind.SWING_DAMAGE_UP: return "SWNG"
+		UpgradeCatalogT.CardKind.COLLISION_DAMAGE_UP: return "COL"
+		UpgradeCatalogT.CardKind.SPRINT_DURATION_UP: return "SPRT"
 	return "?"
 
 

@@ -17,6 +17,31 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 280 — BUILD — consult-001 H5 fix: ribbon labels 2-char → 3-5 char semantic tokens
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; consult-driven micro-fix, no new anchor; the [FEEL-CONSULT] lift on C8 awaits real playtest scoring of consult-001 predictions per CONSULT-LEDGER cap=3 uncalibrated default).
+- Same-family check: iter 279 was META (consult fire); iter 280 BUILD. Streak: 5 BUILDs (274-278) → META (279) → BUILD (280). No NO-SIGNAL family violation.
+- Trigger: consult-001 returned during iter 280 fire; H5 rejected at 0.95 confidence — highest of all 6 hypothesis verdicts. The consult's specific recommendation maps cleanly to a single-iter BUILD: relabel + widen chip width. Took the highest-confidence + cheapest action FIRST per /second-opinion synthesis discipline ("prefer lower migration cost" — disagreement protocol step 3).
+- Constraints respected: 1, 5 (chip categories preserved), 7 (verb stems — BEAM/AOE/SWNG are verbs/affordances surfaced as ribbon vocabulary).
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** post substrate write #85 (PlayerTank.gd ×51). Relabel + chip-width-bump live entirely inside the existing loadout-gated ribbon path; procedural baseline never reaches `_card_chip_short`. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 77/77 PASS.
+- Falsifications: none. Predicted "chip width 18 too narrow for 4-char tokens" — mitigated by widening to 28px (no clip in harness or runtime).
+- Files: scripts/PlayerTank.gd (chip width const 18 → 28; `_card_chip_short` remap 14 entries), loop/breach/test_breach_active_cards_ribbon.gd (assert labels HP/BEAM/MOVE per new mapping), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md, loop/breach/CONSULT-LEDGER.md (consult-001 fully captured with verdict table + 3 player predictions + affected anchors).
+- Empirical: 14-card label remap: HP/HP+/RLD/CAP/MOVE/BEAM/RNG/PIER/AOE/RAD/CD/SWNG/COL/SPRT. Chip width 28×12 fits 4-char tokens at 8pt font. Harness updated; 3-pick render now reads [HP green, BEAM cyan, MOVE AP-pale]. Category color palette unchanged (all 5 from iter 278 still correct).
+- Finding: **consult-001 H5 recommendation applied (highest-confidence verdict at 0.95).** The 2-letter codes ("BD"/"BR"/"AR" etc.) are replaced with semantic stems ("BEAM"/"RNG"/"RAD") that a fresh player can guess cold. The consult's broader claim — "the ribbon should be a REMINDER, not the first explanation; pair with pickup toast for full name" — is partially addressed by this iter (relabel only); the pickup-toast portion is queued for a future iter. Other consult recommendations BACKLOGGED in CONSULT-LEDGER:
+  - **H4** (0.74): bump kill-flash to 24×24 outer ring + 16×16 core (~1 iter)
+  - **H6** (0.81): split HUD into visibility classes (combat-on / conditional / breath-beat) (~2-3 iters)
+  - **Q1** (0.90): pre-Phase-B breach-economy proof room (~3-5 iters; bigger pivot)
+  - **Q3** (0.92): diagnostic room + recap metric (kills-by-shell, terrain-opened-by-shell) (~2-3 iters)
+  - **H1 acceptance gate strengthen** (0.86): state → decision (instrumented test that visibility CHANGES behavior)
+  - **Reload bar duplicate at tank** (0.84): tank-adjacent 6-10px pip + keep top-left
+  - **Stardew delta**: pacing/rhythm over HUD legibility (0.87) — bigger architectural finding queued as design-direction question
+- quiet_signal_counter reset → 0 via SIGNAL_RECEIPT: source_id=consult-001-response-iter-280; consumed_by_iter=280; changed_next_action=yes; resulting_artifact=PlayerTank.gd label remap + CONSULT-LEDGER consult-001 § fully captured.
+
+---
+
 ## iter 279 — META — Phase A close adversarial CONSULT fired (dice-hook Nat 2)
 
 - Date: 2026-05-25
