@@ -17,6 +17,10 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 202 — STATUS-CHECK — Round 23 closed; awaiting user decision on pick_card_on_levelup flag
+
+---
+
 ## iter 201 — META — Round 23 close + REVIEW-QUEUE #14 update
 
 - Date: 2026-05-24
