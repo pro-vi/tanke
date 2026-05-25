@@ -116,6 +116,13 @@ var _shell_slot_bgs: Array[ColorRect] = []
 var _shell_slot_chips: Array[ColorRect] = []
 var _shell_slot_labels: Array[Label] = []
 var _shell_codex: ColorRect = null  # arc-4 iter 36: run-start shell primer
+# arc-4 iter 274 (Round 24 Phase A widget 2): reload bar — visualizes
+# GunTimer cooldown progress. fg width = bg_w * progress; fg color =
+# current shell's color (reuses _shell_color so the reload chrome
+# matches the in-flight bullet). Built only inside the loadout-gated
+# block in _setup_hud, so arc-2/3 HUD is bit-identical to before.
+var _reload_bar_bg: ColorRect = null
+var _reload_bar_fg: ColorRect = null
 # arc-4 iter 116 (Round 14 Phase 2): REAR_GUARD cooldown timer +
 # tunables. _rear_guard_cd ticks down to 0.0; when 0.0 + an enemy
 # is in the rear cone + loadout has the flag, fires an AP backward
@@ -1946,6 +1953,7 @@ func _setup_hud() -> void:
 	if loadout != null:
 		_build_shell_panel(canvas)
 		_build_shell_codex(canvas)
+		_build_reload_bar(canvas)
 		# arc-4 iter 42 (Round 6d, stakes): the live best-depth readout —
 		# the depth chase, always visible (not just on the death recap).
 		_run_best_depth = _load_best_depth()
@@ -2031,6 +2039,51 @@ func _shell_reserve(sc: int) -> int:
 	if sc == BulletT.SHELL_CLASS_APCR:
 		return loadout.apcr_reserve
 	return 0
+
+
+# arc-4 iter 274 (Round 24 Phase A widget 2): reload bar. Linear bar
+# under HP, fills 0→100% as GunTimer cools down; fg color matches the
+# current shell (reuses _shell_color so the chrome reads continuous
+# with the in-flight bullet). Caller gates on loadout != null, so
+# arc-2/3 HUD is bit-identical (bar never built).
+const RELOAD_BAR_BG_X: float = 3.0
+const RELOAD_BAR_BG_Y: float = 24.0
+const RELOAD_BAR_BG_W: float = 40.0
+const RELOAD_BAR_BG_H: float = 4.0
+const RELOAD_BAR_INSET: float = 1.0
+func _build_reload_bar(canvas: CanvasLayer) -> void:
+	_reload_bar_bg = ColorRect.new()
+	_reload_bar_bg.name = "ReloadBarBG"
+	_reload_bar_bg.position = Vector2(RELOAD_BAR_BG_X, RELOAD_BAR_BG_Y)
+	_reload_bar_bg.size = Vector2(RELOAD_BAR_BG_W, RELOAD_BAR_BG_H)
+	_reload_bar_bg.color = Color(0.07, 0.07, 0.09, 0.82)
+	canvas.add_child(_reload_bar_bg)
+	_reload_bar_fg = ColorRect.new()
+	_reload_bar_fg.name = "ReloadBarFG"
+	_reload_bar_fg.position = Vector2(
+		RELOAD_BAR_BG_X + RELOAD_BAR_INSET,
+		RELOAD_BAR_BG_Y + RELOAD_BAR_INSET)
+	_reload_bar_fg.size = Vector2(
+		RELOAD_BAR_BG_W - 2.0 * RELOAD_BAR_INSET,
+		RELOAD_BAR_BG_H - 2.0 * RELOAD_BAR_INSET)
+	_reload_bar_fg.color = _shell_color(current_shell)
+	canvas.add_child(_reload_bar_fg)
+
+
+# arc-4 iter 274: per-frame width + color update. progress = 0 when
+# GunTimer just started a fresh reload, 1 when idle / ready. clampf
+# keeps width non-negative against any timing edge.
+func _update_reload_bar() -> void:
+	if _reload_bar_fg == null:
+		return
+	var progress: float = 1.0
+	if has_node("GunTimer"):
+		var gt: Timer = $GunTimer
+		if gt.time_left > 0.0 and gt.wait_time > 0.0:
+			progress = clampf(1.0 - (gt.time_left / gt.wait_time), 0.0, 1.0)
+	var max_w: float = RELOAD_BAR_BG_W - 2.0 * RELOAD_BAR_INSET
+	_reload_bar_fg.size.x = max_w * progress
+	_reload_bar_fg.color = _shell_color(current_shell)
 
 
 # arc-4 iter 35 (Round 5, playtest finding 1 — "no shell UI"): build the
@@ -2440,6 +2493,9 @@ func _update_run_hud() -> void:
 	# Only when a loadout exists (the panel is null otherwise).
 	if _shell_panel != null and loadout != null:
 		_update_shell_panel()
+	# arc-4 iter 274 (Round 24 Phase A widget 2): refresh reload bar.
+	if _reload_bar_fg != null and loadout != null:
+		_update_reload_bar()
 	# arc-4 iter 56 (Round 8a): accrue XP from kills + depth.
 	_tick_xp()
 

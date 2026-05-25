@@ -24,6 +24,45 @@ Format:
 
 ---
 
+## iter 274 — BUILD — Round 24 Phase A widget 2: reload bar
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1 (no combat modal — bar is read-only
+  passive HUD), 7 (verbs/affordances surface — the reload state IS
+  the verb the player is currently buying time on).
+- CONSULT constraints risked: none structurally; risk is purely
+  visual-noise (one more ColorRect competing for attention).
+- Same-family admissibility (iter 273 rule): iters 270-273 were all
+  META. This iter MUST be a shipped concrete diff tied to a live
+  rubric anchor (Round 24 Phase A is the named scope; reload bar
+  widget 2 is the cheapest first ship since it needs no asset-gen).
+- Predicted failure: cooldown progress visualization could be jumpy
+  on the first physics frame (GunTimer.wait_time may be 0 before
+  first arm) or could double-render when MORTAR archetype uses
+  charge-lob path (GunTimer flow differs).
+- Falsifiable claim: post-edit, `_reload_bar_fg.size.x` reads at full
+  width (≈bg_w−2) when GunTimer is idle (time_left == 0 OR not
+  started) AND ≤ half width within 1 frame after firing a shot.
+  Harness asserts both.
+- Sentence test: n/a (no upgrade introduced this iter).
+- Substrate touched: scripts/PlayerTank.gd (Layer 2 freeze — substrate
+  write #79 per session-learnings counter; sanctioned per the
+  default-on gating template — all new HUD code is loadout-gated, so
+  arc-2/3 codepath is bit-identical).
+- Hash-anchor verification plan:
+  (a) pre-edit baseline already captured this session
+      (23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291)
+  (b) post-edit re-run `godot --headless --script
+      res://loop/test_runner.gd -- --seed 42 --frames 120 --json`,
+      must equal 23d6a2ec3bf2821f… (the new vars + ColorRects are
+      built inside the existing `if loadout != null:` block, never
+      executed on procedural baseline).
+  (c) `make test-all` 5/5 green.
+  (d) `make check-breach-reload-bar` (new harness target) green.
+
+---
+
 ## iter 157 — META — ARC-4-checkpoint.md extension (iters 125-156)
 
 - Date: 2026-05-24

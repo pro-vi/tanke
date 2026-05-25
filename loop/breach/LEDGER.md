@@ -17,6 +17,22 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 274 — BUILD — Round 24 Phase A widget 2: reload bar
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; widget 2/5 of Phase A — anchor lift at phase close, not per widget)
+- Same-family admissibility: iters 270-273 were all META; this iter ships a concrete code diff (per iter-273 strengthened admissibility rule).
+- Constraints respected: 1 (no combat modal — passive read-only HUD), 7 (verbs/affordances surface — reload state IS the verb the player is currently buying time on).
+- Constraints risked: none (additive HUD inside loadout-gated block).
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** post substrate write #79 (PlayerTank.gd ×47). procedural baseline reload-bar fields stay null; ColorRects never built. `make test` exit 0; `make test-all` 5/5 PASS.
+- Falsifications: none. Predicted "GunTimer.wait_time may be 0 before first arm" — handled by the time_left/wait_time > 0 guard; harness case "idle" verifies fg.size.x = max_w (38.0) in that state.
+- Files: scripts/PlayerTank.gd (+2 field decls, +1 _setup_hud call, +1 _update_run_hud call, +new `_build_reload_bar()` + `_update_reload_bar()` helpers + 5 RELOAD_BAR_* constants), loop/breach/test_breach_reload_bar.gd (NEW — 5 assertions: procedural-baseline-doesn't-build / hud-parented / idle-width-equals-max / mid-cooldown-progress-visible / color-follows-current_shell), Makefile (.PHONY + check-breach-reload-bar target + test-breach aggregate), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: idle fg.size.x = 38.0 (= max_w); mid-cooldown ≈ 19 (≈50% reloaded with wait_time=2.0 after one frame); AP→HE shell cycle flips fg.color from (0.92,0.92,0.95) to (1.0,0.85,0.25) in one tick.
+- Finding: **Round 24 Phase A widget 2 (reload bar) lands.** Linear bar at top-left (3, 24, 40×4) under the HP bar; fg width = max_w · (1 − time_left/wait_time), fg color = `_shell_color(current_shell)` so the chrome reads continuous with the in-flight bullet (per Phase A's "render every existing system to the player" north star). Procedural baseline bit-identical: both `_reload_bar_bg` and `_reload_bar_fg` remain null when `loadout == null` (the same gating template that has carried 47 PlayerTank substrate writes without breaking the hash anchor). harness test_breach_reload_bar verifies all 5 assertions; new `check-breach-reload-bar` target in `.PHONY` + `test-breach` aggregate (73 targets now). Phase A widgets shipped so far: 1/5 (this one). Remaining: shell chips (widget 1, asset-gen via /agentify), speed meter (widget 3, procedural), active-cards ribbon (widget 4, asset-gen), kill-flash (widget 5, reuse widget-1 icons). Same-family counter resets — this is a shipped-diff iter with structural verification, not a no-signal iter. **quiet_signal_counter stays 0** (continues from the iter-273 user-direction reset which has been consumed; the BUILD this iter is its first downstream artifact).
+
+---
+
 ## iter 273 — META — PROMPT amendment v2: /second-opinion 8-patch correction
 
 - Date: 2026-05-25 (resumed session after iter 272 amendment)
