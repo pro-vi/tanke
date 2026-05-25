@@ -24,6 +24,27 @@ Format:
 
 ---
 
+## iter 285 — BUILD — RunRecap route-currency metrics (data + API; wiring iter 286)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (death-recap tied to resource/build/route — route is now a first-class recap dimension), 7 (verbs not stats — the new fields name VERBS the player took, not stat snapshots).
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — consult-001 Q3 (0.92) explicitly recommends "shells spent opening lanes, kills by shell, terrain opened by shell" as the diagnostic that makes "shells are route currency" provable post-run. Citable: STATE source_ids_used + iter-283 architect blueprint deliverable 2.
+- Same-family check: iter 284 BUILD → 285 BUILD. Both anchor-tied to the Q1 sprint blueprint; productive same-family.
+- Scope discipline: iter 285 ships DATA + API only (RunRecap field additions + record method). Bullet/level wiring (the caller side that decides "this hit was on a route-gate") is iter 286. This keeps each iter testable in isolation.
+- Predicted failure: the new dicts could double-count if both `record_shot()` and `record_shot_hit()` fire for the same shot. Mitigation: record_shot tracks SHOTS FIRED (independent of what the bullet later hits); record_shot_hit tracks WHAT THE SHOT HIT (only fires when a body is damaged). Total accounting: shots_fired ≥ shots_hit; route + combat hits sum to shots_hit OR less (misses count toward shots_fired only).
+- Falsifiable claim: post-edit, RunRecap has `shells_spent_on_routes: Dictionary` + `shells_spent_on_combat: Dictionary` + `route_taken: String` fields; `record_shot_hit(shell_class, hit_kind)` increments the right dict; harness directly tests:
+  (1) Initial state: both dicts have AP/HE/HEAT/APCR keys with value 0
+  (2) record_shot_hit(HE, "route") → shells_spent_on_routes[HE] == 1, combat unchanged
+  (3) record_shot_hit(AP, "combat") → shells_spent_on_combat[AP] == 1, routes unchanged
+  (4) Multiple calls accumulate correctly
+  (5) Existing record_shot still works (no regression on the iter-30 fire counter)
+- Substrate touched: NONE — RunRecap.gd is arc-4-owned (per substrate freeze list it's not Layer 1/2/3/4).
+- Hash-anchor verification plan: no substrate write → hash preserved. Will re-verify post-edit anyway.
+
+---
+
 ## iter 284 — BUILD — Q1 proof-room: BreachBand resource + 4-lane ASCII layout + design-verification harness
 
 - Date: 2026-05-25

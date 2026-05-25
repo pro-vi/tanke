@@ -17,6 +17,24 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 285 — BUILD — RunRecap route-currency metrics (data + API; consult Q3 0.92 diagnostic half)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; sprint iter 2 of 4; data+API only, wiring iter 286).
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — consult-001 Q3 verdict 0.92 explicitly named "shells spent opening lanes, kills by shell, terrain opened by shell" as the diagnostic; iter 285 ships the storage half so iter 286 can wire it. Citable: blueprint deliverable 2.
+- Same-family check: iter 284 BUILD → 285 BUILD. Both anchored to the Q1 sprint blueprint; productive same-family.
+- Constraints respected: 6 (death-recap tied to resource/build/route — route is now first-class), 7 (verbs not stats — record_shot_hit names the VERB the shot performed, not stat snapshot).
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** — RunRecap.gd is arc-4-owned (not in any of the 4 substrate freeze layers); no substrate write. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 79/79 PASS.
+- Falsifications: none. Predicted "dicts could double-count if record_shot + record_shot_hit fire for same shot" — mitigated by independence assertion in harness (Case 5): record_shot bumps shells_fired only; record_shot_hit bumps routes/combat only. Verified.
+- Files: scripts/RunRecap.gd (+ 2 new dicts shells_spent_on_routes/shells_spent_on_combat keyed by 4 shell classes AP/HE/HEAT/APCR each init 0; + route_taken: String; + time_per_lane: Dictionary; + 2 const HIT_KIND_ROUTE/HIT_KIND_COMBAT; + record_shot_hit(shell_class, hit_kind) method; + total_shells_on_routes / total_shells_on_combat helpers), loop/breach/test_breach_run_recap_routes.gd (NEW — 6 assertions: init state / HE route hit / AP combat hit / accumulation / record_shot independence / defensive no-op), Makefile (.PHONY + check-breach-run-recap-routes + test-breach aggregate; 79 targets now), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: harness verifies all 4 shell-class keys init to 0 in both dicts; record_shot_hit(HE, "route") increments routes[HE]; record_shot_hit(AP, "combat") increments combat[AP]; accumulation tracks correctly (3 HE routes + 2 AP combat = total_routes 3, total_combat 2); existing record_shot still bumps shells_fired without leaking to new dicts; unknown hit_kind ("miss" / "" / "bogus") is a no-op.
+- Finding: **Q1 sprint iter 2 of 4 ships.** RunRecap now carries the data structure for "shells are route currency" to be MEASURED post-run, not just claimed. APCR is first-class (vs. iter-30 fired-only dict which omitted APCR). Wiring (Bullet / level scene calls record_shot_hit when a brick gate / steel barrier / entrenched-Heavy gate is hit) lands iter 286. The two-iter split keeps each testable in isolation — iter 285 verified the API independent of wiring; iter 286 verifies the wiring independent of the API.
+- quiet_signal_counter stays at 0 (downstream of iter-283 user-direction source, already consumed).
+
+---
+
 ## iter 284 — BUILD — Q1 proof-room artifact + 4-lane ASCII layout + design-verification harness
 
 - Date: 2026-05-25

@@ -37,6 +37,72 @@ var shells_fired: Dictionary = {
 	Bullet.SHELL_CLASS_HEAT: 0,
 }
 
+# arc-4 iter 285 (Q1 reframe, consult-001 Q3 verdict 0.92 — route-currency
+# diagnostic): per-class breakdown of WHAT each shot HIT — a route-gate
+# (brick cluster / steel barrier / entrenched Heavy at gate row) vs.
+# regular combat (enemy in the open). The Q1 proof-room's central
+# claim is "shells are route currency"; these dicts make that claim
+# auditable post-run. APCR is included because iter-33 user override
+# made APCR the 4th shell class and the proof room's APCR lane (steel
+# barrier) is the most extreme example of route-as-shell-gate.
+var shells_spent_on_routes: Dictionary = {
+	Bullet.SHELL_CLASS_AP: 0,
+	Bullet.SHELL_CLASS_HE: 0,
+	Bullet.SHELL_CLASS_HEAT: 0,
+	Bullet.SHELL_CLASS_APCR: 0,
+}
+var shells_spent_on_combat: Dictionary = {
+	Bullet.SHELL_CLASS_AP: 0,
+	Bullet.SHELL_CLASS_HE: 0,
+	Bullet.SHELL_CLASS_HEAT: 0,
+	Bullet.SHELL_CLASS_APCR: 0,
+}
+# Which lane the player completed first in a proof-room run. Empty
+# string means no lane completed (player died or run still in progress).
+# Set by the level scene when the player crosses the goal row in a lane.
+var route_taken: String = ""
+# Time spent in each lane (ms). Keyed by lane name (e.g. "HE", "APCR",
+# "HEAT", "AP"). Set by the level scene from per-lane entry/exit.
+var time_per_lane: Dictionary = {}
+
+
+# arc-4 iter 285: increment route OR combat counter for a shot that hit.
+# `hit_kind` is the string "route" or "combat" — caller decides which
+# based on what the bullet damaged (level scene / Bullet wiring lands
+# iter 286). Out-of-known shell classes still tick (defensive — the
+# dict grows to include any future SHELL_CLASS_*). Unknown hit_kind
+# is a no-op; callers must use one of the two sanctioned strings.
+const HIT_KIND_ROUTE: String = "route"
+const HIT_KIND_COMBAT: String = "combat"
+func record_shot_hit(shell_class: int, hit_kind: String) -> void:
+	if hit_kind == HIT_KIND_ROUTE:
+		if shells_spent_on_routes.has(shell_class):
+			shells_spent_on_routes[shell_class] += 1
+		else:
+			shells_spent_on_routes[shell_class] = 1
+	elif hit_kind == HIT_KIND_COMBAT:
+		if shells_spent_on_combat.has(shell_class):
+			shells_spent_on_combat[shell_class] += 1
+		else:
+			shells_spent_on_combat[shell_class] = 1
+	# Unknown hit_kind = no-op (defensive).
+
+
+# arc-4 iter 285: total shells that landed on a route-gate.
+func total_shells_on_routes() -> int:
+	var t: int = 0
+	for k in shells_spent_on_routes:
+		t += shells_spent_on_routes[k]
+	return t
+
+
+# arc-4 iter 285: total shells that landed on combat (enemies in open).
+func total_shells_on_combat() -> int:
+	var t: int = 0
+	for k in shells_spent_on_combat:
+		t += shells_spent_on_combat[k]
+	return t
+
 
 # Called on every player shot. Increments the per-class fired counter.
 func record_shot(shell_class: int) -> void:
