@@ -24,6 +24,21 @@ Format:
 
 ---
 
+## iter 275 — BUILD — Round 24 Phase A widget 3: speed meter
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1 (no combat modal — passive read-only HUD label), 7 (verbs surface — speed ratio is the visible side of the MOMENTUM card / RAM init / OVERDRIVE burst).
+- CONSULT constraints risked: none structurally.
+- Same-family admissibility (iter 273 rule): iter 274 was BUILD (anchor-tied diff). This iter is also BUILD (anchor-tied diff). Two productive same-family in a row is admissible — the rule targets NO-SIGNAL families (STATUS-CHECK, planning-without-ship, etc.), not active build.
+- Predicted failure: speed_label could display "1.0×" forever if I forget the overdrive_mult multiplier path; or could divide-by-zero if @export default of 32 changes.
+- Falsifiable claim: post-edit, _speed_label.text equals "SPD 1.0×" on a fresh PlayerTank with loadout but no archetype init / no MOMENTUM / no overdrive — and equals "SPD 1.2×" after one MOMENTUM card application (speed 32 → 38 ≈ 1.19× ≈ rounded "1.2×"). Harness asserts both.
+- Sentence test: n/a (no upgrade introduced this iter).
+- Substrate touched: scripts/PlayerTank.gd (Layer 2 — substrate write #80, sanctioned per default-on gating template; new HUD additions inside the existing loadout-gated block).
+- Hash-anchor verification plan: post-edit `make test` + procedural oracle on seed 42 — must equal 23d6a2ec3bf2821f… (the _speed_label is built ONLY inside `if loadout != null:` in _setup_hud, so procedural baseline still has _speed_label == null + no per-frame update path).
+
+---
+
 ## iter 274 — BUILD — Round 24 Phase A widget 2: reload bar
 
 - Date: 2026-05-25

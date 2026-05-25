@@ -17,6 +17,22 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 275 — BUILD — Round 24 Phase A widget 3: speed meter
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; widget 3/5 of Phase A — anchor lift at phase close)
+- Same-family admissibility: iter 274 was BUILD, iter 275 is BUILD — productive same-family in a row is admissible per iter-273 rule (rule targets NO-SIGNAL families).
+- Constraints respected: 1 (no combat modal — passive HUD label), 7 (verbs surface — speed ratio is the visible side of the MOMENTUM card / RAM init / OVERDRIVE burst).
+- Constraints risked: none (additive HUD inside loadout-gated block).
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** post substrate write #80 (PlayerTank.gd ×48). `_speed_label` stays null on procedural baseline (never built outside `if loadout != null:`). `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 74/74 PASS.
+- Falsifications: none. Predicted "speed_label could divide-by-zero if @export default of 32 changes" — mitigated by hardcoded `SPEED_BASELINE: float = 32.0` constant, not by reading @export default; if @export ever changes, the constant remains the BC canonical baseline.
+- Files: scripts/PlayerTank.gd (+1 field decl, +1 const, +1 _setup_hud build block, +1 _update_run_hud call, +new `_update_speed_meter()` helper), loop/breach/test_breach_speed_meter.gd (NEW — 5 assertions: procedural-baseline-doesn't-build / baseline-1.0× / MOMENTUM-1.2× / overdrive-1.6×-with-cyan-color / high-boost-1.5×-with-yellow-color), Makefile (.PHONY + check-breach-speed-meter + test-breach aggregate), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: baseline speed=32 → "SPD 1.0×"; speed=38 (MOMENTUM) → "SPD 1.2×"; overdrive @ speed=32 × overdrive_mult=1.6 → "SPD 1.6×" cyan; speed=48 → "SPD 1.5×" yellow tier (≥1.5 threshold).
+- Finding: **Round 24 Phase A widget 3 (speed meter) lands.** Top-right column at (232, 40) — under DEPTH/TIME/BEST labels in the existing ascender HUD stack. Three color tiers: green default (<1.5×), yellow boost (≥1.5×), cyan overdrive burst (independent of ratio). The meter is the visible side of the MOMENTUM card (the player can now READ the +20% they bought; previously imaginary per the user's Round-24 trigger "speed invisible (upgrades feel imaginary)"). Phase A widgets shipped: 2/5 (reload bar + speed meter). Remaining: shell chips (asset-gen), active-cards ribbon (asset-gen), kill-flash (reuses widget 1 icons). Two procedural widgets shipped consecutively without an asset-gen detour — fast iteration loop holding.
+
+---
+
 ## iter 274 — BUILD — Round 24 Phase A widget 2: reload bar
 
 - Date: 2026-05-25

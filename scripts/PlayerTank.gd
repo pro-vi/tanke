@@ -123,6 +123,11 @@ var _shell_codex: ColorRect = null  # arc-4 iter 36: run-start shell primer
 # block in _setup_hud, so arc-2/3 HUD is bit-identical to before.
 var _reload_bar_bg: ColorRect = null
 var _reload_bar_fg: ColorRect = null
+# arc-4 iter 275 (Round 24 Phase A widget 3): speed meter. Top-right
+# column under BEST; displays SPD N.N× normalized to BC baseline (32).
+# Built only inside loadout-gated block — arc-2/3 bit-identical.
+var _speed_label: Label = null
+const SPEED_BASELINE: float = 32.0
 # arc-4 iter 116 (Round 14 Phase 2): REAR_GUARD cooldown timer +
 # tunables. _rear_guard_cd ticks down to 0.0; when 0.0 + an enemy
 # is in the rear cone + loadout has the flag, fires an AP backward
@@ -1965,6 +1970,17 @@ func _setup_hud() -> void:
 		_best_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 		_best_label.add_theme_constant_override("outline_size", 2)
 		canvas.add_child(_best_label)
+		# arc-4 iter 275 (Round 24 Phase A widget 3): speed meter — top-right
+		# column, under BEST. Shows current speed normalized to BC baseline
+		# (32). Reflects RAM init, MOMENTUM card, and OVERDRIVE burst.
+		_speed_label = Label.new()
+		_speed_label.name = "SpeedLabel"
+		_speed_label.position = Vector2(232, 40)
+		_speed_label.text = "SPD 1.0×"
+		_speed_label.add_theme_color_override("font_color", Color(0.65, 0.95, 0.65, 1.0))
+		_speed_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		_speed_label.add_theme_constant_override("outline_size", 2)
+		canvas.add_child(_speed_label)
 		# arc-4 iter 56 (Round 8a): XP bar + level readout — the visible
 		# roguelite progression beat (playtest-3). Top strip, right of HP.
 		_level_label = Label.new()
@@ -2068,6 +2084,27 @@ func _build_reload_bar(canvas: CanvasLayer) -> void:
 		RELOAD_BAR_BG_H - 2.0 * RELOAD_BAR_INSET)
 	_reload_bar_fg.color = _shell_color(current_shell)
 	canvas.add_child(_reload_bar_fg)
+
+
+# arc-4 iter 275: per-frame text update for the speed meter. Computes
+# effective speed = base speed × overdrive_mult (if burst active),
+# divides by SPEED_BASELINE (32 = BC default), formats one-decimal ratio.
+# Color shifts yellow when boosted ≥ 1.5×, cyan during overdrive.
+func _update_speed_meter() -> void:
+	if _speed_label == null:
+		return
+	var effective: float = float(speed)
+	var overdriving: bool = _overdrive_timer > 0.0
+	if overdriving:
+		effective *= overdrive_mult
+	var ratio: float = effective / SPEED_BASELINE
+	_speed_label.text = "SPD %.1f×" % ratio
+	if overdriving:
+		_speed_label.add_theme_color_override("font_color", Color(0.55, 0.95, 1.0, 1.0))
+	elif ratio >= 1.5:
+		_speed_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.4, 1.0))
+	else:
+		_speed_label.add_theme_color_override("font_color", Color(0.65, 0.95, 0.65, 1.0))
 
 
 # arc-4 iter 274: per-frame width + color update. progress = 0 when
@@ -2496,6 +2533,9 @@ func _update_run_hud() -> void:
 	# arc-4 iter 274 (Round 24 Phase A widget 2): refresh reload bar.
 	if _reload_bar_fg != null and loadout != null:
 		_update_reload_bar()
+	# arc-4 iter 275 (Round 24 Phase A widget 3): refresh speed meter.
+	if _speed_label != null and loadout != null:
+		_update_speed_meter()
 	# arc-4 iter 56 (Round 8a): accrue XP from kills + depth.
 	_tick_xp()
 
