@@ -17,6 +17,33 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 194 — PLAYTEST-FIX — MORTAR SPG-style sprite (FV304 inspo) + atlas regen
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Hash anchor: 23d6a2ec3bf2821f… VERIFIED (no scripts/ writes;
+  img/archetype_sprites.png is arc-4-owned, not procedural baseline).
+- Files: tools/gen_archetype_sprites.py (make_mortar_up redesigned;
+  removed offset asymmetric tube; added centered short barrel + wide
+  muzzle plate); img/archetype_sprites.png regenerated; tools/out/
+  archetype_sprites_preview.png regenerated.
+- Finding: User playtest directive: "for the catapult i want a
+  better sprite, SPG (in world of tank) like, i think FV304 is a
+  great inspo." Original iter-143 design was asymmetric tube
+  (offset right) — that distinctness choice was driven by the
+  iter-144 motif-hamming threshold, but at the eye-test the user
+  rejected the look. Redesign: front-centered short barrel + wide
+  muzzle plate at top + chunky mount widening into chassis. SPG
+  silhouette. Readability gate still passes (motif-hamming ≥ 10
+  vs PRISM and RAM; fill ratio 0.31; ≥ 1 accent in front half).
+  test-breach 67/67 (sprite harness checks texture/vframes/frame_base,
+  not pixel values, so passes through asset regen).
+  Next: iter 195+ MORTAR charge-lob mechanic (tap = short, hold =
+  farther) + landing reticle that glides outward while charging.
+
+---
+
 ## iter 193 — PLAYTEST-FIX — double PRISM DPS + PRISM rotation visual glitch
 
 - Date: 2026-05-24

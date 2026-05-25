@@ -181,24 +181,43 @@ def make_prism_up(frame: int = 0) -> List[List[int]]:
 
 
 def make_mortar_up(frame: int = 0) -> List[List[int]]:
-    """MORTAR: chassis + stubby angled tube offset to right-front.
-    Identity: ASYMMETRIC silhouette + accent at tube tip = lobber, not gun."""
+    """MORTAR: chassis + centered short barrel + wide muzzle plate.
+    Identity: SPG-like silhouette (FV304-inspired) — squat hull,
+    centered stubby barrel with a visible muzzle-break plate at front.
+
+    iter 194 (PLAYTEST-FIX) — redesigned from iter-143's offset
+    asymmetric tube per user feedback ('catapult i want a better
+    sprite, SPG like, FV304 great inspo'). Asymmetry removed in
+    favor of front-centered short barrel + muzzle plate. Distinctness
+    vs PRISM preserved through the wide muzzle break (rows 0-1)
+    + chunky barrel mount (rows 4-5) vs PRISM's narrow lens column."""
     g = _blank_grid()
     _add_chassis_and_treads(g, frame=frame)
-    # Tube base mount (slightly right of center)
-    _fill_rect(g, 4, 7, 7, 11, B)
-    _outline_rect(g, 4, 7, 7, 11)
-    # Stubby angled tube going up-and-right from mount
-    # Diagonal pixels: (3,9), (3,10), (2,10), (2,11), (1,11)
-    for r, c in [(3, 9), (3, 10), (2, 10), (2, 11), (1, 11)]:
-        g[r][c] = B
-    # Tube outline (left edge + cap edge)
-    for r, c in [(3, 8), (4, 8), (1, 10), (0, 11), (2, 12)]:
-        if 0 <= r < CELL and 0 <= c < CELL:
-            g[r][c] = O
-    # Mortar cup opening (accent at muzzle tip)
-    g[1][11] = A
-    g[0][11] = A
+    # Wide muzzle plate / muzzle-break at top (FV304 signature) — row 0
+    # outline strip cols 6..9; row 1 has accent at the brake edges (the
+    # 'open' muzzle look), B inside.
+    for c in range(6, 10):
+        g[0][c] = O
+    g[1][6] = A
+    g[1][9] = A
+    g[1][7] = B
+    g[1][8] = B
+    # Barrel body: 2-wide × 2-tall, centered cols 7-8, rows 2-3.
+    for r in range(2, 4):
+        g[r][7] = B
+        g[r][8] = B
+        g[r][6] = O  # barrel side outline
+        g[r][9] = O
+    # Barrel mount widening (rows 4-5) into chassis — gives the
+    # SPG 'plate' feel.
+    for c in range(6, 10):
+        g[4][c] = B
+    g[4][5] = O
+    g[4][10] = O
+    for c in range(5, 11):
+        g[5][c] = B
+    g[5][4] = O
+    g[5][11] = O
     return g
 
 
