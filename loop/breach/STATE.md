@@ -1,8 +1,8 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: round-24-consult-backlog-applying (Q3+reload-pip+H1 shipped 291-293; H6/Stardew remaining)
-iter: 293
+phase: round-24-consult-backlog-applying (7-of-8 applied through iter 294; only Stardew-pacing reframe remains)
+iter: 294
 round24_blueprint: loop/breach/iter-270-round24-architect.md
 round24_status: opening — Phase A (HUD-as-status) → Phase B (scaling + tier breakthroughs) → Phase C (enemy-HP recurve). Stardew delta — same BC primitives, modern HUD + progression feel. User-directed iter 270 (2026-05-24).
 asset_gen_standing_capability: /agentify image_gen (ChatGPT) is the standing visual-asset pipeline — confirmed via Round 9 (4 tank archetype concept sprites) and Pro Consult 011 (motif-first procedural masks per H5). The full pipeline (prompt → image → palette extraction → 16×16 / 8×8 silhouette compliance → atlas pack) shipped end-to-end at iters 142-149. Sanctioned for HUD icons, card art, enemy variants, depot art, banner art, level decorations. Procedural PIL (`tools/gen_tile.py`, `tools/gen_archetype_sprites.py`) remains the same-iter fallback. iter 271 amendment lifts this from Round-9-specific to standing.
@@ -32,6 +32,12 @@ quiet_signal_source_ids_used:  # iter 273 — list of source_ids that have alrea
     consumed_by_iter: 283
     changed_next_action: yes
     resulting_artifact: loop/breach/PROMPT.md § FRAMING-AUDIT GATE (NEW) + loop/breach/iter-283-round24-Q1-architect.md (NEW blueprint) + REVIEW-QUEUE #29 CLOSED with Option B + Round 24 reframed Phase B/C parked → Q1 breach-economy proof room sprint iters 284-287
+  - kind: user_direction
+    source_id: askuserquestion-iter294-h6-Option-A
+    first_seen_iter: 294
+    consumed_by_iter: 294
+    changed_next_action: yes
+    resulting_artifact: scripts/PlayerTank.gd H6 pressure-fade (#55 substrate write) + test_breach_h6_pressure_fade.gd; consult-001 progress 6-of-8 → 7-of-8 applied; only Stardew-pacing reframe remains
 consult_calibration: {hits: 0, partial: 0, misses: 0, untested: 0}  # iter 273 — score of consult predictions against later real playtests; updated when user plays + scores. ≥2 hits AND hit rate ≥50% → calibrated_cap can rise to 4. Repeated misses → uncalibrated_cap lowers further or [FEEL-CONSULT] disabled.
 round23_status: closed-iter-201 (5 phases shipped; pick_card_on_levelup default false ABSORBED into Round 24 Phase A — flag flips true as part of HUD legibility work since cards are now visibly part of the loop)
 round23_blueprint: loop/breach/iter-196-round23-architect.md
@@ -65,8 +71,9 @@ hash_anchor_at_iter_286: 23d6a2ec3bf2821f  # bit-identical through 88 substrate 
 hash_anchor_at_iter_289: 23d6a2ec3bf2821f  # bit-identical through 89 substrate writes — Bullet.gd APCR-steel branch route-record fix (#12) gated on shell_class == SHELL_CLASS_APCR AND body.has_method("breach") AND body.has_meta("is_route_gate"); arc-2/3 procedural baseline fires AP only, never reaches APCR branch
 hash_anchor_at_iter_291: 23d6a2ec3bf2821f  # bit-identical through 90 substrate writes — PlayerTank.gd #53 (death-label route_summary splice) lives inside existing `if run_recap != null` branch which arc-2/3 baseline never enters; insertion is empty when no hits recorded (no extra newlines)
 hash_anchor_at_iter_292: 23d6a2ec3bf2821f  # bit-identical through 91 substrate writes — PlayerTank.gd #54 (tank-adjacent reload pip) lives inside the same `if loadout != null:` block as the other Phase A widgets; never built on procedural baseline
-substrate_writes_this_arc: 91  # Bullet.gd ×12 + PlayerTank.gd ×54 (+iter 292 reload-pip) + Enemy.gd ×7 + others unchanged
-consult_001_progress: 6-of-8-applied  # H5 (iter 280) + H4 (iter 281) + Q1 sprint (iters 283-290) + Q3 recap-surfacing (iter 291) + reload-pip (iter 292) + H1 acceptance-gate strengthen (iter 293). Backlog (2 remaining): H6 visibility classes (~2-3 iters), Stardew-delta pacing reframe (~30+ iters, needs user scope decision).
+hash_anchor_at_iter_294: 23d6a2ec3bf2821f  # bit-identical through 92 substrate writes — PlayerTank.gd #55 (H6 pressure-fade) gated on loadout != null; _last_fire_time defaults to -100.0 so procedural baseline's _is_high_pressure() == false; _update_h6_pressure_fade null-guards both panels
+substrate_writes_this_arc: 92  # Bullet.gd ×12 + PlayerTank.gd ×55 (+iter 294 H6 visibility) + Enemy.gd ×7 + others unchanged
+consult_001_progress: 7-of-8-applied  # H5 (iter 280) + H4 (iter 281) + Q1 sprint (iters 283-290) + Q3 recap-surfacing (iter 291) + reload-pip (iter 292) + H1 acceptance-gate (iter 293) + H6 visibility classes V1 (iter 294). Backlog (1 remaining): Stardew-delta pacing reframe (~30+ iters; user explicitly declined Option C at iter 283 in favor of Option B; would need fresh user direction).
 current_round: 24-phase-A-shipped — Stardew delta Phase A complete at iter 278 (5/5 widgets). 5 consecutive procedural BUILDs (iters 274-278). Phase A pending playtest acceptance; loop continues into Phase B per blueprint sequencing. Active-build cadence 240s (per L16). Blueprint: loop/breach/iter-270-round24-architect.md.
 current_round_phase: PHASE-A-SHIPPED-PENDING-ACCEPTANCE → PHASE-B-OPENING. Widgets shipped (all 5): [reload-bar (iter 274), speed-meter (iter 275), shell-chips-v1 (iter 276), kill-flash (iter 277), active-cards-ribbon-v1 (iter 278)]. Stranger-on-screen test: PENDING (REVIEW-QUEUE #28 — requires real playtest). Phase B (scaling-curve audit + tier-breakthrough card conversion) opens at iter 279 — does NOT block on acceptance per blueprint pattern "A ships before B starts" (A has shipped — acceptance is a parallel review).
 consult_001_status: adopted
@@ -81,19 +88,15 @@ consult_001_status: resolved-applied-h5-only  # 5 other recommendations (H4 / H6
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
 loop_state: RUNNING — Q1 sprint CLOSED iter 290 at 7 iters (iters 283-290). The Q1 breach-economy proof room is now PLAYABLE + RUNTIME-VERIFIED at scene level: scenes/Q1ProofRoom.tscn loads with 4 shell-gated lanes (HE brick / APCR steel / HEAT armored / AP open), per-lane harness asserts cross-pollination ("AP cannot pass steel; only APCR drills"), RunRecap tracks shells_spent_on_routes vs combat in real bullet hits. Playtest brief at loop/breach/Q1-PROOF-ROOM-PLAYTEST-BRIEF.md awaits user scoring of consult-001's 3 falsifiable predictions. REVIEW-QUEUE #30 opened. Loop continues in active build awaiting either user direction OR cheapest remaining consult-001 backlog item from H6/H1/reload-bar-dup/Stardew-pacing/Q3-recap-surfacing.
-next_action: iter 294 — framing-audit pause + likely AskUserQuestion. consult-001 progress: 6-of-8 applied. Remaining 2 items have different shapes:
-  (a) **H6 visibility classes** (conf 0.81, ~2-3 iters) — combat-on / conditional / breath-beat HUD splits. Medium scope; biggest visual change the user would feel. Loop COULD apply unilaterally per Option B authorization, but it's the most disruptive of the remaining items.
-  (b) **Stardew-delta pacing reframe** (conf 0.87, ~30+ iters) — round-shift. CANNOT apply unilaterally; needs user scope decision (this was Option C the user did NOT choose at iter 283).
+next_action: iter 295 — consult-001 application sprint is COMPLETE except for Stardew-pacing (which user declined at iter 283). The honest move: HALT and surface that the loop has finished what the user authorized. Loop should NOT continue unilaterally because (a) the only remaining item is Stardew-pacing which user explicitly chose NOT to take at iter 283 and (b) the calibration of consult-001's 3 predictions REQUIRES the user to playtest + score; otherwise feel_consult_cap stays at 3 forever and the [FEEL-CONSULT] anchors stay structurally untestable.
 
-  Framing-audit gate (PROMPT § iter 283) check at iter 294: 6 consult-001 fixes have been applied since iter 283; user has not yet scored consult-001 predictions OR given new direction. Remaining items either need user scope-confirm (Stardew-pacing) or are big enough that a check-in is warranted (H6 visibility classes). Per the framing-audit gate, after the 3rd consecutive consult-application iter without fresh user signal, surface a check-in via AskUserQuestion — exactly the trigger that fired at iter 283.
+  Recommended for iter 295: PushNotification + AskUserQuestion to surface this naturally. Options:
+    A. Score consult-001 predictions now (user plays Q1ProofRoom; marks hit/partial/miss in CONSULT-LEDGER)
+    B. Pivot to Stardew-pacing reframe (the OPTION C the user previously declined; user may have changed their mind given the Q1+Q3 work is shipped)
+    C. Open Round 25 visual identity sprint (queued at REVIEW-QUEUE #27)
+    D. HALT loop pending direction
 
-  Recommended action for iter 294: AskUserQuestion with 3 options:
-    A. Apply H6 visibility classes (consult-001 final structural fix — 2-3 iters)
-    B. Pause loop pending user playtest scoring of consult-001's 3 predictions (calibration depends on this)
-    C. Pivot to Stardew-pacing reframe (Option C from iter-283 — bigger reframe; user explicitly chose Option B last time)
-    D. User-stated alternative
-
-  Same-family check at iter 294: iters 291-293 = 2 BUILDs + 1 META (Q3 / reload-pip / H1) all consult-001 application. Iter 294 is a META asking user direction; mix is fine. No NO-SIGNAL family.
+  Framing-audit gate (PROMPT § iter 283) check: with 7/8 applied and only the user-blocked item remaining, continuing to "apply backlog" is no longer a legitimate framing — the backlog is consumed. Continuing would be drift back into "cheap fixes" mode that the iter-282 /meta finding named. Stopping or asking is the correct move.
 score: 50/75 absolute · 50/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=4eff/3abs,C7=3,C8=4,C9=2,C10=5,C11=3,C12=3,C13=3,C14=3,C15=4  (iter 119 BUILD-QUALITY re-tags C10 anchor 5 from "arc-4 close" → "iter-N+ checkpoint (N ≥ 100)" — original anchor text was structurally unreachable after PROMPT's non-stop amendment; substantive cross-arc invariant overwhelmingly verified at iter-117 audit. C10 = 5 absolute. ★ 50/75 milestone reached — represents the structural ceiling absent playtest cite or new mechanical scope.)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
@@ -102,7 +105,7 @@ round6e_blueprint: loop/breach/iter-043-round6e-architect.md
 round7_blueprint: loop/breach/iter-047-round7-architect.md
 round8_blueprint: loop/breach/iter-055-round8-architect.md
 round9_blueprint: loop/breach/iter-062-round9-architect.md
-new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,reload-bar,speed-meter,shell-chips,kill-flash,active-cards-ribbon,q1-proof,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike,double-kill,archetype-select-pause,xp-reload-persistence,switch-archetype-validation,pick-archetype-and-mortar-guard,run-recap-archetype-contract,p2-batch1,p2-batch2,p2-batch3,depot-lifetime-pick,steel-salvage-threshold,band-banner-stacking,fire-while-swap,level-up-ceilings,ammo-pickup-no-waste,toast-stagger,route-strip-max-cleared,run-recap-verdict-sentence,run-recap-killer,run-recap-resource-sentence,scout-telegraph,rear-guard,run-recap-route-diff,run-recap-regret-quote} + check-silhouette-gate (85 in test-breach aggregate; iter 293 was META — docs only, no new harness; consult-001 progress 6-of-8)
+new_harness_targets: check-breach-{config,shells,depot,he-blast,loadout,depot-choice,level,harness,recap,enemies,assets,armor,dividend,swap,overdrive,hud,reload-bar,speed-meter,shell-chips,kill-flash,active-cards-ribbon,q1-proof,apcr,codex,shuffle,depot-roll,rulechangers,stakes,meta,route,xp,ammo,shield,hp,archetype,prism,mortar,ram,archetype-select,archetype-switch,distinctness-audit,pressure-probes,band-shape,band-shape-analyzer,swarm-spike,double-kill,archetype-select-pause,xp-reload-persistence,switch-archetype-validation,pick-archetype-and-mortar-guard,run-recap-archetype-contract,p2-batch1,p2-batch2,p2-batch3,depot-lifetime-pick,steel-salvage-threshold,band-banner-stacking,fire-while-swap,level-up-ceilings,ammo-pickup-no-waste,toast-stagger,route-strip-max-cleared,run-recap-verdict-sentence,run-recap-killer,run-recap-resource-sentence,scout-telegraph,rear-guard,run-recap-route-diff,run-recap-regret-quote} + check-silhouette-gate (86 in test-breach aggregate at iter 294 — H6 pressure-fade shipped; consult-001 progress 7-of-8 with only user-declined Stardew-pacing remaining)
 review_queue_open: [#14 ★ PLAYTEST REQUEST (playtest 5 gate; Pro Consult 011 visual layer now included), #15 archetypes-as-identities vs archetypes-as-weapons (design-direction question)]  # iter 151 sweep close — #1, #2, #4, #5, #6, #8, #10, #12, #16 closed as loop-internal/informational artifacts long-superseded. #3, #7, #9, #11 CLOSED earlier (playtests delivered). #13 CLOSED iter 147 (Pro Consult 011 path d shipped).
 ```
 

@@ -17,6 +17,26 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 294 — BUILD — consult-001 H6 visibility classes V1: pressure-fade ribbon + route panel (user direction Option A)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; final consult-001 structural fix; anchor lift defer until user playtest scores prediction 3 of the consult).
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — user EXPLICITLY chose Option A at iter-294 AskUserQuestion ("Apply H6 visibility classes"). H6 (consult-001 conf 0.81) is the final structural fix; directly addresses consult prediction 3 ("bottom-left stack ignored under pressure"). Gate passes.
+- Same-family check: iter 293 META → 294 BUILD. Mix preserves alternation; consult-driven application, anchor-tied.
+- Constraints respected: 1 (passive fade), 5 (run-context vs combat-context separation), 7 (verbs not stats — pressure state IS a verb).
+- Constraints risked: visual jitter on pressure-state transitions — mitigated by HIGH_PRESSURE_WINDOW_S = 2.0s buffer (after firing, the fade persists 2s before lifting).
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** post PlayerTank.gd substrate write #55. The `_update_h6_pressure_fade()` call is gated on `loadout != null` (arc-2/3 baseline never enters that branch); `_last_fire_time` field exists but defaults to -100.0 so `_is_high_pressure()` returns false on procedural baseline; `_update_h6_pressure_fade()` itself null-guards both panels. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 86/86 PASS.
+- Falsifications: 1 mid-iter, caught by harness:
+  - First harness run failed pre-condition: `_route_panel not built`. Route panel is BUILD-DEFERRED via call_deferred + requires `_run_band_route()` to be non-empty (needs a real breach config parent). In the minimal harness (PlayerTank alone), the deferred build short-circuits. Fix: harness now uses `route_built: bool` to make route-panel assertions CONDITIONAL on the panel existing; active-cards panel (always built on loadout != null) carries the primary verification.
+- Files: scripts/PlayerTank.gd (+5 constants + 1 field + 1 _update_run_hud call + new `_is_high_pressure()` + `_update_h6_pressure_fade()` helpers + 1 line in `_fire()` to stamp `_last_fire_time` — substrate write #55), loop/breach/test_breach_h6_pressure_fade.gd (NEW — 4 cases: initial FULL, fired FADED, post-window FULL restoration, procedural baseline silent no-op), Makefile (.PHONY + check-breach-h6-pressure-fade + test-breach aggregate; 86 targets now), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: H6_PRESSURE_WINDOW_S = 2.0s; H6_FADE_ALPHA = 0.3; H6_FULL_ALPHA = 1.0. Initial state (no fires): active-cards.modulate.a = 1.0. After `_last_fire_time = now`: a = 0.3. After window expiry: a = 1.0. Procedural baseline: silent no-op (panels null).
+- Finding: **consult-001 H6 visibility classes V1 ships.** Two run-context HUD strips (active-cards ribbon + route panel) now fade to alpha 0.3 during the 2-second window after firing — combat focus gets visual priority. Combat-critical widgets (HP / reload bar / reload pip / shell chips / speed meter) STAY at full alpha always per the consult's "always-on combat" class. This directly addresses consult prediction 3 ("bottom-left stack ignored under pressure"): the loop is no longer fighting the player's attention budget; the strips now visually de-emphasize themselves DURING combat and re-emphasize themselves between fights. consult_001_progress: 7-of-8-applied; only Stardew-pacing reframe (~30+ iters, needs user scope decision) remains. The 8th item is the round-shift that user explicitly declined at iter 283 in favor of Option B.
+- substrate_writes_this_arc: 92 (PlayerTank.gd ×55).
+- quiet_signal_counter RESET → 0 via SIGNAL_RECEIPT: source_id=askuserquestion-iter294-h6-Option-A; first_seen_iter=294; consumed_by_iter=294; changed_next_action=yes; resulting_artifact=PlayerTank.gd H6 pressure-fade + test_breach_h6_pressure_fade.gd.
+
+---
+
 ## iter 293 — META — consult-001 H1 acceptance-gate strengthen (state→decision)
 
 - Date: 2026-05-25

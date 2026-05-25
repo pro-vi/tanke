@@ -24,6 +24,25 @@ Format:
 
 ---
 
+## iter 294 — BUILD — consult-001 H6 visibility classes: pressure-fade ribbon + route (user direction Option A)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1 (no combat modal — fade is passive), 2/3, 5, 7 (verb-not-stat — pressure determines visibility class, naming the player's current state).
+- CONSULT constraints risked: visual jitter — if pressure transitions oscillate the ribbon could "flicker." Mitigated by HIGH_PRESSURE_WINDOW = 2.0s smoothing.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — user explicitly chose Option A at iter 294 AskUserQuestion (apply H6 visibility classes); H6 is consult-001's final structural fix (conf 0.81). Citable: STATE source_ids_used iter-294 entry. Gate passes.
+- Same-family check: iter 293 META → 294 BUILD. Mix preserves alternation; consult-driven application, anchor-tied.
+- Predicted failure: pressure proxy ("fired within last 2s") may fail to capture passive threat (enemy approaching but player hasn't shot). V1 ships the firing-based proxy as scaffold; iter 295 can extend to enemy-proximity OR enemy-bullet-in-flight as a stricter proxy if playtest reveals a gap.
+- Falsifiable claim: post-edit, PlayerTank has `_last_fire_time` field + `_is_high_pressure()` helper + alpha modulation logic in `_update_run_hud`. Harness asserts:
+  - Initial state (no fires yet): _is_high_pressure() == false; active-cards panel + route panel at full alpha (1.0)
+  - After simulated fire: _last_fire_time set; _is_high_pressure() == true for HIGH_PRESSURE_WINDOW seconds; ribbon + route alpha drops to 0.3
+  - After window expires: _is_high_pressure() == false again; alpha restored to 1.0
+- Sentence test: n/a.
+- Substrate touched: scripts/PlayerTank.gd (substrate write #55 — loadout-gated; arc-2/3 baseline doesn't load these panels at all per iter-278/iter-50 gating).
+- Hash-anchor verification plan: post-edit `make test` + procedural oracle on seed 42 → 23d6a2ec3bf2821f… (modulation lives inside the existing loadout-gated panels which arc-2/3 baseline never builds).
+
+---
+
 ## iter 293 — META — consult-001 H1: acceptance-gate strengthen (state→decision second gate)
 
 - Date: 2026-05-25

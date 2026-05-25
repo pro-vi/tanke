@@ -135,6 +135,17 @@ const RELOAD_PIP_W: float = 8.0
 const RELOAD_PIP_H: float = 2.0
 const RELOAD_PIP_X: float = -4.0   # centered horizontally on tank
 const RELOAD_PIP_Y: float = 10.0   # 2 px clear of tank's 16-px sprite
+# arc-4 iter 294 (consult-001 H6 visibility classes, conf 0.81 — user
+# direction Option A at iter-294 AskUserQuestion): pressure-fade for
+# the run-context HUD strips. ribbon + route panel fade to FADE_ALPHA
+# during HIGH_PRESSURE_WINDOW seconds after firing; restore to 1.0
+# when the player has not fired recently (i.e. pressure has eased).
+# Combat-critical widgets (HP / reload bar / reload pip / shell chips /
+# speed meter) stay at full alpha always.
+const H6_PRESSURE_WINDOW_S: float = 2.0
+const H6_FADE_ALPHA: float = 0.3
+const H6_FULL_ALPHA: float = 1.0
+var _last_fire_time: float = -100.0  # init far in past so _is_high_pressure() == false
 # arc-4 iter 275 (Round 24 Phase A widget 3): speed meter. Top-right
 # column under BEST; displays SPD N.N× normalized to BC baseline (32).
 # Built only inside loadout-gated block — arc-2/3 bit-identical.
@@ -659,6 +670,10 @@ func _fire() -> void:
 	$GunTimer.start()
 	shoot.emit(Bullet, $Muzzle.global_position, direction, actual_shell)
 	can_shoot = false
+	# arc-4 iter 294 (consult-001 H6): stamp pressure timestamp on every
+	# committed fire (not on _swap_cooldown rejections). _update_run_hud
+	# checks elapsed time vs H6_PRESSURE_WINDOW_S to fade run-context HUD.
+	_last_fire_time = Time.get_ticks_msec() / 1000.0
 	if run_recap != null:
 		run_recap.record_shot(actual_shell)
 
@@ -2816,6 +2831,29 @@ func _update_run_hud() -> void:
 	# arc-4 iter 292 (consult-001 conf 0.84): refresh tank-adjacent pip.
 	if _reload_pip_fg != null and loadout != null:
 		_update_reload_pip()
+	# arc-4 iter 294 (consult-001 H6 conf 0.81): pressure-fade run-context.
+	if loadout != null:
+		_update_h6_pressure_fade()
+
+
+# arc-4 iter 294: return true when the player has fired within
+# H6_PRESSURE_WINDOW_S seconds. Used to fade run-context HUD strips
+# (active-cards ribbon + route panel) during combat focus.
+func _is_high_pressure() -> bool:
+	var now: float = Time.get_ticks_msec() / 1000.0
+	return (now - _last_fire_time) < H6_PRESSURE_WINDOW_S
+
+
+# arc-4 iter 294: apply alpha modulation to the run-context HUD strips
+# (ribbon + route panel) based on pressure state. Combat-critical
+# widgets are deliberately NOT modulated — they must stay legible
+# whether or not the player is in active combat.
+func _update_h6_pressure_fade() -> void:
+	var target_alpha: float = H6_FADE_ALPHA if _is_high_pressure() else H6_FULL_ALPHA
+	if _active_cards_panel != null:
+		_active_cards_panel.modulate.a = target_alpha
+	if _route_panel != null:
+		_route_panel.modulate.a = target_alpha
 	# arc-4 iter 275 (Round 24 Phase A widget 3): refresh speed meter.
 	if _speed_label != null and loadout != null:
 		_update_speed_meter()
