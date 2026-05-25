@@ -230,6 +230,19 @@ var _beam_pierce: bool = false      # skip ray-cast first-body stop for visual +
 var _mortar_cooldown_mult: float = 1.0  # multiplied into MORTAR_GUN_COOLDOWN (lower = faster)
 var _mortar_aoe_damage_bonus: int = 0    # added to AOE_DAMAGE per shell
 var _mortar_aoe_radius_bonus: float = 0.0  # added to AOE_RADIUS per shell
+# RAM card accumulators
+var _ram_swing_damage_bonus: int = 0
+var _ram_collision_damage_bonus: int = 0
+# DEFAULT MOMENTUM card — +20% move speed per pick (stacks
+# multiplicatively). At 1.0 = no card. Capped at 2.0 (2× base).
+var _momentum_mult: float = 1.0
+# arc-4 iter 200 (Round 23 Phase 4): feature flag for wiring the
+# level-up event into _show_levelup_pick. Default false — existing
+# _apply_level_boost auto-cycle path is preserved so test_breach_xp /
+# test_breach_xp_reload_persistence / test_breach_level_up_ceilings
+# don't break. Flip to true when the pick UI is the desired player
+# experience (iter 201 close-out or later, gated on playtest).
+@export var pick_card_on_levelup: bool = false
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
@@ -524,7 +537,7 @@ func _physics_process(delta: float) -> void:
 		if archetype == TankArchetype.RAM and _ram_collision_timer <= 0.0:
 			var collider: Object = collision.get_collider()
 			if collider != null and collider.has_method("take_damage"):
-				collider.take_damage(RAM_COLLISION_DAMAGE)
+				collider.take_damage(RAM_COLLISION_DAMAGE + _ram_collision_damage_bonus)
 				_ram_collision_timer = RAM_DAMAGE_COOLDOWN
 	sprite.colliding = collision != null
 
@@ -1305,10 +1318,38 @@ func _apply_card(kind: int) -> void:
 			if archetype == TankArchetype.MORTAR and has_node("GunTimer"):
 				var gt2: Timer = $GunTimer
 				gt2.wait_time = maxf(RELOAD_MIN, MORTAR_GUN_COOLDOWN * _mortar_cooldown_mult - _reload_reduction)
+		# arc-4 iter 200 (Round 23 Phase 4): RAM cards
+		UpgradeCatalogT.CardKind.SWING_DAMAGE_UP:
+			_ram_swing_damage_bonus += 1
+		UpgradeCatalogT.CardKind.COLLISION_DAMAGE_UP:
+			_ram_collision_damage_bonus += 1
+		UpgradeCatalogT.CardKind.SPRINT_DURATION_UP:
+			overdrive_burst += 0.5
+		# arc-4 iter 200 (Round 23 Phase 4): DEFAULT cards
+		UpgradeCatalogT.CardKind.FASTER_RELOAD:
+			# Mirrors the iter-92 P0-2 path used by _apply_level_boost.
+			_reload_reduction += RELOAD_STEP
+			if has_node("GunTimer"):
+				var gt3: Timer = $GunTimer
+				var arch_base: float = MORTAR_GUN_COOLDOWN * _mortar_cooldown_mult if archetype == TankArchetype.MORTAR else _base_default_gun_wait_time
+				gt3.wait_time = maxf(RELOAD_MIN, arch_base - _reload_reduction)
+		UpgradeCatalogT.CardKind.SHELL_CAP_PLUS_1:
+			if loadout != null:
+				if loadout.max_he_reserve < MAX_HE_RESERVE_CEILING:
+					loadout.max_he_reserve += 1
+				if loadout.max_heat_reserve < MAX_HEAT_RESERVE_CEILING:
+					loadout.max_heat_reserve += 1
+				if loadout.max_apcr_reserve < MAX_APCR_RESERVE_CEILING:
+					loadout.max_apcr_reserve += 1
+				loadout.refill_he(1)
+				loadout.refill_heat(1)
+				loadout.refill_apcr(1)
+		UpgradeCatalogT.CardKind.MOMENTUM:
+			# +20% move speed per pick; multiplicative; capped at 2.0.
+			_momentum_mult = minf(2.0, _momentum_mult * 1.2)
+			speed = int(round(speed * 1.2))
 		_:
-			# TODO Phase 4: fill in DEFAULT + RAM cards.
-			# Silent no-op for now so the UI doesn't error out
-			# when an unimplemented card is picked.
+			# Defensive: silent no-op for any card not yet wired.
 			pass
 	_show_pickup_toast("LEVEL UP  %s" % msg, Color(1.0, 0.9, 0.35, 1.0))
 
@@ -1345,7 +1386,7 @@ func _ram_swing() -> void:
 			continue  # behind the tank
 		if to_target.length() > RAM_SWING_RANGE:
 			continue  # out of range
-		sibling.take_damage(RAM_SWING_DAMAGE)
+		sibling.take_damage(RAM_SWING_DAMAGE + _ram_swing_damage_bonus)
 
 
 # arc-4 iter 116 (Round 14 Phase 2): scan the "enemy" group for the
@@ -2432,6 +2473,13 @@ func _grant_xp(amount: int) -> void:
 		_level += 1
 		_xp_to_next = XP_BASE + (_level - 1) * XP_STEP
 		_apply_level_boost(_level)
+		# arc-4 iter 200 (Round 23 Phase 4): also pop the pick UI when
+		# the feature flag is set (default false to preserve test compat).
+		# The auto-boost above is the baseline reward; the pick is a
+		# bonus card. Once playtest validates the pick experience, the
+		# auto-boost may be removed.
+		if pick_card_on_levelup:
+			_show_levelup_pick(_level)
 	_update_xp_hud()
 
 

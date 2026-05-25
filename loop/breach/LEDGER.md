@@ -17,6 +17,53 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 200 — BUILD — Round 23 Phase 4 — RAM + DEFAULT card branches + level-up wiring flag
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Hash anchor: 23d6a2ec3bf2821f… VERIFIED (substrate write #78;
+  all new bonuses default to 0 / 1.0; feature flag default false
+  so all existing test/playthrough behavior is bit-identical).
+- Files: scripts/PlayerTank.gd #78 (+ _ram_swing_damage_bonus /
+  _ram_collision_damage_bonus / _momentum_mult state + pick_card_
+  on_levelup @export feature flag; 6 new apply_card branches
+  SWING_DAMAGE_UP/COLLISION_DAMAGE_UP/SPRINT_DURATION_UP +
+  FASTER_RELOAD/SHELL_CAP_PLUS_1/MOMENTUM; wired bonuses into
+  RAM_COLLISION_DAMAGE + RAM_SWING_DAMAGE call sites; added
+  conditional `_show_levelup_pick(_level)` call after
+  `_apply_level_boost` in `_grant_xp` gated by flag); loop/breach/
+  test_breach_card_apply_p4.gd (NEW 8-case harness); Makefile
+  (+ target).
+- Finding: **Round 23 ALL 14 CARDS NOW WORKING.** Phase 4 ships
+  the last 6:
+    SWING_DAMAGE_UP    → +1 _ram_swing_damage_bonus → take_damage
+                         site at line 1348 adds bonus to RAM_SWING_DAMAGE
+    COLLISION_DAMAGE_UP → +1 _ram_collision_damage_bonus → take_damage
+                         site at line 527 adds bonus to RAM_COLLISION_DAMAGE
+    SPRINT_DURATION_UP → overdrive_burst += 0.5 (RAM gets the iter-67
+                         built-in sprint; this lengthens its window)
+    FASTER_RELOAD      → mirrors iter-92 _reload_reduction path; composes
+                         with mortar cooldown mult correctly
+    SHELL_CAP_PLUS_1   → +1 to each shell cap (clamped to per-shell
+                         CEILINGs) + refill 1 of each (mirrors iter-103
+                         P1-E logic)
+    MOMENTUM           → speed × 1.2 per pick (cap 2.0); +20% move
+                         speed for the run
+  Level-up wiring (flag-gated): `pick_card_on_levelup` (@export,
+  default false). When TRUE, `_grant_xp` calls `_show_levelup_pick`
+  AFTER `_apply_level_boost`, so player gets BOTH the auto-boost
+  baseline reward AND a bonus card pick. Default false preserves
+  iter-92/103 test compat (test_breach_xp / test_breach_xp_reload_
+  persistence / test_breach_level_up_ceilings all pass through
+  unchanged because they don't set the flag). test-all 5/5;
+  test-breach 72/72 (was 71). Score 50/75 unchanged.
+  Next: iter 201 META — Round 23 close + REVIEW-QUEUE #14 update
+  + decision on flipping pick_card_on_levelup default after
+  playtest.
+
+---
+
 ## iter 199 — BUILD — Round 23 Phase 3 — PRISM + MORTAR card apply branches
 
 - Date: 2026-05-24
