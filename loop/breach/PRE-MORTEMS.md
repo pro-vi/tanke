@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 290 — META — Q1 sprint CLOSE: playtest brief + REVIEW-QUEUE #30 + CONSULT-LEDGER prediction-scoring trigger
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 (META — no code).
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — the brief is the bridge between the loop's 7-iter sprint and the user's playtest. consult-001's 3 falsifiable predictions get a scoring trigger here. Gate passes.
+- Same-family check: iter 289 BUILD → iter 290 META. Mix breaks the 6-BUILD streak; productive end-of-sprint META.
+- Predicted failure: brief could be too long (defeating its 1-page purpose) OR could fail to surface the consult-001 prediction-scoring rules clearly enough for the user to score post-playtest.
+- Falsifiable claim: post-edit, loop/breach/Q1-PROOF-ROOM-PLAYTEST-BRIEF.md exists and contains: launch command, lane summary, 3 consult-001 predictions in user-actionable form, debrief template. REVIEW-QUEUE has #30 with prediction-scoring rules. CONSULT-LEDGER consult-001 § Affected anchors lists the scoring trigger.
+- Sentence test: n/a.
+- Substrate touched: NONE — pure docs + REVIEW-QUEUE + CONSULT-LEDGER.
+- Hash-anchor verification plan: no substrate write → hash preserved. Re-verify anyway.
+
+---
+
 ## iter 289 — BUILD — Q1 sprint 6/7: per-lane gate-clearance + route-currency verification harness
 
 - Date: 2026-05-25

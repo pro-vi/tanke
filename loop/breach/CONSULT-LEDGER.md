@@ -158,6 +158,12 @@ Bottom line (verbatim): "Phase A was real progress, not fake shipping — but it
 ### Affected anchors
 - C8 (HUD legibility): could lift to 4 [FEEL-CONSULT] after Phase A widget set complete IF Predictions 1+2+3 are SCORED hits. Per cap=3 uncalibrated → NO lift yet; require real playtest scoring first.
 - Other RUBRIC anchors: the consult explicitly says HUD work does NOT lift Q1 (breach economy distinctness) — that lift requires the "breach-economy proof room" work, not Phase A.
+- **Q1 sprint shipped iter 290 (per user direction iter 283 Option B).** The Q1 proof room (scenes/Q1ProofRoom.tscn) materializes the consult Q1 verdict 0.90: "shells are route currency, not damage flavor." Playtest brief loop/breach/Q1-PROOF-ROOM-PLAYTEST-BRIEF.md gives user a concrete way to score the 3 predictions above against actual play.
+
+### Prediction-scoring trigger (iter 290)
+- **READY TO SCORE.** When user plays Q1ProofRoom.tscn + reads the brief, they fill in this section's Scoring fields.
+- Trigger path: REVIEW-QUEUE #30 → user plays → user marks per-prediction hit/partial/miss → CONSULT-LEDGER consult-001 § Scoring updates → STATE.consult_calibration tally bumps → calibration thresholds apply (≥2 hits + hit_rate ≥50% → cap rises 3→4; ≥3 misses in last 5 → cap lowers OR disable).
+- Loop continues structurally between user's playtest sessions per L3 (REVIEW-QUEUE pattern); no idle ping-pong.
 
 ### Expiration
 - max_iters_without_real_playtest: 30 (default)

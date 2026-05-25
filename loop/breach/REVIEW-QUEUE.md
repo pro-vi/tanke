@@ -818,6 +818,58 @@ Items remaining OPEN (require user signal):
 
 #27 — Round 25 candidate: Visual identity layer (asset-gen capability lifted to standing) — round 25 — iter 271 — open (queued, opens after Round 24)
 
+#30 — ★ Q1 PROOF-ROOM SHIPPED — playable + 3 consult-001 predictions awaiting user scoring — round 24 — iter 290 — open
+  Finding: Round 24 reframed Q1 sprint (consult-001 verdict 0.90) shipped
+  across 7 iters (284-290): BreachBand resource + ASCII layout + parser
+  module + storage API + Bullet/PlayerTank wiring + playable scene +
+  per-lane runtime verification harness + playtest brief. The CRITICAL
+  "shells are route currency, not damage flavor" claim is now a RUNTIME
+  ASSERTION: the harness verifies AP shot at steel does NOT pass (cross-
+  pollination preserved), only APCR drills steel. Plus iter 289 surfaced
+  + fixed an iter-286 wiring gap (APCR-steel drill not recording route
+  hits) via the verification harness itself.
+  Affordance: User can `godot --path . scenes/Q1ProofRoom.tscn` and walk
+  the 4-lane proof room (HE / APCR / HEAT / AP). Player auto-spawns in HE
+  lane V1 (edit Q1ProofRoomScene.V1_PLAYER_LANE to try others).
+  Risk: V1 has no pick UI, no goal trigger, no on-screen recap. These
+  are deliberate scope cuts to close the sprint at 7 iters; the structural
+  claim "shells are route currency" is enforceable without those polish
+  items. The brief at loop/breach/Q1-PROOF-ROOM-PLAYTEST-BRIEF.md
+  documents what's not in V1.
+  Hash anchor `23d6a2ec3bf2821f…` preserved through 9 substrate writes
+  (Bullet ×12, PlayerTank ×52, Enemy ×7). test-breach 83/83 green.
+
+  **CONSULT-001 PREDICTIONS AWAITING USER SCORING (3 total):**
+    1. Shell/reload legibility passes; active-build legibility fails
+       (expected_observation + falsified_if in CONSULT-LEDGER consult-001 §)
+    2. Top-left reload read AFTER combat, not USED during combat
+    3. Bottom-left route/card/shell stacking IGNORED under pressure
+
+  Scoring rules (from CONSULT-LEDGER):
+    - User plays Q1ProofRoom.tscn 1-2 times → observes per-prediction
+      behavior → marks each hit / partial / miss in CONSULT-LEDGER
+      consult-001 § Scoring
+    - STATE.consult_calibration tallies update
+    - Per CONSULT-LEDGER calibration thresholds:
+      * ≥2 hits + hit_rate ≥50% across scored entries → feel_consult_cap
+        raises 3 → 4 (calibrated)
+      * ≥3 misses in last 5 scored → cap lowers to 2 OR [FEEL-CONSULT]
+        temporarily disabled for affected anchor types
+
+  Q1 SPRINT COMPLETE. Next steps gated on either:
+    (a) User scores predictions → loop applies calibration + picks next
+        consult-001 backlog item (H6 visibility classes / H1 acceptance
+        gate / reload bar tank-dup / Q3 diagnostic recap / Stardew-pacing)
+    (b) User reframes round entirely (Option C from REVIEW-QUEUE #29)
+    (c) User wants Round 25 visual identity sprint to open
+    (d) User direction stated otherwise
+
+  Loop continues in active build per PROMPT cron at 240s; if no fresh
+  user direction lands, loop picks (a) cheapest remaining consult-001
+  backlog item from the existing 4-of-7 backlog list.
+
+---
+
 #29 — ★★ FRAMING AUDIT — Stardew delta scope (consult-001 + /meta finding) — round 24 — iter 282 — CLOSED iter 283 (user chose Option B)
   Resolution iter 283: user picked **Option B — pivot to Q1 breach-economy proof room.** Blueprint shipped at loop/breach/iter-283-round24-Q1-architect.md. Original Phase B/C parked. Estimated 4-5 iters (284-288). PROMPT.md framing-audit gate § added as the structural follow-up.
 

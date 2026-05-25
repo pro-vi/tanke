@@ -17,6 +17,33 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 290 — META — Q1 sprint CLOSE: playtest brief + REVIEW-QUEUE #30 + CONSULT-LEDGER prediction-scoring trigger
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; META iter closing the 7-iter sprint).
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — the brief is the bridge between loop's 7-iter sprint and user's playtest scoring. Gate passes.
+- Same-family check: iter 289 BUILD → 290 META. Mix breaks the 6-BUILD streak; productive end-of-sprint META.
+- Constraints respected: all 7 (META — no code).
+- Constraints risked: none.
+- Hash anchor: n/a (no substrate write — pure docs + REVIEW-QUEUE + CONSULT-LEDGER).
+- Files: loop/breach/Q1-PROOF-ROOM-PLAYTEST-BRIEF.md (NEW — launch command + 4-lane summary + 3 consult-001 predictions in user-actionable form + Q1 verdict-specific questions + V1 honest scope cuts + debrief template + scoring-flow explanation), loop/breach/REVIEW-QUEUE.md (#30 NEW summarizing Q1 sprint shipped + 3 predictions awaiting user scoring + CONSULT-LEDGER calibration rules), loop/breach/CONSULT-LEDGER.md (consult-001 § Affected anchors updated with Q1-sprint-shipped note + prediction-scoring trigger section), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Finding: **Q1 SPRINT CLOSES at 7 iters (283-290).** What shipped across the sprint:
+  - iter 283 META: user direction Option B captured; PROMPT framing-audit gate added
+  - iter 284 BUILD: BreachBand resource (q1_proof.tres) + ASCII layout + design-verification harness
+  - iter 285 BUILD: RunRecap shells_spent_on_routes / shells_spent_on_combat / record_shot_hit API
+  - iter 286 BUILD: Bullet → PlayerTank → RunRecap wiring (is_route_gate meta routing)
+  - iter 287 BUILD: Q1ProofRoom parser module (TILE_GRID + lane helpers); sprint plan revised 4→7 iters
+  - iter 288 BUILD: scenes/Q1ProofRoom.tscn playable scene + spawn logic
+  - iter 289 BUILD: per-lane runtime verification harness + APCR-steel wiring gap fix (surfaced by harness itself)
+  - iter 290 META: playtest brief + REVIEW-QUEUE close + prediction-scoring trigger
+- "Shells are route currency, not just damage flavor" is now a RUNTIME ASSERTION on a PLAYABLE scene, not a design slogan. The consult-001 Q1 verdict (0.90) is materialized in code. User can now score the 3 predictions against actual play; cap calibration tallies into STATE.consult_calibration.
+- substrate_writes_this_arc: unchanged at 89 (this iter is META — no substrate touch).
+- consult_001_progress: 5-of-7-applied — H5 ribbon-labels (iter 280) + H4 kill-flash-ring (iter 281) + Q1 proof room sprint (iters 284-290, full 7-iter program). Backlog: H6 visibility classes, H1 acceptance gate strengthen, reload bar tank-adjacent dup, Stardew-delta pacing reframe, Q3 diagnostic recap surfacing (the in-scene route-currency surfacing — RunRecap stores it but no on-screen recap shows it; deferred unless user plays + scores).
+- quiet_signal_counter stays at 0 (downstream of iter-283 user-direction source). The next strong-signal source will be the user's actual scoring of the predictions (per CONSULT-LEDGER scoring fields).
+
+---
+
 ## iter 289 — BUILD — Q1 sprint 6/7: per-lane gate playthrough harness + APCR-steel route-currency wiring fix
 
 - Date: 2026-05-25
