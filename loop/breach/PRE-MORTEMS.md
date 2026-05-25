@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 291 — BUILD — consult-001 Q3 recap-surfacing: route-currency on death overlay
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1, 6 (death recap surfaces route attribution via shell breakdown), 7 (verb-not-stat — "1HE on route, 2AP on combat" names the verbs the player performed, not stat snapshots).
+- CONSULT constraints risked: visual density — death label is 176×116 and already shows 7+ lines. Mitigation: route_currency_summary returns AT MOST 2 lines and SKIPS zero entries; collapses to "" if no hits recorded.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — Q3 (consult-001 conf 0.92) is the diagnostic surfacing that makes the Q1 proof-room data VISIBLE post-run. Without it, the data sits in RunRecap unread; the player never sees the "shells are route currency" breakdown they just played. Direct downstream of user's Option B at iter 283. Gate passes.
+- Same-family check: iter 290 META → 291 BUILD. Mix is fine.
+- Predicted failure: format could overflow the 176×116 panel if a long run has shells on all 4 classes in both dicts. Mitigation: compact "%dCLASS" tokens space-separated; 4 classes × 2 dicts max = "ROUTE: 4HE 4HEAT 4APCR 4AP\nCOMBAT: 4HE 4HEAT 4APCR 4AP" ≈ 36 chars per line, well within ~30-char-wide panel. Verified empirically by harness.
+- Falsifiable claim: post-edit, RunRecap.route_currency_summary() returns "" when no record_shot_hit calls fired; "ROUTE: 1HE" after one record_shot_hit(HE, "route"); "ROUTE: 1HE\nCOMBAT: 1AP" after one of each; correctly drops zero entries. PlayerTank death label includes the route_currency_summary block when run_recap != null AND total > 0.
+- Sentence test: n/a.
+- Substrate touched: scripts/PlayerTank.gd (substrate write #53 — gated on `run_recap != null` already, splicing route summary into existing death-label format string).
+- Hash-anchor verification plan: post-edit `make test` + procedural oracle on seed 42 → must equal 23d6a2ec3bf2821f… (insertion is INSIDE the `if run_recap != null` branch which arc-2/3 baseline never enters).
+
+---
+
 ## iter 290 — META — Q1 sprint CLOSE: playtest brief + REVIEW-QUEUE #30 + CONSULT-LEDGER prediction-scoring trigger
 
 - Date: 2026-05-25

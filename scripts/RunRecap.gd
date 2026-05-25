@@ -104,6 +104,42 @@ func total_shells_on_combat() -> int:
 	return t
 
 
+# arc-4 iter 291 (consult-001 Q3 verdict 0.92): compact route-currency
+# summary for the death overlay. Returns up to 2 lines:
+#   "ROUTE: 1HE 1APCR 2HEAT"
+#   "COMBAT: 3AP"
+# Drops zero entries. Returns "" when both dicts are empty so the
+# death label can skip the section.
+func route_currency_summary() -> String:
+	var lines: Array[String] = []
+	var route_parts: Array[String] = _shell_breakdown(shells_spent_on_routes)
+	var combat_parts: Array[String] = _shell_breakdown(shells_spent_on_combat)
+	if not route_parts.is_empty():
+		lines.append("ROUTE: " + " ".join(route_parts))
+	if not combat_parts.is_empty():
+		lines.append("COMBAT: " + " ".join(combat_parts))
+	return "\n".join(lines)
+
+
+# Format a shells_spent_* dict as compact tokens. AP/HE/HEAT/APCR
+# order matches the in-game shell-cycle order.
+func _shell_breakdown(d: Dictionary) -> Array[String]:
+	var parts: Array[String] = []
+	var ordered: Array = [
+		[Bullet.SHELL_CLASS_AP, "AP"],
+		[Bullet.SHELL_CLASS_HE, "HE"],
+		[Bullet.SHELL_CLASS_HEAT, "HEAT"],
+		[Bullet.SHELL_CLASS_APCR, "APCR"],
+	]
+	for entry in ordered:
+		var sc: int = entry[0]
+		var label: String = entry[1]
+		var v: int = int(d.get(sc, 0))
+		if v > 0:
+			parts.append("%d%s" % [v, label])
+	return parts
+
+
 # Called on every player shot. Increments the per-class fired counter.
 func record_shot(shell_class: int) -> void:
 	if shells_fired.has(shell_class):

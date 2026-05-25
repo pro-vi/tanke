@@ -1731,8 +1731,16 @@ func _die() -> void:
 			if band != null and "canonical_answer" in band:
 				canonical = String(band.canonical_answer)
 			var verdict: String = run_recap.verdict_sentence(canonical)
-			_death_label.text = "YOU DIED\n\n%s\n\nDEPTH %d · TIME %d:%02d · KILLS %d%s%s" % [
-				verdict, depth, t / 60, t % 60, kills, best_line, best_time_line
+			# arc-4 iter 291 (consult-001 Q3 verdict 0.92): splice
+			# route-currency summary between verdict + footer when
+			# any route/combat hits were recorded. Empty when no
+			# hits (e.g. died before firing) — keeps panel tight.
+			var route_summary: String = run_recap.route_currency_summary()
+			var route_block: String = ("\n\n" + route_summary) \
+					if not route_summary.is_empty() else ""
+			_death_label.text = "YOU DIED\n\n%s%s\n\nDEPTH %d · TIME %d:%02d · KILLS %d%s%s" % [
+				verdict, route_block, depth, t / 60, t % 60, kills,
+				best_line, best_time_line,
 			]
 		else:
 			_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nCANCELS %d\nSTALL %d%%%s%s" % [depth, t / 60, t % 60, kills, aim_cancels, int(stall_pct), best_line, best_time_line]

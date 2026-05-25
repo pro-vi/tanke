@@ -17,6 +17,25 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 291 — BUILD — consult-001 Q3 recap-surfacing: route-currency on death overlay
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; recap-surfacing makes Q1's data visible; anchor lift defer until user playtest scores predictions).
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — Q3 (consult-001 conf 0.92) is the diagnostic surfacing the proof-room's route-currency data to the player; without it, the data stays invisible. Direct downstream of Q1 sprint (user's Option B from iter 283). Gate passes.
+- Same-family check: iter 290 META → 291 BUILD. Mix is good.
+- Constraints respected: 1, 6 (route attribution surfaced), 7 (verb tokens "1HE on route" not "+10% damage").
+- Constraints risked: none — width budget verified at worst case 27/38 chars.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** post PlayerTank.gd substrate write #53. Insertion lives entirely inside the existing `if run_recap != null` branch which arc-2/3 procedural baseline never enters. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 84/84 PASS.
+- Falsifications: none. Predicted "format could overflow 176×116 panel" — harness Case 6 verifies worst-case 27 chars per line (under 38-char budget).
+- Files: scripts/RunRecap.gd (+ `route_currency_summary()` method + `_shell_breakdown()` private helper; orders AP/HE/HEAT/APCR; drops zero entries), scripts/PlayerTank.gd (substrate write #53 — splices route_summary block between verdict and DEPTH/TIME footer in the death label; empty when no hits → no extra newlines), loop/breach/test_breach_route_currency_summary.gd (NEW — 6 cases: empty / 1 HE route / 1 AP combat / mixed / multi-class ordered / worst-case width), Makefile (.PHONY + check-breach-route-currency-summary + test-breach aggregate; 84 targets now), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: `route_currency_summary()` returns "" for empty; "ROUTE: 1HE" for one HE route; "COMBAT: 1AP" for one AP combat; "ROUTE: 1HE\nCOMBAT: 1AP" mixed; "ROUTE: 2HE 1APCR\nCOMBAT: 3AP" multi-class with AP/HE/HEAT/APCR ordering + zero-drop. Worst-case width 27 chars (well under 38 budget for the 176-px death label).
+- Finding: **Consult-001 Q3 (conf 0.92) shipped.** The Q1 proof-room data is now SURFACED to the player on death — `RunRecap.shells_spent_on_routes` and `_on_combat` aren't just internal counters anymore; they appear in the death overlay as "ROUTE: 1HE 1APCR / COMBAT: 3AP" or similar. The player can read post-run whether they spent shells on routes (the breach economy verb) or on combat (the BC verb). This closes the loop between iter 285's storage API and the player's felt feedback. consult_001_progress: 4-of-8-applied; backlog now H6 / H1 / reload-bar-dup / Stardew-pacing-reframe (4 remaining).
+- substrate_writes_this_arc: 90 (PlayerTank.gd ×53; Bullet.gd ×12; Enemy.gd ×7; etc).
+- quiet_signal_counter stays at 0 (downstream of iter-283 source).
+
+---
+
 ## iter 290 — META — Q1 sprint CLOSE: playtest brief + REVIEW-QUEUE #30 + CONSULT-LEDGER prediction-scoring trigger
 
 - Date: 2026-05-25
