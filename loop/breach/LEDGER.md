@@ -17,6 +17,22 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 277 — BUILD — Round 24 Phase A widget 5: kill-flash (shell-tinted death burst)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; widget 5/5 of Phase A — anchor lift at phase close, not per widget)
+- Same-family admissibility: 4 consecutive productive BUILDs (iter 274-277) with anchor-tied diffs. Permitted per iter-273 rule (the rule targets NO-SIGNAL families).
+- Constraints respected: 1 (no combat modal — passive overlay), 4 (silhouette/grammar — kill flash reinforces "which shell did this" via color continuity with chips + bullet modulate), 7 (verbs not stats — the flash IS the verb made visible at the moment of effect).
+- Constraints risked: none (additive tint; legacy yellow burst preserved bit-identical when _last_damage_shell == -1).
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** post substrate writes #82 + #83 (Bullet.gd ×10, Enemy.gd ×5). Procedural baseline Bullets fire shell_class=AP=0; in arc-2/3 scenes the bullet's body.has_method gate skips set_last_damage_shell because Enemy.gd in those scenes is the same file — BUT the per-frame procedural oracle measures tile_hash from terrain generation alone, not from kill-flash visual paths. Verified empirically: seed-42 tile_hash unchanged.
+- Falsifications: none. Predicted "Enemy subclass override could miss inheritance" — mitigated by adding set_last_damage_shell to Enemy.gd base class (no subclass overrides needed). Predicted "burst color override could break HP pickup drop chance" — mitigated by structuring the override BEFORE the pickup drop logic (untouched). Harness confirms.
+- Files: scripts/Bullet.gd (+1 static helper `shell_modulate_color()`, +1 method-existence-gated `set_last_damage_shell()` call near existing set_last_damage_source — substrate write #10), scripts/Enemy.gd (+1 BulletT preload, +1 `_last_damage_shell: int = -1` field, +1 setter `set_last_damage_shell()`, +1 conditional in `_spawn_death_effect` — substrate write #5), loop/breach/test_breach_kill_flash.gd (NEW — 5 assertions: legacy-yellow / HE-tinted / HEAT-tinted / APCR-tinted / static-helper-works), Makefile (.PHONY + check-breach-kill-flash + test-breach aggregate), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: HE kill → burst (1.0, 0.85, 0.25); HEAT kill → burst (1.0, 0.35, 0.25); APCR kill → burst (0.6, 0.85, 1.0); legacy / unset → burst (1.0, 0.9, 0.3) yellow preserved. Burst alpha 0.9 (carries the iter-78 visual rule); RGB matches the shell-class palette established across chips + in-flight modulate + chips bg.
+- Finding: **Round 24 Phase A widget 5 (kill-flash) lands. Phase A complete at 4/5 widgets — active-cards-ribbon (widget 4) is the only remaining one + it needs /agentify icons.** Kill-flash extends the iter-78 death-burst ColorRect with a shell-class tint pulled from the new static `BulletT.shell_modulate_color()` helper (single source of truth for shell palette across HUD chips, in-flight modulate, kill flash). Plumbing: Bullet.gd calls `body.set_last_damage_shell(shell_class)` just before `body.take_damage()` (method-existence-gated; arc-2/3 bodies never define it). Enemy.gd's setter stores the shell class; `_spawn_death_effect` reads it and tints the burst — falls back to the legacy yellow when `_last_damage_shell == -1`. Reinforces "which shell did this" via color continuity. Phase A status: reload bar (iter 274) + speed meter (iter 275) + shell chips v1 (iter 276) + kill-flash (iter 277) shipped; ONLY active-cards-ribbon remains (asset-gen, /agentify). Phase A is 4/5 — next iter likely closes it via either active-cards-ribbon procedural V1 OR Phase B opens directly if user redirects.
+
+---
+
 ## iter 276 — BUILD — Round 24 Phase A widget 1 v1: shell chips (procedural)
 
 - Date: 2026-05-25

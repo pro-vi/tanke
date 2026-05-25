@@ -21,6 +21,19 @@ const SHELL_CLASS_APCR: int = 3
 # anti-armor). When at default, `start()` runs an arc-2-identical path.
 @export var shell_class: int = SHELL_CLASS_AP
 
+# arc-4 iter 277 (Round 24 Phase A widget 5): canonical per-shell color
+# used by HUD chips (iter 276), in-flight bullet modulate (iter 35), and
+# kill-flash (iter 277). Single source of truth for shell visual identity.
+static func shell_modulate_color(sc: int) -> Color:
+	if sc == SHELL_CLASS_HE:
+		return Color(1.0, 0.85, 0.25, 1.0)
+	if sc == SHELL_CLASS_HEAT:
+		return Color(1.0, 0.35, 0.25, 1.0)
+	if sc == SHELL_CLASS_APCR:
+		return Color(0.6, 0.85, 1.0, 1.0)
+	return Color(0.92, 0.92, 0.95, 1.0)  # AP — pale steel
+
+
 var velocity: Vector2 = Vector2.ZERO
 var _steel_drilled: int = 0  # arc-4 iter 49: steel blocks this APCR shell has drilled
 # arc-4 iter 109 (Round 12 Gap 2): kill-source attribution. Set by
@@ -135,6 +148,11 @@ func _on_body_entered(body: Node) -> void:
 		# it, so this is a no-op on the baseline.
 		if body.has_method("set_last_damage_source"):
 			body.set_last_damage_source(source_label)
+		# arc-4 iter 277 (Round 24 Phase A widget 5): propagate shell
+		# class so Enemy.gd can tint its death burst by killing shell.
+		# Method-existence gated so arc-2/3 bodies are unaffected.
+		if body.has_method("set_last_damage_shell"):
+			body.set_last_damage_shell(shell_class)
 		body.take_damage(deal)
 	if shell_class == SHELL_CLASS_HE:
 		var radius_hits: int = _apply_he_blast(body)

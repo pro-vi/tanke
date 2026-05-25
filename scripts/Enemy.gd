@@ -1,5 +1,11 @@
 extends CharacterBody2D
 
+# arc-4 iter 277: BulletT preload for shell_modulate_color (kill-flash
+# burst tint). Lazy-loaded only when _spawn_death_effect runs the
+# arc-4 branch; arc-2/3 _last_damage_shell stays -1 and the static
+# call site is never reached.
+const BulletT = preload("res://scripts/Bullet.gd")
+
 # Enemy types (iter 24 behavioral split): "Light" (naive chaser) /
 # "Heavy" (corridor-denier: pauses + bursts when aligned with player).
 # Set by Spawner.gd at instantiate time per ENEMY_TYPES table.
@@ -93,6 +99,11 @@ var _lkp: Variant = null  # Vector2 when set, null when no LKP
 var _reached_lkp: bool = false
 var _search_until: float = 0.0  # _state_time threshold past which SEARCH expires
 var _aim_cancel_timer: float = 0.0  # iter 51: stuns Heavy out of AIM_FIRE after hit-cancel
+# arc-4 iter 277 (Round 24 Phase A widget 5): kill-flash — tracks the
+# shell class of the most recent damage so _spawn_death_effect can
+# tint the burst by killing shell. Default -1 = unknown / legacy; the
+# yellow generic burst stays for the procedural / arc-2/3 baseline.
+var _last_damage_shell: int = -1
 @export var lkp_reach_radius: float = 12.0
 @export var lkp_search_duration: float = 2.5
 @onready var _sprite: Sprite2D = $Sprite2D
@@ -618,13 +629,30 @@ func _flash_hit() -> void:
 # BC-style death burst — yellow ColorRect at enemy position, fades + scales
 # up over 0.3s, then auto-frees. Parented to level (not enemy) so the
 # tween survives the enemy's queue_free.
+# arc-4 iter 277: setter called by Bullet.gd just before take_damage so
+# _spawn_death_effect knows which shell class to tint the burst with.
+# Method-existence gated at the call site — arc-2/3 paths still hit
+# Enemy.gd but the field is purely additive (no behavioral impact when
+# not set; the burst falls back to its iter-78 yellow color).
+func set_last_damage_shell(sc: int) -> void:
+	_last_damage_shell = sc
+
+
 func _spawn_death_effect() -> void:
 	var parent_node: Node = get_parent()
 	if parent_node == null or not is_instance_valid(parent_node):
 		return
 	var burst: ColorRect = ColorRect.new()
 	burst.size = Vector2(16, 16)
-	burst.color = Color(1.0, 0.9, 0.3, 0.9)  # warm yellow burst
+	# arc-4 iter 277 (Round 24 Phase A widget 5): kill-flash — tint by
+	# killing shell when known. Procedural / arc-2/3 bullets never call
+	# set_last_damage_shell, so _last_damage_shell stays -1 and the
+	# legacy yellow burst renders bit-identical.
+	if _last_damage_shell >= 0:
+		var shell_color: Color = BulletT.shell_modulate_color(_last_damage_shell)
+		burst.color = Color(shell_color.r, shell_color.g, shell_color.b, 0.9)
+	else:
+		burst.color = Color(1.0, 0.9, 0.3, 0.9)  # warm yellow burst (legacy)
 	burst.position = global_position - Vector2(8, 8)  # center on enemy
 	burst.z_index = 50
 	parent_node.add_child(burst)

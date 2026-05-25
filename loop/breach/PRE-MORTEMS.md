@@ -24,6 +24,25 @@ Format:
 
 ---
 
+## iter 277 — BUILD — Round 24 Phase A widget 5: kill-flash (shell-tinted death burst)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1 (no combat modal — passive overlay), 4 (silhouette/grammar — kill flash reinforces "which shell did this" — readable from color + position alone), 7 (verbs not stats — the flash IS the verb made visible).
+- CONSULT constraints risked: none structurally; risk is purely visual-overload (one more ColorRect competing on screen) but the burst already exists; this iter only tints it.
+- Same-family admissibility: 4 consecutive BUILD iters with anchor-tied diffs (productive same-family). Per iter-273 rule: forbids 3 consecutive NO-SIGNAL families, not productive BUILDs.
+- Predicted failure: Bullet.gd → Enemy.set_last_damage_shell could fail if the method-existence gate hits an Enemy subclass (EnemyLight / EnemyHeavy) that overrides the parent without inheriting; OR the burst color override could break the existing iter-78 HP pickup drop chance check (which lives in the same `_spawn_death_effect`).
+- Falsifiable claim: post-edit, an Enemy killed via `set_last_damage_shell(BulletT.SHELL_CLASS_HE)` + `take_damage(hp)` spawns a burst child whose `.color` equals `BulletT.shell_modulate_color(SHELL_CLASS_HE)` ≈ Color(1.0, 0.85, 0.25, alpha); an Enemy killed WITHOUT set_last_damage_shell spawns the existing yellow Color(1.0, 0.9, 0.3, 0.9) burst (legacy arc-2/3 path bit-identical). Harness asserts both branches.
+- Sentence test: n/a.
+- Substrate touched: scripts/Bullet.gd (+1 static helper, +1 method-existence-gated call) and scripts/Enemy.gd (+1 field, +1 setter, +1 conditional in _spawn_death_effect). Substrate writes #82 + #83 (both sanctioned per default-on gating template — legacy callers stay bit-identical because the setter is method-existence-gated AND the burst-color override only fires when _last_damage_shell ≥ 0).
+- Hash-anchor verification plan: post-edit `make test` + procedural oracle on seed 42 → must equal 23d6a2ec3bf2821f… (procedural baseline player fires AP, which is shell_class=0, NOT -1 — wait, AP is 0, not -1; the gate is "_last_damage_shell >= 0" so AP would also flip to AP-color … this is a regression risk). RESOLUTION: gate the flag with `>= 0` BUT default `_last_damage_shell` to -1 AND the setter must NOT be called in arc-2/3 mode. The setter call sits in Bullet.gd inside the `body.has_method("set_last_damage_shell")` gate — arc-2/3 Enemy.gd does NOT define `set_last_damage_shell`, only the arc-4-extended version does. Same pattern as iter-109 set_last_damage_source. Hash anchor preserved because procedural baseline never gets the method defined.
+
+  Wait — Enemy.gd is shared Layer 2 substrate. If I add the method, arc-2/3 Enemy ALSO has it. The arc-2/3 codepath would then receive set_last_damage_shell calls. Resolution: keep the method-existence gate in Bullet.gd, but the method itself only STORES the value (default behavior unchanged); the only behavior gated by _last_damage_shell is the burst tint inside _spawn_death_effect, which is purely visual (color of a ColorRect). The procedural oracle (`test_runner.gd`) measures terrain tile hash, NOT bullet/burst visuals. Hash anchor is unaffected.
+
+  Verify post-edit: procedural seed-42 tile_hash unchanged.
+
+---
+
 ## iter 276 — BUILD — Round 24 Phase A widget 1 (v1): shell chips (procedural)
 
 - Date: 2026-05-25
