@@ -181,6 +181,16 @@ var _beam_dmg_timer: float = 0.0
 const MortarShellScene = preload("res://scenes/MortarShell.tscn")
 const MORTAR_RANGE: float = 96.0
 const MORTAR_GUN_COOLDOWN: float = 1.5
+# arc-4 iter 195 (PLAYTEST-FIX): MORTAR charge-lob — tap = short lob
+# (min range), hold = farther (up to max range). Charge curve linear
+# over MORTAR_CHARGE_TIME. Landing reticle glides outward while
+# charging ("angry birds top-down" feel per user).
+const MORTAR_RANGE_MIN: float = 32.0
+const MORTAR_RANGE_MAX: float = MORTAR_RANGE  # 96.0, alias for charge-cap
+const MORTAR_CHARGE_TIME: float = 1.0
+var _mortar_charging: bool = false
+var _mortar_charge_t: float = 0.0  # 0..1, 1 = full charge
+var _mortar_reticle: Node2D = null
 # arc-4 iter 67 (Round 9e): RAM Tank — collision damage + short-range
 # swing + built-in sprint. The movement-as-weapon archetype.
 const RAM_COLLISION_DAMAGE: int = 1
@@ -499,6 +509,8 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_pressed("ui_accept") and _ram_swing_timer <= 0.0:
 			_ram_swing()
 			_ram_swing_timer = RAM_SWING_COOLDOWN
+	elif archetype == TankArchetype.MORTAR:
+		_tick_mortar_charge(delta)
 	elif Input.is_action_pressed("ui_accept"):
 		_fire()
 
@@ -710,17 +722,123 @@ func _stop_beam() -> void:
 # arc-4 iter 66 (Round 9d): MORTAR fires a lobbed shell into the parent
 # level — target is MORTAR_RANGE in the tank's facing direction; the
 # shell handles the arc + impact AoE.
-func _fire_mortar() -> void:
+# arc-4 iter 195 (PLAYTEST-FIX): now takes an optional range arg for
+# charge-lob. Default = MORTAR_RANGE_MAX preserves harness/tests that
+# call _fire_mortar() directly without arguments.
+func _fire_mortar(range_px: float = MORTAR_RANGE_MAX) -> void:
 	var muzzle: Node2D = $Muzzle
 	var lvl: Node = get_parent()
 	if lvl == null:
 		return
 	var origin: Vector2 = muzzle.global_position
 	var dir: Vector2 = Vector2(1.0, 0.0).rotated(rotation)
-	var target: Vector2 = origin + dir * MORTAR_RANGE
+	var target: Vector2 = origin + dir * range_px
 	var shell = MortarShellScene.instantiate()
 	lvl.add_child(shell)
 	shell.launch(origin, target)
+
+
+# arc-4 iter 195 (PLAYTEST-FIX): MORTAR charge-lob input handler.
+# Called every _physics_process when archetype == MORTAR. Detects
+# ui_accept just_pressed → start charge; while held → accumulate
+# charge + update reticle position; just_released → fire shell at
+# the charge-derived range, then reset.
+func _tick_mortar_charge(delta: float) -> void:
+	# Respect the global swap/cooldown gates: if can_shoot is false,
+	# the player is mid-reload — don't let them charge.
+	if not can_shoot:
+		_mortar_cancel_charge()
+		return
+	var pressed: bool = Input.is_action_pressed("ui_accept")
+	var just_pressed: bool = Input.is_action_just_pressed("ui_accept")
+	var just_released: bool = Input.is_action_just_released("ui_accept")
+	if just_pressed and not _mortar_charging:
+		_mortar_charging = true
+		_mortar_charge_t = 0.0
+		_mortar_reticle_show()
+	if _mortar_charging and pressed:
+		_mortar_charge_t = clampf(_mortar_charge_t + delta / MORTAR_CHARGE_TIME, 0.0, 1.0)
+		_mortar_reticle_update()
+	if _mortar_charging and just_released:
+		var range_px: float = lerpf(MORTAR_RANGE_MIN, MORTAR_RANGE_MAX, _mortar_charge_t)
+		_fire_mortar(range_px)
+		$GunTimer.start()
+		can_shoot = false
+		_mortar_cancel_charge()
+
+
+func _mortar_cancel_charge() -> void:
+	_mortar_charging = false
+	_mortar_charge_t = 0.0
+	_mortar_reticle_hide()
+
+
+func _mortar_reticle_target() -> Vector2:
+	# Charge-derived landing point in the muzzle's facing direction.
+	var muzzle: Node2D = get_node_or_null("Muzzle")
+	if muzzle == null:
+		return global_position
+	var origin: Vector2 = muzzle.global_position
+	var dir: Vector2 = Vector2(1.0, 0.0).rotated(rotation)
+	var range_px: float = lerpf(MORTAR_RANGE_MIN, MORTAR_RANGE_MAX, _mortar_charge_t)
+	return origin + dir * range_px
+
+
+func _mortar_reticle_show() -> void:
+	if _mortar_reticle != null:
+		_mortar_reticle.visible = true
+		_mortar_reticle_update()
+		return
+	# Build the reticle lazily on first charge — placed as a sibling of
+	# PlayerTank so it lives in the level's coordinate space and isn't
+	# rotated by the tank body's set_rotation().
+	var lvl: Node = get_parent()
+	if lvl == null:
+		return
+	_mortar_reticle = Node2D.new()
+	_mortar_reticle.name = "MortarReticle"
+	_mortar_reticle.z_index = 30
+	# Crosshair: a 12x12 outline square + small dot center. Cheap and
+	# readable at top-down view ("angry birds landing spot" per user).
+	var ring: ColorRect = ColorRect.new()
+	ring.size = Vector2(12, 12)
+	ring.position = Vector2(-6, -6)
+	ring.color = Color(0, 0, 0, 0)  # transparent fill — only the border via 4 lines
+	ring.mouse_filter = 2
+	_mortar_reticle.add_child(ring)
+	# Four 1-px edge strips for the outline (cheap "ring" look).
+	for r in [
+		[Vector2(-6, -6), Vector2(12, 1)],  # top
+		[Vector2(-6, 5),  Vector2(12, 1)],  # bottom
+		[Vector2(-6, -6), Vector2(1, 12)],  # left
+		[Vector2(5, -6),  Vector2(1, 12)],  # right
+	]:
+		var edge: ColorRect = ColorRect.new()
+		edge.position = r[0]
+		edge.size = r[1]
+		edge.color = Color(1.0, 0.85, 0.4, 0.9)  # warm yellow ring
+		edge.mouse_filter = 2
+		_mortar_reticle.add_child(edge)
+	# Center dot.
+	var dot: ColorRect = ColorRect.new()
+	dot.size = Vector2(2, 2)
+	dot.position = Vector2(-1, -1)
+	dot.color = Color(1.0, 0.85, 0.4, 1.0)
+	dot.mouse_filter = 2
+	_mortar_reticle.add_child(dot)
+	lvl.add_child(_mortar_reticle)
+	_mortar_reticle_update()
+
+
+func _mortar_reticle_update() -> void:
+	if _mortar_reticle == null:
+		return
+	_mortar_reticle.global_position = _mortar_reticle_target()
+
+
+func _mortar_reticle_hide() -> void:
+	if _mortar_reticle != null:
+		_mortar_reticle.visible = false
 
 
 # arc-4 iter 69 (Round 9g): undo the current archetype's per-init mods
@@ -748,6 +866,13 @@ func _revert_archetype() -> void:
 		# hardcoded 1.0 (which wiped the XP bonus).
 		gt.wait_time = maxf(RELOAD_MIN, _base_default_gun_wait_time - _reload_reduction)
 		can_shoot = true  # consistent post-stop state
+		# arc-4 iter 195 (PLAYTEST-FIX): cancel any in-progress charge
+		# and free the reticle on archetype-switch — leaving the reticle
+		# visible would be a visual bug after the player swaps away.
+		_mortar_cancel_charge()
+		if _mortar_reticle != null:
+			_mortar_reticle.queue_free()
+			_mortar_reticle = null
 	elif archetype == TankArchetype.RAM:
 		speed -= RAM_SPEED_BONUS
 		_ram_swing_timer = 0.0  # S1: clear pending swing cooldown

@@ -17,6 +17,42 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 195 — PLAYTEST-FIX — MORTAR charge-lob mechanic + landing reticle
+
+- Date: 2026-05-24
+- Tag: [FEEL]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Hash anchor: 23d6a2ec3bf2821f… VERIFIED (substrate write #74;
+  MORTAR-archetype-gated; arc-2/3 baseline + DEFAULT path unchanged).
+- Files: scripts/PlayerTank.gd #74 (+ MORTAR_RANGE_MIN/MAX +
+  MORTAR_CHARGE_TIME constants; _mortar_charging/_mortar_charge_t/
+  _mortar_reticle state; _tick_mortar_charge handler called from
+  _physics_process MORTAR branch; _mortar_reticle_show/update/hide
+  helpers; _fire_mortar now takes optional range_px parameter; cancel
+  + free reticle on archetype switch); Makefile (+ check-breach-
+  mortar-charge target wired into test-breach); loop/breach/test_
+  breach_mortar_charge.gd (NEW harness, 5 cases).
+- Finding: User playtest directive: "i can hit space to lob the
+  shell softly. Or I can keep pressing the space to lob further.
+  像一个蓄力条 like angry bird but top down. when im pressing the
+  intended landing spot shows and glide." Shipped end-to-end:
+  - just_pressed → starts charge + spawns landing reticle (yellow
+    crosshair) at MORTAR_RANGE_MIN (32px).
+  - Hold → charge ramps t=0→1 over 1.0s; reticle glides outward
+    each frame to current charge-derived target.
+  - just_released → lobs shell at lerp(MIN, MAX, t) range.
+  - Archetype switch frees the reticle + cancels charge.
+  Old click-to-fire fixed-range behavior is REPLACED in the input
+  path. _fire_mortar still callable with no args (defaults to MAX)
+  for harness compatibility. Reticle is built lazily on first
+  charge so MORTAR-archetype init has no per-frame cost when idle.
+  test-all 5/5; test-breach 68/68 (was 67). Score 50/75 unchanged
+  (FEEL anchor playtest-only).
+  Next: iter 196+ — class-specific 3-choice upgrade system as
+  multi-iter round.
+
+---
+
 ## iter 194 — PLAYTEST-FIX — MORTAR SPG-style sprite (FV304 inspo) + atlas regen
 
 - Date: 2026-05-24
