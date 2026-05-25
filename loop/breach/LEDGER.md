@@ -17,6 +17,36 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 198 — BUILD — Round 23 Phase 2 — pick-1-of-3 card UI
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Hash anchor: 23d6a2ec3bf2821f… VERIFIED (substrate write #75;
+  loadout-gated — arc-2/3 mode skips pick entirely).
+- Files: scripts/PlayerTank.gd #75 (+ UpgradeCatalogT preload; +
+  _levelup_picking/_levelup_panel/_levelup_choice_labels/_levelup_
+  choices state; + _build_levelup_panel / _show_levelup_pick /
+  _pick_3_from_pool / _refresh_levelup_panel / _exit_levelup_pick /
+  _pick_levelup_card / _apply_card / _poll_levelup_pick_input helpers;
+  + _physics_process branch for pick-input poll with dead-during-pick
+  escape mirroring iter-91 P0-1 pattern); loop/breach/test_breach_
+  levelup_pick.gd (NEW harness, 6 cases); Makefile (+ target).
+- Finding: Phase 2 of Round 23 shipped. The pick-1-of-3 UI pops on
+  level-up event (Phase 4 will wire the trigger), draws 3 distinct
+  cards from the current archetype's pool, pauses the tree per the
+  iter-91 P0-1 pattern, accepts KEY_1/2/3 input, and routes through
+  _apply_card on selection. Only HP_PLUS_1 and HP_PLUS_2 apply paths
+  are wired this iter (Phases 3-4 fill in the remaining 12 CardKinds).
+  Unimplemented cards no-op silently with the toast still showing
+  the picked name — UI is end-to-end exercisable. arc-2/3 mode
+  (loadout=null) skips pick entirely so the legacy codepath is
+  untouched. test-all 5/5; test-breach 70/70 (was 69). Score 50/75
+  unchanged.
+  Next: iter 199 BUILD Phase 3 — PRISM + MORTAR card apply branches.
+
+---
+
 ## iter 197 — BUILD — Round 23 Phase 1 — UpgradeCatalog data module
 
 - Date: 2026-05-24

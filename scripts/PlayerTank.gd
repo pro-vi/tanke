@@ -10,6 +10,8 @@ const BulletT = preload("res://scripts/Bullet.gd")
 const LoadoutT = preload("res://scripts/Loadout.gd")
 const RunRecapT = preload("res://scripts/RunRecap.gd")
 const MetaProgressT = preload("res://scripts/MetaProgress.gd")
+# arc-4 Round 23 (iter 197+): class-specific upgrade card catalog.
+const UpgradeCatalogT = preload("res://scripts/UpgradeCatalog.gd")
 
 # arc-4 iter 146 (Pro Consult 011 step 4/5): per-archetype atlas. PRISM row 0,
 # MORTAR row 1, RAM row 2; each row 8 cells matching TankSprite.gd dir_set
@@ -209,6 +211,14 @@ var _archetype_initialized: bool = false
 var _archetype_selecting: bool = false
 var _archetype_panel: ColorRect = null
 var _archetype_choice_labels: Array[Label] = []
+# arc-4 Round 23 Phase 2 (iter 198): level-up pick-1-of-3 card UI.
+# Mirrors the iter-68 archetype-pick pattern + iter-91 P0-1 pause
+# discipline. State is loadout-gated like the rest of the breach UI;
+# arc-2/3 mode never builds this panel.
+var _levelup_picking: bool = false
+var _levelup_panel: ColorRect = null
+var _levelup_choice_labels: Array[Label] = []
+var _levelup_choices: Array = []  # 3 CardKind values for the current pick
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
@@ -361,6 +371,15 @@ func _physics_process(delta: float) -> void:
 			_handle_restart_input()
 			return
 		_poll_archetype_select_input()
+		return
+	# arc-4 Round 23 Phase 2 (iter 198): pick-1-of-3 card screen.
+	# Same dead-during-pick escape as the archetype selector.
+	if _levelup_picking:
+		if _dead:
+			_exit_levelup_pick()
+			_handle_restart_input()
+			return
+		_poll_levelup_pick_input()
 		return
 	# arc-4 iter 36: the shell codex is dismissed by the first gameplay
 	# input — the player reads the breach-economy primer, then plays.
@@ -1103,6 +1122,155 @@ func _poll_archetype_select_input() -> void:
 		_pick_archetype_by_index(2)
 	elif Input.is_physical_key_pressed(KEY_4):
 		_pick_archetype_by_index(3)
+
+
+# =====================================================================
+# arc-4 Round 23 Phase 2 (iter 198): pick-1-of-3 level-up card UI.
+# Mirrors the iter-68 archetype-pick pattern + iter-91 P0-1 pause
+# discipline. The pick panel pops at level-up time, shows 3 cards
+# drawn from the current archetype's pool, KEY_1/2/3 selects, then
+# _apply_card mutates state. apply_card branches are Phase 3-4 work
+# (iter 199-200); iter 198 ships the UI machinery + HP_PLUS_1 as
+# the one working card path so the system is end-to-end exercisable.
+# =====================================================================
+
+func _build_levelup_panel(canvas: CanvasLayer) -> void:
+	_levelup_panel = ColorRect.new()
+	_levelup_panel.name = "LevelupPanel"
+	_levelup_panel.position = Vector2(28, 56)
+	_levelup_panel.size = Vector2(264, 132)
+	_levelup_panel.color = Color(0.05, 0.05, 0.08, 0.96)
+	_levelup_panel.visible = false
+	canvas.add_child(_levelup_panel)
+	_codex_line(_levelup_panel, "— PICK AN UPGRADE —", Vector2(40, 10), 13,
+		Color(1.0, 0.95, 0.6, 1.0))
+	for i in 3:
+		var lbl: Label = Label.new()
+		lbl.name = "CardRow%d" % i
+		lbl.position = Vector2(14, 36 + i * 26)
+		lbl.add_theme_color_override("font_color", Color.WHITE)
+		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		lbl.add_theme_constant_override("outline_size", 2)
+		lbl.add_theme_font_size_override("font_size", 10)
+		_levelup_panel.add_child(lbl)
+		_levelup_choice_labels.append(lbl)
+	_codex_line(_levelup_panel, "Press 1-3 to pick.", Vector2(14, 116), 9,
+		Color(0.78, 0.8, 0.86, 1.0))
+
+
+# Show the pick panel for the given level. Draws 3 distinct cards from
+# the current archetype's pool; if the pool has fewer than 3 entries
+# the panel shows all of them (pool size 4 is current v1 default).
+func _show_levelup_pick(level: int) -> void:
+	# Skip the pick entirely in arc-2/3 mode — no loadout means the
+	# level-up surface isn't even active.
+	if loadout == null:
+		return
+	var pool: Array[int] = UpgradeCatalogT.pool_for(archetype)
+	var picked: Array = _pick_3_from_pool(pool)
+	if picked.size() == 0:
+		return  # defensive — pool empty, nothing to offer
+	_levelup_choices = picked
+	_levelup_picking = true
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	get_tree().paused = true
+	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
+	if canvas == null:
+		return
+	if _levelup_panel == null:
+		_build_levelup_panel(canvas)
+	_refresh_levelup_panel(level)
+	_levelup_panel.visible = true
+
+
+# Pick up to 3 distinct entries from pool (random selection). Returns
+# fewer than 3 only if the pool itself has fewer than 3 entries.
+func _pick_3_from_pool(pool: Array[int]) -> Array:
+	var out: Array = []
+	var working: Array = pool.duplicate()
+	working.shuffle()
+	for i in mini(3, working.size()):
+		out.append(working[i])
+	return out
+
+
+# Populate the panel's 3 rows from _levelup_choices.
+func _refresh_levelup_panel(level: int) -> void:
+	for i in _levelup_choice_labels.size():
+		var lbl: Label = _levelup_choice_labels[i]
+		if i >= _levelup_choices.size():
+			lbl.text = ""
+			continue
+		var kind: int = int(_levelup_choices[i])
+		var name_str: String = UpgradeCatalogT.label_for(kind)
+		var sentence: String = UpgradeCatalogT.sentence_for(kind)
+		lbl.text = "[%d]  %s  —  %s" % [i + 1, name_str, sentence]
+
+
+# Centralized cleanup — mirrors _exit_archetype_select. Always called
+# after a pick OR on the dead-during-pick escape.
+func _exit_levelup_pick() -> void:
+	_levelup_picking = false
+	if _levelup_panel != null:
+		_levelup_panel.visible = false
+	get_tree().paused = false
+	process_mode = Node.PROCESS_MODE_INHERIT
+
+
+# Apply the chosen card. Public so harness can drive without
+# faking input. Phases 3-4 (iter 199-200) fill in the remaining
+# CardKind branches; iter 198 ships HP_PLUS_1 + HP_PLUS_2 as
+# the first working paths.
+func _pick_levelup_card(idx: int) -> void:
+	if not _levelup_picking:
+		return
+	if idx < 0 or idx >= _levelup_choices.size():
+		return
+	var kind: int = int(_levelup_choices[idx])
+	_apply_card(kind)
+	_exit_levelup_pick()
+
+
+# Apply a card by CardKind. Phase 2 (iter 198) only wires HP_PLUS_1
+# and HP_PLUS_2 (the simplest universal cards). Phases 3-4 will fill
+# in BEAM_*, AOE_*, SWING_*, COLLISION_*, SPRINT_*, FASTER_RELOAD,
+# SHELL_CAP_PLUS_1, MOMENTUM.
+func _apply_card(kind: int) -> void:
+	var msg: String = UpgradeCatalogT.label_for(kind)
+	match kind:
+		UpgradeCatalogT.CardKind.HP_PLUS_1:
+			if max_hp < MAX_HP_CEILING:
+				max_hp += 1
+				hp += 1
+			else:
+				hp = max_hp
+			hp_changed.emit(hp, max_hp)
+		UpgradeCatalogT.CardKind.HP_PLUS_2:
+			# RAM-exclusive: +2 max_hp (clamped) — tank flavor.
+			var added: int = 0
+			for _i in 2:
+				if max_hp < MAX_HP_CEILING:
+					max_hp += 1
+					hp += 1
+					added += 1
+			if added == 0:
+				hp = max_hp
+			hp_changed.emit(hp, max_hp)
+		_:
+			# TODO Phase 3-4: fill in remaining CardKind branches.
+			# Silent no-op for now so the UI doesn't error out
+			# when an unimplemented card is picked.
+			pass
+	_show_pickup_toast("LEVEL UP  %s" % msg, Color(1.0, 0.9, 0.35, 1.0))
+
+
+func _poll_levelup_pick_input() -> void:
+	if Input.is_physical_key_pressed(KEY_1):
+		_pick_levelup_card(0)
+	elif Input.is_physical_key_pressed(KEY_2):
+		_pick_levelup_card(1)
+	elif Input.is_physical_key_pressed(KEY_3):
+		_pick_levelup_card(2)
 
 
 # arc-4 iter 67 (Round 9e): RAM melee swing — damage every Node2D
