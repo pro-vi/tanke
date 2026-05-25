@@ -165,6 +165,20 @@ Bottom line (verbatim): "Phase A was real progress, not fake shipping — but it
 - Trigger path: REVIEW-QUEUE #30 → user plays → user marks per-prediction hit/partial/miss → CONSULT-LEDGER consult-001 § Scoring updates → STATE.consult_calibration tally bumps → calibration thresholds apply (≥2 hits + hit_rate ≥50% → cap rises 3→4; ≥3 misses in last 5 → cap lowers OR disable).
 - Loop continues structurally between user's playtest sessions per L3 (REVIEW-QUEUE pattern); no idle ping-pong.
 
+### Iter 293 — H1 acceptance-gate strengthen (conf 0.86, APPLIED)
+- Phase A acceptance now requires BOTH gates:
+  - **Gate 1 (legibility):** "stranger can name shell + reload + active build within 3 seconds" — the original criterion from iter-270 blueprint.
+  - **Gate 2 (state→decision, NEW):** "did visibility CHANGE behavior?" Player marks each widget used / ignored / sometimes after playing. Catches the failure mode the original gate misses — labeled-but-ignored.
+- Per-widget questions added to PLAYTEST-BRIEF + debrief template now collects used/ignored/sometimes per widget (reload bar, reload pip, shell chips, speed meter, active-cards ribbon, kill-flash, Q3 recap).
+- This is the structural test of consult Q3 verdict 0.92 ("phase passes screen-reading test while failing play test"). Without Gate 2, the loop ships HUD and never gets evidence of usage under pressure.
+- REVIEW-QUEUE #28 strengthened with the second-gate note. Brief updated. CONSULT-LEDGER documents the application.
+
+### Backlog after iter 293 (3 remaining of 8 consult-001 recommendations)
+- **H6 visibility classes** (conf 0.81, ~2-3 iters) — combat-on / conditional / breath-beat HUD groups; ribbon + route fade under pressure
+- **Stardew-delta pacing reframe** (conf 0.87, ~30+ iters) — round-shift requiring user decision
+- (Q1 sprint is counted as 1 applied item per recommendation; the 7-iter program landed iters 283-290.)
+- Items applied: H4 (iter 281), H5 (iter 280), Q1 (iters 283-290), Q3 recap (iter 291), reload-pip (iter 292), H1 (iter 293).
+
 ### Expiration
 - max_iters_without_real_playtest: 30 (default)
 - expires_at_iter: 309

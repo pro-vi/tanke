@@ -17,6 +17,24 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 293 — META — consult-001 H1 acceptance-gate strengthen (state→decision)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; META iter; closes a framing gap in the Phase A acceptance criteria).
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — H1 (consult-001 conf 0.86) addresses Q3 verdict 0.92 framing concern by adding a SECOND gate to Phase A acceptance. Without it, the loop ships HUD widgets that pass static-screen tests but never gets evidence they CHANGED PLAYER BEHAVIOR. Gate passes.
+- Same-family check: iter 292 BUILD → 293 META. Mix alternates productively.
+- Constraints respected: all 7 (META — docs only).
+- Constraints risked: none.
+- Hash anchor: n/a (no substrate write — pure docs + REVIEW-QUEUE + CONSULT-LEDGER updates).
+- Falsifications: none.
+- Files: loop/breach/Q1-PROOF-ROOM-PLAYTEST-BRIEF.md (+ NEW § "STATE → DECISION GATE" with per-widget questions: reload bar / reload pip / shell chips / speed meter / active-cards ribbon / kill-flash / Q3 recap; + extended debrief template with used / ignored / sometimes per widget), loop/breach/REVIEW-QUEUE.md (#28 strengthened with second-gate note pointing to brief), loop/breach/CONSULT-LEDGER.md (consult-001 § H1-applied entry + backlog tail update; 6-of-8 applied now), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Finding: **consult-001 H1 (acceptance-gate strengthen, conf 0.86) shipped as docs.** Phase A acceptance now requires BOTH gates — legibility (3-second naming) AND state→decision (did visibility change behavior?). The latter is the structural test of consult Q3 verdict 0.92's "phase passes screen-reading test while failing play test" — directly addresses the failure mode the iter-270-282 loop wandered into when it shipped 5 widgets without evidence of usage under pressure. consult_001_progress: 6-of-8-applied; backlog 2 remaining (H6 visibility classes ~2-3 iters; Stardew-pacing reframe ~30+ iters needs user scope decision).
+- substrate_writes_this_arc: unchanged at 91 (META iter — no substrate touch).
+- quiet_signal_counter stays at 0 (downstream of iter-283 source).
+
+---
+
 ## iter 292 — BUILD — consult-001 reload-bar tank-adjacent pip (combat-timing UI near combat focus)
 
 - Date: 2026-05-25

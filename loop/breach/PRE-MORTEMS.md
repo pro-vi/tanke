@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 293 — META — consult-001 H1: acceptance-gate strengthen (state→decision second gate)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 (META — docs only).
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — H1 (consult-001 conf 0.86) addresses Q3 verdict 0.92 framing concern ("phase passes screen-reading test while failing play test") by adding a SECOND gate to Phase A acceptance: state→decision (instrumented evidence that visibility CHANGES behavior). Direct downstream of Option B's iter-270 anchor. Gate passes.
+- Same-family check: iter 292 BUILD → 293 META. Mix alternates productively.
+- Predicted failure: docs-only iter could feel light, but the prediction-scoring lift from H1 is real: without state→decision, the loop ships HUD widgets that look pass-able on a static screen but never gets evidence they CHANGED PLAYER BEHAVIOR.
+- Falsifiable claim: post-edit, Q1-PROOF-ROOM-PLAYTEST-BRIEF.md has a new "STATE → DECISION GATE" section asking "did visibility change YOUR behavior?"; REVIEW-QUEUE #28 has the gate added to the stranger-on-screen acceptance criteria; CONSULT-LEDGER consult-001 § Affected anchors notes the H1 fix applied.
+- Sentence test: n/a.
+- Substrate touched: NONE — docs + REVIEW-QUEUE + CONSULT-LEDGER.
+- Hash-anchor verification plan: no substrate write → hash preserved. Will skip the hash verification step this iter since the diff is markdown-only; if state changes anywhere unexpected, the next iter's verification catches it.
+
+---
+
 ## iter 292 — BUILD — consult-001 reload-bar tank-adjacent pip (combat-timing UI near combat focus)
 
 - Date: 2026-05-25

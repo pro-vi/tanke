@@ -83,6 +83,60 @@ after playing.
 
 ---
 
+## STATE → DECISION GATE (consult-001 H1 fix, iter 293)
+
+The original Phase A acceptance was a STATIC-SCREEN test: "stranger names
+current shell + reload state + active build within 3 seconds." That's
+necessary but not sufficient — consult-001 verdict Q3 (0.92) named the
+trap: *"phase can pass the screen-reading test while failing the play
+test."* You can label every system, satisfy every naming test, and
+still ship HUD-as-decoration if the player never USES it.
+
+H1 (consult-001 conf 0.86) adds a second gate. After playing:
+
+> **Did visibility CHANGE your behavior?**
+
+For each shipped HUD widget, ask whether you actually USED it during
+the run:
+
+- **Reload bar (top-left + tank-adjacent pip):**
+  - Did you DELAY a shot because you saw the bar still filling?
+  - Did you use the tank-adjacent pip in combat, the top-left bar
+    in calm moments, or both?
+  - Or did you fire by rhythm / failed input / projectile observation,
+    ignoring both readouts?
+- **Shell chips row:**
+  - Did you SEE your reserves dwindling and switch shells preemptively?
+  - Or did you discover empty reserves only when you tried to fire?
+- **Speed meter (SPD N.N×):**
+  - Did you NOTICE the speed boost actually matter — did you take a
+    riskier path / try to outrun something / extend a sprint window
+    because the meter showed > 1.0×?
+  - Or was it numerical decoration?
+- **Active-cards ribbon (bottom-left, 3-5 char tokens):**
+  - Did you remember what cards you picked WITHOUT consulting the ribbon?
+  - Did you make a synergy decision based on the visible stack?
+- **Kill-flash (shell-tinted death burst):**
+  - Did you notice "ah, that was my HEAT shot" vs "that was my AP"?
+  - Did the color change your sense of which shell did what work?
+- **Q3 recap (death overlay "ROUTE: ... / COMBAT: ..."):**
+  - After your run, did the breakdown surprise you? Did it match what
+    you THOUGHT you spent shells on, or did it surface a gap?
+
+**The state→decision gate passes when** you can name at least one
+moment where the HUD changed what you did. The screen-reading gate
+catches LEGIBILITY; the state→decision gate catches USABILITY UNDER
+PRESSURE. Both gates are required for Phase A acceptance.
+
+If you can't name a state→decision moment for a widget, that widget
+either (a) needs a stronger affordance (the consult's H6 visibility-
+classes recommendation addresses this) or (b) has the wrong placement
+(the iter-292 tank-adjacent pip is the experiment for the reload bar
+specifically — does combat-focus placement change usage vs the top-
+left bar alone?).
+
+---
+
 ## What to look for (Q1 verdict-specific)
 
 Beyond the predictions, the central Q1 claim is:
@@ -145,10 +199,20 @@ Q1 claim verdict — "shells are route currency, not damage flavor":
 Consult-001 predictions:
   1. shell/reload legible, build chips opaque:
      [hit / partial / miss]   notes:
-  2. reload bar read AFTER combat:
+  2. reload bar read AFTER combat (top-left vs tank-adjacent pip):
      [hit / partial / miss]   notes:
   3. bottom-left stack ignored under pressure:
      [hit / partial / miss]   notes:
+
+STATE → DECISION GATE (consult-001 H1 fix):
+  Did visibility CHANGE your behavior? (per widget)
+  - Reload bar (top-left):  [used / ignored / sometimes]   notes:
+  - Reload pip (tank-adj):  [used / ignored / sometimes]   notes:
+  - Shell chips:            [used / ignored / sometimes]   notes:
+  - Speed meter:            [used / ignored / sometimes]   notes:
+  - Active-cards ribbon:    [used / ignored / sometimes]   notes:
+  - Kill-flash:             [used / ignored / sometimes]   notes:
+  - Q3 recap (death):       [used / ignored / sometimes]   notes:
 
 What surprised you (positive):
 

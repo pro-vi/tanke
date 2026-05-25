@@ -972,6 +972,16 @@ Items remaining OPEN (require user signal):
   of looking at the screen. If yes → Phase A passes acceptance → loop
   opens Phase B (scaling-curve + tier breakthroughs). If no → flag
   which widget is unreadable → loop pivots to refine it before Phase B.
+
+  **STRENGTHENED ITER 293 (consult-001 H1 conf 0.86): SECOND GATE — state→decision.**
+  Per Q3 verdict 0.92 ("phase passes screen-reading test while failing play
+  test"), naming-state is insufficient. After playing, you must also answer:
+  "did visibility CHANGE my behavior?" For each widget, mark used / ignored /
+  sometimes. The state→decision gate catches USABILITY UNDER PRESSURE — the
+  failure mode where every widget IS labeled and still IGNORED in combat.
+  Both gates required for Phase A acceptance: legibility (3-second naming)
+  AND decision-change (used during play). See loop/breach/Q1-PROOF-ROOM-PLAYTEST-BRIEF.md
+  § "STATE → DECISION GATE" for per-widget questions + debrief template.
   Trigger: user message 2026-05-24 — "i want the loop to be longer running... and explore how the system has figured out a way to install assets? they got new tanks image asset from chat gpt. meaning we can produce all sorts of assets now."
   Finding: /agentify image_gen is now a confirmed standing capability — the full pipeline (prompt → image → palette extraction → 16×16/8×8 silhouette compliance → atlas pack → in-game render) shipped end-to-end at iters 142-149 via Pro Consult 011 H5. Round 9 + Round 23 already used it for archetype sprites. Round 25 surface: re-skin existing systems with /agentify-generated assets where they currently use stubs or palette swaps.
   Candidate surfaces (loop picks within the round):
