@@ -17,6 +17,27 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 282 — META — /meta dice-hook Nat 13 → frame-mismatch named → loop HALT pending user direction
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; /meta is a framing-audit, not a build).
+- Trigger: Stop-hook dice rolled Nat 13 → "Run /meta — step back and name the pattern." Forced the framing audit the loop does not run intrinsically.
+- /meta verdict: **Frame mismatch** (primary) + scaffold drift (secondary).
+  - **Frame mismatch**: loop shipped Phase A HUD legibility in response to user's "Stardew Valley delta" trigger; consult-001 at Q1=0.90, Q3=0.92, Stardew-axis=0.87 said the trigger likely ISN'T about HUD. Iters 280-281 responded to consult by ticking off cheap fixes (H5+H4) while DEFERRING the architectural findings. Cargo-cult exactly as iter-273 amendment warned about.
+  - **Scaffold drift**: same-family admissibility rule, CONSULT-LEDGER, SIGNAL_RECEIPT discipline all landed correctly per spec. But the SUBSTANCE these structures were supposed to deliver (catching drift) is being routed around — cheap fixes feed the structure without challenging it. The mechanisms are working AS DESIGNED but not delivering what they were designed for.
+- Same-family check: iter 279 META (consult fire) → 280 BUILD → 281 BUILD → 282 META (/meta). NOT a violation (META iters break BUILD streaks), but the deeper finding is that the same-family rule is structurally BLIND to frame mismatch — it only checks for NO-SIGNAL families, not for wrong-frame-but-productive-execution families.
+- Constraints respected: all 7 (META — no code).
+- Constraints risked: none.
+- Hash anchor: n/a (no substrate write).
+- Files: loop/breach/REVIEW-QUEUE.md (#29 NEW with 3-option framing-audit question for user), loop/breach/LEDGER.md, loop/breach/STATE.md.
+- PushNotification fired: "tanke iter 281: /meta flagged frame-mismatch. Consult-001 says Stardew delta may be pacing/economy not HUD. Loop pausing — needs your direction (3 options in REVIEW-QUEUE #29)."
+- **Loop HALTED.** No iter 283 scheduled. The dice forced a framing audit; the audit named a real frame mismatch; the response is to STOP queueing cheap fixes and escalate to user. Auto-scheduling iter 283 would defeat the point.
+- Structural follow-up identified (NOT applied this iter): add a framing-audit gate to PROMPT.md — every Round close AND every consult absorption must answer "does the user's most recent trigger map to the work this round is doing?" before queueing next iter. Same shape as same-family admissibility rule, applied to FRAMING layer not iter layer. Apply after user responds to REVIEW-QUEUE #29.
+- Finding: **The dice forced the audit; the loop did not.** The framing-audit gate is a deferred structural follow-up. The immediate action is escalation. quiet_signal_counter does NOT reset on this iter — /meta is a structural insight, not strong signal per SIGNAL_RECEIPT rules (no new source_id, no playtest, no consult-with-new-evidence). The genuine strong signal will be the user's response to REVIEW-QUEUE #29.
+
+---
+
 ## iter 281 — BUILD — consult-001 H4 fix: kill-flash 24×24 hollow ring + 16×16 core
 
 - Date: 2026-05-25

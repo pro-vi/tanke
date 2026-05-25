@@ -818,6 +818,75 @@ Items remaining OPEN (require user signal):
 
 #27 — Round 25 candidate: Visual identity layer (asset-gen capability lifted to standing) — round 25 — iter 271 — open (queued, opens after Round 24)
 
+#29 — ★★ FRAMING AUDIT — Stardew delta scope (consult-001 + /meta finding) — round 24 — iter 282 — open
+  Finding: /meta (iter 282, dice Nat 13) named the session pattern
+  as **frame mismatch**: loop shipped Phase A (HUD legibility) in
+  response to user's iter-270 trigger ("Stardew Valley delta against
+  牧场物語"); consult-001 (Pro extended-thinking 5m29s) at Q1=0.90,
+  Q3=0.92, Stardew-axis=0.87 confidence said the trigger likely
+  ISN'T about HUD legibility — it's about pacing/rhythm/economy.
+  After consult, loop began ticking off cheap consult fixes (H5
+  ribbon labels iter 280 + H4 kill-flash ring iter 281) while
+  DEFERRING the architectural findings — exactly the cargo-cult
+  pattern the iter-273 PROMPT amendment was meant to prevent
+  ("becoming extremely good at managing the absence of evidence...
+  while avoiding 'did the game become more compelling to an actual
+  player'"). The dice forced the audit; the loop did not.
+  Affordance: User collapses the frame ambiguity that the loop
+  cannot collapse alone. The 3 options below carry different
+  downstream scopes (4-5 iters / 8-15 iters / 30+ iters).
+  Risk: Loop continues shipping cheap consult fixes while waiting
+  for user response. Counter: loop has STOPPED — no iter 282
+  scheduled. Resumes on user signal.
+
+  **OPTION A — Finish Phase A consult-driven refinements (cheapest)**
+    - Apply remaining consult-001 H6 visibility classes + reload bar
+      tank-adjacent duplicate + pickup-toast (~4-5 iters)
+    - Then open Phase B as-blueprinted (scaling-curve audit + tier
+      breakthroughs); accept consult Q1/Q3 architectural findings as
+      future-scope backlog
+    - Honest read: this is the LOOP'S DEFAULT if no user response.
+      It assumes the consult was right about cheap fixes but wrong
+      about the bigger framing. Tests the assumption "HUD legibility
+      is necessary scaffolding for tier-breakthroughs to land."
+
+  **OPTION B — Pivot to consult Q1 breach-economy proof room (medium)**
+    - Build one diagnostic room where shells materially change route:
+      HE opens loot lane but costs AoE safety; HEAT punches bunker
+      shortcut at armor cost; APCR saves time at escape-ammo cost
+    - Forces shell-as-route-currency to FEEL in 5-10 minutes of play
+      (~8-15 iters; intermediate scope; preserves "breach economy"
+      identity anchor from arc-4 CONSULT)
+    - Honest read: the consult's HIGHEST-architectural-confidence
+      recommendation (Q1 at 0.90). Tests the assumption "breach
+      economy needs a proof room before tier-breakthroughs matter."
+
+  **OPTION C — Reframe Round 24 entirely as "Stardew delta = pacing/rhythm" (biggest)**
+    - Define the tanke equivalent of Stardew's day/energy loop
+      BEFORE any more HUD or scaling work
+    - Candidate: breach budget = limited specials + reload tempo +
+      destructible terrain + route rewards + post-room card choices
+      structured as a recurring pressure-release cycle
+    - Phase A/B/C of current Round 24 blueprint may be partially
+      DISCARDED or repurposed; new round opens
+    - Estimated 30+ iters; biggest scope; biggest scope-risk
+    - Honest read: the consult's Stardew-axis verdict at 0.87.
+      Tests the assumption "the user's actual trigger was structural,
+      not surface."
+
+  **OPTION D — User-stated alternative**
+    - User names a fourth direction the loop did not consider.
+
+  Recommendation from /meta: Option B (consult's strongest
+  architectural finding) OR Option C (consult's reframe) — both
+  address the seductive-but-hollow risk the consult named at 0.92.
+  Option A is the cheapest path but is also the path the /meta
+  analysis flagged as avoidance-dressed-up-as-cost-prioritization.
+
+  Loop is HALTED. No iter 282 scheduled. Wakes on user signal.
+
+---
+
 #28 — ★ Round 24 Phase A SHIPPED — Stardew delta HUD legibility — round 24 — iter 278 — open (pending playtest acceptance)
   Finding: All 5 Phase A HUD widgets shipped across 5 consecutive
   procedural BUILD iters (274-278): reload bar (top-left, color matches
