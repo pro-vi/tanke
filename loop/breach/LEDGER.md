@@ -17,6 +17,29 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 190 — PLAYTEST-FIX — hide shell-cycle HUD for non-DEFAULT archetypes
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Hash anchor: 23d6a2ec3bf2821f… VERIFIED bit-identical (substrate
+  write #72; new helper is loadout/archetype-gated; flag-off path
+  unchanged).
+- Files: scripts/PlayerTank.gd (#72; _set_shell_hud_visible helper;
+  called from _apply_archetype_sprite — DEFAULT shows panel, non-
+  DEFAULT hides panel + force-hides codex).
+- Finding: User playtest feedback iter 189 ("shells only work for
+  default tank, no? UI is very distracting"). Confirmed by design —
+  PRISM uses beam, MORTAR lobs (no cycle), RAM uses swing/collision;
+  the AP/HE/HEAT/APCR HUD strip + codex are CRUFT for them, eating
+  bottom-screen space and adding visual noise. Fix: shell_panel +
+  shell_codex visibility now gated on archetype = DEFAULT. Hash
+  preserved; test-all 5/5; test-breach 67/67. The second user
+  finding ("UI is very distracting") is broader density work pending
+  user direction on what to compress/relocate.
+
+---
+
 ## iter 189 — STATUS-CHECK — 32nd post-checkpoint idle iter · hash ok · awaiting signal
 
 ---

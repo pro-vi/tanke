@@ -790,11 +790,27 @@ func _apply_archetype_sprite(arch: int) -> void:
 		sprite.texture = DEFAULT_ATLAS_TEX
 		sprite.vframes = 18
 		sprite.set("frame_base", 0)
+		_set_shell_hud_visible(true)
 		return
 	sprite.texture = ARCHETYPE_ATLAS_TEX
 	sprite.vframes = 3
 	sprite.hframes = 16
 	sprite.set("frame_base", _ARCHETYPE_FRAME_BASE[arch])
+	# arc-4 iter 190 (PLAYTEST-FIX): hide shell-cycle HUD for non-DEFAULT
+	# archetypes. PRISM uses beam, MORTAR lobs (no cycle), RAM uses
+	# physical collision — the AP/HE/HEAT/APCR strip + codex are CRUFT
+	# for them, eating bottom-screen space and adding visual noise.
+	_set_shell_hud_visible(false)
+
+
+func _set_shell_hud_visible(show: bool) -> void:
+	if _shell_panel != null:
+		_shell_panel.visible = show
+	# Shell codex is the run-start primer that explains shells — only
+	# meaningful for DEFAULT. Don't auto-show it (visibility controlled
+	# elsewhere); only force-hide when non-DEFAULT.
+	if not show and _shell_codex != null:
+		_shell_codex.visible = false
 
 
 func _init_archetype() -> void:
