@@ -586,6 +586,36 @@ When the loop encounters a stall (quiet iter, empty DIAGNOSE, no shippable advan
 
 ---
 
+## FRAMING-AUDIT GATE (iter 283 per /meta dice-hook Nat 13 finding — the most-direct anti-frame-drift rule)
+
+**Same-family admissibility catches NO-SIGNAL families; framing-audit catches WRONG-FRAME-BUT-PRODUCTIVE-EXECUTION families.** The iter-282 /meta finding named the failure mode that the iter-273 same-family rule doesn't catch: anchor-tied diffs shipped against the wrong frame.
+
+**Required gate fires at:**
+- Every Round close (before queueing next round)
+- Every CONSULT absorption (after the consult response is captured to CONSULT-LEDGER)
+- The 3rd consecutive iter of "applying consult backlog" without a fresh frame check
+
+**The gate asks ONE question:**
+> "Does the user's most recent trigger map to the work this round is doing?"
+
+If the answer is YES (with citable evidence — the trigger's verbatim phrasing + the round's deliverables clearly serving it): continue.
+
+If the answer is NO or UNCLEAR: the loop must do ONE of:
+- AskUserQuestion with 3 named options the loop has considered (do NOT bury the question in REVIEW-QUEUE — surface it in the chat UI where the user will actually see it)
+- PushNotification + REVIEW-QUEUE entry (when AskUserQuestion is unavailable, e.g. during /loop cron firing)
+- Adversarial-consult-over-artifact to challenge the current frame
+- Halt and write a candid reframe note to STATE.md
+
+**The gate cannot be passed by ticking off cheap items from a consult backlog** — that is the cargo-cult pattern iter-273 named ("becoming extremely good at managing the absence of evidence — labels, counters, tags, consults — while avoiding 'did the game become more compelling to an actual player'"). Cheap-consult-fix cadence triggers the gate at iter 3 of the cadence.
+
+**Why this rule has more teeth than same-family alone:**
+- Same-family says: "this kind of iter has fired too many times in a row."
+- Framing-audit says: "even if every iter is productive, the AGGREGATE direction may be wrong."
+
+The iter-282 /meta finding documented exactly this: iters 274-281 were 8 productive BUILDs (5 widget + 2 consult fix + 1 META). Each passed same-family. Each was anchor-tied and gated. The consult-001 verdict — at the AGGREGATE level — said the frame was likely wrong. The framing-audit gate is the structural answer.
+
+---
+
 ## SAME-FAMILY ADMISSIBILITY (iter 273 per /second-opinion — the most-direct anti-idle rule)
 
 **The loop may not emit 3 consecutive iterations from the same no-signal family.**

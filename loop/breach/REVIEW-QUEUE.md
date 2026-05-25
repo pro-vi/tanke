@@ -818,7 +818,12 @@ Items remaining OPEN (require user signal):
 
 #27 — Round 25 candidate: Visual identity layer (asset-gen capability lifted to standing) — round 25 — iter 271 — open (queued, opens after Round 24)
 
-#29 — ★★ FRAMING AUDIT — Stardew delta scope (consult-001 + /meta finding) — round 24 — iter 282 — open
+#29 — ★★ FRAMING AUDIT — Stardew delta scope (consult-001 + /meta finding) — round 24 — iter 282 — CLOSED iter 283 (user chose Option B)
+  Resolution iter 283: user picked **Option B — pivot to Q1 breach-economy proof room.** Blueprint shipped at loop/breach/iter-283-round24-Q1-architect.md. Original Phase B/C parked. Estimated 4-5 iters (284-288). PROMPT.md framing-audit gate § added as the structural follow-up.
+
+---
+
+
   Finding: /meta (iter 282, dice Nat 13) named the session pattern
   as **frame mismatch**: loop shipped Phase A (HUD legibility) in
   response to user's iter-270 trigger ("Stardew Valley delta against

@@ -17,6 +17,34 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 283 — META — user direction received (Option B) → Round 24 REFRAMES → Q1 breach-economy proof room
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; reframe + blueprint).
+- Trigger: User re-fired /loop. Per iter-282 /meta finding, that re-fire was ambiguous; resolved by surfacing the framing-audit question via AskUserQuestion (the move /meta named: "let the user collapse the frame ambiguity that the loop cannot collapse alone"). User chose Option B.
+- User direction (verbatim AskUserQuestion answer): "B: Pivot to Q1 breach-economy proof room (Recommended)" — 8-15 iters, consult's highest-architectural-confidence finding (0.90), builds diagnostic room where HE/HEAT/APCR materially change route; shells become route currency, not damage flavor.
+- Same-family check: iter 282 META → iter 283 META. Productive same-family (both META iters serve framing-audit + reframe, ANCHORED to user direction). The framing-audit gate added in PROMPT.md this iter explicitly sanctions META iters that absorb fresh user direction.
+- Constraints respected: all 7 (META — no code).
+- Constraints risked: none.
+- Hash anchor: n/a (no substrate write — pure META + blueprint + PROMPT amendment).
+- Files:
+  - loop/breach/PROMPT.md (+ NEW § FRAMING-AUDIT GATE — the structural follow-up named at iter 282; gate fires at every Round close + every CONSULT absorption + the 3rd consecutive "applying consult backlog" iter; asks "does the user's most recent trigger map to the work this round is doing?")
+  - loop/breach/iter-283-round24-Q1-architect.md (NEW — full Round 24 reframed blueprint covering proof-room layout, per-lane gate semantics, 4-iter deliverable plan iters 284-287, acceptance criteria, anti-patterns, sentence-test verification per shell)
+  - loop/breach/REVIEW-QUEUE.md (#29 CLOSED with Option B chosen)
+  - loop/breach/LEDGER.md, loop/breach/STATE.md
+- Round 24 NEW STRUCTURE: original Phase B/C (scaling-curve + enemy-HP recurve) PARKED. Replaced by Q1 proof-room program. Original Phase A (HUD widgets) remains shipped but is now scaffolding, not the centerpiece.
+- Proof-room design (per consult-001 verbatim + architect blueprint): 1 BreachBand `q1_proof` with 4 distinct lanes:
+  - HE lane: 4-cell brick cluster gate, opens with 1 HE shell (≈3s) vs. ≈25s with AP alone
+  - APCR lane: 3-cell steel barrier, IMPASSABLE without APCR (only shell that drills steel)
+  - HEAT lane: 1 entrenched Heavy (hp=3 armored) blocking shortcut, 2 HEAT shells to clear (≈4s) vs. ≈15s with AP+exposure
+  - AP lane: open path with 3-4 Light patrol, completable as the baseline (≈12s)
+- Acceptance: each lane has its gate / each gate is shell-gated / RunRecap tracks shells_spent_on_routes vs shells_spent_on_combat / goal reachable from all 4 lanes / hash anchor preserved / make test-all + test-breach green / REVIEW-QUEUE entry + playtest brief shipped.
+- /meta structural follow-up APPLIED: PROMPT.md § FRAMING-AUDIT GATE added. This is the gate that would have caught the iters-274-281 frame mismatch at iter 277 (the 3rd consecutive cheap consult fix), forcing the framing audit earlier. From now on every Round close AND every CONSULT absorption explicitly answers "does the user's most recent trigger map to the work this round is doing?" with citable evidence.
+- Finding: **Round 24 reframed under user direction (Option B).** Loop resumes with reframed scope: Q1 breach-economy proof room, not blueprint Phase B/C. Next iter 284 BUILD — instantiate the proof-room BreachBand schema + sample band layout. The framing-audit gate is now structural PROMPT-level. quiet_signal_counter RESET to 0 via SIGNAL_RECEIPT: source_id=user-direction-iter283-AskUserQuestion-Option-B; consumed_by_iter=283; changed_next_action=yes; resulting_artifact=PROMPT.md framing-audit gate + iter-283-round24-Q1-architect.md blueprint + REVIEW-QUEUE #29 close.
+
+---
+
 ## iter 282 — META — /meta dice-hook Nat 13 → frame-mismatch named → loop HALT pending user direction
 
 - Date: 2026-05-25

@@ -1,8 +1,8 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: round-24-HALTED-pending-user-framing-audit (REVIEW-QUEUE #29)
-iter: 282
+phase: round-24-Q1-proof-room (REFRAMED per user direction iter 283 Option B)
+iter: 283
 round24_blueprint: loop/breach/iter-270-round24-architect.md
 round24_status: opening — Phase A (HUD-as-status) → Phase B (scaling + tier breakthroughs) → Phase C (enemy-HP recurve). Stardew delta — same BC primitives, modern HUD + progression feel. User-directed iter 270 (2026-05-24).
 asset_gen_standing_capability: /agentify image_gen (ChatGPT) is the standing visual-asset pipeline — confirmed via Round 9 (4 tank archetype concept sprites) and Pro Consult 011 (motif-first procedural masks per H5). The full pipeline (prompt → image → palette extraction → 16×16 / 8×8 silhouette compliance → atlas pack) shipped end-to-end at iters 142-149. Sanctioned for HUD icons, card art, enemy variants, depot art, banner art, level decorations. Procedural PIL (`tools/gen_tile.py`, `tools/gen_archetype_sprites.py`) remains the same-iter fallback. iter 271 amendment lifts this from Round-9-specific to standing.
@@ -26,6 +26,12 @@ quiet_signal_source_ids_used:  # iter 273 — list of source_ids that have alrea
     consumed_by_iter: 280
     changed_next_action: yes
     resulting_artifact: scripts/PlayerTank.gd _card_chip_short remap (14 entries) + chip width const 18→28 + CONSULT-LEDGER consult-001 § fully captured with verdict table + 3 player predictions + 7 backlogged recommendations
+  - kind: user_direction
+    source_id: askuserquestion-iter283-round24-frame-Option-B
+    first_seen_iter: 283
+    consumed_by_iter: 283
+    changed_next_action: yes
+    resulting_artifact: loop/breach/PROMPT.md § FRAMING-AUDIT GATE (NEW) + loop/breach/iter-283-round24-Q1-architect.md (NEW blueprint) + REVIEW-QUEUE #29 CLOSED with Option B + Round 24 reframed Phase B/C parked → Q1 breach-economy proof room sprint iters 284-287
 consult_calibration: {hits: 0, partial: 0, misses: 0, untested: 0}  # iter 273 — score of consult predictions against later real playtests; updated when user plays + scores. ≥2 hits AND hit rate ≥50% → calibrated_cap can rise to 4. Repeated misses → uncalibrated_cap lowers further or [FEEL-CONSULT] disabled.
 round23_status: closed-iter-201 (5 phases shipped; pick_card_on_levelup default false ABSORBED into Round 24 Phase A — flag flips true as part of HUD legibility work since cards are now visibly part of the loop)
 round23_blueprint: loop/breach/iter-196-round23-architect.md
@@ -70,10 +76,8 @@ last_consult: iter 280  # consult-001 — adversarial-over-artifact, Phase A clo
 consult_001_status: resolved-applied-h5-only  # 5 other recommendations (H4 / H6 / Q1 / Q3 / H1-gate-strengthen / reload-bar-dup / Stardew-pacing) backlogged in CONSULT-LEDGER; Phase B opening deferred pending breach-economy-proof-room (Q1) decision.
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: HALTED-pending-user — iter 282 /meta (dice Nat 13) named the session pattern as frame-mismatch + scaffold drift. Consult-001 (Pro extended-thinking 5m29s) flagged at Q1=0.90, Q3=0.92, Stardew-axis=0.87 that the user's iter-270 "Stardew Valley delta" trigger likely isn't about HUD legibility. Iters 280-281 responded by shipping cheap consult fixes (H5+H4) — the exact cargo-cult pattern the iter-273 amendment was designed to prevent. The dice forced the audit; the loop did not. PushNotification + REVIEW-QUEUE #29 opened with 3-option framing-audit question for user. No iter 283 scheduled. Loop resumes on user signal.
-next_action: iter 283 — WAIT for user direction on REVIEW-QUEUE #29 framing-audit (Option A: finish Phase A consult fixes then Phase B as-blueprinted / Option B: pivot to Q1 breach-economy proof room / Option C: reframe Round 24 as Stardew-pacing / Option D: user-stated alternative). Loop will NOT auto-queue another cheap consult fix while this question is pending — that would defeat the framing audit. When user responds: apply the chosen option AND add the deferred structural follow-up to PROMPT.md (framing-audit gate at every Round close + every consult absorption). Until then: HALTED.
-
-next_action_deferred_options:  # for reference once user answers REVIEW-QUEUE #29
+loop_state: RUNNING — iter 283 META reframed Round 24 per user direction (Option B chosen via AskUserQuestion). Loop pivots from Phase A consult-cleanup to Q1 breach-economy proof room. Original blueprint Phase B/C parked. PROMPT.md framing-audit gate added (structural follow-up from iter 282 /meta). Blueprint loop/breach/iter-283-round24-Q1-architect.md governs iters 284-287 (4-iter sprint: proof-room BreachBand + RunRecap route-currency metrics + sim harness + playtest brief).
+next_action: iter 284 — BUILD — proof room as new BreachBand. Per iter-283-round24-Q1-architect.md deliverable 1: (a) create configs/bands/q1_proof.tres (BreachBand resource); (b) define 4-lane layout via existing LevelDNA/BiomeConfig terrain weights OR a hand-laid q1_proof_layout.txt tile array consumed by a small loader; (c) spawn gate elements (brick cluster, steel barrier, entrenched Heavy, Light patrol); (d) sim harness asserts each lane has its gate + each gate is solvable ONLY with its sanctioned shell + goal reachable from all 4 lanes; (e) hash anchor preserved (BreachBand is arc-4-owned, not substrate). Framing-audit-gate check: does user's iter-270 "Stardew Valley delta" trigger map to a "shells are route currency" proof room? YES — user explicitly chose this path at iter 283 (Option B) over Options A/C; the proof room directly addresses consult Q1 + the arc-4 identity anchor "breach economy = what are you willing to spend to open the next vertical lane?"
   (a) **pickup-toast** (1-2 iters) — consult-001 H5 sub-recommendation: show full UpgradeCatalog.label_for() name for 1-2s on card pickup, so ribbon becomes a REMINDER not the first explanation. PlayerTank already has `_show_pickup_toast` infrastructure from iter 80; extending it to card pickups is small.
   (b) **reload bar tank-adjacent duplicate** (1-2 iters, conf 0.84) — add a tiny 6-10px reload pip near the tank, keep the top-left bar; duplicate critical timing signal so combat-focused gaze gets the cue.
   (c) **H6 visibility classes** (2-3 iters, conf 0.81) — split HUD into always-on-combat (HP/reload/shell) / conditional (speed only when buffed) / breath-beat (route + cards ribbon fade during pressure, full at depot/breach/pause).
