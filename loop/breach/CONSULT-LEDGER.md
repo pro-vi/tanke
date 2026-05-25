@@ -88,7 +88,59 @@ Every `[FEEL-CONSULT]` cite requires an entry here. The ledger turns adversarial
 
 ## Open entries (active, awaiting scoring)
 
-*None yet — first entry will be created when the loop fires its first iter-273+ adversarial-consult-over-artifact.*
+## consult-001 — Round 24 Phase A close (5 HUD widgets) — iter 279 — open
+
+- consult_id: 001
+- opened_iter: 279
+- trigger: stop-hook dice (Nat 2 — "Run /second-opinion before shipping"); also: Phase A close is the first natural punctuation since iter-79 last logged consult (200+ iters overdue per ~every-10 cadence).
+- media_hash: n/a (text-only consult; no screenshot — Godot session not running during cron iter; future consults should capture instrumented frame per iter-273 § "Where to source media")
+- prompt_hash: n/a (recorded in agentify run page)
+- agentify_query_key: tanke-arc4-phase-a-second-opinion
+- agentify_run_id: 28d4afe9-3038-4cf7-af0a-96708ec88acb
+- agentify_tab_id: c22332a9-4621-4970-a43f-da6f68a2b4b2
+- modeIntent: extended-pro (ChatGPT Pro extended thinking)
+- fired_at: 2026-05-25 (session iter 279, post-Phase-A-close)
+
+### Blind read (stage 1)
+
+DEVIATION from PROMPT § two-stage protocol: this consult was fired as a SINGLE compound prompt containing 6 hypotheses + 3 permanent questions + 4 specific sharp asks + the 5-widget design surface description. NOT split into blind-read first / informed-critique second. Reason: stop-hook fired post-commit; the loop wanted one consult to cover the Phase A close inflection point rather than two sequential rounds. The delta-blind-vs-informed signal is lost for this entry; future entries should restore the two-stage discipline.
+
+Pending response read (~10-30 min from fire time per Pro extended thinking).
+
+### Informed critique (stage 2)
+- Folded into stage 1 above (deviation noted).
+
+### Delta (blind vs informed)
+- N/A — single-stage. Mitigation: hypotheses H1-H6 were framed NEUTRALLY (per /second-opinion skill rule — no preloaded conclusions), so the model is invited to challenge each without anchoring.
+
+### Concrete recommendations from consult
+- *Pending response.*
+
+### Player predictions (falsifiable)
+- *Pending response — explicitly requested as 3 falsifiable predictions in prompt response-format block.*
+
+### What CANNOT be known from this consult
+- Tactile feel of the reload bar / shell chips / kill-flash IN MOTION at 60fps
+- Whether the player notices the cards ribbon DURING combat (attention budget under pressure)
+- Whether 2-letter ribbon labels parse in <5s for a fresh player (cognitive load under stress)
+- Whether the bottom-left 3-strip stacking obscures bricks / enemies in tight chokes
+- Whether Phase A actually shifts feel toward "Stardew Valley delta" or just makes BC's HUD denser
+- Death recap experience post-kill-flash (does shell-tinted burst land emotionally?)
+
+### Affected anchors
+- *Pending response — will list which RUBRIC anchors the consult lifts to [FEEL-CONSULT] (cap 3 uncalibrated) OR explicitly cannot lift.*
+
+### Expiration
+- max_iters_without_real_playtest: 30 (default)
+- expires_at_iter: 309
+- expires_on_next_real_playtest: yes
+
+### Scoring (filled in by user after playtest)
+- iter_scored: TBD
+- predictions:
+  - TBD (response not yet read)
+- overall verdict: TBD
+- cap_impact: TBD
 
 ---
 

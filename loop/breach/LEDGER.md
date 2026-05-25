@@ -17,6 +17,24 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 279 — META — Phase A close adversarial CONSULT fired (dice-hook Nat 2)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; pending consult response)
+- Trigger: Stop-hook dice rolled Nat 2 → "Run /second-opinion before shipping." Coincides with Phase A close inflection — last logged consult was iter 79, 200+ iters overdue per ~every-10 cadence in PROMPT.
+- Same-family check: iters 274-278 were 5 productive BUILDs; iter 279 is a META that BREAKS the streak naturally. No same-family violation; this is the punctuation between Phase A close and Phase B opening.
+- Constraints respected: all 7 (no code touched).
+- Constraints risked: none.
+- Hash anchor: n/a (no substrate write this iter — pure CONSULT fire).
+- Files: loop/breach/CONSULT-LEDGER.md (NEW consult-001 entry — pending response), loop/breach/LEDGER.md, loop/breach/STATE.md.
+- /agentify fire-and-forget: queryId 28d4afe9-3038-4cf7-af0a-96708ec88acb, key tanke-arc4-phase-a-second-opinion, modeIntent extended-pro (ChatGPT Pro extended thinking). ETA 10-30 min per skill description.
+- Prompt structure: 6 hypotheses H1-H6 (HUD-legibility-is-right-Phase-A-scope / procedural-V1-acceptable / 5-consecutive-BUILD-streak-productive / kill-flash-16x16-sufficient / 2-letter-labels-honest-scaffolding / 3-strip-bottom-left-stacking-coherent), 3 permanent arc-4 questions (breach-economy-vs-just-BC / earned-breath-vs-HUD-bloat / seductive-but-hollow), 4 specific sharp asks (reload-bar-placement / kill-flash-drama / 2-letter-parseability / Stardew-delta-actual-axis). Per /second-opinion skill: framed NEUTRALLY — no preloaded conclusions — so each H labelled and asked-to-be-challenged.
+- DEVIATION recorded in CONSULT-LEDGER: single-stage prompt (no blind-then-informed two-stage split). Justified by stop-hook trigger pattern; future consults should restore two-stage discipline.
+- Finding: **Phase A close → CONSULT-001 fired.** Defers the "did this 5-BUILD streak actually serve the user's iter-270 Stardew-delta trigger" question to the frontier-model panel. Concrete next: next /loop wake (in ~3-4 min from iter-278 commit) checks `agentify_status({key: "tanke-arc4-phase-a-second-opinion"})`. If response complete → read + integrate into CONSULT-LEDGER + LEDGER + decide Phase B shape. If still running → proceed with iter 280 Phase B audit work in parallel (consult does not block Phase B per iter-273 amendment — non-consultable parallel review). quiet_signal_counter stays 0 (this consult will reset when response completes per SIGNAL_RECEIPT — fresh source_id with action-changing artifact pending).
+
+---
+
 ## iter 278 — BUILD — Round 24 Phase A widget 4 v1: active-cards ribbon (PHASE A CLOSES)
 
 - Date: 2026-05-25
