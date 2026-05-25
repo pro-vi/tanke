@@ -17,6 +17,10 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 191 — STATUS-CHECK — iter-190 fix shipped; awaiting user direction on UI density redesign
+
+---
+
 ## iter 190 — PLAYTEST-FIX — hide shell-cycle HUD for non-DEFAULT archetypes
 
 - Date: 2026-05-24
