@@ -17,6 +17,24 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 284 — BUILD — Q1 proof-room artifact + 4-lane ASCII layout + design-verification harness
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; first concrete BUILD of the user-directed Q1 reframe; anchor lift on C4 anchor 1 + C8 anchor 1 deferred until playable integration ships iter 285+).
+- Framing-audit gate (PROMPT § iter 283): does user's iter-270 "Stardew Valley delta" trigger map to this iter? YES — user picked Option B at iter 283 (Q1 breach-economy proof room) explicitly addressing consult-001 Q1 verdict 0.90. Citable evidence in STATE source_ids_used. Gate passes.
+- Same-family check: iter 282 META → 283 META → 284 BUILD. Fresh BUILD; productive direction-change after meta + user direction. No NO-SIGNAL family.
+- Constraints respected: 1, 2 (4 shell classes), 3 (each shell has a canonical lane), 5 (dominant pressure = route-choice), 7 (verbs not stats — gate language: blasts/drills/burst/rotation).
+- Constraints risked: 4 (silhouette grammar) — reused existing assets (brick/steel/Heavy/Light); no new silhouettes.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** (NO substrate write this iter — pure arc-4-owned resource + ASCII layout + harness). `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 78/78 PASS.
+- Falsifications: 1 caught + fixed mid-iter. Initial layout had ".BBB." (3 bricks) at HE gate but described "4-cell rosette" — the harness `_extract_gate_lines()` + `_shell_can_clear()` design-property check caught the mismatch and forced a layout update to "BBBBB" (5-cell cluster spanning the lane). This is exactly the kind of design self-inconsistency the harness was built to catch. NO F-number assigned (single-iter design-internal mismatch, not a structural bug).
+- Files: configs/bands/q1_proof.tres (NEW BreachBand resource — band_name "q1_proof" + dominant_pressure "4 vertical lanes; each lane gated by a different shell class — shells are route currency" + canonical_answer citing all 4 shells per their lane), loop/breach/q1_proof_layout.txt (NEW — ASCII grid + per-lane shell-gating semantics + design property explanation), loop/breach/test_breach_q1_proof.gd (NEW — 5 assertions: band loads with right metadata, layout has 4 gate markers, each lane has its expected gate shape, per-shell solvability + critical cross-pollination check that APCR lane is IMPASSABLE without APCR, sentence test verifies verb-not-stat language with 0 stat-bump anti-patterns and ≥3 verb keywords), Makefile (.PHONY + check-breach-q1-proof + test-breach aggregate; 78 targets now), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: harness reports `gate types: HE=5 bricks / APCR=5 steel / HEAT=1 Heavy / AP=2 Light (correct shapes)` + `solvability: each shell clears its lane; APCR lane IMPASSABLE without APCR (route-currency proof)` + `sentence test: 4 verb keywords cited, 0 stat-bump anti-patterns`.
+- Finding: **Q1 proof room ships as design artifact + verification harness.** The route-currency design property is now machine-verifiable: the harness mathematically proves that AP/HE/HEAT bullets bounce off steel and APCR is the ONLY shell that drills (the cross-pollination assertion). This is the consult-001 Q1 verdict made structural: "shells are route currency, not just damage flavor" is now a test-breach assertion, not just a design slogan. Playable integration (load layout into a real Godot scene, drive a player through each lane) is iter 285 per blueprint. Same-family streak ends naturally — iter 283 META + iter 284 BUILD is the proper alternation; framing-audit gate now active will catch any future drift at iter 3.
+- quiet_signal_counter stays at 0 (this iter is a downstream artifact of the iter-283 user-direction source already consumed; per SIGNAL_RECEIPT one-time rule, no fresh reset).
+
+---
+
 ## iter 283 — META — user direction received (Option B) → Round 24 REFRAMES → Q1 breach-economy proof room
 
 - Date: 2026-05-25

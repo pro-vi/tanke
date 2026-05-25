@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="BreachBand" load_steps=3 format=3]
+
+; Arc-4 Round 24 reframe (iter 284 per user-direction iter 283 Option B):
+; Q1 breach-economy proof room. Standalone BreachBand designed to prove
+; the consult-001 Q1 finding (conf 0.90): "shells are route currency, not
+; just damage flavor." 4 distinct vertical lanes, each gated by a
+; different shell class. The layout itself lives in
+; loop/breach/q1_proof_layout.txt (ASCII grid). This resource carries
+; the band-level metadata (name + dominant pressure + canonical answer)
+; and a tuned LevelConfig that nudges procedural generation toward the
+; 4-lane structure when the layout file is not consumed directly.
+
+[ext_resource type="Script" path="res://scripts/BreachBand.gd" id="1_band"]
+[ext_resource type="Script" path="res://scripts/LevelConfig.gd" id="2_lc"]
+
+[sub_resource type="Resource" id="lc_q1"]
+script = ExtResource("2_lc")
+merge_probability = 0.20
+empty_weight = 0.45
+brick_weight = 0.18
+steel_weight = 0.10
+grass_weight = 0.20
+water_weight = 0.07
+
+[resource]
+script = ExtResource("1_band")
+band_name = "q1_proof"
+depth_min = 0
+depth_max = 30
+dominant_pressure = "4 vertical lanes; each lane gated by a different shell class — shells are route currency"
+canonical_answer = "HE lane = brick cluster (HE blasts 4-cell rosette); APCR lane = steel barrier 3 cells (only APCR drills); HEAT lane = entrenched Heavy hp=3 armored (HEAT 2-shots, AP+HE chip-through); AP lane = open patrol of 3-4 Lights (AP cheap rotation). Goal: depot cache at top of band."
+level_config = SubResource("lc_q1")
+enemy_weights = {
+"Heavy": 0.25,
+"Light": 0.75
+}

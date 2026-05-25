@@ -1,0 +1,122 @@
+# Q1 breach-economy proof room — ASCII layout
+# arc-4 iter 284 per blueprint loop/breach/iter-283-round24-Q1-architect.md
+#
+# Tile legend (1 cell = 8px game tile; band footprint is 21 cols × 30 rows):
+#   .   = empty (passable)
+#   B   = brick (passable after 1 AP hit; HE blast clears 4-cell radius)
+#   S   = steel (only APCR drills, 1 block per hit)
+#   W   = water (impassable except by HE-cleared rubble bridge — future feature)
+#   G   = grass (passable; reduces visibility per arc-2 forest_hidden)
+#   ▲   = goal (depot cache at row 0)
+#   ┌─┐ = lane boundary marker (cosmetic; not in tile array)
+#   L   = Light enemy spawn (hp=1, no armor)
+#   H   = Heavy enemy spawn (hp=3, armored)
+#   P   = player start (at row 29, lane centerline)
+#
+# Lane structure (cols 0-20):
+#   Lane 1 (HE):    cols 0-4
+#   Lane 2 (APCR):  cols 5-9
+#   Lane 3 (HEAT):  cols 10-14
+#   Lane 4 (AP):    cols 15-20
+#
+# Each lane has its gate at row 14 (mid-band). Below the gate = approach;
+# above the gate = clearance to the goal.
+#
+# Gate row K = 14 (mid-band). Goal row = 0 (top).
+# Player start row = 29 (bottom of each lane).
+
+# Row 0  ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲     ← GOAL (depot cache spans all lanes)
+GOAL_ROW: ▲▲▲▲▲ ▲▲▲▲▲ ▲▲▲▲▲ ▲▲▲▲▲▲
+
+# Rows 1-13: clearance — after gate, smooth path to the goal
+# (with light obstacles to test commit + small enemy presence)
+LANE_HE     LANE_APCR   LANE_HEAT   LANE_AP
+.....       .....       .....       ......
+.....       .....       .....       ......
+..L..       .....       .....       ......
+.....       .....       ..L..       ......
+.....       ..L..       .....       ......
+.....       .....       .....       ......
+.....       .....       .....       ......
+.....       .....       .....       ......
+.....       .....       .....       ......
+.....       .....       .....       ......
+.....       .....       .....       ......
+.....       .....       .....       ......
+.....       .....       .....       ......
+
+# Row 14: THE GATE ROW (each lane has its gate type)
+GATE_HE:    BBBBB       (5-cell brick cluster spanning the lane; HE blast at center clears 4+ cells in radius — 1-shot solve)
+GATE_APCR:  SSSSS       (3-5 cell steel barrier; APCR drills 1 per hit)
+GATE_HEAT:  ..H..       (1 entrenched Heavy hp=3 armored; HEAT 2-shots)
+GATE_AP:    .L.L..      (2-4 Light patrol; AP rotation)
+
+# Rows 15-28: approach — open with light cover
+LANE_HE     LANE_APCR   LANE_HEAT   LANE_AP
+.....       .....       .....       ......
+..G..       .....       .....       ......
+.....       .....       .....       ......
+.....       ..G..       .....       ......
+.....       .....       .....       ......
+.....       .....       ..G..       ......
+.....       .....       .....       .....G
+.....       .....       .....       ......
+.....       .....       .....       ......
+.....       .....       .....       ......
+.....       .....       .....       ......
+.....       .....       .....       ......
+.....       .....       .....       ......
+.....       .....       .....       ......
+
+# Row 29: PLAYER START
+PLAYER_START: ..P.. ..P.. ..P.. ..P...
+
+# Per-lane shell-gating semantics (the design property the harness verifies):
+#
+# LANE_HE (cols 0-4):
+#   - Gate: 4-cell brick cluster (B in 4 adjacent cells at row 14)
+#   - Shell HE: 1 shot at center of cluster → blast radius clears all 4 bricks
+#     → lane passable in ~3 seconds
+#   - Shell AP: would need 4 individual hits (1 per brick) → ~12 AP fired,
+#     plus reposition cost since AP doesn't blast radius → ~20-25s
+#   - Shell APCR: AP-equivalent on brick (1 brick per hit, no radius) → ~12 shots
+#   - Shell HEAT: 2× damage on enemies, normal on terrain → same as AP for bricks
+#   - DOMINANT: HE
+#
+# LANE_APCR (cols 5-9):
+#   - Gate: 3-cell steel barrier at row 14
+#   - Shell APCR: 3 drilled shots → lane passable in ~6s
+#   - Shell AP/HE/HEAT: STEEL IS IMPENETRABLE without APCR. AP bullets bounce;
+#     HE blast cannot crack steel; HEAT 2× damage applies to armored ENEMIES
+#     not to steel terrain → LANE IMPASSABLE without APCR
+#   - DOMINANT: APCR (unique — only shell that drills steel)
+#
+# LANE_HEAT (cols 10-14):
+#   - Gate: 1 entrenched Heavy hp=3 armored at row 14
+#   - Shell HEAT: 2× damage to armored = 2 shots to kill → ~4s, low exposure
+#   - Shell AP: 1 damage to armored (after mitigation) → ~5-6 shots, high
+#     exposure during reload window → ~15s including dodging
+#   - Shell HE: blast hits Heavy for normal damage; could 3-shot but blast
+#     also clears Heavy's cover → similar to AP in time/exposure
+#   - Shell APCR: 1× damage on armored (not 2× like HEAT) → ~5-6 shots
+#   - DOMINANT: HEAT (cheapest in exposure-time)
+#
+# LANE_AP (cols 15-20):
+#   - Gate: 2-4 Light patrol at row 14
+#   - Shell AP: cheap rotation, 1-shot Lights → ~12s with movement
+#   - Shell HE: works but wasted (Lights die in 1 AP; HE is inventory-spend)
+#   - Shell HEAT/APCR: also works but wasted on unarmored
+#   - DOMINANT: AP (baseline — the room IS clearable with pure AP; this lane
+#     is the FREE lane, the breach economy honors AP as "no special shell
+#     required" path)
+#
+# DESIGN PROPERTY: The proof room MUST be designed so that:
+#   - Each lane has ONE dominant shell (cheapest in time + exposure)
+#   - At least ONE lane (APCR) is IMPASSABLE without its dominant shell
+#   - At least one lane (AP) is COMPLETABLE with the baseline shell
+#   - The dominant-shell choice changes the run's character: a HE-heavy
+#     build favors lane 1; an APCR-heavy build favors lane 2; a HEAT-heavy
+#     build favors lane 3; a "pure AP" build is forced into lane 4
+#
+# This is the consult-001 Q1 verdict made structural:
+#   "shells are route currency, not just damage flavor"

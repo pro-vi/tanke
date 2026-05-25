@@ -24,6 +24,33 @@ Format:
 
 ---
 
+## iter 284 — BUILD — Q1 proof-room: BreachBand resource + 4-lane ASCII layout + design-verification harness
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1 (no combat modal), 2 (3 shell classes + APCR override — the 4 lanes map 1:1), 3 (every shell class has a canonical lane), 5 (proof room has dominant pressure: route-choice — NOT generic-harder), 7 (verbs not stats — each lane lifts a verb: HE blasts / APCR drills / HEAT pierces / AP rotates).
+- CONSULT constraints risked: 4 (silhouette/grammar) — the gate elements (brick cluster, steel barrier, entrenched Heavy, Light patrol) reuse existing assets; no new silhouettes introduced.
+- Framing-audit gate (PROMPT § iter 283): does the user's iter-270 "Stardew Valley delta" trigger map to this iter? YES — user picked Option B at iter 283 explicitly choosing Q1 breach-economy proof room; iter 284 is the first concrete BUILD step. Citable evidence: STATE source_ids_used iter-283 askuserquestion entry + blueprint loop/breach/iter-283-round24-Q1-architect.md.
+- Same-family check: iter 282 META → 283 META → 284 BUILD. 2-META streak broken; iter 284 is a fresh BUILD anchored to user-direction blueprint.
+- Predicted failure: ASCII layout's per-shell solvability check could pass for a design that LOOKS right but fails when integrated into a real scene later (parity drift — model used to verify the design doesn't match the real scene conditions). Mitigation: harness assertions are conservative; lane structure properties are pure topology (no behavior simulation), so the real-scene integration should preserve them.
+- Falsifiable claim: harness loads q1_proof.tres + q1_proof_layout.txt; verifies:
+  (1) 4 distinct vertical lanes exist
+  (2) HE lane has brick-cluster gate at row ~K, APCR lane has 3-cell steel barrier, HEAT lane has 1 entrenched Heavy marker, AP lane is open-with-patrol
+  (3) Per-shell pathfinding: HE shell + HE lane → reaches goal; APCR shell + APCR lane → reaches goal; HEAT shell + HEAT lane → reaches goal; AP shell + AP lane → reaches goal
+  (4) Cross-pollination check: AP shell + steel barrier → BLOCKED (cannot reach goal in APCR lane); APCR shell + brick cluster → drill works but inefficient (cosmetic note, no failure)
+- Sentence test (per shell, from blueprint):
+  - HE: "This shell helps me climb through brick-cluster lanes by changing how I use my AoE budget." ✓
+  - APCR: "This shell helps me climb through steel-barrier lanes by changing how I use my drill budget." ✓
+  - HEAT: "This shell helps me climb through armored-bunker shortcuts by changing how I use my 2× anti-armor burst." ✓
+  - AP: "This shell helps me climb through patrol-defended open lanes by changing how I use my time + movement budget." ✓
+- Substrate touched: NONE this iter — all new files are arc-4-owned:
+  - configs/bands/q1_proof.tres (NEW; BreachBand resource)
+  - loop/breach/q1_proof_layout.txt (NEW; ASCII grid)
+  - loop/breach/test_breach_q1_proof.gd (NEW; harness)
+- Hash-anchor verification plan: trivial — no substrate write → procedural baseline path unchanged → hash preserved. Will re-verify post-edit anyway.
+
+---
+
 ## iter 281 — BUILD — consult-001 H4 fix: kill-flash 24×24 outer ring + 16×16 core
 
 - Date: 2026-05-25
