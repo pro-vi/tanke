@@ -17,6 +17,22 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 276 — BUILD — Round 24 Phase A widget 1 v1: shell chips (procedural)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; widget 4/5 of Phase A — anchor lift at phase close, not per widget)
+- Same-family admissibility: iters 274-276 are three consecutive BUILD with anchor-tied diffs (productive same-family). Permitted per iter-273 rule (forbids 3 NO-SIGNAL families, not 3 productive BUILDs).
+- Constraints respected: 1 (no combat modal — passive read-only HUD), 4 (silhouette/grammar — 4-chip row 1:1 with 4 shell roles), 7 (verbs not stats — chip row surfaces which shell is armed + how many are stockpiled).
+- Constraints risked: none (additive HUD inside loadout-gated block; existing bottom shell panel preserved for V1 backward compat with check-breach-hud + check-breach-fire-while-swap harnesses).
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** post substrate write #81 (PlayerTank.gd ×49). `_shell_chip_bgs` stays empty on procedural baseline; `_shell_chips_panel` stays null. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 75 targets PASS.
+- Falsifications: none. Predicted "chip row could collide with reload bar (y=24, 4px tall)" — chips at y=32 leave 4px gap; verified by harness reading bg.position.y. Predicted "selected highlight could fail to update on cycle" — Case E verifies HE highlight follows current_shell flip.
+- Files: scripts/PlayerTank.gd (+1 panel field, +2 array fields, +5 constants, +1 _setup_hud call, +1 _update_run_hud call, +new `_build_shell_chips()` + `_update_shell_chips()` helpers), loop/breach/test_breach_shell_chips.gd (NEW — 5 assertions: procedural-baseline-empty / 4-bgs-4-labels-correct-size / reserve-labels-match-loadout / selected-bright-others-dim / cycle-flips-highlight), Makefile (.PHONY + check-breach-shell-chips + test-breach aggregate), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: 4 chips at (3, 32), (25, 32), (47, 32), (69, 32) — 20×12 each with 2px gap; total row 88×14. AP-selected brightness 2.79 vs HE-dim 0.74 (ratio 3.8×, clearly readable). After current_shell=HE: HE 2.10 vs AP-dim 0.98 (ratio 2.1×; HE color base is darker than AP/HEAT so smaller spread, still visible).
+- Finding: **Round 24 Phase A widget 1 v1 (shell chips, procedural) lands.** Top-left compact row at (3, 32) under reload bar. 4 chips per shell class with selected highlight + per-class reserve count ("AP" for unlimited; numeric for HE/HEAT/APCR). Procedural V1 — palette-aligned ColorRects reusing `_shell_color()` from the bottom strip; deliberately DOES NOT replace the existing bottom _shell_panel (the blueprint says "replaces" but V1 is additive to preserve existing harness coverage; V2 — post-playtest — can remove the bottom strip when chips are user-validated). Phase A widgets shipped: 3/5 (reload bar + speed meter + shell chips v1). Remaining: kill-flash (can now reuse the chip color palette from this iter), active-cards-ribbon (needs 14 /agentify icons; biggest remaining payload). The shell-chips foundation now exists, enabling the kill-flash widget which depends on per-shell visual identity. Three procedural BUILDs in a row without an asset-gen detour — same-family productive admissibility carrying the loop forward at sustained cadence.
+
+---
+
 ## iter 275 — BUILD — Round 24 Phase A widget 3: speed meter
 
 - Date: 2026-05-25

@@ -128,6 +128,19 @@ var _reload_bar_fg: ColorRect = null
 # Built only inside loadout-gated block — arc-2/3 bit-identical.
 var _speed_label: Label = null
 const SPEED_BASELINE: float = 32.0
+# arc-4 iter 276 (Round 24 Phase A widget 1 v1): shell chips — compact
+# top-left row showing AP/HE/HEAT/APCR with the active class highlighted
+# and reserve counts. V1 is procedural (palette-aligned ColorRects);
+# /agentify image_gen icons can swap in later via a CAPABILITY iter.
+# Built only inside loadout-gated block — arc-2/3 bit-identical.
+var _shell_chips_panel: ColorRect = null
+var _shell_chip_bgs: Array[ColorRect] = []
+var _shell_chip_labels: Array[Label] = []
+const SHELL_CHIPS_X: float = 3.0
+const SHELL_CHIPS_Y: float = 32.0
+const SHELL_CHIP_W: float = 20.0
+const SHELL_CHIP_H: float = 12.0
+const SHELL_CHIP_GAP: float = 2.0
 # arc-4 iter 116 (Round 14 Phase 2): REAR_GUARD cooldown timer +
 # tunables. _rear_guard_cd ticks down to 0.0; when 0.0 + an enemy
 # is in the rear cone + loadout has the flag, fires an AP backward
@@ -1959,6 +1972,7 @@ func _setup_hud() -> void:
 		_build_shell_panel(canvas)
 		_build_shell_codex(canvas)
 		_build_reload_bar(canvas)
+		_build_shell_chips(canvas)
 		# arc-4 iter 42 (Round 6d, stakes): the live best-depth readout —
 		# the depth chase, always visible (not just on the death recap).
 		_run_best_depth = _load_best_depth()
@@ -2084,6 +2098,67 @@ func _build_reload_bar(canvas: CanvasLayer) -> void:
 		RELOAD_BAR_BG_H - 2.0 * RELOAD_BAR_INSET)
 	_reload_bar_fg.color = _shell_color(current_shell)
 	canvas.add_child(_reload_bar_fg)
+
+
+# arc-4 iter 276 (Round 24 Phase A widget 1 v1): build the top-left
+# shell chip row. 4 slots — one per shell class — each a small bg
+# ColorRect plus a compact label. The selected chip renders at full
+# shell-color saturation; non-selected chips dim to ~35% so the
+# active class reads at a glance. Caller gates on loadout != null.
+func _build_shell_chips(canvas: CanvasLayer) -> void:
+	var classes: Array[int] = [
+		BulletT.SHELL_CLASS_AP, BulletT.SHELL_CLASS_HE,
+		BulletT.SHELL_CLASS_HEAT, BulletT.SHELL_CLASS_APCR,
+	]
+	_shell_chips_panel = ColorRect.new()
+	_shell_chips_panel.name = "ShellChipsPanel"
+	_shell_chips_panel.position = Vector2(SHELL_CHIPS_X - 1.0, SHELL_CHIPS_Y - 1.0)
+	var total_w: float = float(classes.size()) * (SHELL_CHIP_W + SHELL_CHIP_GAP)
+	_shell_chips_panel.size = Vector2(total_w, SHELL_CHIP_H + 2.0)
+	_shell_chips_panel.color = Color(0.04, 0.04, 0.06, 0.6)
+	canvas.add_child(_shell_chips_panel)
+	for i in classes.size():
+		var x: float = SHELL_CHIPS_X + float(i) * (SHELL_CHIP_W + SHELL_CHIP_GAP)
+		var bg: ColorRect = ColorRect.new()
+		bg.position = Vector2(x, SHELL_CHIPS_Y)
+		bg.size = Vector2(SHELL_CHIP_W, SHELL_CHIP_H)
+		bg.color = _shell_color(classes[i])
+		canvas.add_child(bg)
+		_shell_chip_bgs.append(bg)
+		var lbl: Label = Label.new()
+		lbl.position = Vector2(x + 2.0, SHELL_CHIPS_Y - 1.0)
+		lbl.size = Vector2(SHELL_CHIP_W - 2.0, SHELL_CHIP_H)
+		lbl.text = "AP" if classes[i] == BulletT.SHELL_CLASS_AP else "0"
+		lbl.add_theme_font_size_override("font_size", 8)
+		lbl.add_theme_color_override("font_color", Color.WHITE)
+		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		lbl.add_theme_constant_override("outline_size", 2)
+		canvas.add_child(lbl)
+		_shell_chip_labels.append(lbl)
+
+
+# arc-4 iter 276: per-frame chip update. Selected = full saturation;
+# others = dimmed. Reserve label reads the current count (or "AP" for
+# the unlimited class).
+func _update_shell_chips() -> void:
+	if _shell_chip_bgs.is_empty():
+		return
+	var classes: Array[int] = [
+		BulletT.SHELL_CLASS_AP, BulletT.SHELL_CLASS_HE,
+		BulletT.SHELL_CLASS_HEAT, BulletT.SHELL_CLASS_APCR,
+	]
+	for i in classes.size():
+		var sc: int = classes[i]
+		var bg: ColorRect = _shell_chip_bgs[i]
+		var base: Color = _shell_color(sc)
+		if sc == current_shell:
+			bg.color = base
+		else:
+			bg.color = Color(base.r * 0.35, base.g * 0.35, base.b * 0.35, 0.85)
+		if sc == BulletT.SHELL_CLASS_AP:
+			_shell_chip_labels[i].text = "AP"
+		else:
+			_shell_chip_labels[i].text = "%d" % _shell_reserve(sc)
 
 
 # arc-4 iter 275: per-frame text update for the speed meter. Computes
@@ -2536,6 +2611,9 @@ func _update_run_hud() -> void:
 	# arc-4 iter 275 (Round 24 Phase A widget 3): refresh speed meter.
 	if _speed_label != null and loadout != null:
 		_update_speed_meter()
+	# arc-4 iter 276 (Round 24 Phase A widget 1 v1): refresh shell chips.
+	if not _shell_chip_bgs.is_empty() and loadout != null:
+		_update_shell_chips()
 	# arc-4 iter 56 (Round 8a): accrue XP from kills + depth.
 	_tick_xp()
 

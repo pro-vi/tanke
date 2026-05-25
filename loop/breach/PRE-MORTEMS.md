@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 276 — BUILD — Round 24 Phase A widget 1 (v1): shell chips (procedural)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1 (no combat modal — passive read-only HUD), 4 (silhouette/grammar — 4-chip row maps 1:1 to 4 shell-class roles), 7 (verbs not stats — chip row is the visible side of which shell is currently armed + how many you've stockpiled).
+- CONSULT constraints risked: none structurally.
+- Same-family admissibility: iters 274-275 were BUILD with anchor-tied diffs (productive same-family). This iter is a third consecutive productive BUILD — admissible per iter-273 rule (the rule forbids 3 NO-SIGNAL families in a row, not 3 productive BUILDs).
+- Scope discipline: blueprint says "Replaces the existing shell HUD with a more legible row." V1 ships the top-left chip row ALONGSIDE the existing bottom _shell_panel, NOT replacing it — existing harnesses (check-breach-hud, check-breach-fire-while-swap) depend on the bottom panel. V2 (post-playtest) can remove the bottom strip when the new chips have user-validated visual coverage.
+- Predicted failure: chip row could collide with reload bar (which is at y=24, 4px tall) — placing chips at y=32 should leave a 4px gap. OR currently-selected highlight could fail to update when current_shell cycles via KEY_TAB.
+- Falsifiable claim: post-edit, _shell_chip_bgs has 4 entries each with size 20×12; with loadout starting at he=6/heat=3/apcr=4, labels read "AP" / "6" / "3" / "4"; and after current_shell ← SHELL_CLASS_HE, chip[1] color brightness > chip[0] color brightness (selected slot is full-saturation, non-selected dimmed to ~35%).
+- Sentence test: n/a (no upgrade introduced this iter).
+- Substrate touched: scripts/PlayerTank.gd (Layer 2 — substrate write #81, sanctioned per default-on gating template).
+- Hash-anchor verification plan: post-edit `make test` + procedural oracle on seed 42 must equal 23d6a2ec3bf2821f… (the chip row builds ONLY inside `if loadout != null:` in _setup_hud, so procedural baseline still has empty `_shell_chip_bgs` array + no per-frame update path).
+
+---
+
 ## iter 275 — BUILD — Round 24 Phase A widget 3: speed meter
 
 - Date: 2026-05-25
