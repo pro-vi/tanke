@@ -1504,6 +1504,18 @@ func set_last_damage_source(label: String) -> void:
 	_last_damage_source = label
 
 
+# arc-4 iter 286 (Q1 sprint 3/4 per blueprint loop/breach/
+# iter-283-round24-Q1-architect.md; consult-001 Q3 verdict 0.92):
+# pass-through called by Bullet.gd._try_record_shot_hit when a shot
+# damages a body. Gated on run_recap (which is gated on loadout) so
+# arc-2/3 baseline + non-breach modes silently no-op — never touches
+# the new RunRecap dicts on the procedural path. Hash anchor preserved.
+func record_shot_hit(shell_class: int, hit_kind: String) -> void:
+	if run_recap == null:
+		return
+	run_recap.record_shot_hit(shell_class, hit_kind)
+
+
 # iter 78 (Q5 priority 4): heal called by HP pickup overlap. Clamped to max_hp.
 # No effect if already dead.
 func heal(amount: int) -> void:

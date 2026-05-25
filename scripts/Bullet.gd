@@ -154,6 +154,13 @@ func _on_body_entered(body: Node) -> void:
 		if body.has_method("set_last_damage_shell"):
 			body.set_last_damage_shell(shell_class)
 		body.take_damage(deal)
+		# arc-4 iter 286 (Q1 sprint 3/4 per blueprint loop/breach/
+		# iter-283-round24-Q1-architect.md; consult-001 Q3 verdict 0.92):
+		# record the hit as route or combat for RunRecap's route-currency
+		# metrics. Reads is_route_gate meta on the body (set by the level
+		# scene when spawning gate-row terrain or entrenched-gate enemies).
+		# Reaches the player via the iter-24 lvl.player pattern.
+		_try_record_shot_hit(body)
 	if shell_class == SHELL_CLASS_HE:
 		var radius_hits: int = _apply_he_blast(body)
 		# arc-4 iter 52 (Round 7e): the HE detonation visual — a blast
@@ -185,6 +192,27 @@ func _try_breach_dividend() -> void:
 		return
 	if p.loadout.breach_dividend:
 		p.loadout.refill_he(1)
+
+
+# arc-4 iter 286: classify the hit as route-gate or combat and forward
+# to the firing player's record_shot_hit pass-through. Bodies set
+# `is_route_gate` meta from the level scene at gate-row positions;
+# defaults to combat when meta absent or falsy. All reads duck-typed —
+# any missing link (no parent.player, no loadout, no run_recap, no
+# record_shot_hit method) silently no-ops. Procedural / arc-2/3 mode
+# never sees is_route_gate meta on any body → silent path.
+func _try_record_shot_hit(body: Node) -> void:
+	var lvl: Node = get_parent()
+	if lvl == null or not ("player" in lvl):
+		return
+	var p = lvl.player
+	if p == null or not p.has_method("record_shot_hit"):
+		return
+	var is_route: bool = false
+	if body != null and body.has_meta("is_route_gate"):
+		is_route = bool(body.get_meta("is_route_gate"))
+	var kind: String = "route" if is_route else "combat"
+	p.record_shot_hit(shell_class, kind)
 
 
 # HE radius blast: iterate siblings of the hit body that respond to

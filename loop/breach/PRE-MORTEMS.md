@@ -24,6 +24,23 @@ Format:
 
 ---
 
+## iter 286 — BUILD — Q1 sprint 3/4: wire Bullet → PlayerTank → RunRecap route-currency hit recording
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1, 6 (route attribution → recap), 7 (verbs not stats — the route-vs-combat distinction names which verb the shell performed).
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — closes the loop between iter 284's design verification (the design property exists) and iter 285's storage API (RunRecap can hold metrics); iter 286 makes the metrics REAL during play. "Shells are route currency" becomes a measurable empirical claim, not just a design slogan. Gate passes.
+- Same-family check: iter 283 META → 284 BUILD → 285 BUILD → 286 BUILD. 3 consecutive BUILDs all anchor-tied to the Q1 sprint blueprint deliverables — productive same-family. (Counter: the same-family RULE only fires NO-SIGNAL family; 3 anchored BUILDs is permitted.) Framing-audit gate explicitly checked above: still tracking user trigger.
+- Predicted failure: if Bullet.gd's body-entered handler is called for a body that is in the "armored" group AND has is_route_gate meta (entrenched-Heavy at HEAT lane gate is BOTH armored AND a route-gate per layout), the bullet logic must record route, NOT combat — that's the whole point of the HEAT-shortcut lane. Mitigation: route classification reads is_route_gate meta first; armored grouping affects damage math, not recording-kind.
+- Falsifiable claim: harness instantiates Bullet at a stub body marked is_route_gate=true, calls _on_body_entered → asserts run_recap.shells_spent_on_routes[shell_class] increments. Same Bullet at an UNtagged body → shells_spent_on_combat increments. Procedural baseline (no loadout, no run_recap) → no error, no record (silent path).
+- Substrate touched:
+  - scripts/Bullet.gd (Layer 2 — substrate write #11) — add `_try_record_shot_hit(body)` helper + call site after body.take_damage. Helper reaches player via existing `lvl.player` pattern (iter 24 _try_breach_dividend precedent); duck-types `record_shot_hit` method existence so arc-2/3 PlayerTank without the method is silently skipped.
+  - scripts/PlayerTank.gd (Layer 2 — substrate write #52) — add `record_shot_hit(shell_class, hit_kind)` pass-through method. Guarded on `loadout != null and run_recap != null` so arc-2/3 baseline + non-breach modes are silent no-op.
+- Hash-anchor verification plan: post-edit `make test` + procedural oracle on seed 42 must equal 23d6a2ec3bf2821f… (Bullet's new helper is method-existence-gated on `record_shot_hit`; arc-2/3 PlayerTank doesn't have it via the loadout/run_recap guards on the PlayerTank side; combined: no observable behavior change on procedural baseline).
+
+---
+
 ## iter 285 — BUILD — RunRecap route-currency metrics (data + API; wiring iter 286)
 
 - Date: 2026-05-25

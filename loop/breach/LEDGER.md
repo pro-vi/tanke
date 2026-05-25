@@ -17,6 +17,30 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 286 — BUILD — Q1 sprint 3/4: wire Bullet → PlayerTank → RunRecap route-currency hit recording
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; wiring iter; anchor lift deferred until proof-room playthrough scores predictions).
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — closes loop between iter 284 (design verification) + iter 285 (storage API); "shells are route currency" becomes a runtime-measurable claim. Gate passes.
+- Same-family check: iter 284 BUILD → 285 BUILD → 286 BUILD. 3 consecutive BUILDs all anchored to the Q1 sprint blueprint; productive same-family (rule targets NO-SIGNAL families). Framing-audit gate also passed at iter-start, reinforcing this isn't drift.
+- Constraints respected: 1, 6 (route attribution → recap), 7 (verbs not stats — route-vs-combat names which verb the shell performed).
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** post 2 substrate writes (Bullet.gd #11 + PlayerTank.gd #52). Both gated:
+  - Bullet's `_try_record_shot_hit(body)` fires only when `lvl.player.has_method("record_shot_hit")` — arc-2/3 PlayerTank does have the method (since I added it to PlayerTank.gd this iter) but...
+  - PlayerTank's `record_shot_hit` is guarded by `if run_recap == null: return` — arc-2/3 procedural baseline has no loadout → no run_recap → silent no-op.
+  - Bodies in arc-2/3 procedural mode never set `is_route_gate` meta → defensive default classifies all as combat, which still records onto a null run_recap (no-op).
+  - Net: arc-2/3 path unchanged structurally; only `run_recap.record_shot_hit` callsite added when loadout active. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 80/80 PASS.
+- Falsifications: 1 mid-iter (caught by harness):
+  - Initial harness used `lvl.set("player", pt)` on a plain Node2D, expecting `"player" in lvl` to return true. Godot 4 GDScript's `in` operator only matches DECLARED properties, not metadata. Fix: harness now defines `class FakeLevel extends Node2D: var player` mirroring Level.gd's @onready declaration. Same pattern Bullet.gd's iter-24 _try_breach_dividend already used; the harness needed to match.
+- Files: scripts/Bullet.gd (+ new `_try_record_shot_hit(body)` helper + 1-line call site after `body.take_damage(deal)` — reads body's `is_route_gate` meta, classifies route-or-combat, forwards to player), scripts/PlayerTank.gd (+ new `record_shot_hit(shell_class, hit_kind)` pass-through guarded on `run_recap != null`), loop/breach/test_breach_route_gate_wiring.gd (NEW — 5 cases: route meta / no meta → combat / false meta → combat / no parent.player → silent / no run_recap → silent), Makefile (.PHONY + check-breach-route-gate-wiring + test-breach aggregate; 80 targets now), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: HE bullet on `is_route_gate=true` body → `shells_spent_on_routes[HE] = 1`. AP bullet on untagged → `shells_spent_on_combat[AP] = 1`. HEAT bullet on `is_route_gate=false` → combat (defensive default). Both no-player and no-run_recap paths silent — no crash, no spurious record.
+- Finding: **Q1 sprint 3 of 4 ships.** The route-currency claim is now end-to-end runtime-instrumented: BreachBand defines the lanes (iter 284), RunRecap stores the metrics (iter 285), Bullet/PlayerTank wire the hits (iter 286). What remains for iter 287 (sprint 4/4): the playtest brief + REVIEW-QUEUE entry summarizing the proof room as shipped + awaiting user scoring of consult-001's 3 falsifiable predictions. After that, Q1 sprint closes and loop checks whether to start sprint on Q3 diagnostic recap surfacing OR open Round 25 visual identity OR await user direction.
+- substrate_writes counter: PlayerTank.gd ×52 + Bullet.gd ×11.
+- quiet_signal_counter stays at 0 (downstream of iter-283 user-direction source, already consumed).
+
+---
+
 ## iter 285 — BUILD — RunRecap route-currency metrics (data + API; consult Q3 0.92 diagnostic half)
 
 - Date: 2026-05-25
