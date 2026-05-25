@@ -368,6 +368,30 @@ Each surface is a candidate for a new SPIKE → BUILD round.
 
 ---
 
+## WORK VALID WITHOUT PLAYTEST (iter 273 per /second-opinion — the substantive answer to "what does the loop DO when playtest is unavailable")
+
+When real playtest is unavailable, the loop should shift toward work that is **valid without real playtest** — NOT toward "narrate plausible nothings into `[FEEL-CONSULT]` anchor lifts."
+
+**First-choice surfaces (when quiet_signal_counter > 0 OR playtest unavailable):**
+
+- **Instrumentation** — telemetry counters, frame timing logs, decision tracing, shell-consumption-per-band recorders. Cheap, harness-citable, produces real evidence later.
+- **Replay capture** — record headless run with synthesized inputs (per arc-3 patterns 5-6); replay = consult media that's actually instrumented, not curated.
+- **Bot / surrogate runs** — auto-play sim with simple AI; reports per-archetype kill-time-per-depth, shell-consumption-per-band, death attribution. Approximates playtest signal structurally.
+- **Deterministic combat probes** — isolation rooms (1 enemy, 1 archetype, 1 shell) to measure exact mechanics; useful for tier-breakthrough audits.
+- **Economy simulations** — Python sim of shell economy / upgrade combinatorics / damage-per-iter curves; surfaces broken combos before playtest does.
+- **Archetype isolation rooms** — single-archetype + single-pressure scene to test the canonical answer in isolation.
+- **UI readability passes** — automated silhouette grammar gate, color contrast checks, HUD-area-as-fraction-of-viewport math (consultable surface).
+- **Content production** — more bands, more enemy types, more cards, more depot variants. Adds rubric surface to lift later.
+- **Prediction ledger entries** — every consult records predictions for later real-playtest scoring (per CONSULT-LEDGER.md).
+- **Reversible prototypes** — branch-experiments behind feature flags; ship to QUEUE for user review.
+- **PushNotification when the missing human signal is truly load-bearing** — not a fallback to idle.
+
+**Note the principle:** these are not "fake playtests." They are structurally-valid work that produces evidence even when no human can play. They are the answer to "PLAYTEST is paramount AND the loop continues working."
+
+**The trap to avoid:** the loop becoming "extremely good at managing the absence of evidence" — gaining tags, counters, labels, consults — while still avoiding *"did the game become more compelling to an actual player?"* That cargo-cult is the seductive-but-hollow failure mode /second-opinion named. The defense is to bias work toward surfaces that survive contact with a real playtest, not surfaces that look rigorous in the absence of one.
+
+---
+
 ## DEFAULT-ON SUBSTRATE GATING TEMPLATE (PATTERN 2 + L5)
 
 When a cross-arc substrate file MUST be extended:
@@ -414,25 +438,37 @@ Trigger conditions:
 "failed" tab status (the arc-4 design CONSULT itself completed despite
 timeout; this is now documented arc-4 behavior).
 
-### Simulated-playtest CONSULT (NEW — iter 272 amendment per /greenfield-loop invariant 8 blind-adversarial protocol)
+### Adversarial-consult-over-artifact (iter 273 rename per /second-opinion — was "simulated-playtest CONSULT" iter 272; renamed to kill over-trust framing)
 
-When a `[FEEL]` anchor is structurally ready to lift but real PLAYTEST is unavailable, the loop fires a **simulated-playtest CONSULT** via /agentify to produce a fresh-eye reading. This is NOT a substitute for real playtest — it's a partial signal that lets the loop lift the anchor to `[FEEL-CONSULT]` (cap 4 effective; cap 5 still requires real playtest).
+When a `[FEEL]` anchor's structural prereqs are complete but real PLAYTEST is unavailable, the loop may fire an **adversarial consult over captured artifact** via /agentify. **This is NOT a simulated playtest. It is an adversarial model critique of an artifact.** It cannot directly observe controller feel, real-time attention load, panic behavior, whether upgrades feel earned, whether enemies feel fair, whether breach economy creates tension, whether the player notices something while dodging bullets, or whether the player is bored after six minutes.
 
-**Protocol:**
-1. Capture artifact: a screenshot, 30-second gameplay clip, or focused design excerpt (rubric anchor wording + the relevant scene file or HUD widget).
-2. Frame the consult prompt blind-adversarially:
-   - "Here is [artifact]. Without the rubric or scores, what does this make you understand? What does the player NOT understand?"
-   - "What's seductive-but-hollow about this? What would look embarrassing in 6 months?"
-   - "What assumption is being over-optimized?"
-3. Capture response to `loop/breach/creative-consults.md` with `[SIMULATED-PLAYTEST]` header.
-4. Cite the anchor as `[FEEL-CONSULT]` (effective cap 4); upgrade to `[FEEL]` (effective cap 5) only on real playtest cite.
+**Two-stage protocol (mandatory):**
+1. **Blind read.** Capture artifact (screenshot, 30-second gameplay clip, or HUD-widget render). Send to /agentify with media + rubric anchor wording ONLY — NO design intent, NO loop self-rationale, NO current scores. Ask the 4 blind questions: "What does this make you understand? What does the player NOT understand? What's seductive-but-hollow? What would look embarrassing in 6 months?"
+2. **Informed critique.** Re-send same artifact WITH stated design intent. Ask: "Given the intent, what's the gap between intent and rendered surface? What assumption is being over-optimized?"
+3. **Capture delta** between blind and informed reads — the delta is often the highest-signal output.
+
+**Mandatory CONSULT-LEDGER entry** (see `loop/breach/CONSULT-LEDGER.md` format). Every consult must record: media_hash, prompt_hash, blind_read_summary, informed_read_summary, concrete_recommendations, **player_predictions** (each with `expected_observation` + `falsified_if`), what_cannot_be_known_from_consult, affected_anchors, expiration.
+
+**Cap rules (iter 273 lower per /second-opinion):**
+- **Uncalibrated `[FEEL-CONSULT]` cap: 3.** Default. The cap stays 3 until the CONSULT-LEDGER shows historical hits against real playtests.
+- **Calibrated `[FEEL-CONSULT]` cap: 4.** Only reachable after consult predictions have historically matched real playtest findings (≥2 hits, hit rate ≥50%, scored in CONSULT-LEDGER).
+- **`[FEEL]` cap: 5.** Real playtest only. Forever.
+
+**Expiry rules:**
+- Two consults ≠ one playtest. The Nth consult does not stack with the (N−1)th.
+- A consult lift expires after `max_iters_without_real_playtest` iters (default 30) — anchor reverts to its structural floor until a real playtest scores the prediction or a fresh consult re-fires.
+- A consult cannot lift the same anchor twice without new media or new evidence.
+
+**Consultable vs non-consultable** — see RUBRIC.md tag legend. `[IDENTITY-PROTECTED]` AND any `[FEEL]` anchor flagged `non-consultable` (e.g. fun, retention, tactile feel, pacing under pressure, build-comprehension under stress) CANNOT lift via `[FEEL-CONSULT]` — they are real-playtest-only by design.
+
+**Where to source media:** when possible, consult media should come from an instrumented run, replay, bot probe, or harness scenario — not a hand-picked screenshot. Instrumentation captures > curated stills.
 
 **When to fire:**
-- A `[FEEL]` anchor's structural prereqs are complete but next anchor-lift requires player perception
-- Quiet-signal counter ≥ 3 (per § QUIET-SIGNAL COUNTER below)
-- Round closes and the playtest gate (REVIEW-QUEUE #14 or sibling) is still open
+- A consultable `[FEEL]` anchor's structural prereqs are complete + real playtest unavailable
+- Quiet-signal counter ≥ 3 (per § QUIET-SIGNAL COUNTER below) AND a consult would produce a falsifiable prediction
+- Round closes with the playtest gate (REVIEW-QUEUE #14 or sibling) still open
 
-**Honesty discipline:** the `[FEEL-CONSULT]` cite tag is mandatory — the loop never promotes a consult cite to a playtest cite. The user reviewing REVIEW-QUEUE sees clearly which anchors were lifted via simulated vs real playtest.
+**Honesty discipline:** the `[FEEL-CONSULT]` cite tag is mandatory and cannot be promoted to `[FEEL]` without a real playtest scoring the prediction. The user reviewing REVIEW-QUEUE sees clearly which anchors were lifted via consult (with predictions + expiration) vs real playtest.
 
 ---
 
@@ -440,26 +476,45 @@ When a `[FEEL]` anchor is structurally ready to lift but real PLAYTEST is unavai
 
 The loop tracks how many consecutive iters have passed without **strong signal**. STATE.md carries `quiet_signal_counter`.
 
-**Strong signal (resets counter to 0):**
+**Strong signal (may reset counter — subject to SIGNAL_RECEIPT discipline below):**
 - A PLAYTEST cite (`[FEEL]` anchor lift)
-- A CONSULT fired AND response captured (`[FEEL-CONSULT]` or `creative-consults.md` append)
+- A CONSULT fired AND response captured AND produced concrete artifact (patch, falsifiable prediction in CONSULT-LEDGER, OR explicit "blocked / unknowable" result that changes next action)
 - A `[STRUCTURE]` rubric anchor lift (numerical, not re-narration)
 - A harness regression caught + fixed (a real failure detected by the harness)
-- A user direction (conversation, REVIEW-QUEUE, STATE amendment, LEDGER directive)
+- A user direction NEWLY received OR first-time-operationalized into a concrete diff/probe/anchor decision
 - A correctness signal (hash anchor verification on a substrate write, `make test-all` regression detected)
 
-**NOT strong signal (does NOT reset):**
+**NOT strong signal (NEVER resets):**
 - A LEDGER STATUS-CHECK entry ("no change · hash ok · tests green")
 - A BUILD-QUALITY iter without anchor lift (polish only)
 - Self-authored re-narration of prior work
 - A scoping/planning iter that doesn't ship anything
 - Idle hash anchor verification when nothing was touched
+- **Re-narration of prior user direction** (the user said it once at iter K; quoting it again at iter K+N does NOT reset)
+- LEDGER, REVIEW-QUEUE, STATE.md, or self-summary text pointing to old source_ids
+
+**SIGNAL_RECEIPT discipline (iter 273 per /second-opinion):**
+Every counter reset must produce a receipt in `STATE.md` under `quiet_signal_source_ids_used`. Format:
+```
+- kind: user_direction | real_playtest | consult | harness | correctness | structural_lift
+  source_id: <message-id / artifact-hash / test-log-id / commit-sha>
+  first_seen_iter: <n>
+  consumed_by_iter: <n>
+  changed_next_action: yes | no
+  resulting_artifact: <diff-path / test-name / anchor-id / probe-name / push-id / consult-ledger-id>
+```
+
+**Reset rules:**
+- A `source_id` may reset `quiet_signal_counter` **only once.** After that, the same source becomes inert for reset purposes.
+- A `user_direction` reset requires a new user message, new external artifact, OR first-time conversion of prior direction into a concrete shipped action.
+- A `consult` reset requires the consult to produce a patch, a CONSULT-LEDGER prediction entry, OR an explicit "blocked / unknowable" result that changes the next action.
+- A `BUILD-QUALITY` reset requires the iter to change an anchor state OR catch a real regression through a harness.
 
 **Counter-driven actions:**
-- counter ≥ 3 → fire simulated-playtest CONSULT (per § CONSULT SCHEDULE) OR bootstrap next round OR escalate via PushNotification. Pick the option that produces strong signal; do not let counter ≥ 4 happen without escalation.
-- counter ≥ 5 → emit `signal-starvation` halt-cause label (per § HALT CONDITIONS) + hard escalate via PushNotification with REVIEW-QUEUE tail summary + queued-round status
+- counter ≥ 3 → fire adversarial-consult-over-artifact (per § CONSULT SCHEDULE) OR bootstrap next round OR escalate via PushNotification. The action MUST produce strong signal per receipt rules; pure status-narration does not satisfy.
+- counter ≥ 5 → emit `signal-starvation` halt-cause label (per § HALT CONDITIONS) + hard escalate via PushNotification with REVIEW-QUEUE tail summary + queued-round status + CONSULT-LEDGER tail
 
-**Why:** the iter-200-268 70-iter STATUS-CHECK idle anti-pattern was unlabeled signal-starvation. Counter discipline prevents the loop from drifting into idle without registering it as a structured event.
+**Why:** the iter-200-268 70-iter STATUS-CHECK idle anti-pattern was unlabeled signal-starvation. Counter discipline + source-id receipt prevents the loop from drifting into idle via re-narration of old signal.
 
 ---
 
@@ -514,20 +569,52 @@ The loop does **NOT** halt on:
 - Compaction or session boundary (instead → resume from STATE.md + LEDGER tail)
 - "Ran out of work" (instead → diagnose next surface from the open-ended list)
 
-### Halt-cause classifier (NEW — iter 272 per /frontier-loop)
+### Halt-cause classifier (iter 272, strengthened iter 273 per /second-opinion)
 
-When the loop encounters a stall (quiet iter, empty DIAGNOSE, no shippable advancement, no signal lift), it does NOT silently emit a STATUS-CHECK. It LABELS the stall:
+When the loop encounters a stall (quiet iter, empty DIAGNOSE, no shippable advancement, no signal lift), it does NOT silently emit a STATUS-CHECK. It LABELS the stall AND each label triggers a mandatory transition.
 
-| Label | Meaning | Action |
+| Label | Halts loop? | Required action |
 |---|---|---|
-| `signal-starvation` | Quiet-signal counter ≥ 5 (no strong signal: no playtest, no consult, no anchor lift, no metric movement). | Fire simulated-playtest CONSULT OR bootstrap next round OR escalate via PushNotification (max 1 per 10 iters). DO NOT auto-pivot to idle cadence. |
-| `derivation-gap` | Loop blocked on something that could have been resolved at scope time (missing capability, ambiguous direction, undefined acceptance). | Log gap to `loop/breach/derivation-gaps.md`; escalate via PushNotification; do best-effort default per /greenfield-loop invariant 7 (judgment default + bounded escalate). |
-| `stone-converged` | Current round closed AND no next round queued AND no user direction. | Bootstrap from § RUBRIC IS MEASUREMENT open-ended surface list. If no surface fits → ASK USER via PushNotification, DO NOT idle. |
-| `wrong-loop` | The work has stopped fitting this loop shape (target became fixed → /frontier-loop terminal; or finite checklist → /goal-loop). | Emit label; propose loop-shape change to user. |
+| `signal-starvation` | No | Fire adversarial-consult-over-artifact OR bootstrap next round OR PushNotification. **No more STATUS-CHECK iters.** Failing to produce strong signal on the next iter → escalate hard. |
+| `derivation-gap` | **Sometimes — halt if cannot resolve** | Must produce ONE of: derivation artifact (decision record + alternatives), minimal experiment / probe, OR concrete uncertainty-reduction patch. **If none possible → HALT + escalate via PushNotification.** Log gap to `loop/breach/derivation-gaps.md`. |
+| `stone-converged` | No | Archive current stone, start next frontier from § WORK VALID WITHOUT PLAYTEST or § RUBRIC IS MEASUREMENT surface list, OR force axis shift. If no surface fits → ASK USER via PushNotification. DO NOT idle. |
+| `wrong-loop` | **Yes — halt active-build behavior** | Stop active BUILD/CAPABILITY work. Switch to prompt-repair OR mode-switch (e.g. propose /frontier-loop terminal, /goal-loop checklist, or /story-loop reframe). PushNotification with proposed shape change. Do NOT continue BUILD on the wrong loop shape. |
 
-**Saturation rule (anti-iter-200-268-pattern):** the loop must NOT emit 2 consecutive iters with the same halt-cause label without escalating via PushNotification on the 3rd. The iter-200-268 70-iter idle pattern was unlabeled signal-starvation; this classifier prevents recurrence.
+**Strengthened saturation rule (iter 273):** the 3rd consecutive same-halt-cause-label event must not merely escalate — it must make the previous iteration shape **inadmissible**. Specifically: after repeated `signal-starvation`, the next iter CANNOT be STATUS-CHECK, BUILD-QUALITY, OR "awaiting user signal." It MUST produce one of: consult artifact, PushNotification, bootstrap target, new harness probe, prompt amendment, OR session close. Same-family admissibility (see next section) is the forcing function.
 
-**Halt-cause is metadata, not halt.** Labeling a stall doesn't stop the loop — it tells the loop what to DO next (and tells the user what happened when they re-engage). The loop still only halts on user signal + correctness violations.
+**Halt-cause is metadata, not halt (except for `derivation-gap` cannot-resolve and `wrong-loop`).** Labeling a stall tells the loop what to DO next AND tells the user what happened when they re-engage. The loop still only HALTS on user signal + correctness violations + the two halting halt-causes above.
+
+---
+
+## SAME-FAMILY ADMISSIBILITY (iter 273 per /second-opinion — the most-direct anti-idle rule)
+
+**The loop may not emit 3 consecutive iterations from the same no-signal family.**
+
+No-signal families (inadmissible 3 in a row):
+- STATUS-CHECK ("no change · hash ok · tests green · awaiting user signal")
+- BUILD-QUALITY without anchor lift (polish only)
+- Planning without shipped artifact
+- Self-narration
+- LEDGER-only updates (no code/content/test/consult/probe diff)
+- Waiting-for-user statements
+
+**On the 3rd would-be same-no-signal-family iteration, the loop MUST instead perform ONE of:**
+- Adversarial-consult-over-artifact with captured media (per § CONSULT SCHEDULE)
+- PushNotification to user with REVIEW-QUEUE tail + queued-round status
+- Bootstrap next frontier target from § RUBRIC IS MEASUREMENT or § WORK VALID WITHOUT PLAYTEST surface lists
+- Create/run new harness probe (instrumentation, replay-capture, bot/surrogate run, deterministic combat probe, economy sim)
+- Perform PROMPT amendment (this very file)
+- Close OR reframe the current stone
+- Ship a concrete code/content diff tied to a live rubric anchor
+
+**Why this rule has more teeth than counter+classifier alone:**
+- Counter says: "this has been quiet too long."
+- Classifier says: "this kind of quiet is signal-starvation."
+- Same-family admissibility says: **"you are not allowed to do that again."**
+
+The iter-200-268 70-iter idle pattern was literally 70 consecutive STATUS-CHECK iters. Same-family admissibility forbids that shape at iter 3, not iter 70.
+
+**Productive same-family is fine.** This rule targets NO-SIGNAL families. Three BUILD iters in a row that each ship anchor-tied diffs are admissible. Three iters of "checked, nothing changed" are not.
 
 ---
 

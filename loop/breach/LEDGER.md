@@ -17,6 +17,29 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 273 — META — PROMPT amendment v2: /second-opinion 8-patch correction
+
+- Date: 2026-05-25 (resumed session after iter 272 amendment)
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; loop-discipline correction)
+- Cron: 240s active-build, unchanged
+- Files: loop/breach/PROMPT.md (+2 new sections + 3 strengthened sections), loop/breach/RUBRIC.md (tag legend overhauled + consultable/non-consultable split), loop/breach/STATE.md (4 yaml fields updated/added), loop/breach/CONSULT-LEDGER.md (NEW), loop/breach/LEDGER.md
+- Finding: **/second-opinion (ChatGPT Pro extended thinking) returned a substantive critique of the iter-272 amendment.** Overall verdict: "directionally right, but too permissive about turning model-produced interpretation into evidence." All 8 corrective patches applied per user directive.
+- The 8 patches:
+  **1. Rename "simulated playtest" → "adversarial consult over captured artifact."** The original name invited over-trust (epistemic laundering). The new name keeps the cite tag `[FEEL-CONSULT]` but reframes the mental model: this is model critique of an artifact, NOT a player-like experience.
+  **2. Lower default cap: 4 → 3 (uncalibrated); 4 only after calibration.** CONSULT-LEDGER tracks prediction hit/miss against later real playtests; ≥2 hits + hit rate ≥50% → calibrated cap 4. Repeated misses → cap lowers further.
+  **3. Same-family admissibility (PULLED FROM DEFERRED — the most-direct anti-idle rule).** No 3-consecutive iters from the same no-signal family (STATUS-CHECK / BUILD-QUALITY-without-lift / planning-without-ship / self-narration / LEDGER-only / waiting-for-user). On 3rd would-be same-family: MUST do consult-with-artifact / PushNotification / bootstrap / probe / amendment / close-reframe / shipped-diff. This forbids the iter-200-268 idle at iter 3, not iter 70.
+  **4. Source-id reset rule for quiet-signal counter.** A source_id may reset counter only ONCE. Re-narration of prior user direction (LEDGER, REVIEW-QUEUE, STATE quoting) does NOT reset. SIGNAL_RECEIPT format mandatory: {kind, source_id, first_seen_iter, consumed_by_iter, changed_next_action, resulting_artifact}.
+  **5. Consult calibration ledger** (CONSULT-LEDGER.md NEW). Every `[FEEL-CONSULT]` makes falsifiable predictions + expires after N iters + later real-playtest scoring. Two-stage protocol: blind artifact read → informed critique with intent → capture the delta (delta is highest-signal output).
+  **6. Split consultable / non-consultable feel criteria** in RUBRIC.md. Consultable: visual hierarchy, UI affordance clarity, thematic mismatch, goal-inferrability, silhouette readability. Non-consultable (real-playtest only): tactile feel, attention-under-stress, difficulty truth, fun/retention, pacing under pressure, build-comprehension under stress. Every `[FEEL]` rubric anchor must mark `consultable: yes/no`.
+  **7. WORK VALID WITHOUT PLAYTEST surface list (NEW PROMPT section).** Names concrete surfaces the loop can ship without playtest: instrumentation, replay capture, bot/surrogate runs, deterministic combat probes, economy sims, archetype isolation rooms, UI readability passes, content production, prediction ledger entries, reversible prototypes. The substantive answer to "what does the loop DO when playtest unavailable" — NOT "narrate plausible nothings into consult lifts."
+  **8. wrong-loop and derivation-gap now CAN HALT.** wrong-loop: halts active-build, switches to prompt-repair or mode-switch (proposes /frontier-loop terminal, /goal-loop checklist, /story-loop reframe). derivation-gap: must produce derivation artifact OR minimal experiment OR concrete uncertainty-reduction patch — OR HALT + escalate. Other halt-causes stay metadata.
+- /second-opinion's seductive-but-hollow critique encoded: "The loop could become extremely good at managing the absence of evidence — labels, counters, tags, consults — while still avoiding 'did the game become more compelling to an actual player?'" Patches 5+6+7 are the defense.
+- /second-opinion file artifact captured to /agentify conversation (queryId `1bae58c2-c9c4-42e7-b092-cc711c3262bc`); ChatGPT page URL in agentify run record.
+- Next iter: Phase A of Round 24 (HUD-as-status). The new disciplines are now in PROMPT; the loop reads them at iter start. First consult that fires will create CONSULT-LEDGER entry 001 + populate quiet_signal_source_ids_used.
+
+---
+
 ## iter 272 — META — PROMPT amendment: simulated-playtest CONSULT + halt-cause classifier + quiet-signal counter
 
 - Date: 2026-05-24

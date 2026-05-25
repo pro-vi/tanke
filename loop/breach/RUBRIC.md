@@ -13,11 +13,38 @@ broken on the flag-off codepath. Arc-3 carry.
 
 **Tag legend** (carried from arc 2 + arc 3, extended in arc 4):
 - `[STRUCTURE]` — code-cited, harness-verifiable
-- `[FEEL]` — playtest-cited, irreducibly cognitive (effective cap: 5)
-- `[FEEL-CONSULT]` (NEW iter 272) — simulated-playtest CONSULT via /agentify with blind-adversarial framing per /greenfield-loop invariant 8 (effective cap: 4 — never promoted to [FEEL] without real playtest)
+- `[FEEL]` — playtest-cited, irreducibly cognitive (effective cap: 5; real playtest only)
+- `[FEEL-CONSULT]` (iter 272, renamed iter 273) — **adversarial consult over captured artifact** via /agentify (NOT simulated playtest). Two-stage protocol (blind read → informed critique → capture delta) per § CONSULT SCHEDULE in PROMPT.md. Mandatory CONSULT-LEDGER entry with falsifiable predictions + expiry. Caps:
+  - **Uncalibrated cap: 3** (default). Anchor lifts to ≤3 until CONSULT-LEDGER calibration proves consult predictions match real playtests (≥2 hits, hit rate ≥50%).
+  - **Calibrated cap: 4** (conditional). Reachable only after calibration; still never `[FEEL]` cap 5.
+  - Lift expires after `max_iters_without_real_playtest` (default 30) — reverts to structural floor pending real playtest scoring.
 - `[MIXED]` — both required
 - `[STRUCTURE-DEFERRED]` — structural cite pending, FEEL not yet attempted
 - `[IDENTITY-PROTECTED]` (per R2) — anchor exists as gaming-prevention; **never AUDIT-rephrased** AND **never lifted via [FEEL-CONSULT]** (real playtest required)
+
+**Consultable vs non-consultable [FEEL] (iter 273 per /second-opinion):**
+
+A `[FEEL]` anchor CAN lift via `[FEEL-CONSULT]` if the question is answerable from a screenshot/clip + design intent:
+- Visual hierarchy clarity (HUD legibility, what reads first)
+- UI affordance recognizability (icon → role inference)
+- Thematic mismatch (cyberpunk text on Battle City sprite)
+- Goal inferrability from on-screen state ("what should I do next?")
+- Silhouette readability (enemy role from sprite alone)
+- Whether a mechanic reads as intentional vs accidental
+- Whether design intent is over-explained vs under-explained
+- Whether something looks generic, derivative, or embarrassing
+
+A `[FEEL]` anchor CANNOT lift via `[FEEL-CONSULT]` (real playtest only — these are the non-consultable surfaces):
+- Tactile feel (controller responsiveness, hitbox trust, aiming friction, dodge rhythm)
+- Real-time attention load (panic behavior, what the player notices while dodging)
+- Difficulty truth (whether deaths feel deserved vs cheap)
+- Fun, addiction, retention ("would I play again")
+- Pacing under pressure (does the breach economy create tension)
+- Build-level comprehension (does the player form a run plan)
+- Whether upgrades feel earned in-the-moment
+- Whether the player is bored after 6 minutes
+
+Mark each `[FEEL]` rubric anchor with `consultable: yes/no` in its body. Default `no` if unsure (conservative). Identity-protected anchors are always `no`.
 
 **Three-tier ceiling reporting** (per R3): every score report includes
 "X/Y effective" alongside "X/50 absolute" where effective excludes
