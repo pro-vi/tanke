@@ -12,6 +12,14 @@ const ARC_HEIGHT: float = 24.0
 const AOE_RADIUS: float = 18.0
 const AOE_DAMAGE: int = 2
 
+# arc-4 iter 199 (Round 23 Phase 3): per-shell overrides so MORTAR
+# upgrade cards (AOE_RADIUS_UP, AOE_DAMAGE_UP) can boost individual
+# shells without mutating the class-level constants. Defaults match
+# the constants exactly — existing callers (and harness) get the
+# same behavior as before unless they explicitly override.
+var aoe_radius_override: float = AOE_RADIUS
+var aoe_damage_override: int = AOE_DAMAGE
+
 var start_pos: Vector2 = Vector2.ZERO
 var target_pos: Vector2 = Vector2.ZERO
 var _elapsed: float = 0.0
@@ -82,8 +90,8 @@ func _explode() -> void:
 		if not sibling.has_method("take_damage"):
 			continue
 		var d: float = (sibling as Node2D).global_position.distance_to(target_pos)
-		if d <= AOE_RADIUS:
-			sibling.take_damage(AOE_DAMAGE)
+		if d <= aoe_radius_override:
+			sibling.take_damage(aoe_damage_override)
 	_spawn_burst(parent_node)
 
 

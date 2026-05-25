@@ -17,6 +17,51 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 199 — BUILD — Round 23 Phase 3 — PRISM + MORTAR card apply branches
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Hash anchor: 23d6a2ec3bf2821f… VERIFIED (substrate writes #76 + #77;
+  all multipliers default to 1.0/0/false so existing codepaths are
+  bit-identical until a card is picked).
+- Files: scripts/PlayerTank.gd #76 (+ _beam_dps_mult / _beam_range_
+  mult / _beam_pierce / _mortar_cooldown_mult / _mortar_aoe_damage_
+  bonus / _mortar_aoe_radius_bonus state; wired multipliers into
+  _tick_beam, _apply_beam_to_targets, _fire_mortar, _init_archetype
+  MORTAR branch, _apply_level_boost FASTER_RELOAD path; + 6 new
+  apply_card branches: BEAM_DPS_UP/BEAM_RANGE_UP/BEAM_PIERCE/AOE_
+  DAMAGE_UP/AOE_RADIUS_UP/MORTAR_COOLDOWN_DOWN); scripts/MortarShell.
+  gd #77 (+ aoe_radius_override / aoe_damage_override per-instance
+  vars defaulting to class constants; _explode uses overrides); loop/
+  breach/test_breach_card_apply_p3.gd (NEW 6-case harness); Makefile
+  (+ check-breach-card-apply-p3 target).
+- Finding: Phase 3 of Round 23 shipped. All 6 PRISM + MORTAR cards
+  now have working apply paths:
+    BEAM_DPS_UP    → cooldown × 0.7 (floor 0.4); 0.125s → 0.0875s
+    BEAM_RANGE_UP  → range × 1.5 (cap 3.0); 160px → 240px; visual
+                     line rebuilt to reflect new max range
+    BEAM_PIERCE    → flag; ray-cast skips first-body stop both visually
+                     and in the damage corridor (shape already covers
+                     all bodies in path so PIERCE is reach-extension)
+    AOE_DAMAGE_UP  → +1 bonus accumulator; injected per-shell via new
+                     MortarShell.aoe_damage_override
+    AOE_RADIUS_UP  → +6 px bonus accumulator; injected per-shell via
+                     new MortarShell.aoe_radius_override
+    MORTAR_COOLDOWN_DOWN → cooldown mult × 0.7 (floor 0.4); 1.5s →
+                            1.05s; pushed into live GunTimer immediately
+  All multipliers persist across archetype switches by design (the
+  cards are the player's, not the archetype's). MortarShell defaults
+  match the class consts so existing test_breach_mortar harness +
+  pressure-probes pass through unchanged. test-all 5/5; test-breach
+  71/71 (was 70). Score 50/75 unchanged.
+  Next: iter 200 BUILD Phase 4 — RAM + DEFAULT card apply branches
+  (SWING_DMG, COLLISION, SPRINT_DUR, FASTER_RELOAD-via-card, SHELL_
+  CAP+1, MOMENTUM) + wire actual level-up trigger to call
+  _show_levelup_pick instead of _apply_level_boost auto-cycle.
+
+---
+
 ## iter 198 — BUILD — Round 23 Phase 2 — pick-1-of-3 card UI
 
 - Date: 2026-05-24

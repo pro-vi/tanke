@@ -219,6 +219,17 @@ var _levelup_picking: bool = false
 var _levelup_panel: ColorRect = null
 var _levelup_choice_labels: Array[Label] = []
 var _levelup_choices: Array = []  # 3 CardKind values for the current pick
+# arc-4 Round 23 Phase 3 (iter 199): per-run multiplier accumulators
+# for card upgrades. Default 1.0/0/false = no card picked yet; each
+# card application mutates these. Persist across archetype switches
+# (the card is the player's, not the archetype's). Survives _revert_
+# archetype like _reload_reduction does (iter 92).
+var _beam_dps_mult: float = 1.0     # multiplied into BEAM_DAMAGE_COOLDOWN (lower = faster)
+var _beam_range_mult: float = 1.0   # multiplied into BEAM_RANGE (higher = farther)
+var _beam_pierce: bool = false      # skip ray-cast first-body stop for visual + damage
+var _mortar_cooldown_mult: float = 1.0  # multiplied into MORTAR_GUN_COOLDOWN (lower = faster)
+var _mortar_aoe_damage_bonus: int = 0    # added to AOE_DAMAGE per shell
+var _mortar_aoe_radius_bonus: float = 0.0  # added to AOE_RADIUS per shell
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
@@ -664,17 +675,20 @@ func _tick_beam(delta: float) -> void:
 	var muzzle: Node2D = $Muzzle
 	var origin: Vector2 = muzzle.global_position
 	var dir: Vector2 = Vector2(1.0, 0.0).rotated(rotation)
-	var end_pos: Vector2 = origin + dir * BEAM_RANGE
+	# arc-4 iter 199 (Round 23 Phase 3): BEAM_RANGE_UP card applies via
+	# _beam_range_mult; BEAM_PIERCE skips the first-body stop in both
+	# the visual ray AND the damage corridor (shape already covers all
+	# bodies in the path, so PIERCE just extends the visual + damage
+	# reach to the full range).
+	var effective_range: float = BEAM_RANGE * _beam_range_mult
+	var end_pos: Vector2 = origin + dir * effective_range
 	var ss := get_world_2d().direct_space_state
-	# (1) Ray-cast for the beam's visual endpoint. Mask=9 means the
-	# beam passes through water (layer 10) like bullets do, matching
-	# the iter-101 bullet target-mask pattern.
 	var ray_q := PhysicsRayQueryParameters2D.create(origin, end_pos)
 	ray_q.exclude = [self]
 	ray_q.collision_mask = 9
 	var ray_hit: Dictionary = ss.intersect_ray(ray_q)
-	var beam_dist: float = BEAM_RANGE
-	if not ray_hit.is_empty():
+	var beam_dist: float = effective_range
+	if not _beam_pierce and not ray_hit.is_empty():
 		beam_dist = origin.distance_to(ray_hit.position)
 	_beam_line.points = [muzzle.position, muzzle.position + Vector2(beam_dist, 0.0)]
 	_beam_line.visible = true
@@ -717,7 +731,9 @@ func _apply_beam_to_targets(delta: float, bodies: Array) -> void:
 			body.take_beam_damage(BEAM_DAMAGE_PER_TICK)
 		elif body.has_method("take_damage"):
 			body.take_damage(BEAM_DAMAGE_PER_TICK)
-	_beam_dmg_timer = BEAM_DAMAGE_COOLDOWN
+	# arc-4 iter 199 (Round 23 Phase 3): BEAM_DPS_UP card applies via
+	# _beam_dps_mult. Lower mult = shorter cooldown = higher tick rate.
+	_beam_dmg_timer = BEAM_DAMAGE_COOLDOWN * _beam_dps_mult
 
 
 # arc-4 iter 138 (PLAYTEST-FIX): thin back-compat shim — harness
@@ -753,6 +769,12 @@ func _fire_mortar(range_px: float = MORTAR_RANGE_MAX) -> void:
 	var dir: Vector2 = Vector2(1.0, 0.0).rotated(rotation)
 	var target: Vector2 = origin + dir * range_px
 	var shell = MortarShellScene.instantiate()
+	# arc-4 iter 199 (Round 23 Phase 3): per-shell overrides from
+	# AOE_DAMAGE_UP / AOE_RADIUS_UP cards. Bonuses persist across the
+	# run via _mortar_aoe_damage_bonus / _mortar_aoe_radius_bonus
+	# accumulators on PlayerTank (not on the shell class).
+	shell.aoe_damage_override = shell.AOE_DAMAGE + _mortar_aoe_damage_bonus
+	shell.aoe_radius_override = shell.AOE_RADIUS + _mortar_aoe_radius_bonus
 	lvl.add_child(shell)
 	shell.launch(origin, target)
 
@@ -983,7 +1005,7 @@ func _init_archetype() -> void:
 		# (mirrors the iter-88 _revert_archetype hygiene).
 		var gt: Timer = $GunTimer
 		gt.stop()
-		gt.wait_time = maxf(RELOAD_MIN, MORTAR_GUN_COOLDOWN - _reload_reduction)
+		gt.wait_time = maxf(RELOAD_MIN, MORTAR_GUN_COOLDOWN * _mortar_cooldown_mult - _reload_reduction)
 		can_shoot = true
 	elif archetype == TankArchetype.RAM:
 		speed += RAM_SPEED_BONUS
@@ -1256,8 +1278,35 @@ func _apply_card(kind: int) -> void:
 			if added == 0:
 				hp = max_hp
 			hp_changed.emit(hp, max_hp)
+		# arc-4 iter 199 (Round 23 Phase 3): PRISM cards
+		UpgradeCatalogT.CardKind.BEAM_DPS_UP:
+			# BEAM_DAMAGE_COOLDOWN × 0.7 → ~43% faster tick rate.
+			# Floor at 0.4 so successive picks don't go absurdly fast.
+			_beam_dps_mult = maxf(0.4, _beam_dps_mult * 0.7)
+		UpgradeCatalogT.CardKind.BEAM_RANGE_UP:
+			# BEAM_RANGE × 1.5 (each pick stacks multiplicatively).
+			# Cap at 3.0 (= 480 px) so beam can't reach the whole map.
+			_beam_range_mult = minf(3.0, _beam_range_mult * 1.5)
+			# Rebuild the visual line so the new max-range is reflected
+			# even when nothing is currently in the beam's path.
+			if _beam_line != null:
+				_beam_line.points = [Vector2(8, 0), Vector2(BEAM_RANGE * _beam_range_mult, 0)]
+		UpgradeCatalogT.CardKind.BEAM_PIERCE:
+			_beam_pierce = true
+		# arc-4 iter 199 (Round 23 Phase 3): MORTAR cards
+		UpgradeCatalogT.CardKind.AOE_DAMAGE_UP:
+			_mortar_aoe_damage_bonus += 1
+		UpgradeCatalogT.CardKind.AOE_RADIUS_UP:
+			_mortar_aoe_radius_bonus += 6.0
+		UpgradeCatalogT.CardKind.MORTAR_COOLDOWN_DOWN:
+			# Multiplicative; floor at 0.4 (= 0.6s base for MORTAR).
+			# Also push the new effective cooldown into the live timer.
+			_mortar_cooldown_mult = maxf(0.4, _mortar_cooldown_mult * 0.7)
+			if archetype == TankArchetype.MORTAR and has_node("GunTimer"):
+				var gt2: Timer = $GunTimer
+				gt2.wait_time = maxf(RELOAD_MIN, MORTAR_GUN_COOLDOWN * _mortar_cooldown_mult - _reload_reduction)
 		_:
-			# TODO Phase 3-4: fill in remaining CardKind branches.
+			# TODO Phase 4: fill in DEFAULT + RAM cards.
 			# Silent no-op for now so the UI doesn't error out
 			# when an unimplemented card is picked.
 			pass
@@ -2424,7 +2473,7 @@ func _apply_level_boost(level: int) -> void:
 		# base − reduction (floored at RELOAD_MIN).
 		_reload_reduction += RELOAD_STEP
 		var gt: Timer = $GunTimer
-		var arch_base: float = MORTAR_GUN_COOLDOWN if archetype == TankArchetype.MORTAR else _base_default_gun_wait_time
+		var arch_base: float = MORTAR_GUN_COOLDOWN * _mortar_cooldown_mult if archetype == TankArchetype.MORTAR else _base_default_gun_wait_time
 		gt.wait_time = maxf(RELOAD_MIN, arch_base - _reload_reduction)
 		msg = "FASTER RELOAD"
 	else:
