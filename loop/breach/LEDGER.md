@@ -17,6 +17,37 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 193 — PLAYTEST-FIX — double PRISM DPS + PRISM rotation visual glitch
+
+- Date: 2026-05-24
+- Tag: [FEEL]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Hash anchor: 23d6a2ec3bf2821f… VERIFIED (substrate write #73;
+  changes are PRISM-archetype-gated → arc-2/3 baseline unaffected).
+- Files: scripts/PlayerTank.gd #73 (BEAM_DAMAGE_COOLDOWN 0.25 →
+  0.125 doubling tick rate → 2× DPS at start; new `move_vector`
+  variable preserves `input_vector` for sprite-facing when PRISM
+  zeros movement).
+- Finding: 2 user playtest directives shipped this iter.
+  (1) "double prism start DPS" — was 1 dmg/0.25s = 4 HP/sec, now
+  1 dmg/0.125s = 8 HP/sec. Same per-tick damage so beam-vs-Light
+  visible drain doubles but step count stays at 10 (preserves
+  iter-139 DPS feel). (2) "prism rotation bug — beam direction
+  switches but hull stays facing old way": root cause was line 445
+  zeroing `input_vector` for PRISM stop-and-fire, which propagated
+  into `sprite.set_dir_set(input_vector)` on line 467 — the ZERO
+  vector failed all branches of `set_dir_set`, leaving `dir_set`
+  unchanged. The `direction` variable and beam ray DID update via
+  the `set_dir(...)` calls higher up, but the sprite frames stayed.
+  Fix: separate `move_vector` for movement-zeroing while preserving
+  `input_vector` for sprite-facing. Now hull sprite rotates in sync
+  with the beam during fire. test-all 5/5; test-breach 67/67. Score
+  unchanged (FEEL anchor playtest-only). Next: iter 194+ for MORTAR
+  SPG-style sprite redesign + charge-lob mechanic; then upgrade
+  system multi-iter round.
+
+---
+
 ## iter 192 — STATUS-CHECK — awaiting user direction on UI density redesign
 
 ---

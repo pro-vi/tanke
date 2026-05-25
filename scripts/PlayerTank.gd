@@ -169,7 +169,10 @@ var _shield_label: Label = null
 # arc-4 iter 65 (Round 9c): PRISM Tank beam — continuous line-cast,
 # damages first body, stop-and-fire. Built only when archetype=PRISM.
 const BEAM_RANGE: float = 160.0
-const BEAM_DAMAGE_COOLDOWN: float = 0.25
+# arc-4 iter 193 (PLAYTEST-FIX): double PRISM start DPS per user
+# direction — was 0.25 (4 ticks/sec). Now 0.125 (8 ticks/sec) doubles
+# the DPS at the start of a run without changing per-tick damage.
+const BEAM_DAMAGE_COOLDOWN: float = 0.125
 var _beam_line: Line2D = null
 var _beam_dmg_timer: float = 0.0
 # arc-4 iter 66 (Round 9d): MORTAR Tank — lobbed AoE shell, fires over
@@ -441,8 +444,16 @@ func _physics_process(delta: float) -> void:
 		sprite.stop()
 	# arc-4 iter 65 (Round 9c): PRISM stop-and-fire — no movement while
 	# the beam is firing. The player commits, gets exposed in exchange.
+	# arc-4 iter 193 (PLAYTEST-FIX): zero the MOVEMENT vector but
+	# preserve `input_vector` for the sprite-facing call below. Before
+	# this fix, zeroing input_vector caused `sprite.set_dir_set` to
+	# keep the old dir_set (no input → no branch matched), so the
+	# hull sprite stayed facing the prior direction even though the
+	# `direction` variable (and the beam ray) had rotated — visible
+	# as a beam pointing one way while the hull faced another.
+	var move_vector: Vector2 = input_vector
 	if archetype == TankArchetype.PRISM and Input.is_action_pressed("ui_accept"):
-		input_vector = Vector2.ZERO
+		move_vector = Vector2.ZERO
 
 	# arc-4 iter 28: OVERDRIVE sprint — KEY_SHIFT triggers a speed burst
 	# when the depot upgrade is owned. Gated on loadout.has_overdrive, so
@@ -463,7 +474,7 @@ func _physics_process(delta: float) -> void:
 	var move_speed: float = float(speed)
 	if _overdrive_timer > 0.0:
 		move_speed *= overdrive_mult
-	velocity = input_vector * move_speed
+	velocity = move_vector * move_speed
 	sprite.set_dir_set(input_vector)
 
 	var collision: KinematicCollision2D = move_and_collide(velocity * delta)
