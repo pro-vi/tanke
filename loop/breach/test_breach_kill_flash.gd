@@ -37,6 +37,25 @@ func _find_burst_after_death(parent: Node) -> ColorRect:
 	return null
 
 
+# iter 281 (consult-001 H4 fix): collect ring-edge ColorRects spawned
+# alongside the 16×16 core. Ring edges are 2-px stroke ColorRects;
+# top/bottom are 24×2, left/right are 20×2 (24-2*stroke vertical).
+func _find_ring_edges(parent: Node) -> Array[ColorRect]:
+	var edges: Array[ColorRect] = []
+	for child in parent.get_children():
+		if child is ColorRect:
+			var size: Vector2 = (child as ColorRect).size
+			var stroke: float = 2.0
+			var outer: float = 24.0
+			var inner_h: float = outer - 2.0 * stroke
+			# Match either top/bottom (24×2) or left/right (2×20)
+			var is_horiz: bool = absf(size.x - outer) < 0.5 and absf(size.y - stroke) < 0.5
+			var is_vert: bool = absf(size.x - stroke) < 0.5 and absf(size.y - inner_h) < 0.5
+			if is_horiz or is_vert:
+				edges.append(child as ColorRect)
+	return edges
+
+
 func _assert_color_rgb_match(got: Color, want: Color, label: String) -> bool:
 	# Compare RGB components only — burst alpha differs from base (0.9 not 1.0).
 	if absf(got.r - want.r) > 0.01 \
@@ -63,7 +82,8 @@ func _kill_and_get_burst(holder: Node, last_shell: int) -> ColorRect:
 
 func _initialize() -> void:
 	# === Case A: legacy / arc-2/3 path — no set_last_damage_shell call.
-	# Default _last_damage_shell == -1 → yellow burst.
+	# Default _last_damage_shell == -1 → yellow burst + NO ring edges
+	# (bit-identical contract per iter 281 consult-001 H4 gate).
 	var holder_a := Node2D.new()
 	root.add_child(holder_a)
 	var burst_legacy: ColorRect = _kill_and_get_burst(holder_a, -1)
@@ -72,9 +92,18 @@ func _initialize() -> void:
 		quit(1); return
 	if not _assert_color_rgb_match(burst_legacy.color, Color(1.0, 0.9, 0.3, 1.0), "legacy"):
 		quit(1); return
-	print("  legacy (no shell propagation): burst = %s (yellow)" % str(burst_legacy.color))
+	# iter 281: legacy path MUST NOT spawn the 24×24 ring (preserves
+	# arc-2/3 bit-identical contract — only 1 ColorRect child on death).
+	var legacy_ring: Array[ColorRect] = _find_ring_edges(holder_a)
+	if not legacy_ring.is_empty():
+		push_error("FAIL — case A: legacy path spawned %d ring edges (must be 0)" \
+				% legacy_ring.size())
+		quit(1); return
+	print("  legacy (no shell propagation): burst = %s (yellow) + 0 ring edges (bit-identical)" \
+			% str(burst_legacy.color))
 
-	# === Case B: HE kill → burst tinted with HE modulate color.
+	# === Case B: HE kill → burst tinted with HE modulate color +
+	# 4 ring edges (iter 281 consult-001 H4 fix) at HE color.
 	var holder_b := Node2D.new()
 	root.add_child(holder_b)
 	var burst_he: ColorRect = _kill_and_get_burst(holder_b, BulletT.SHELL_CLASS_HE)
@@ -84,8 +113,16 @@ func _initialize() -> void:
 	var want_he: Color = BulletT.shell_modulate_color(BulletT.SHELL_CLASS_HE)
 	if not _assert_color_rgb_match(burst_he.color, want_he, "HE"):
 		quit(1); return
-	print("  HE kill: burst = %s (matches BulletT.shell_modulate_color(HE) = %s)" \
-			% [str(burst_he.color), str(want_he)])
+	# iter 281: HE kill must spawn 4 ring edges with HE RGB.
+	var he_ring: Array[ColorRect] = _find_ring_edges(holder_b)
+	if he_ring.size() != 4:
+		push_error("FAIL — case B: expected 4 ring edges on HE kill, got %d" % he_ring.size())
+		quit(1); return
+	for edge in he_ring:
+		if not _assert_color_rgb_match(edge.color, want_he, "HE ring edge"):
+			quit(1); return
+	print("  HE kill: burst = %s + 4 ring edges (all HE RGB %.2f/%.2f/%.2f)" \
+			% [str(burst_he.color), want_he.r, want_he.g, want_he.b])
 
 	# === Case C: HEAT kill.
 	var holder_c := Node2D.new()

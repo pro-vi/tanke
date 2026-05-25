@@ -638,6 +638,58 @@ func set_last_damage_shell(sc: int) -> void:
 	_last_damage_shell = sc
 
 
+# arc-4 iter 281 (consult-001 H4 fix): 24×24 hollow ring around the
+# 16×16 kill-flash core. 4 edge ColorRects, 2-px stroke, shell-color
+# tint at alpha 0.45 (faint), same 0.3s fade tween + scale-to-1.4
+# as the core. Caller gates on _last_damage_shell >= 0.
+const KILL_FLASH_RING_OUTER: float = 24.0
+const KILL_FLASH_RING_STROKE: float = 2.0
+const KILL_FLASH_RING_ALPHA: float = 0.45
+const KILL_FLASH_TWEEN_S: float = 0.3
+const KILL_FLASH_RING_SCALE_TO: float = 1.4
+func _spawn_kill_flash_ring(parent_node: Node) -> void:
+	var shell_color: Color = BulletT.shell_modulate_color(_last_damage_shell)
+	var ring_color: Color = Color(shell_color.r, shell_color.g, shell_color.b, KILL_FLASH_RING_ALPHA)
+	var half: float = KILL_FLASH_RING_OUTER * 0.5
+	var stroke: float = KILL_FLASH_RING_STROKE
+	# top edge
+	var top: ColorRect = ColorRect.new()
+	top.size = Vector2(KILL_FLASH_RING_OUTER, stroke)
+	top.position = global_position - Vector2(half, half)
+	top.color = ring_color
+	top.z_index = 49
+	parent_node.add_child(top)
+	# bottom edge
+	var bot: ColorRect = ColorRect.new()
+	bot.size = Vector2(KILL_FLASH_RING_OUTER, stroke)
+	bot.position = global_position - Vector2(half, -(half - stroke))
+	bot.color = ring_color
+	bot.z_index = 49
+	parent_node.add_child(bot)
+	# left edge (inside top/bottom edges so they don't overlap)
+	var left: ColorRect = ColorRect.new()
+	left.size = Vector2(stroke, KILL_FLASH_RING_OUTER - 2.0 * stroke)
+	left.position = global_position - Vector2(half, half - stroke)
+	left.color = ring_color
+	left.z_index = 49
+	parent_node.add_child(left)
+	# right edge
+	var right: ColorRect = ColorRect.new()
+	right.size = Vector2(stroke, KILL_FLASH_RING_OUTER - 2.0 * stroke)
+	right.position = global_position - Vector2(-(half - stroke), half - stroke)
+	right.color = ring_color
+	right.z_index = 49
+	parent_node.add_child(right)
+	for edge in [top, bot, left, right]:
+		var tw: Tween = edge.create_tween()
+		tw.set_parallel(true)
+		tw.tween_property(edge, "modulate:a", 0.0, KILL_FLASH_TWEEN_S)
+		tw.tween_property(edge, "scale",
+				Vector2(KILL_FLASH_RING_SCALE_TO, KILL_FLASH_RING_SCALE_TO),
+				KILL_FLASH_TWEEN_S)
+		tw.chain().tween_callback(edge.queue_free)
+
+
 func _spawn_death_effect() -> void:
 	var parent_node: Node = get_parent()
 	if parent_node == null or not is_instance_valid(parent_node):
@@ -661,6 +713,14 @@ func _spawn_death_effect() -> void:
 	tween.tween_property(burst, "modulate:a", 0.0, 0.3)
 	tween.tween_property(burst, "scale", Vector2(1.6, 1.6), 0.3)
 	tween.chain().tween_callback(burst.queue_free)
+	# arc-4 iter 281 (consult-001 H4 fix, conf 0.74): drama bump —
+	# add a faint 24×24 hollow ring around the 16×16 core to make
+	# "which shell did this" survive peripheral vision. Same 0.3s
+	# lifetime; 4 edge ColorRects (2-px stroke) at the shell color
+	# with alpha 0.45. Only spawns when shell class is known (arc-2/3
+	# legacy yellow burst stays at 1 ColorRect — bit-identical).
+	if _last_damage_shell >= 0:
+		_spawn_kill_flash_ring(parent_node)
 	# iter 78 (Q5 priority 4 "explore roguelite mechanics"): Heavy 25% drop
 	# chance for HP pickup. Player walking over → +1 HP (clamped to max_hp).
 	if enemy_type == "Heavy" and randf() < 0.25:

@@ -17,6 +17,24 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 281 — BUILD — consult-001 H4 fix: kill-flash 24×24 hollow ring + 16×16 core
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; consult-driven refinement; [FEEL-CONSULT] lift on C8 still awaits real playtest scoring of consult-001 predictions).
+- Same-family check: iter 279 META → 280 BUILD (consult H5 fix) → 281 BUILD (consult H4 fix) — productive same-family, consult-driven; permitted.
+- Trigger: consult-001 H4 verdict 0.74 — "16×16 may be below threshold when multiple enemies/bricks/bullets are active. Do a restrained bump, not a spectacle: 24×24 thin outer ring + existing 16×16 core, same 0.3s lifetime, shell-color tint, no 0.5s lingering tween yet."
+- Constraints respected: 1 (no combat modal — passive overlay), 4 (silhouette/grammar — ring shape reinforces shell-color attribution; learning signal not decoration).
+- Constraints risked: visual noise on multi-kill bursts — mitigated by alpha 0.45 (faint) + same 0.3s lifetime + 4 small edge ColorRects total. Mass kills (e.g. HE blast) could spawn 4×N ring edges; deferred to future tuning if playtest flags it.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** post substrate write #86 (Enemy.gd ×7). Ring edges only spawn when `_last_damage_shell >= 0`; procedural baseline Bullet never calls set_last_damage_shell → legacy path stays at 1 ColorRect, bit-identical. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 77/77 PASS.
+- Falsifications: none. Predicted "ring may render as 4 disconnected line segments" — harness verifies 4 edges exist; visual continuity at 2-px stroke + matched corners holds (no overlap, no gap by construction: top/bot are 24×2 full-width; left/right are 2×20 inset by stroke height so corners are owned by top/bot edges only).
+- Files: scripts/Enemy.gd (+5 constants + new `_spawn_kill_flash_ring()` helper spawning 4 edge ColorRects with shell-color alpha 0.45 + matched 0.3s tween + scale-1.4 + queue_free; +3-line conditional spawning the ring in `_spawn_death_effect` when `_last_damage_shell >= 0`), loop/breach/test_breach_kill_flash.gd (+new `_find_ring_edges()` helper + 2 new assertions: legacy path spawns ZERO ring edges, HE kill spawns 4 ring edges all at HE RGB), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: HE kill spawns burst (1.0, 0.85, 0.25, 0.9) at 16×16 + 4 ring edges (top 24×2, bot 24×2, left 2×20, right 2×20) all at HE RGB (1.0, 0.85, 0.25, alpha 0.45). Legacy path: 0 ring edges, 1 yellow burst (bit-identical to pre-iter-277 behavior).
+- Finding: **consult-001 H4 applied — kill-flash drama bump shipped.** A 24×24 hollow ring at shell-color alpha 0.45 now wraps the 16×16 core on shell-attributed kills, addressing the consult's concern that "a learning signal must survive peripheral vision." Procedural V1 (4 edge ColorRects forming the hollow rectangle); /agentify could later swap in a per-shell sprite ring for visual polish. Phase A refinement progress: H5 (iter 280) + H4 (iter 281) shipped — 2 of 7 consult-001 backlogged recommendations resolved. Remaining: H6 visibility classes, Q1 breach-economy proof room, Q3 diagnostic room, H1 acceptance gate strengthen, reload bar tank-adjacent duplicate, Stardew-delta pacing reframe.
+- quiet_signal_counter stays at 0 (consult-001 source already consumed in iter 280; this iter is a downstream artifact of the consumed source — does not re-reset per SIGNAL_RECEIPT one-time rule).
+
+---
+
 ## iter 280 — BUILD — consult-001 H5 fix: ribbon labels 2-char → 3-5 char semantic tokens
 
 - Date: 2026-05-25

@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 281 — BUILD — consult-001 H4 fix: kill-flash 24×24 outer ring + 16×16 core
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1 (no combat modal — passive overlay), 4 (silhouette/grammar — the ring shape preserves "which shell did this" via color continuity; the ring is a learning signal, not decoration).
+- CONSULT constraints risked: visual noise — adding 4 edge ColorRects per kill could amplify screen clutter on multi-kill bursts. Mitigated by same 0.3s lifetime + alpha 0.45 (faint).
+- Same-family check: iter 279 META → 280 BUILD → 281 BUILD. 2 consecutive BUILDs both anchored to consult-001 recommendations (H5 + H4) — productive same-family per iter-273 rule.
+- Trigger: consult-001 H4 verdict 0.74: "probably no for attribution; a 16×16 tint may be below threshold when multiple enemies/bricks/bullets are active. Do a restrained bump, not a spectacle: 24×24 thin outer ring + existing 16×16 core, same 0.3s lifetime, shell-color tint, no 0.5s lingering tween yet."
+- Predicted failure: ring may render as 4 disconnected line segments (top/bottom/left/right) rather than a continuous hollow rectangle if positioning is off-by-one. OR the alpha-0.45 stroke may be visually invisible against bright terrain at pixel-art resolution.
+- Falsifiable claim: post-edit, an enemy killed via `set_last_damage_shell(HE)` + `take_damage(hp)` spawns the existing 16×16 burst child AND 4 additional ColorRect children forming a 24×24 hollow ring (top edge 24×2, bottom edge 24×2, left edge 2×20, right edge 2×20). All 4 edges have shell-color RGB matching the core. Legacy `_last_damage_shell == -1` path spawns ONLY the original 16×16 (no ring) — preserves arc-2/3 bit-identical contract.
+- Sentence test: n/a.
+- Substrate touched: scripts/Enemy.gd (Layer 2 — substrate write #6 — `_spawn_death_effect` extension; gated on `_last_damage_shell >= 0` so arc-2/3 legacy path stays at 1 ColorRect, bit-identical).
+- Hash-anchor verification plan: `make test` + procedural oracle on seed 42 = 23d6a2ec3bf2821f… (ring edges only spawn when `_last_damage_shell >= 0`; procedural baseline Bullet never calls set_last_damage_shell — same gating pattern as iter 277).
+
+---
+
 ## iter 280 — BUILD — consult-001 H5 fix: ribbon labels 2-char → 3-5 char semantic tokens
 
 - Date: 2026-05-25
