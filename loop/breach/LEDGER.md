@@ -17,6 +17,24 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 270 — META — Round 24 OPEN — Stardew delta scope
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0; opening iter, no anchor lift)
+- Cron: re-engaging at 240s active-build cadence per session-learnings L16. Loop pivots from iter-200-268 saturation idle back to active build.
+- Files: loop/breach/iter-270-round24-architect.md (NEW), loop/breach/STATE.md, loop/breach/REVIEW-QUEUE.md (#26 appended), loop/breach/LEDGER.md
+- Finding: **User-directed Round 24 opens.** Signal 2026-05-24: "i want more distinction from raw BC.. start feel more modern.. Stardew Valley delta against 牧场物語." Diagnosis: systems shipped but the player can't SEE them (ammo invisible, reload invisible, speed invisible, cards implicit) coupled with flat scaling (depth 50+ plays like depth 5).
+- 3-phase sequenced program (A must ship before B starts; B before C):
+    - Phase A — HUD-as-status (5 widgets: WoT shell chips, reload bar, speed meter, active-cards ribbon, kill-flash). Folds Round-23 `pick_card_on_levelup` flag flip into the legibility scope.
+    - Phase B — Scaling-curve + tier breakthroughs (convert ≥3 cards per archetype from linear to tier-breakthrough; HUD shows next-threshold cue).
+    - Phase C — Enemy-HP recurve (kill-time matches damage curve; depth-50 full-upgrade outpaces depth-5 fresh).
+- Acceptance per phase + anti-patterns codified in the blueprint.
+- Saturation-watch: if a phase stalls (≥2 empty DIAGNOSE, no rubric movement) → escalate via PushNotification + pivot. DO NOT run 70 idle status-checks (the iter-200-268 anti-pattern named in iter-269 reflection L16).
+- Next iter: Phase A iter — likely DIAGNOSE on which widget to ship first (shell chips most likely; they replace the existing partial HUD with a more legible row) OR SPIKE on icon-generation approach (procedural PIL via gen_tile.py vs /agentify image_gen vs solid-color stubs with text labels).
+
+---
+
 ## iter 269 — META — SESSION CLOSE — cron cancelled by user · candid reflection
 
 - Date: 2026-05-24

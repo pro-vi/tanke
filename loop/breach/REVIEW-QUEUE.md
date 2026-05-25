@@ -816,6 +816,20 @@ Items remaining OPEN (require user signal):
     table + 5 loop-process findings:
     loop/breach/round-12-summary.md.
 
+#26 — Round 24 direction: Stardew delta (HUD legibility + scaling curve + enemy-HP recurve) — round 24 — iter 270 — open (active-build)
+  Trigger: user message 2026-05-24 — "i want more distinction from raw BC.. start feel more modern.. Stardew Valley delta against 牧场物語." User-named gap: systems shipped but the player can't SEE them (ammo invisible, reload invisible, speed invisible, cards implicit) + flat scaling (depth 50+ plays like depth 5).
+  Finding: 3-phase sequenced program — same BC primitives, modern HUD + progression feel.
+    Phase A — HUD-as-status (5 widgets: WoT shell chips, reload bar, speed meter, active-cards ribbon, kill-flash). Folds the Round-23 pick_card_on_levelup flag flip (was #14) into the legibility scope — cards are now visibly part of the loop.
+    Phase B — Scaling-curve + tier breakthroughs (convert ≥3 cards per archetype from linear bonuses to tier-breakthroughs; HUD shows next-breakthrough threshold).
+    Phase C — Enemy-HP recurve (depth-50 full-upgrade player measurably outpaces depth-5 fresh; depth-50 no-upgrade feels harder than depth-5).
+  Affordance: closes the iter-200-268 saturation idle pattern with substantive active-build work directly on the user-named gap. Each phase has acceptance criteria + anti-patterns codified in the blueprint.
+  Blueprint: loop/breach/iter-270-round24-architect.md
+  Cron: 240s active-build (per L16). Saturation-watch: don't repeat the 70-iter idle anti-pattern; escalate via PushNotification if a phase stalls.
+  Round 23 flag-flip (was a sub-item of #14): absorbed into Phase A — `pick_card_on_levelup` becomes default true as cards become visible HUD elements.
+  Done criteria: 3 phases shipped + harness green + hash anchor preserved + REVIEW-QUEUE summary entry appended.
+
+---
+
 #17 — code-review-iter-100 fix sprint COMPLETE (Round 5-8 retroactive cleanup) — iters 100-104 — closed (10/11 fixed, 1 design no-op)
   Finding: per F006 + F007 (delegate /code-review at every round
     close, retroactively when prior rounds were skipped), the
