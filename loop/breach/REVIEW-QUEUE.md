@@ -817,6 +817,35 @@ Items remaining OPEN (require user signal):
     loop/breach/round-12-summary.md.
 
 #27 — Round 25 candidate: Visual identity layer (asset-gen capability lifted to standing) — round 25 — iter 271 — open (queued, opens after Round 24)
+
+#28 — ★ Round 24 Phase A SHIPPED — Stardew delta HUD legibility — round 24 — iter 278 — open (pending playtest acceptance)
+  Finding: All 5 Phase A HUD widgets shipped across 5 consecutive
+  procedural BUILD iters (274-278): reload bar (top-left, color matches
+  current shell), speed meter (top-right, SPD N.N× with green/yellow/cyan
+  tiers), shell chips v1 (top-left compact row, AP/HE/HEAT/APCR with
+  selected highlight + reserve counts), kill-flash (enemy death burst
+  tinted by killing shell — green/yellow/red/cyan palette), active-cards
+  ribbon (bottom-left strip showing picked upgrades as category-tinted
+  2-letter chips). Hash anchor `23d6a2ec3bf2821f…` preserved bit-identical
+  through 6 substrate writes (PlayerTank ×4 + Bullet ×1 + Enemy ×1).
+  test-breach now 77 targets (+5 new harnesses). HUD area still ≤ 25%
+  of viewport per Phase A acceptance constraint.
+  Affordance: Player can now read the current shell + reload state +
+  speed boost + active build + which shell killed the enemy at a glance.
+  This is what was previously "invisible upgrades feel imaginary"
+  (user's iter-270 trigger) made VISIBLE.
+  Risk: V1 procedural chips are honest scaffolding but not yet beautiful —
+  the visual-identity-via-/agentify path (Round 25 candidate, REVIEW-QUEUE
+  #27) is the next visual polish step. The acceptance test — STRANGER ON
+  SCREEN names shell + reload + build within 3 seconds — REQUIRES a real
+  human playtest; the loop cannot fake it.
+  Stranger-on-screen test status: PENDING (cannot be self-tested).
+  Recommended user-look: run breach mode, observe whether you (or a
+  stranger) can name (a) current shell, (b) reload state, (c) which
+  upgrades are stacking, (d) what killed each enemy — within 3 seconds
+  of looking at the screen. If yes → Phase A passes acceptance → loop
+  opens Phase B (scaling-curve + tier breakthroughs). If no → flag
+  which widget is unreadable → loop pivots to refine it before Phase B.
   Trigger: user message 2026-05-24 — "i want the loop to be longer running... and explore how the system has figured out a way to install assets? they got new tanks image asset from chat gpt. meaning we can produce all sorts of assets now."
   Finding: /agentify image_gen is now a confirmed standing capability — the full pipeline (prompt → image → palette extraction → 16×16/8×8 silhouette compliance → atlas pack → in-game render) shipped end-to-end at iters 142-149 via Pro Consult 011 H5. Round 9 + Round 23 already used it for archetype sprites. Round 25 surface: re-skin existing systems with /agentify-generated assets where they currently use stubs or palette swaps.
   Candidate surfaces (loop picks within the round):

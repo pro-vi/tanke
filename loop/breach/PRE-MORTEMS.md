@@ -24,6 +24,21 @@ Format:
 
 ---
 
+## iter 278 — BUILD — Round 24 Phase A widget 4 (v1): active-cards ribbon (procedural)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1 (no combat modal — passive HUD), 5 (each band's pressure stays distinct — the ribbon surfaces what build the player has BUILT against that pressure), 7 (verbs not stats — chips track verbs picked up, displayed verbatim).
+- CONSULT constraints risked: visual density on the bottom HUD strip (route panel at y=195, shell panel at y=209; ribbon needs ≤14 px of vertical breathing room).
+- Same-family admissibility: 5 consecutive productive BUILDs (iter 274-278) with anchor-tied diffs. Permitted (rule targets NO-SIGNAL families).
+- Predicted failure: ribbon could break the iter-101 `_apply_card` call site if I miss any branch (some auto-boost cards may flow through different paths — RAM HP_PLUS_2 lives in a separate match arm); OR chips could collide with the route panel at y=195 if ribbon overflows downward.
+- Falsifiable claim: post-edit, with loadout != null + _apply_card called 3 times (HP_PLUS_1, BEAM_DPS_UP, MOMENTUM), exactly 3 chip ColorRects are visible (the rest hidden); each chip's color category matches the kind (HP=green, MOMENTUM=AP-pale, BEAM_DPS_UP=cyan); each chip's short label matches the kind's abbreviation ("HP", "BD", "MV"). Procedural baseline has `_applied_cards` empty and `_active_cards_chip_bgs` empty.
+- Sentence test: n/a (no new upgrade introduced).
+- Substrate touched: scripts/PlayerTank.gd (Layer 2 — substrate write #84, sanctioned per default-on gating template; new HUD inside the loadout-gated block + new push site in _apply_card with `_active_cards_panel != null` guard).
+- Hash-anchor verification plan: post-edit `make test` + procedural oracle on seed 42 → must equal 23d6a2ec3bf2821f… (the ribbon builds ONLY inside `if loadout != null:` in _setup_hud; `_apply_card` is called only via levelup pick UI which is also loadout-gated; arc-2/3 baseline never touches either path).
+
+---
+
 ## iter 277 — BUILD — Round 24 Phase A widget 5: kill-flash (shell-tinted death burst)
 
 - Date: 2026-05-25

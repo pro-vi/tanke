@@ -141,6 +141,20 @@ const SHELL_CHIPS_Y: float = 32.0
 const SHELL_CHIP_W: float = 20.0
 const SHELL_CHIP_H: float = 12.0
 const SHELL_CHIP_GAP: float = 2.0
+# arc-4 iter 278 (Round 24 Phase A widget 4 v1): active-cards ribbon —
+# bottom-left strip above the route panel; each picked card adds a
+# category-tinted chip with a 2-letter abbreviation. Procedural V1;
+# /agentify per-card art icons swap in via CAPABILITY iter later.
+var _active_cards_panel: ColorRect = null
+var _active_cards_chip_bgs: Array[ColorRect] = []
+var _active_cards_chip_labels: Array[Label] = []
+var _applied_cards: Array[int] = []
+const ACTIVE_CARDS_X: float = 2.0
+const ACTIVE_CARDS_Y: float = 180.0
+const ACTIVE_CARD_CHIP_W: float = 18.0
+const ACTIVE_CARD_CHIP_H: float = 12.0
+const ACTIVE_CARD_CHIP_GAP: float = 2.0
+const ACTIVE_CARDS_MAX_VISIBLE: int = 8
 # arc-4 iter 116 (Round 14 Phase 2): REAR_GUARD cooldown timer +
 # tunables. _rear_guard_cd ticks down to 0.0; when 0.0 + an enemy
 # is in the rear cone + loadout has the flag, fires an AP backward
@@ -1296,6 +1310,12 @@ func _pick_levelup_card(idx: int) -> void:
 # in BEAM_*, AOE_*, SWING_*, COLLISION_*, SPRINT_*, FASTER_RELOAD,
 # SHELL_CAP_PLUS_1, MOMENTUM.
 func _apply_card(kind: int) -> void:
+	# arc-4 iter 278 (Round 24 Phase A widget 4): record the pick + refresh
+	# the active-cards ribbon. Ribbon is built loadout-gated so the
+	# update path is a silent noop when _active_cards_panel is null
+	# (procedural / arc-2/3 mode never instantiates the ribbon).
+	_applied_cards.append(kind)
+	_update_active_cards_ribbon()
 	var msg: String = UpgradeCatalogT.label_for(kind)
 	match kind:
 		UpgradeCatalogT.CardKind.HP_PLUS_1:
@@ -1973,6 +1993,7 @@ func _setup_hud() -> void:
 		_build_shell_codex(canvas)
 		_build_reload_bar(canvas)
 		_build_shell_chips(canvas)
+		_build_active_cards_ribbon(canvas)
 		# arc-4 iter 42 (Round 6d, stakes): the live best-depth readout —
 		# the depth chase, always visible (not just on the death recap).
 		_run_best_depth = _load_best_depth()
@@ -2098,6 +2119,105 @@ func _build_reload_bar(canvas: CanvasLayer) -> void:
 		RELOAD_BAR_BG_H - 2.0 * RELOAD_BAR_INSET)
 	_reload_bar_fg.color = _shell_color(current_shell)
 	canvas.add_child(_reload_bar_fg)
+
+
+# arc-4 iter 278 (Round 24 Phase A widget 4 v1): build the active-cards
+# ribbon at bottom-left. Pre-allocates ACTIVE_CARDS_MAX_VISIBLE chip
+# slots — each starts hidden. _update_active_cards_ribbon flips
+# visibility + writes label/color as `_applied_cards` grows.
+func _build_active_cards_ribbon(canvas: CanvasLayer) -> void:
+	_active_cards_panel = ColorRect.new()
+	_active_cards_panel.name = "ActiveCardsPanel"
+	_active_cards_panel.position = Vector2(ACTIVE_CARDS_X - 1.0, ACTIVE_CARDS_Y - 1.0)
+	var total_w: float = float(ACTIVE_CARDS_MAX_VISIBLE) \
+			* (ACTIVE_CARD_CHIP_W + ACTIVE_CARD_CHIP_GAP)
+	_active_cards_panel.size = Vector2(total_w, ACTIVE_CARD_CHIP_H + 2.0)
+	_active_cards_panel.color = Color(0.04, 0.04, 0.06, 0.6)
+	_active_cards_panel.visible = false  # only appear once a card is picked
+	canvas.add_child(_active_cards_panel)
+	for i in ACTIVE_CARDS_MAX_VISIBLE:
+		var x: float = ACTIVE_CARDS_X + float(i) * (ACTIVE_CARD_CHIP_W + ACTIVE_CARD_CHIP_GAP)
+		var bg: ColorRect = ColorRect.new()
+		bg.position = Vector2(x, ACTIVE_CARDS_Y)
+		bg.size = Vector2(ACTIVE_CARD_CHIP_W, ACTIVE_CARD_CHIP_H)
+		bg.color = Color(0.1, 0.1, 0.12, 0.0)  # alpha 0 — hidden until populated
+		bg.visible = false
+		canvas.add_child(bg)
+		_active_cards_chip_bgs.append(bg)
+		var lbl: Label = Label.new()
+		lbl.position = Vector2(x + 2.0, ACTIVE_CARDS_Y - 1.0)
+		lbl.size = Vector2(ACTIVE_CARD_CHIP_W - 2.0, ACTIVE_CARD_CHIP_H)
+		lbl.text = ""
+		lbl.add_theme_font_size_override("font_size", 8)
+		lbl.add_theme_color_override("font_color", Color.WHITE)
+		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		lbl.add_theme_constant_override("outline_size", 2)
+		lbl.visible = false
+		canvas.add_child(lbl)
+		_active_cards_chip_labels.append(lbl)
+
+
+# arc-4 iter 278: per-card 2-letter abbreviation for the ribbon chip.
+func _card_chip_short(kind: int) -> String:
+	match kind:
+		UpgradeCatalogT.CardKind.HP_PLUS_1: return "HP"
+		UpgradeCatalogT.CardKind.HP_PLUS_2: return "H+"
+		UpgradeCatalogT.CardKind.FASTER_RELOAD: return "RL"
+		UpgradeCatalogT.CardKind.SHELL_CAP_PLUS_1: return "SC"
+		UpgradeCatalogT.CardKind.MOMENTUM: return "MV"
+		UpgradeCatalogT.CardKind.BEAM_DPS_UP: return "BD"
+		UpgradeCatalogT.CardKind.BEAM_RANGE_UP: return "BR"
+		UpgradeCatalogT.CardKind.BEAM_PIERCE: return "BP"
+		UpgradeCatalogT.CardKind.AOE_DAMAGE_UP: return "AD"
+		UpgradeCatalogT.CardKind.AOE_RADIUS_UP: return "AR"
+		UpgradeCatalogT.CardKind.MORTAR_COOLDOWN_DOWN: return "LB"
+		UpgradeCatalogT.CardKind.SWING_DAMAGE_UP: return "SW"
+		UpgradeCatalogT.CardKind.COLLISION_DAMAGE_UP: return "CL"
+		UpgradeCatalogT.CardKind.SPRINT_DURATION_UP: return "SP"
+	return "?"
+
+
+# arc-4 iter 278: per-card category color. HP=green; DEFAULT=AP-pale;
+# PRISM=cyan (APCR-like); MORTAR=warm yellow (HE-like); RAM=warm red
+# (HEAT-like). Aligns with the shell-color palette so the player reads
+# "this chip belongs to my archetype family" at a glance.
+func _card_chip_color(kind: int) -> Color:
+	match kind:
+		UpgradeCatalogT.CardKind.HP_PLUS_1, UpgradeCatalogT.CardKind.HP_PLUS_2:
+			return Color(0.3, 0.9, 0.4, 1.0)
+		UpgradeCatalogT.CardKind.BEAM_DPS_UP, UpgradeCatalogT.CardKind.BEAM_RANGE_UP, \
+				UpgradeCatalogT.CardKind.BEAM_PIERCE:
+			return Color(0.6, 0.85, 1.0, 1.0)
+		UpgradeCatalogT.CardKind.AOE_DAMAGE_UP, UpgradeCatalogT.CardKind.AOE_RADIUS_UP, \
+				UpgradeCatalogT.CardKind.MORTAR_COOLDOWN_DOWN:
+			return Color(1.0, 0.85, 0.25, 1.0)
+		UpgradeCatalogT.CardKind.SWING_DAMAGE_UP, \
+				UpgradeCatalogT.CardKind.COLLISION_DAMAGE_UP, \
+				UpgradeCatalogT.CardKind.SPRINT_DURATION_UP:
+			return Color(1.0, 0.35, 0.25, 1.0)
+	return Color(0.92, 0.92, 0.95, 1.0)  # DEFAULT pool — AP-pale
+
+
+# arc-4 iter 278: refresh chip visibility/label/color from _applied_cards.
+# Shows up to ACTIVE_CARDS_MAX_VISIBLE chips; overflow is silently capped
+# (V2 with /agentify icons can add a "+N more" indicator).
+func _update_active_cards_ribbon() -> void:
+	if _active_cards_panel == null:
+		return
+	_active_cards_panel.visible = not _applied_cards.is_empty()
+	var shown: int = mini(_applied_cards.size(), ACTIVE_CARDS_MAX_VISIBLE)
+	for i in ACTIVE_CARDS_MAX_VISIBLE:
+		var bg: ColorRect = _active_cards_chip_bgs[i]
+		var lbl: Label = _active_cards_chip_labels[i]
+		if i < shown:
+			var kind: int = _applied_cards[i]
+			bg.visible = true
+			bg.color = _card_chip_color(kind)
+			lbl.visible = true
+			lbl.text = _card_chip_short(kind)
+		else:
+			bg.visible = false
+			lbl.visible = false
 
 
 # arc-4 iter 276 (Round 24 Phase A widget 1 v1): build the top-left

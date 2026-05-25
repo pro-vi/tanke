@@ -17,6 +17,22 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 278 — BUILD — Round 24 Phase A widget 4 v1: active-cards ribbon (PHASE A CLOSES)
+
+- Date: 2026-05-25
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective (Δ vs prior: 0; Phase A close — anchor lift gated on real playtest of the stranger-on-screen test).
+- Same-family admissibility: 5 consecutive productive BUILDs (iter 274-278) with anchor-tied diffs. Permitted (rule targets NO-SIGNAL families). **Phase A closes this iter — same-family BUILD streak resolves into a phase-close event with REVIEW-QUEUE update.**
+- Constraints respected: 1 (no combat modal — passive ribbon updates only on pick), 5 (chip categories surface archetype identity — beam=cyan, mortar=yellow, ram=red, default=AP-pale, HP=green), 7 (verbs not stats — chip labels are verb mnemonics like SW/CL/SP/MV).
+- Constraints risked: visual density — bottom HUD strip now has 3 stacked rows (ribbon y=180, route y=195, shell panel y=209). Acceptance check (stranger-on-screen test) gated on playtest.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** post substrate write #84 (PlayerTank.gd ×50). Ribbon panel + 8 chip slots built only inside loadout-gated `_setup_hud` block; `_apply_card` only called from levelup pick UI which is loadout-gated; arc-2/3 baseline never touches either path. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 77/77 PASS.
+- Falsifications: none. Predicted "ribbon overflow downward could collide with route panel y=195" — chip height 12 + base y=180 ends at y=192, leaves 3px gap. Predicted "miss apply paths" — only `_apply_card` is the card entry point per Round 23 design; auto-boosts in `_apply_level_boost` are deliberately NOT card-tracked (those rotate stats, not cards).
+- Files: scripts/PlayerTank.gd (+4 fields, +6 constants, +1 _setup_hud call, +new `_build_active_cards_ribbon()` + `_card_chip_short()` + `_card_chip_color()` + `_update_active_cards_ribbon()` helpers, +2 lines in `_apply_card` to append + refresh), loop/breach/test_breach_active_cards_ribbon.gd (NEW — 5 assertions: procedural-baseline-empty / 8-slots-built-hidden / 1-pick-shows-HP-green / 3-pick-render-with-correct-labels-and-colors / pick-order-preserved), Makefile (.PHONY + check-breach-active-cards-ribbon + test-breach aggregate), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md, loop/breach/REVIEW-QUEUE.md (Phase A close note).
+- Empirical: 1 pick HP_PLUS_1 → panel.visible=true, chip 0 = green "HP"; 3 picks (HP/BEAM_DPS_UP/MOMENTUM) → chips [green HP, cyan BD, AP-pale MV] visible, chips 3-7 hidden; `_applied_cards` array preserves order `[0, 4, 3]` (CardKind enum integer values).
+- Finding: **Round 24 Phase A CLOSES.** All 5 widgets shipped across 5 consecutive productive BUILD iters (274-278): reload bar (widget 2) + speed meter (widget 3) + shell chips v1 (widget 1) + kill-flash (widget 5) + active-cards ribbon v1 (widget 4). Substrate writes: PlayerTank ×4 + Bullet ×1 + Enemy ×1 = 6 writes total; hash anchor `23d6a2ec3bf2821f` bit-identical through all 6 (loadout-gated + default-on patterns held). New harness coverage: +5 test-breach targets (76→78 → 77... wait, 72 +5 = 77 from iter-277 LEDGER which said 76; let me recount). Actually checking: iter-277 LEDGER said "test-breach 76 targets" and iter-278 adds 1 → 77. The acceptance work — stranger-on-screen test — REQUIRES a real human playtest; the loop cannot fake it. REVIEW-QUEUE updated to mark Phase A "shipped pending playtest acceptance". Saturation-watch carries: next iter must NOT slip into status-check idle. Next iter is Phase B opening — scaling-curve audit + tier-breakthrough card conversion. SAME-FAMILY: 5 productive BUILDs is the streak; closing Phase A is the natural punctuation; Phase B will reset the cadence with SPIKE / DECISION / BUILD pattern.
+
+---
+
 ## iter 277 — BUILD — Round 24 Phase A widget 5: kill-flash (shell-tinted death burst)
 
 - Date: 2026-05-25
