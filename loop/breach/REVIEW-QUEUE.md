@@ -408,7 +408,33 @@ Items remaining OPEN (require user signal):
   Default if no answer: (b) — algorithmic tint+overlay via
     gen_tile.py preserves BC grammar and is the most loop-native path.
 
-#14 — ★ PLAYTEST REQUEST — Round 9 + Round 10 + code-review fix sprint complete — round 9-11 — iter 71+79+99 — open (playtest gate, UPGRADED iter 99)
+#14 — ★ PLAYTEST REQUEST — Round 9-23 (visuals + charge-lob + class cards) — round 9-23 — iter 71+79+99+147+200 — open (playtest gate, UPGRADED iter 201)
+
+  ⇒ **Round 23 close (iter 201) — class-specific upgrade cards
+     SHIPPED.** Pick-1-of-3 on level-up, archetype-aware. 14 cards
+     across 4 pools, all apply paths working end-to-end (PRISM:
+     BEAM_DPS/RANGE/PIERCE; MORTAR: AOE_DAMAGE/RADIUS/COOLDOWN; RAM:
+     SWING/COLLISION/SPRINT/HP+2; DEFAULT: HP+1/RELOAD/SHELLS/MOMENTUM).
+     **Feature-flagged at `pick_card_on_levelup` (@export, default
+     false)** to preserve test compat — needs USER DECISION on flip:
+       (a) flip default → true now: pick UI pops on every level-up
+           alongside the auto-boost. Players get auto-stat + bonus
+           card. Risk: pick screen interruption might feel jarring
+           mid-combat (mitigated by tree-pause per iter-91 P0-1).
+       (b) keep default false: existing auto-cycle only. Player can
+           opt in via Inspector or scripted set. Risk: feature ships
+           dead.
+       Loop recommendation: (a) — the feature was user-directed and
+       the playtest IS the test that decides whether the interruption
+       feels good. Default-off ships dead.
+  ⇒ Visual layer (Pro Consult 011 / iters 142-149): PRISM/MORTAR/RAM
+     render as distinct 8-bit sprites in-game.
+  ⇒ MORTAR charge-lob (iter 195): tap = short / hold = far + reticle.
+  ⇒ PRISM DPS doubled (iter 193) + rotation glitch fixed (iter 193).
+  ⇒ Shell HUD hides for non-DEFAULT archetypes (iter 190).
+  ⇒ All of the above ready for playtest 5 in one session.
+
+#14-ARCHIVED-original — ★ PLAYTEST REQUEST — Round 9 + Round 10 + code-review fix sprint complete — round 9-11 — iter 71+79+99 — open (playtest gate, UPGRADED iter 99)
   ⇒ **Sprint-hardening update (iter 99):** since the original
      iter-71 request, the iter-90 /code-review delegation surfaced
      18 anchored findings; iters 90-98 fixed 17 of them (2 P0 +

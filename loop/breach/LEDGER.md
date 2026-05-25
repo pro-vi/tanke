@@ -17,6 +17,45 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 201 — META — Round 23 close + REVIEW-QUEUE #14 update
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 absolute · 50/75 effective   (Δ vs prior: 0)
+- Hash anchor: 23d6a2ec3bf2821f… n/a (no code edits this iter).
+- Files: loop/breach/REVIEW-QUEUE.md (#14 upgraded with Round-23
+  close summary + USER DECISION request on pick_card_on_levelup
+  flag default; original entry archived); STATE.md + LEDGER.md.
+- Finding: **Round 23 CLOSED.** 5 phases shipped across iters
+  196-200 per blueprint:
+    P1 (iter 197) — UpgradeCatalog data module (14 CardKinds, 4
+                    archetype pools of 4 cards each)
+    P2 (iter 198) — pick-1-of-3 UI (iter-68 archetype-panel pattern
+                    + iter-91 P0-1 pause discipline)
+    P3 (iter 199) — PRISM + MORTAR apply branches (BEAM_DPS/RANGE/
+                    PIERCE, AOE_DAMAGE/RADIUS, MORTAR_COOLDOWN)
+    P4 (iter 200) — RAM + DEFAULT apply branches (SWING/COLLISION/
+                    SPRINT, FASTER_RELOAD, SHELL_CAP, MOMENTUM) +
+                    pick_card_on_levelup feature flag
+    P5 (iter 201) — this META close
+  Substrate writes: PlayerTank.gd #75-#78 (4 across the round),
+  MortarShell.gd #77 (per-shell AOE overrides). Hash anchor preserved
+  every iter. 4 new harnesses (upgrade_catalog, levelup_pick,
+  card_apply_p3, card_apply_p4) = 24 test cases added; test-breach
+  68 → 72 targets.
+  USER DECISION pending in REVIEW-QUEUE #14: flip `pick_card_on_
+  levelup` default true (feature ships live) or keep false (feature
+  ships dormant, opt-in via Inspector). Loop recommendation: flip
+  true — feature was user-directed and playtest IS the test that
+  validates the interruption feel; default-off ships dead.
+  Score 50/75 unchanged (C7/C11 anchor 4-5 are [FEEL] playtest-
+  gated, so the structural ceiling holds). Round 23 represents the
+  biggest substantive surface added since the Pro Consult 011
+  visual layer (iters 142-149). Next: idle iter 202 unless user
+  signals direction OR flips the flag.
+
+---
+
 ## iter 200 — BUILD — Round 23 Phase 4 — RAM + DEFAULT card branches + level-up wiring flag
 
 - Date: 2026-05-24
