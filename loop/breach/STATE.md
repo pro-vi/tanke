@@ -2,7 +2,7 @@
 
 ```yaml
 phase: running
-iter: 254
+iter: 255
 round23_status: closed-iter-201 (5 phases shipped; pick_card_on_levelup default false; USER DECISION pending on flip — see REVIEW-QUEUE #14)
 round23_blueprint: loop/breach/iter-196-round23-architect.md
 hash_anchor_at_iter_146: 23d6a2ec3bf2821f  # bit-identical through 70 substrate writes — PlayerTank archetype sprite swap is gated on loadout != null + archetype != DEFAULT; procedural baseline (loadout=null) keeps sprites_0.png + frame_base=0; TankSprite.gd frame_base field defaults to 0 (bit-identical at default)
