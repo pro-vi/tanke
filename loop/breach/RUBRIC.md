@@ -13,10 +13,11 @@ broken on the flag-off codepath. Arc-3 carry.
 
 **Tag legend** (carried from arc 2 + arc 3, extended in arc 4):
 - `[STRUCTURE]` — code-cited, harness-verifiable
-- `[FEEL]` — playtest-cited, irreducibly cognitive
+- `[FEEL]` — playtest-cited, irreducibly cognitive (effective cap: 5)
+- `[FEEL-CONSULT]` (NEW iter 272) — simulated-playtest CONSULT via /agentify with blind-adversarial framing per /greenfield-loop invariant 8 (effective cap: 4 — never promoted to [FEEL] without real playtest)
 - `[MIXED]` — both required
 - `[STRUCTURE-DEFERRED]` — structural cite pending, FEEL not yet attempted
-- `[IDENTITY-PROTECTED]` (NEW per R2) — anchor exists as gaming-prevention; **never AUDIT-rephrased**
+- `[IDENTITY-PROTECTED]` (per R2) — anchor exists as gaming-prevention; **never AUDIT-rephrased** AND **never lifted via [FEEL-CONSULT]** (real playtest required)
 
 **Three-tier ceiling reporting** (per R3): every score report includes
 "X/Y effective" alongside "X/50 absolute" where effective excludes

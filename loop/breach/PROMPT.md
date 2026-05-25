@@ -414,6 +414,53 @@ Trigger conditions:
 "failed" tab status (the arc-4 design CONSULT itself completed despite
 timeout; this is now documented arc-4 behavior).
 
+### Simulated-playtest CONSULT (NEW — iter 272 amendment per /greenfield-loop invariant 8 blind-adversarial protocol)
+
+When a `[FEEL]` anchor is structurally ready to lift but real PLAYTEST is unavailable, the loop fires a **simulated-playtest CONSULT** via /agentify to produce a fresh-eye reading. This is NOT a substitute for real playtest — it's a partial signal that lets the loop lift the anchor to `[FEEL-CONSULT]` (cap 4 effective; cap 5 still requires real playtest).
+
+**Protocol:**
+1. Capture artifact: a screenshot, 30-second gameplay clip, or focused design excerpt (rubric anchor wording + the relevant scene file or HUD widget).
+2. Frame the consult prompt blind-adversarially:
+   - "Here is [artifact]. Without the rubric or scores, what does this make you understand? What does the player NOT understand?"
+   - "What's seductive-but-hollow about this? What would look embarrassing in 6 months?"
+   - "What assumption is being over-optimized?"
+3. Capture response to `loop/breach/creative-consults.md` with `[SIMULATED-PLAYTEST]` header.
+4. Cite the anchor as `[FEEL-CONSULT]` (effective cap 4); upgrade to `[FEEL]` (effective cap 5) only on real playtest cite.
+
+**When to fire:**
+- A `[FEEL]` anchor's structural prereqs are complete but next anchor-lift requires player perception
+- Quiet-signal counter ≥ 3 (per § QUIET-SIGNAL COUNTER below)
+- Round closes and the playtest gate (REVIEW-QUEUE #14 or sibling) is still open
+
+**Honesty discipline:** the `[FEEL-CONSULT]` cite tag is mandatory — the loop never promotes a consult cite to a playtest cite. The user reviewing REVIEW-QUEUE sees clearly which anchors were lifted via simulated vs real playtest.
+
+---
+
+## QUIET-SIGNAL COUNTER (NEW — iter 272 per /frontier-loop quiet-signal-checkpoint)
+
+The loop tracks how many consecutive iters have passed without **strong signal**. STATE.md carries `quiet_signal_counter`.
+
+**Strong signal (resets counter to 0):**
+- A PLAYTEST cite (`[FEEL]` anchor lift)
+- A CONSULT fired AND response captured (`[FEEL-CONSULT]` or `creative-consults.md` append)
+- A `[STRUCTURE]` rubric anchor lift (numerical, not re-narration)
+- A harness regression caught + fixed (a real failure detected by the harness)
+- A user direction (conversation, REVIEW-QUEUE, STATE amendment, LEDGER directive)
+- A correctness signal (hash anchor verification on a substrate write, `make test-all` regression detected)
+
+**NOT strong signal (does NOT reset):**
+- A LEDGER STATUS-CHECK entry ("no change · hash ok · tests green")
+- A BUILD-QUALITY iter without anchor lift (polish only)
+- Self-authored re-narration of prior work
+- A scoping/planning iter that doesn't ship anything
+- Idle hash anchor verification when nothing was touched
+
+**Counter-driven actions:**
+- counter ≥ 3 → fire simulated-playtest CONSULT (per § CONSULT SCHEDULE) OR bootstrap next round OR escalate via PushNotification. Pick the option that produces strong signal; do not let counter ≥ 4 happen without escalation.
+- counter ≥ 5 → emit `signal-starvation` halt-cause label (per § HALT CONDITIONS) + hard escalate via PushNotification with REVIEW-QUEUE tail summary + queued-round status
+
+**Why:** the iter-200-268 70-iter STATUS-CHECK idle anti-pattern was unlabeled signal-starvation. Counter discipline prevents the loop from drifting into idle without registering it as a structured event.
+
 ---
 
 ## COMPACTION DISCIPLINE (per L2)
@@ -466,6 +513,21 @@ The loop does **NOT** halt on:
 - F-numbered falsifications (instead → log, fix, continue)
 - Compaction or session boundary (instead → resume from STATE.md + LEDGER tail)
 - "Ran out of work" (instead → diagnose next surface from the open-ended list)
+
+### Halt-cause classifier (NEW — iter 272 per /frontier-loop)
+
+When the loop encounters a stall (quiet iter, empty DIAGNOSE, no shippable advancement, no signal lift), it does NOT silently emit a STATUS-CHECK. It LABELS the stall:
+
+| Label | Meaning | Action |
+|---|---|---|
+| `signal-starvation` | Quiet-signal counter ≥ 5 (no strong signal: no playtest, no consult, no anchor lift, no metric movement). | Fire simulated-playtest CONSULT OR bootstrap next round OR escalate via PushNotification (max 1 per 10 iters). DO NOT auto-pivot to idle cadence. |
+| `derivation-gap` | Loop blocked on something that could have been resolved at scope time (missing capability, ambiguous direction, undefined acceptance). | Log gap to `loop/breach/derivation-gaps.md`; escalate via PushNotification; do best-effort default per /greenfield-loop invariant 7 (judgment default + bounded escalate). |
+| `stone-converged` | Current round closed AND no next round queued AND no user direction. | Bootstrap from § RUBRIC IS MEASUREMENT open-ended surface list. If no surface fits → ASK USER via PushNotification, DO NOT idle. |
+| `wrong-loop` | The work has stopped fitting this loop shape (target became fixed → /frontier-loop terminal; or finite checklist → /goal-loop). | Emit label; propose loop-shape change to user. |
+
+**Saturation rule (anti-iter-200-268-pattern):** the loop must NOT emit 2 consecutive iters with the same halt-cause label without escalating via PushNotification on the 3rd. The iter-200-268 70-iter idle pattern was unlabeled signal-starvation; this classifier prevents recurrence.
+
+**Halt-cause is metadata, not halt.** Labeling a stall doesn't stop the loop — it tells the loop what to DO next (and tells the user what happened when they re-engage). The loop still only halts on user signal + correctness violations.
 
 ---
 

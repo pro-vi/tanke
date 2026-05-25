@@ -17,6 +17,27 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 272 — META — PROMPT amendment: simulated-playtest CONSULT + halt-cause classifier + quiet-signal counter
+
+- Date: 2026-05-24
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; loop-discipline amendment)
+- Cron: 240s active-build, unchanged
+- Files: loop/breach/PROMPT.md (+3 new sections), loop/breach/RUBRIC.md (tag legend extension), loop/breach/STATE.md (+4 new yaml fields), loop/breach/LEDGER.md
+- Finding: **User-directed amendment** synthesizing /frontier-loop + /story-loop + /greenfield-loop into our PROMPT, addressing two coupled gaps:
+  (1) **PLAYTEST is paramount but absence shouldn't stop the loop.** Currently [FEEL] anchors strictly cap at 2 without playtest; without playtest the loop slips into idle (iter-200-268 anti-pattern).
+  (2) **The loop needs structured stall labels.** Per /frontier-loop halt-cause classifier; unlabeled stalls (STATUS-CHECK iters) hide signal-starvation as benign idle.
+- Three additions:
+  **A. Simulated-playtest CONSULT + `[FEEL-CONSULT]` tag.** When a [FEEL] anchor is structurally ready but real playtest unavailable, loop fires a blind-adversarial CONSULT via /agentify (capture artifact → blind framing → 5 questions per /greenfield-loop invariant 8 → capture to creative-consults.md). Anchor lifts to `[FEEL-CONSULT]` (cap 4 effective); `[FEEL]` (cap 5) still requires real playtest. `[IDENTITY-PROTECTED]` anchors are NEVER liftable via simulated playtest — those stay real-playtest-only by design.
+  **B. Halt-cause classifier** (signal-starvation / derivation-gap / stone-converged / wrong-loop). Labels stalls structurally so the loop knows what to DO next (escalate / bootstrap / propose loop-shape change). Saturation rule: must NOT emit 2 consecutive same-label iters without escalating on the 3rd. Halt-cause is metadata, not halt — loop still only halts on user signal + correctness violations.
+  **C. Quiet-signal counter** in STATE. Strong signal (playtest / consult / structural lift / harness regression caught / user direction / correctness signal) resets to 0; status-check iters and self-narration do NOT reset. counter ≥ 3 → fire simulated-playtest CONSULT or bootstrap next round; counter ≥ 5 → emit signal-starvation label + hard escalate via PushNotification.
+- Together: the loop can keep producing partial-feedback signal via /agentify when you're not available to playtest, and it cannot slip into 70-iter unlabeled idle — saturation becomes a structured event with a forcing function.
+- Skill sources read: /Users/provi/.claude/skills/{frontier-loop,story-loop,greenfield-loop}/SKILL.md.
+- Loop-design surfaces NOT adopted yet (deferred): INTENT.md (≥3 live target hypotheses per greenfield invariant 3), same-family admissibility forcing function (3-shape limit per frontier-loop), FIXED ≠ CLOSED on REVIEW-QUEUE (story-loop). Apply after Round 24 ships if proven worth the rewrite.
+- Next iter: Phase A of Round 24 (HUD-as-status), per iter-270 STATE. The new disciplines are now in PROMPT; the loop reads them on next iter start.
+
+---
+
 ## iter 271 — META — asset-gen standing capability + Round 25 queued + longer-running discipline
 
 - Date: 2026-05-24
