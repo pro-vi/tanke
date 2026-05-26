@@ -586,6 +586,45 @@ When the loop encounters a stall (quiet iter, empty DIAGNOSE, no shippable advan
 
 ---
 
+## VISUAL VERIFICATION DISCIPLINE (iter 301 per playtest-feedback gap pattern iters 296-300)
+
+**Unit harnesses verify layers in isolation; they do NOT verify what the player sees.** This was named live across iters 296-300 — every iter passed harnesses + claimed "playable" + the next user playtest surfaced a visual bug or layout mess in seconds:
+- iter 296: shoot signal not wired (e2e harness skipped the integration)
+- iter 297: reload-bar GunTimer-looping cosmetic
+- iter 298: z-stack drift if anything new spawned
+- iter 299: HP / Depth / Time / Best labels at default 16pt because no override set
+- iter 300: WoT-tray scope was correct but only validated visually after user playtest
+
+**The rule (mandatory for any HUD or scene-spatial change):**
+
+> Before claiming a visual change "ships clean," capture a screenshot via
+> `make screenshot-q1` (or the equivalent project-shape target), `Read` the
+> PNG with the Read tool, and visually confirm the change. If you didn't
+> look at it, you didn't verify it.
+
+**Concrete tools (iter 301):**
+- `make screenshot-q1` — drives `tools/q1_screenshot.gd` (loads Q1ProofRoom, dismisses codex, lets HUD settle, captures via --write-movie) and saves to `tools/out/q1_latest.png`
+- `tools/refs/q1_baseline.png` — committed baseline; future iters can `pip3 install pillow` + diff if needed, but visual eyeballing is the V1 contract
+- Embed the captured PNG inline in the response via Read so the user also sees what you saw
+
+**Triggers** (when this rule fires):
+- HUD widget added / removed / repositioned
+- Z-index change
+- Typography / font-size / color change
+- Scene layout change
+- Any change reported "visual" in PRE-MORTEM or LEDGER
+
+**The trap to avoid:** harness-green + tests-pass does NOT equal "visually clean." The harness verifies the property you encoded; it doesn't verify what's on screen. Without a screenshot step, the loop ships claims it can't back.
+
+**Why this rule has teeth:**
+- Same-family admissibility (iter 273) catches NO-SIGNAL families
+- Framing-audit gate (iter 283) catches wrong-frame productive execution
+- Visual-verification discipline (iter 301) catches right-frame execution where the VISUAL OUTPUT diverges from the intended design
+
+The iter-296 → iter-300 user-playtest surfaced the gap structurally. This rule encodes the response.
+
+---
+
 ## FRAMING-AUDIT GATE (iter 283 per /meta dice-hook Nat 13 finding — the most-direct anti-frame-drift rule)
 
 **Same-family admissibility catches NO-SIGNAL families; framing-audit catches WRONG-FRAME-BUT-PRODUCTIVE-EXECUTION families.** The iter-282 /meta finding named the failure mode that the iter-273 same-family rule doesn't catch: anchor-tied diffs shipped against the wrong frame.

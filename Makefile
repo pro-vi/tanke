@@ -23,6 +23,21 @@ test:
 	@out=$$($(HEADLESS) $(PROC_SCENE) --quit-after $(TEST_FRAMES) 2>&1 | grep -E "^(ERROR|SCRIPT ERROR)" | $(NOISE_FILTER)); \
 	if [ -n "$$out" ]; then echo "$$out"; exit 1; fi
 
+# Arc-4 iter 301 (visual-verification discipline): drive Q1ProofRoom,
+# dismiss codex, render a few frames, save the final frame to a known
+# path. Used by visual-verification convention added to PROMPT.md.
+# Invoke before claiming any HUD/visual change "ships clean."
+.PHONY: screenshot-q1
+screenshot-q1:
+	@mkdir -p tools/out
+	@rm -f tools/out/q1_frame*.png 2>/dev/null || true
+	@$(RENDERER) --write-movie tools/out/q1_frame.png --fixed-fps 1 \
+		--quit-after 8 --script res://tools/q1_screenshot.gd 2>/dev/null || true
+	@latest=$$(ls -t tools/out/q1_frame*.png 2>/dev/null | head -1); \
+	if [ -z "$$latest" ]; then echo "ERROR: no screenshot captured"; exit 1; fi; \
+	cp "$$latest" tools/out/q1_latest.png; \
+	echo "captured: tools/out/q1_latest.png (was $$latest)"
+
 # Capture frame PNGs via --write-movie (Metal renderer, window flashes briefly)
 screenshot:
 	@mkdir -p $(FRAMES_DIR)

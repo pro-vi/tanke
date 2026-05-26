@@ -17,6 +17,30 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 301 — META — VISUAL VERIFICATION DISCIPLINE: PROMPT amendment + `make screenshot-q1` + baseline image
+
+- Date: 2026-05-26
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; structural process improvement closing the iters 296-300 gap pattern).
+- Trigger: user said "continue indefinitely" after the iter-300 user-feedback resolution. Honest read: iters 296-300 surfaced a recurring failure mode (shipping visual-changing code without screenshot verification) FIVE TIMES in a row. Without a structural fix, the same pattern will repeat. iter 301 encodes the fix as a PROMPT-level discipline + cheap tooling so future iters can comply.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES indirectly — the Stardew-delta trigger drove Phase A's HUD legibility work; iters 296-300 surfaced gaps in that visual verification. The discipline added here is what would have prevented those gaps in the first place. Gate passes.
+- Same-family check: iter 300 BUILD → 301 META. Healthy alternation; META iter that encodes a learned pattern.
+- Constraints respected: all 7. Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** — no Layer-1/2/3 substrate touch (META + Makefile + tools/ additions only). `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 87/87 PASS.
+- Falsifications: none. Predicted "the screenshot target depends on Q1ProofRoom.tscn existing + script working" — verified by running `make screenshot-q1` end-to-end + reading the resulting PNG inline.
+- Files:
+  - loop/breach/PROMPT.md (NEW § VISUAL VERIFICATION DISCIPLINE inserted before § FRAMING-AUDIT GATE — names the iters 296-300 pattern, mandates screenshot capture + Read for visual changes, lists triggers, names the trap, includes "why this rule has teeth" 3-rule cascade with same-family + framing-audit + visual-verification)
+  - Makefile (NEW `screenshot-q1` target — runs tools/q1_screenshot.gd driver via $(RENDERER) --write-movie, dedups output PNG to tools/out/q1_latest.png)
+  - tools/refs/q1_baseline.png (NEW — committed baseline image showing the iter-300 final state: clean top-left HP/LVL/XP/reload, clean top-right DEPTH/TIME/BEST/SPD column, bottom-center WoT shell tray [AP --][HE 0][HEAT 0][APCR 0], full Q1 proof room visible)
+  - loop/breach/LEDGER.md, loop/breach/STATE.md
+- Empirical: `make screenshot-q1` captures 7741 bytes of PNG in ~0.5s; baseline shows the WoT-tray layout from iter 300 plus all iter-299 typography fixes. The next visual-changing iter can re-run + diff (eyeball or pip3-pillow-pixel-diff) to catch unintended drift.
+- Finding: **The recurring "shipped without visual verification" pattern from iters 296-300 is now structurally addressed.** PROMPT.md carries the discipline; Makefile carries the tool; tools/refs/q1_baseline.png carries the visual contract. Future iters touching HUD / scene-spatial / typography / z-index MUST run the screenshot step + Read the PNG inline before claiming "ships clean." The trap (harness-green ≠ visually clean) is named in PROMPT. This is the structural answer to the user's frustration at iter 297 ("you should be able to take screenshots yourself?") — yes, and now the loop's PROMPT mandates it.
+- The "why this rule has teeth" cascade now reads: same-family admissibility (NO-SIGNAL families) → framing-audit gate (wrong-frame productive execution) → visual-verification discipline (right-frame, but VISUAL OUTPUT diverges from design intent). Three structural defenses, each catching a different failure mode.
+- substrate_writes_this_arc: unchanged at 95 (META + tooling only).
+- quiet_signal_counter stays at 0 (downstream of iter-297 user-feedback source; this iter encodes the pattern that source surfaced).
+
+---
+
 ## iter 300 — BUILD — WoT-style shell tray: chips relocated to bottom-center; legacy 316×26 tray removed (user feedback #3)
 
 - Date: 2026-05-26
