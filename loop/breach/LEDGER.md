@@ -17,6 +17,28 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 302 — BUILD — consult-001 H5 sub-recommendation: card-pickup toast (full label + sentence) + dedup
+
+- Date: 2026-05-26
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; consult sub-recommendation cleanup + redundancy removal).
+- Trigger: re-audit of consult-001 recommendations surfaced an UNAPPLIED sub-recommendation under H5: "On card pickup, show the full UpgradeCatalog label for 1-2 seconds so the ribbon becomes a reminder, not the first explanation." Without this, the ribbon's 2-letter tokens (BEAM/RNG/PIER/etc) work only as RECALL aids; new players never see the full card name post-pick.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — H5 verdict 0.95 was the highest-confidence reject in consult-001; the sub-recommendation closes the H5 loop. Direct downstream of Option B authorization.
+- Same-family check: iter 301 META → 302 BUILD. Healthy alternation.
+- Constraints respected: 1 (no combat modal — transient toast 1.5s), 7 (verb surfaced — toast text is "<label> — <sentence-test>" naming the verb the card lifts).
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** post substrate write #59 (PlayerTank.gd) — toast call lives inside `_apply_card` which is only reachable via levelup pick UI (loadout-gated); arc-2/3 procedural baseline never enters that path. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 88/88 PASS.
+- Falsifications: 1 mid-iter, caught by harness:
+  - First harness run reported "pickup toast spawned (0 → 2)" — my new iter-302 toast was firing alongside the iter-200 "LEVEL UP <label>" toast at the END of `_apply_card` (line 1455). Redundant — both fired on every pick. Fix: removed the iter-200 toast (the iter-302 one carries richer info: full label + sentence). Result: 0 → 1 toast per pick. Verified.
+- Files: scripts/PlayerTank.gd (+ `_show_pickup_toast` call at top of `_apply_card` with text `"<label> — <sentence>"` + color `_card_chip_color(kind)` so toast color matches ribbon chip category; REMOVED the iter-200 `_show_pickup_toast("LEVEL UP %s" % msg, ...)` at end of `_apply_card` to dedup), loop/breach/test_breach_card_pickup_toast.gd (NEW — 4 cases: toast spawns on _apply_card / text contains label+sentence / color matches chip / z_index = HUD_Z_TOAST), Makefile (.PHONY + check-breach-card-pickup-toast + test-breach aggregate; 88 targets now), loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: harness verifies `pt._apply_card(HP_PLUS_1)` spawns 1 toast (was 2 before dedup); toast.text contains "HP +1" AND "survive one more hit"; toast color matches chip category (green for HP); toast.z_index == 40 (HUD_Z_TOAST always-reach contract).
+- Visual verification per iter-301 discipline: ran `make screenshot-q1` — toast doesn't appear in static driver capture because no card is picked; harness covers the dynamic case. Runtime visual confirmation comes when user picks a card during play. Static baseline still matches iter-301.
+- Finding: **consult-001 application is now functionally complete on the recommendations the user authorized (Option B at iter 283).** H5 main + sub-recommendation, H4, Q1 sprint, Q3 recap, reload-pip (user-overridden iter 297), H1, H6 all applied. Only Stardew-pacing remains (user-declined). 8 of 8 actionable items resolved (counting H5 sub-rec as part of H5 main).
+- substrate_writes_this_arc: 95 → 96 (PlayerTank.gd ×59 — net effect is one toast call moved + one removed; loadout-gated).
+- quiet_signal_counter stays at 0 (downstream of iter-297 user-feedback source).
+
+---
+
 ## iter 301 — META — VISUAL VERIFICATION DISCIPLINE: PROMPT amendment + `make screenshot-q1` + baseline image
 
 - Date: 2026-05-26

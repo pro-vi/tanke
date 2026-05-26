@@ -1358,6 +1358,20 @@ func _apply_card(kind: int) -> void:
 	# (procedural / arc-2/3 mode never instantiates the ribbon).
 	_applied_cards.append(kind)
 	_update_active_cards_ribbon()
+	# arc-4 iter 302 (consult-001 H5 sub-recommendation): surface the full
+	# card name + sentence-test description as a transient toast on pickup,
+	# so the ribbon's 2-letter token becomes a REMINDER not the first
+	# explanation. Color matches the ribbon chip's category color so
+	# the player learns the visual mapping. Uses the existing iter-80
+	# _show_pickup_toast infrastructure (1.5s fade-out, stagger-aware,
+	# z_index = HUD_Z_TOAST so it reaches the player over popups).
+	_show_pickup_toast(
+		"%s — %s" % [
+			UpgradeCatalogT.label_for(kind),
+			UpgradeCatalogT.sentence_for(kind),
+		],
+		_card_chip_color(kind),
+	)
 	var msg: String = UpgradeCatalogT.label_for(kind)
 	match kind:
 		UpgradeCatalogT.CardKind.HP_PLUS_1:
@@ -1438,7 +1452,12 @@ func _apply_card(kind: int) -> void:
 		_:
 			# Defensive: silent no-op for any card not yet wired.
 			pass
-	_show_pickup_toast("LEVEL UP  %s" % msg, Color(1.0, 0.9, 0.35, 1.0))
+	# arc-4 iter 302: the iter-200 "LEVEL UP <label>" toast at end of
+	# _apply_card REMOVED. The iter-302 toast at top of _apply_card
+	# already shows the full UpgradeCatalog label + sentence (richer
+	# than just "LEVEL UP <label>"), so this fire was redundant and
+	# produced 2 toasts per pick. The `msg` local is still computed
+	# above for any future use within the match arms.
 
 
 func _poll_levelup_pick_input() -> void:
