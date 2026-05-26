@@ -73,26 +73,26 @@ func _initialize() -> void:
 			quit(1); return
 	print("  case B: 4 chip bgs + 4 labels, sizes match constants")
 
-	# === Case C: reserve labels match loadout state.
-	# Loadout defaults: he_reserve=0, heat_reserve=0, apcr_reserve=0.
-	# Set them to known non-zero values to assert label refresh.
+	# === Case C: reserve labels match loadout state (iter 300 WoT-style:
+	# "AP --" / "HE 6" / "HEAT 3" / "APCR 4" — full shell-name + reserve,
+	# matching the legacy tray semantics now that the tray is removed).
 	pt.loadout.he_reserve = 6
 	pt.loadout.heat_reserve = 3
 	pt.loadout.apcr_reserve = 4
 	pt._update_shell_chips()
-	if pt._shell_chip_labels[0].text != "AP":
-		push_error("FAIL — AP chip label = '%s', want 'AP'" % pt._shell_chip_labels[0].text)
+	if pt._shell_chip_labels[0].text != "AP --":
+		push_error("FAIL — AP chip label = '%s', want 'AP --'" % pt._shell_chip_labels[0].text)
 		quit(1); return
-	if pt._shell_chip_labels[1].text != "6":
-		push_error("FAIL — HE chip label = '%s', want '6'" % pt._shell_chip_labels[1].text)
+	if pt._shell_chip_labels[1].text != "HE 6":
+		push_error("FAIL — HE chip label = '%s', want 'HE 6'" % pt._shell_chip_labels[1].text)
 		quit(1); return
-	if pt._shell_chip_labels[2].text != "3":
-		push_error("FAIL — HEAT chip label = '%s', want '3'" % pt._shell_chip_labels[2].text)
+	if pt._shell_chip_labels[2].text != "HEAT 3":
+		push_error("FAIL — HEAT chip label = '%s', want 'HEAT 3'" % pt._shell_chip_labels[2].text)
 		quit(1); return
-	if pt._shell_chip_labels[3].text != "4":
-		push_error("FAIL — APCR chip label = '%s', want '4'" % pt._shell_chip_labels[3].text)
+	if pt._shell_chip_labels[3].text != "APCR 4":
+		push_error("FAIL — APCR chip label = '%s', want 'APCR 4'" % pt._shell_chip_labels[3].text)
 		quit(1); return
-	print("  reserve labels match loadout state: AP/6/3/4")
+	print("  reserve labels match loadout state: AP --/HE 6/HEAT 3/APCR 4")
 
 	# === Case D: selected chip is full-bright; others are dimmed.
 	pt.current_shell = BulletT.SHELL_CLASS_AP

@@ -110,11 +110,9 @@ var _dead: bool = false
 var _restart_armed: bool = false
 var _hp_label: Label
 # arc-4 iter 35: breach-mode shell panel (4 slots — AP/HE/HEAT/APCR).
-var _shell_panel: ColorRect = null
-var _shell_slot_classes: Array[int] = []
-var _shell_slot_bgs: Array[ColorRect] = []
-var _shell_slot_chips: Array[ColorRect] = []
-var _shell_slot_labels: Array[Label] = []
+# iter 300 (user feedback #3): the iter-35 legacy `_shell_panel` and its
+# 4 slot fields REMOVED. Replaced by the iter-276 shell chips relocated
+# to bottom-center (WoT-style) with shell-name + reserve labels.
 var _shell_codex: ColorRect = null  # arc-4 iter 36: run-start shell primer
 # arc-4 iter 274 (Round 24 Phase A widget 2): reload bar — visualizes
 # GunTimer cooldown progress. fg width = bg_w * progress; fg color =
@@ -153,11 +151,16 @@ const SPEED_BASELINE: float = 32.0
 var _shell_chips_panel: ColorRect = null
 var _shell_chip_bgs: Array[ColorRect] = []
 var _shell_chip_labels: Array[Label] = []
-const SHELL_CHIPS_X: float = 3.0
-const SHELL_CHIPS_Y: float = 32.0
-const SHELL_CHIP_W: float = 20.0
-const SHELL_CHIP_H: float = 12.0
+# iter 300 (user feedback #3 — WoT-style bottom-center placement,
+# replacing the legacy iter-35 _shell_panel that lived at y=209):
+# shell chips moved from top-left to bottom-center, enlarged from
+# 20×12 to 32×16, labels carry full shell name + reserve like the
+# legacy tray. Centered: 4 chips × (32 + 2 gap) = 134 wide → x = 93.
+const SHELL_CHIP_W: float = 32.0
+const SHELL_CHIP_H: float = 16.0
 const SHELL_CHIP_GAP: float = 2.0
+const SHELL_CHIPS_X: float = 93.0  # (viewport_w 320 - 134) / 2 → centered
+const SHELL_CHIPS_Y: float = 215.0  # near bottom, above where legacy tray was
 # arc-4 iter 278 (Round 24 Phase A widget 4 v1): active-cards ribbon —
 # bottom-left strip above the route panel; each picked card adds a
 # category-tinted chip with a 2-letter abbreviation. Procedural V1;
@@ -1057,8 +1060,19 @@ func _apply_archetype_sprite(arch: int) -> void:
 
 
 func _set_shell_hud_visible(show: bool) -> void:
-	if _shell_panel != null:
-		_shell_panel.visible = show
+	# iter 300: legacy _shell_panel removed; retarget to the bottom-center
+	# shell chips panel. arc-2/3 has neither built (loadout-gated), so this
+	# stays a silent no-op on procedural baseline.
+	if _shell_chips_panel != null:
+		_shell_chips_panel.visible = show
+	# Hide individual chip bgs + labels too so the row doesn't render
+	# even if the wrapper panel isn't queried.
+	for bg in _shell_chip_bgs:
+		if bg != null:
+			bg.visible = show
+	for lbl in _shell_chip_labels:
+		if lbl != null:
+			lbl.visible = show
 	# Shell codex is the run-start primer that explains shells — only
 	# meaningful for DEFAULT. Don't auto-show it (visibility controlled
 	# elsewhere); only force-hide when non-DEFAULT.
@@ -2050,7 +2064,10 @@ func _setup_hud() -> void:
 	# arc-4 iter 35-36: breach-mode shell panel + run-start codex. Gated
 	# on loadout != null so arc-2/3 HUD is bit-identical (neither built).
 	if loadout != null:
-		_build_shell_panel(canvas)
+		# iter 300 (user feedback #3): _build_shell_panel REMOVED — the
+		# legacy 316×26 bottom tray at y=209 is replaced by the iter-276
+		# shell chips relocated to bottom-center (WoT-style). Labels now
+		# carry shell-name + reserve like the tray did.
 		_build_shell_codex(canvas)
 		_build_reload_bar(canvas)
 		_build_shell_chips(canvas)
@@ -2311,7 +2328,10 @@ func _build_shell_chips(canvas: CanvasLayer) -> void:
 	_shell_chips_panel.position = Vector2(SHELL_CHIPS_X - 1.0, SHELL_CHIPS_Y - 1.0)
 	var total_w: float = float(classes.size()) * (SHELL_CHIP_W + SHELL_CHIP_GAP)
 	_shell_chips_panel.size = Vector2(total_w, SHELL_CHIP_H + 2.0)
-	_shell_chips_panel.color = Color(0.04, 0.04, 0.06, 0.6)
+	# iter 300: use SHELL_PANEL_BG_DEFAULT so _flash_shell_panel_reject's
+	# fade target matches the actual base color (the constants now apply
+	# to the chips panel since the legacy _shell_panel is removed).
+	_shell_chips_panel.color = SHELL_PANEL_BG_DEFAULT
 	canvas.add_child(_shell_chips_panel)
 	for i in classes.size():
 		var x: float = SHELL_CHIPS_X + float(i) * (SHELL_CHIP_W + SHELL_CHIP_GAP)
@@ -2333,9 +2353,11 @@ func _build_shell_chips(canvas: CanvasLayer) -> void:
 		_shell_chip_labels.append(lbl)
 
 
-# arc-4 iter 276: per-frame chip update. Selected = full saturation;
-# others = dimmed. Reserve label reads the current count (or "AP" for
-# the unlimited class).
+# arc-4 iter 276 (chip update) — iter 300 reworked for WoT bottom-center
+# placement. Labels now show shell-name + reserve count (matching the
+# legacy tray that this replaces): "AP --" / "HE 6" / "HEAT 3" / "APCR 4".
+# Selected = full saturation; others = dimmed. Out-of-reserve dims the
+# whole chip alpha so the player sees which shells are empty.
 func _update_shell_chips() -> void:
 	if _shell_chip_bgs.is_empty():
 		return
@@ -2352,9 +2374,14 @@ func _update_shell_chips() -> void:
 		else:
 			bg.color = Color(base.r * 0.35, base.g * 0.35, base.b * 0.35, 0.85)
 		if sc == BulletT.SHELL_CLASS_AP:
-			_shell_chip_labels[i].text = "AP"
+			_shell_chip_labels[i].text = "AP --"
 		else:
-			_shell_chip_labels[i].text = "%d" % _shell_reserve(sc)
+			_shell_chip_labels[i].text = "%s %d" % [_shell_name(sc), _shell_reserve(sc)]
+		# iter 300: dim chip when reserve is empty (shell unavailable).
+		var dim: float = 1.0
+		if loadout != null and not loadout.can_fire(sc):
+			dim = 0.4
+		_shell_chip_labels[i].modulate.a = dim
 
 
 # arc-4 iter 292 reload-pip helpers REMOVED iter 297 — user playtest
@@ -2425,46 +2452,8 @@ func _update_reload_bar() -> void:
 	_reload_bar_fg.color = _shell_color(current_shell)
 
 
-# arc-4 iter 35 (Round 5, playtest finding 1 — "no shell UI"): build the
-# breach-mode shell panel. A 4-slot strip — one slot per shell class —
-# each with a colour chip (matching the in-flight Bullet modulate), the
-# shell name, and the finite reserve. Gated on loadout != null by the
-# caller, so arc-2/3 HUD is bit-identical (panel never built).
-func _build_shell_panel(canvas: CanvasLayer) -> void:
-	_shell_panel = ColorRect.new()
-	_shell_panel.name = "ShellPanel"
-	_shell_panel.position = Vector2(2, 209)
-	_shell_panel.size = Vector2(316, 26)
-	_shell_panel.color = SHELL_PANEL_BG_DEFAULT
-	_shell_panel.z_index = HUD_Z_RUN_CONTEXT  # iter 298 (gets replaced iter 299 anyway)
-	canvas.add_child(_shell_panel)
-	_shell_slot_classes = [
-		BulletT.SHELL_CLASS_AP, BulletT.SHELL_CLASS_HE,
-		BulletT.SHELL_CLASS_HEAT, BulletT.SHELL_CLASS_APCR,
-	]
-	for i in _shell_slot_classes.size():
-		var slot_x: float = 4.0 + float(i) * 78.0
-		var bg: ColorRect = ColorRect.new()
-		bg.position = Vector2(slot_x, 2)
-		bg.size = Vector2(76, 22)
-		bg.color = Color(0, 0, 0, 0)  # set per-frame by _update_shell_panel
-		_shell_panel.add_child(bg)
-		_shell_slot_bgs.append(bg)
-		var chip: ColorRect = ColorRect.new()
-		chip.position = Vector2(slot_x + 4.0, 9)
-		chip.size = Vector2(8, 8)
-		chip.color = _shell_color(_shell_slot_classes[i])
-		_shell_panel.add_child(chip)
-		_shell_slot_chips.append(chip)
-		var lbl: Label = Label.new()
-		lbl.position = Vector2(slot_x + 15.0, 4)
-		lbl.add_theme_color_override("font_color", Color.WHITE)
-		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
-		lbl.add_theme_constant_override("outline_size", 2)
-		lbl.add_theme_font_size_override("font_size", 10)
-		_shell_panel.add_child(lbl)
-		_shell_slot_labels.append(lbl)
-	_update_shell_panel()
+# arc-4 iter 35 _build_shell_panel REMOVED iter 300 — replaced by the
+# iter-276 shell chips relocated to bottom-center (user feedback #3).
 
 
 # arc-4 iter 102 (P1-D fix from code-review-iter-100): a brief
@@ -2475,33 +2464,21 @@ func _build_shell_panel(canvas: CanvasLayer) -> void:
 # read the rejection as a broken input). Tween fades back to default
 # over SHELL_PANEL_REJECT_FADE_S (~0.18s).
 func _flash_shell_panel_reject() -> void:
-	if _shell_panel == null:
+	# iter 300: legacy _shell_panel removed; retarget the reject-flash
+	# to the bottom-center chips panel (the iter-276 _shell_chips_panel).
+	# Same warm-orange flash + same fade duration, just on the new home.
+	if _shell_chips_panel == null:
 		return
-	_shell_panel.color = SHELL_PANEL_BG_REJECTED
-	var t: Tween = _shell_panel.create_tween()
-	t.tween_property(_shell_panel, "color", SHELL_PANEL_BG_DEFAULT,
+	_shell_chips_panel.color = SHELL_PANEL_BG_REJECTED
+	var t: Tween = _shell_chips_panel.create_tween()
+	t.tween_property(_shell_chips_panel, "color", SHELL_PANEL_BG_DEFAULT,
 		SHELL_PANEL_REJECT_FADE_S)
 
 
-# arc-4 iter 35: refresh the shell panel — reserve counts, the selection
-# highlight on current_shell, and dimming for out-of-reserve shells.
-func _update_shell_panel() -> void:
-	if _shell_panel == null or loadout == null:
-		return
-	for i in _shell_slot_classes.size():
-		var sc: int = _shell_slot_classes[i]
-		var shell_nm: String = _shell_name(sc)
-		if sc == BulletT.SHELL_CLASS_AP:
-			_shell_slot_labels[i].text = "%s  --" % shell_nm  # AP unlimited
-		else:
-			_shell_slot_labels[i].text = "%s  %d" % [shell_nm, _shell_reserve(sc)]
-		if sc == current_shell:
-			_shell_slot_bgs[i].color = Color(0.95, 0.95, 0.55, 0.45)
-		else:
-			_shell_slot_bgs[i].color = Color(0, 0, 0, 0)
-		var dim: float = 1.0 if loadout.can_fire(sc) else 0.4
-		_shell_slot_labels[i].modulate.a = dim
-		_shell_slot_chips[i].modulate.a = dim
+# arc-4 iter 35 _update_shell_panel REMOVED iter 300 — replaced by
+# _update_shell_chips (iter 276, relocated to bottom-center iter 300).
+# Reserve-count + selection-highlight + out-of-reserve dimming logic
+# now lives in the chips updater.
 
 
 # arc-4 iter 36: any movement / fire / shell-swap key — used to dismiss
@@ -2832,10 +2809,8 @@ func _update_run_hud() -> void:
 	if _time_label != null:
 		var t: int = int(_run_time)
 		_time_label.text = "TIME %d:%02d" % [t / 60, t % 60]
-	# arc-4 iter 35: refresh the shell panel — current shell + reserves.
-	# Only when a loadout exists (the panel is null otherwise).
-	if _shell_panel != null and loadout != null:
-		_update_shell_panel()
+	# arc-4 iter 35 shell-panel update REMOVED iter 300 — legacy tray gone;
+	# the iter-276 _update_shell_chips call below handles reserves now.
 	# arc-4 iter 274 (Round 24 Phase A widget 2): refresh reload bar.
 	if _reload_bar_fg != null and loadout != null:
 		_update_reload_bar()

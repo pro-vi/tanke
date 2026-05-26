@@ -17,6 +17,35 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 300 — BUILD — WoT-style shell tray: chips relocated to bottom-center; legacy 316×26 tray removed (user feedback #3)
+
+- Date: 2026-05-26
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; user-direction refactor closing playtest feedback #3).
+- Trigger: user feedback iter 297 #3 — "I like the top-left ammo icons but I think they should be moved center bottom like in WoT and replace the giant legacy ammo tray." Deferred to iter 300 because it's a bigger refactor than the other 3 items.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — user explicit direction. Closes the final piece of HUD feedback from the playtest brief acceptance loop.
+- Same-family check: iter 299 BUILD → 300 BUILD. Productive same-family; consult-001 + user-feedback application.
+- Constraints respected: all 7.
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** post Layer-2 substrate write (PlayerTank.gd ×58 — net deletion of legacy panel + relocation of chips; both gated on loadout != null). `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 87/87 PASS.
+- Files: scripts/PlayerTank.gd:
+  - SHELL_CHIPS_X / SHELL_CHIPS_Y / SHELL_CHIP_W / SHELL_CHIP_H repositioned: (3, 32, 20, 12) → (93, 215, 32, 16). 4 chips × 34 = 136 wide; centered in 320-wide viewport.
+  - `_update_shell_chips`: labels changed from short tokens ("AP" / "6") to legacy-tray-equivalent ("AP --" / "HE 6" / "HEAT 3" / "APCR 4"). Out-of-reserve chip label dimmed to alpha 0.4 (matches legacy tray's behavior).
+  - `_shell_chips_panel.color` set to `SHELL_PANEL_BG_DEFAULT` (the constant the reject-flash fade targets — used to be the legacy panel's constant; now shared).
+  - REMOVED: `_build_shell_panel` (62 lines), `_update_shell_panel` (16 lines), `_shell_panel` field, `_shell_slot_classes` / `_shell_slot_bgs` / `_shell_slot_chips` / `_shell_slot_labels` arrays. RETARGETED: `_flash_shell_panel_reject` now flashes `_shell_chips_panel`; `_set_shell_hud_visible` now toggles `_shell_chips_panel.visible` + individual chip bgs/labels.
+  - Removed `_update_shell_panel` call from `_update_run_hud`; `_update_shell_chips` call already exists (iter 276) and now carries the full reserve+selection logic.
+- Test harness updates:
+  - loop/breach/test_breach_hud.gd REWRITTEN: now verifies `ShellChipsPanel` exists at bottom-center (~viewport center x=160), 4 chips show "AP --"/"HE N"/"HEAT N"/"APCR N", selection highlight via brightness comparison, empty-reserve chip label alpha-dimmed, AND a NEW negative assertion that the legacy ShellPanel is NOT built (catches removal regression).
+  - loop/breach/test_breach_shell_chips.gd updated for the WoT-style labels.
+  - loop/breach/test_breach_archetype.gd retargeted "ShellPanel" → "ShellChipsPanel" in its HUD-piece spot check.
+  - loop/breach/test_breach_fire_while_swap.gd retargeted `_shell_panel` → `_shell_chips_panel` (the reject-flash now lands on the chips panel).
+- Empirical screenshot at tools/out/q1_frame00000007.png (committed inline): top-left HP bar / HP label / LVL / XP bar / reload-bar-line clean and compact (8pt typography from iter 299). Top-right DEPTH/TIME/BEST/SPD column compact. Bottom-center shows "[AP --]  [HE 0]  [HEAT 0]  [APCR 0]" with AP chip bright (selected) and HE/HEAT/APCR labels dimmed (out-of-reserve at default loadout). Legacy 316×26 bottom strip gone — the proof-room view between the HUD strips is much cleaner.
+- Finding: **User-direction Q1ProofRoom playtest feedback #1–#4 all resolved across iters 297-300:** reload pip removed (#1), z-index audit + explicit hierarchy (#2), shell tray moved bottom-center WoT-style (#3), reload-bar looping bug fixed (#4). Plus iter 299 typography harmonization (the underlying "messy top-left" feeling). All 4 visible-with-screenshot. test-breach 87/87 green throughout. Hash anchor `23d6a2ec…` bit-identical through every iter.
+- substrate_writes_this_arc: 94 → 95 (PlayerTank.gd ×58 — net removal + relocation; all changes inside loadout-gated path).
+- quiet_signal_counter stays at 0 (downstream of iter-297 user-feedback source still active).
+
+---
+
 ## iter 299 — BUILD — typography harmonization: HP/Depth/Time/Best/Speed/Level labels → 8pt (user feedback "messy top-left")
 
 - Date: 2026-05-26

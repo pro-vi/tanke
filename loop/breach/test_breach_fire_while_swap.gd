@@ -9,7 +9,7 @@
 # legibility spirit — the cost surface must be readable.
 #
 # After the fix: when `_fire` is rejected by `_swap_cooldown > 0`,
-# `_flash_shell_panel_reject()` sets `_shell_panel.color` to
+# `_flash_shell_chips_panel_reject()` sets `_shell_chips_panel.color` to
 # `SHELL_PANEL_BG_REJECTED` (warm orange), then a tween fades it
 # back to `SHELL_PANEL_BG_DEFAULT` over `SHELL_PANEL_REJECT_FADE_S`.
 # Behavior unchanged (the swap-cost reload-beat is the iter-27
@@ -38,14 +38,14 @@ func _initialize() -> void:
 	await process_frame
 	await process_frame
 
-	if pt._shell_panel == null:
+	if pt._shell_chips_panel == null:
 		push_error("FAIL — shell panel was not built (loadout-gated; check _ready path)")
 		quit(1); return
 
 	# === Sanity: panel starts at the default dark BG.
-	if pt._shell_panel.color != PlayerTankT.SHELL_PANEL_BG_DEFAULT:
-		push_error("FAIL — initial _shell_panel.color = %s, want SHELL_PANEL_BG_DEFAULT" \
-				% pt._shell_panel.color)
+	if pt._shell_chips_panel.color != PlayerTankT.SHELL_PANEL_BG_DEFAULT:
+		push_error("FAIL — initial _shell_chips_panel.color = %s, want SHELL_PANEL_BG_DEFAULT" \
+				% pt._shell_chips_panel.color)
 		quit(1); return
 	print("  initial panel color = SHELL_PANEL_BG_DEFAULT (dark)")
 
@@ -57,9 +57,9 @@ func _initialize() -> void:
 	pt._fire()
 	# Immediately inspect — the tween has not yet stepped, so the
 	# panel color is at its flash-start value (SHELL_PANEL_BG_REJECTED).
-	if pt._shell_panel.color != PlayerTankT.SHELL_PANEL_BG_REJECTED:
-		push_error("FAIL — after rejected fire: _shell_panel.color = %s, want SHELL_PANEL_BG_REJECTED (silent-drop regression)" \
-				% pt._shell_panel.color)
+	if pt._shell_chips_panel.color != PlayerTankT.SHELL_PANEL_BG_REJECTED:
+		push_error("FAIL — after rejected fire: _shell_chips_panel.color = %s, want SHELL_PANEL_BG_REJECTED (silent-drop regression)" \
+				% pt._shell_chips_panel.color)
 		quit(1); return
 	print("  after rejected fire: panel flashed SHELL_PANEL_BG_REJECTED (warm orange)")
 
@@ -83,12 +83,12 @@ func _initialize() -> void:
 	# default if we don't step exactly the right number of frames,
 	# but it should be in the direction of default (the red channel
 	# should be much lower than SHELL_PANEL_BG_REJECTED's 1.0).
-	if pt._shell_panel.color.r > 0.5:
+	if pt._shell_chips_panel.color.r > 0.5:
 		push_error("FAIL — panel did not fade back (color.r = %.2f after 30 frames, want < 0.5)" \
-				% pt._shell_panel.color.r)
+				% pt._shell_chips_panel.color.r)
 		quit(1); return
 	print("  panel faded back toward default after tween (color.r = %.3f)" \
-			% pt._shell_panel.color.r)
+			% pt._shell_chips_panel.color.r)
 
 	# === Control: when `_swap_cooldown == 0`, fire is NOT rejected
 	# and the panel is NOT flashed. The fire goes through normally
@@ -96,7 +96,7 @@ func _initialize() -> void:
 	# can_shoot flips).
 	pt._swap_cooldown = 0.0
 	pt.can_shoot = true
-	pt._shell_panel.color = PlayerTankT.SHELL_PANEL_BG_DEFAULT
+	pt._shell_chips_panel.color = PlayerTankT.SHELL_PANEL_BG_DEFAULT
 	# Direct _fire emits the `shoot` signal; without a connected
 	# handler the emit is harmless. Skip if the muzzle node isn't
 	# present in this minimal harness.
@@ -104,7 +104,7 @@ func _initialize() -> void:
 		print("  (skipping control fire — no Muzzle in instantiated PlayerTank)")
 	else:
 		pt._fire()
-		if pt._shell_panel.color == PlayerTankT.SHELL_PANEL_BG_REJECTED:
+		if pt._shell_chips_panel.color == PlayerTankT.SHELL_PANEL_BG_REJECTED:
 			push_error("FAIL — control fire (no swap cooldown) wrongly flashed the panel")
 			quit(1); return
 		if pt.can_shoot:

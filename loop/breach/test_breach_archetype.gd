@@ -43,7 +43,8 @@ func _initialize() -> void:
 	# Spot-check that the existing breach HUD pieces still build (Round 5/6/8).
 	# RoutePanel is skipped — it requires a breach-level parent with
 	# breach_config; this harness uses root as the parent.
-	for nm in ["ShellPanel", "LevelLabel", "ShellCodex", "ShieldLabel"]:
+	# iter 300: ShellPanel removed, replaced by ShellChipsPanel (bottom-center).
+	for nm in ["ShellChipsPanel", "LevelLabel", "ShellCodex", "ShieldLabel"]:
 		if hud.get_node_or_null(nm) == null:
 			push_error("FAIL — DEFAULT archetype regressed breach HUD (missing %s)" % nm)
 			quit(1); return
