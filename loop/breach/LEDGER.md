@@ -17,6 +17,27 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 304 — BUILD — apply iter-301 visual-verification discipline to iter-302 toast (post-pick baseline)
+
+- Date: 2026-05-26
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; closes the visual-verification gap for the iter-302 toast).
+- Trigger: framing-audit gate fired honestly — user-authorized backlog is drained. Two options: surface to user, or pick the smallest legitimate hardening. Took the smallest: apply the iter-301 visual-verification discipline to the iter-302 toast, which I shipped WITHOUT a screenshot baseline. That's the same pattern iter-301 was specifically encoded to prevent — applying the discipline retroactively closes the gap.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — visual verification of the consult-001-driven feature (iter-302 toast = H5 sub-recommendation downstream of Option B). Gate passes; the work is anchor-tied to the same user direction lineage that authorized iters 280-303.
+- Same-family check: iter 303 BUILD → 304 BUILD. Both anchor-tied structural hardening; productive same-family.
+- Constraints respected: all 7. Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** — tooling-only (driver + Makefile target + baseline image); no substrate touch. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 89/89 PASS.
+- Falsifications: 1 mid-iter, caught by inspection of captured frames:
+  - First `make screenshot-q1-post-pick` ran but only the FINAL frame at frame 7 was saved as the latest; toast had already faded by that point (1.5s tween at --fixed-fps 1). Discovery method: noticed frame 5 was 10417 bytes vs frame 6/7 at ~7970 bytes — the extra ~2.5KB was the toast text. Read frame 5 inline and confirmed the toast was visible there. Fix: keep the latest frame as `tools/out/q1_post_pick_latest.png` for the static "post-pick state" view, but use frame 5 (or the largest middle frame) as the BASELINE for the toast-visible view at `tools/refs/q1_post_pick_baseline.png`.
+- Files: tools/q1_screenshot.gd (Q1_PICK_CARD env var support — when set to "1", applies HP_PLUS_1 LATE in the await sequence so the captured frame catches the toast at high opacity), Makefile (NEW `screenshot-q1-post-pick` target wrapping the env-var invocation), tools/refs/q1_post_pick_baseline.png (NEW — toast-visible baseline showing "HP +1 — survive one more hit" green text fading upward + the green HP ribbon chip at bottom-left + HP 4/4 in top-left after the iter-302 toast + iter-278 ribbon update + iter-1380 match-arm effect all fire together).
+- Empirical: visually confirmed the iter-302 toast renders at near-top-center (around y=22-30) with green color (HP_PLUS_1 category) + text containing "HP +1 — survive one m..." (text truncates as the position tween moves it upward + alpha fades). Ribbon chip 0 at bottom-left fills with HP_PLUS_1 green color. HP label in top-left now reads "HP 4/4" (was 3/3 — the match-arm `max_hp += 1; hp += 1` fired). Three iter-300-era integrations all visually verified through one screenshot.
+- Observation (not actioned this iter): toast position at x=140 puts it horizontally between the top-left HP/LVL/XP column and the top-right DEPTH/TIME/BEST/SPD column. Borderline overlap with neither column in this specific capture, but the toast width grows with text length — long card sentences could nick the ascender column. Filed mentally; not a user-reported issue.
+- Finding: **The visual-verification gap on iter-302's toast is now closed via the iter-301 discipline applied retroactively.** Future iters that touch toast / ribbon / HP-label code can run `make screenshot-q1-post-pick` + `Read` + diff against `tools/refs/q1_post_pick_baseline.png` to catch unintended drift. The frame-5-not-frame-7 finding documents a real subtlety of the capture pipeline (--fixed-fps 1 + tween durations interact non-obviously).
+- substrate_writes_this_arc: unchanged at 96 (tooling + baseline image; no script changes).
+- quiet_signal_counter stays at 0.
+
+---
+
 ## iter 303 — BUILD — e2e card-pick harness (visual-verification discipline applied at card-flow layer)
 
 - Date: 2026-05-26

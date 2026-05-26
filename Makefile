@@ -38,6 +38,21 @@ screenshot-q1:
 	cp "$$latest" tools/out/q1_latest.png; \
 	echo "captured: tools/out/q1_latest.png (was $$latest)"
 
+# Arc-4 iter 304 (visual-verification of iter-302 toast): captures Q1
+# room with HP_PLUS_1 picked so the iter-302 pickup toast + iter-278
+# ribbon chip both render. Output: tools/out/q1_post_pick_latest.png.
+.PHONY: screenshot-q1-post-pick
+screenshot-q1-post-pick:
+	@mkdir -p tools/out
+	@rm -f tools/out/q1_frame*.png 2>/dev/null || true
+	@Q1_PICK_CARD=1 $(RENDERER) --write-movie tools/out/q1_frame.png \
+		--fixed-fps 1 --quit-after 8 \
+		--script res://tools/q1_screenshot.gd 2>/dev/null || true
+	@latest=$$(ls -t tools/out/q1_frame*.png 2>/dev/null | head -1); \
+	if [ -z "$$latest" ]; then echo "ERROR: no screenshot captured"; exit 1; fi; \
+	cp "$$latest" tools/out/q1_post_pick_latest.png; \
+	echo "captured: tools/out/q1_post_pick_latest.png (was $$latest)"
+
 # Capture frame PNGs via --write-movie (Metal renderer, window flashes briefly)
 screenshot:
 	@mkdir -p $(FRAMES_DIR)
