@@ -17,6 +17,26 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 295 — META — user-direction HALT: playtest + score consult-001 predictions
+
+- Date: 2026-05-26
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; halt iter).
+- Trigger: AskUserQuestion at iter 295 with 3 options (A: halt to playtest + score / B: open Round 25 / C: Stardew-pacing pivot). User chose Option A: "Halt — I'll playtest + score predictions."
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — calibration via real playtest is the structurally-correct closing move for the consult-001 application sprint. Without scoring, feel_consult_cap stays at 3 (uncalibrated) forever and the [FEEL-CONSULT] anchors stay untestable. Gate passes; halt is the right action.
+- Same-family check: iter 294 BUILD → 295 META. Mix is fine; user-direction is a strong-signal source.
+- Constraints respected: all 7 (META — no code).
+- Constraints risked: none.
+- Hash anchor: n/a (no substrate write).
+- Files: loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Finding: **Loop HALTED at iter 295 per user direction.** consult-001 application sprint resolved at 7-of-8 (Stardew-pacing user-declined). The Q1 proof room is playable + runtime-verified; HUD-as-status H6 pressure-fade visibility class shipped; playtest brief + REVIEW-QUEUE #30 + CONSULT-LEDGER scoring trigger all in place. User now playtests Q1ProofRoom.tscn + scores the 3 consult-001 predictions (per loop/breach/Q1-PROOF-ROOM-PLAYTEST-BRIEF.md debrief template). When scoring completes, STATE.consult_calibration tallies update; per CONSULT-LEDGER rules ≥2 hits + hit_rate ≥50% raises feel_consult_cap 3 → 4.
+- Loop resumes when user writes a new /loop input OR scores predictions.
+- substrate_writes_this_arc: unchanged at 92.
+- quiet_signal_counter RESET → 0 via SIGNAL_RECEIPT: source_id=askuserquestion-iter295-Option-A-halt; first_seen_iter=295; consumed_by_iter=295; changed_next_action=yes (loop halts); resulting_artifact=STATE phase update + LEDGER iter 295.
+- NOTE: scenes/Q1ProofRoom.tscn was lightly tidied by external editor between iter 294 and iter 295 (load_steps removed; cosmetic .tscn cleanup). No behavior change; harness still passes.
+
+---
+
 ## iter 294 — BUILD — consult-001 H6 visibility classes V1: pressure-fade ribbon + route panel (user direction Option A)
 
 - Date: 2026-05-25

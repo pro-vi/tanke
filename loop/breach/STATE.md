@@ -1,8 +1,8 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: round-24-consult-backlog-applying (7-of-8 applied through iter 294; only Stardew-pacing reframe remains)
-iter: 294
+phase: round-24-HALTED-user-playtest-pending (iter 295 — user chose Option A; calibration awaits scoring)
+iter: 295
 round24_blueprint: loop/breach/iter-270-round24-architect.md
 round24_status: opening — Phase A (HUD-as-status) → Phase B (scaling + tier breakthroughs) → Phase C (enemy-HP recurve). Stardew delta — same BC primitives, modern HUD + progression feel. User-directed iter 270 (2026-05-24).
 asset_gen_standing_capability: /agentify image_gen (ChatGPT) is the standing visual-asset pipeline — confirmed via Round 9 (4 tank archetype concept sprites) and Pro Consult 011 (motif-first procedural masks per H5). The full pipeline (prompt → image → palette extraction → 16×16 / 8×8 silhouette compliance → atlas pack) shipped end-to-end at iters 142-149. Sanctioned for HUD icons, card art, enemy variants, depot art, banner art, level decorations. Procedural PIL (`tools/gen_tile.py`, `tools/gen_archetype_sprites.py`) remains the same-iter fallback. iter 271 amendment lifts this from Round-9-specific to standing.
@@ -38,6 +38,12 @@ quiet_signal_source_ids_used:  # iter 273 — list of source_ids that have alrea
     consumed_by_iter: 294
     changed_next_action: yes
     resulting_artifact: scripts/PlayerTank.gd H6 pressure-fade (#55 substrate write) + test_breach_h6_pressure_fade.gd; consult-001 progress 6-of-8 → 7-of-8 applied; only Stardew-pacing reframe remains
+  - kind: user_direction
+    source_id: askuserquestion-iter295-Option-A-halt
+    first_seen_iter: 295
+    consumed_by_iter: 295
+    changed_next_action: yes (loop HALTS)
+    resulting_artifact: STATE phase update + LEDGER iter 295 META; loop awaits user playtest + scoring of consult-001's 3 predictions
 consult_calibration: {hits: 0, partial: 0, misses: 0, untested: 0}  # iter 273 — score of consult predictions against later real playtests; updated when user plays + scores. ≥2 hits AND hit rate ≥50% → calibrated_cap can rise to 4. Repeated misses → uncalibrated_cap lowers further or [FEEL-CONSULT] disabled.
 round23_status: closed-iter-201 (5 phases shipped; pick_card_on_levelup default false ABSORBED into Round 24 Phase A — flag flips true as part of HUD legibility work since cards are now visibly part of the loop)
 round23_blueprint: loop/breach/iter-196-round23-architect.md
@@ -87,16 +93,15 @@ last_consult: iter 280  # consult-001 — adversarial-over-artifact, Phase A clo
 consult_001_status: resolved-applied-h5-only  # 5 other recommendations (H4 / H6 / Q1 / Q3 / H1-gate-strengthen / reload-bar-dup / Stardew-pacing) backlogged in CONSULT-LEDGER; Phase B opening deferred pending breach-economy-proof-room (Q1) decision.
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: RUNNING — Q1 sprint CLOSED iter 290 at 7 iters (iters 283-290). The Q1 breach-economy proof room is now PLAYABLE + RUNTIME-VERIFIED at scene level: scenes/Q1ProofRoom.tscn loads with 4 shell-gated lanes (HE brick / APCR steel / HEAT armored / AP open), per-lane harness asserts cross-pollination ("AP cannot pass steel; only APCR drills"), RunRecap tracks shells_spent_on_routes vs combat in real bullet hits. Playtest brief at loop/breach/Q1-PROOF-ROOM-PLAYTEST-BRIEF.md awaits user scoring of consult-001's 3 falsifiable predictions. REVIEW-QUEUE #30 opened. Loop continues in active build awaiting either user direction OR cheapest remaining consult-001 backlog item from H6/H1/reload-bar-dup/Stardew-pacing/Q3-recap-surfacing.
-next_action: iter 295 — consult-001 application sprint is COMPLETE except for Stardew-pacing (which user declined at iter 283). The honest move: HALT and surface that the loop has finished what the user authorized. Loop should NOT continue unilaterally because (a) the only remaining item is Stardew-pacing which user explicitly chose NOT to take at iter 283 and (b) the calibration of consult-001's 3 predictions REQUIRES the user to playtest + score; otherwise feel_consult_cap stays at 3 forever and the [FEEL-CONSULT] anchors stay structurally untestable.
+loop_state: HALTED — iter 295 user chose Option A at AskUserQuestion: halt to playtest + score consult-001 predictions. consult-001 sprint resolved 7-of-8 applied (H4/H5/Q1-sprint/Q3-recap/reload-pip/H1/H6); 8th (Stardew-pacing) user-declined at iter 283. Q1 proof room playable + runtime-verified at scene level; HUD-as-status H6 pressure-fade live. Playtest brief at loop/breach/Q1-PROOF-ROOM-PLAYTEST-BRIEF.md with debrief template + 3 prediction-scoring questions. When user scores: STATE.consult_calibration updates → feel_consult_cap calibrates. Loop resumes on next /loop input or user signal.
+next_action: WAIT for user direction. User plays Q1ProofRoom.tscn + scores 3 consult-001 predictions per loop/breach/Q1-PROOF-ROOM-PLAYTEST-BRIEF.md. When user fills the debrief template + marks hit/partial/miss in CONSULT-LEDGER, STATE.consult_calibration tallies update. User then writes a new /loop input (or playtest/halt/stop) to resume.
 
-  Recommended for iter 295: PushNotification + AskUserQuestion to surface this naturally. Options:
-    A. Score consult-001 predictions now (user plays Q1ProofRoom; marks hit/partial/miss in CONSULT-LEDGER)
-    B. Pivot to Stardew-pacing reframe (the OPTION C the user previously declined; user may have changed their mind given the Q1+Q3 work is shipped)
-    C. Open Round 25 visual identity sprint (queued at REVIEW-QUEUE #27)
-    D. HALT loop pending direction
-
-  Framing-audit gate (PROMPT § iter 283) check: with 7/8 applied and only the user-blocked item remaining, continuing to "apply backlog" is no longer a legitimate framing — the backlog is consumed. Continuing would be drift back into "cheap fixes" mode that the iter-282 /meta finding named. Stopping or asking is the correct move.
+  When loop resumes options (per user direction):
+    - Direction "score me up" / debrief filled → loop updates consult_calibration + decides next sprint based on prediction outcomes
+    - Direction "Round 25 visual identity" → opens REVIEW-QUEUE #27 sprint (re-skin via /agentify image_gen)
+    - Direction "Stardew-pacing pivot" → opens 30+ iter reframe (the previously-declined Option C)
+    - Direction "playtest" → ALREADY in playtest-pending mode; this would be a no-op
+    - Direction "halt" / "stop" → loop stays halted (current state)
 score: 50/75 absolute · 50/75 effective  # C1=3,C2=3,C3=4,C4=3,C5=3,C6=4eff/3abs,C7=3,C8=4,C9=2,C10=5,C11=3,C12=3,C13=3,C14=3,C15=4  (iter 119 BUILD-QUALITY re-tags C10 anchor 5 from "arc-4 close" → "iter-N+ checkpoint (N ≥ 100)" — original anchor text was structurally unreachable after PROMPT's non-stop amendment; substantive cross-arc invariant overwhelmingly verified at iter-117 audit. C10 = 5 absolute. ★ 50/75 milestone reached — represents the structural ceiling absent playtest cite or new mechanical scope.)
 spike_report: loop/breach/iter-001-spike-report.md
 round5_blueprint: loop/breach/iter-033-round5-architect.md
