@@ -17,6 +17,25 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 303 — BUILD — e2e card-pick harness (visual-verification discipline applied at card-flow layer)
+
+- Date: 2026-05-26
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; structural integration coverage closing the iter-296-style gap at the card-flow layer).
+- Trigger: iter-301 visual-verification discipline named the pattern of unit-test-green-but-integration-broken; iter-296 fire e2e harness was the structural answer at the fire-path layer. iter-303 mirrors that fix at the levelup-pick → _apply_card layer. Without it, the iter-302 toast wiring could silently break under future refactor and only surface via user playtest.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — closes the integration-gap pattern that surfaced 5× during the playtest-feedback phase (iters 296-300). Anchor-tied to the iter-301 discipline. Same-family check: iter 302 BUILD → 303 BUILD, both anchor-tied structural hardening; productive.
+- Constraints respected: all 7. Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** — harness-only, no substrate write. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 89/89 PASS.
+- Falsifications: 1 mid-iter, caught + fixed:
+  - First harness run errored: `Parse Error: Function "get_tree()" not found in base self.` SceneTree IS the tree (the harness extends SceneTree). Fix: replaced `get_tree().paused` with bare `paused` (the SceneTree's own property). Same pattern that bit iter-296 (Godot 4 GDScript subtleties around scene-tree access).
+- Files: loop/breach/test_breach_card_pick_end_to_end.gd (NEW — 4 cases driving the full pick path: pre-state clean → `_show_levelup_pick(2)` shows panel + populates 3 choices → `_pick_levelup_card(0)` unpauses tree + hides panel + flips `_levelup_picking` → post-state asserts `_applied_cards` size 1 + ribbon chip 0 visible + pickup toast with label+sentence + match-arm effect (HP_PLUS_1 increments max_hp when that's what the random pool picked)), Makefile (.PHONY + check-breach-card-pick-e2e + test-breach aggregate; 89 targets now), loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Empirical: random pool picked MOMENTUM during this run; harness asserts that on whatever the random pick is, the toast text contains both the label ("MOMENTUM") AND the sentence-test description ("outrun the killbox"). HP_PLUS_1 effect assertion gates on picked_kind == HP_PLUS_1 so the test is robust to pool randomness.
+- Finding: **The integration-gap-via-harness-only-on-units pattern is now structurally defended at both the fire-flow (iter 296) and card-flow (iter 303) layers.** Future refactor of either path is gated by these e2e harnesses; user-playtest surprise is bounded to behavior that's hard to verify automatically (feel, attention under pressure, etc — the non-consultable axes from iter 273's CONSULT-LEDGER tag legend).
+- substrate_writes_this_arc: unchanged at 96 (harness-only).
+- quiet_signal_counter stays at 0 (downstream of iter-297 user-feedback source; this iter is downstream structural hardening of the pattern that source surfaced).
+
+---
+
 ## iter 302 — BUILD — consult-001 H5 sub-recommendation: card-pickup toast (full label + sentence) + dedup
 
 - Date: 2026-05-26
