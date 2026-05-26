@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://b7q1pr1q1pr1q"]
+[gd_scene format=3 uid="uid://b7q1pr1q1pr1q"]
 
 [ext_resource type="Script" path="res://scripts/Q1ProofRoomScene.gd" id="1_q1scene"]
 

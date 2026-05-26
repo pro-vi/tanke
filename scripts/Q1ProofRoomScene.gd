@@ -120,3 +120,17 @@ func _spawn_player() -> void:
 	add_child(spawned_player)
 	# arc-4 iter 289: expose alias for Bullet's lvl.player reach.
 	player = spawned_player
+	# arc-4 iter 296 (playtest-fix from user): connect the shoot signal
+	# so fired bullets actually instantiate. Mirrors Level.gd:17's pattern.
+	# Without this, _fire() emits shoot but no listener spawns a bullet
+	# → player feels like firing is broken.
+	spawned_player.shoot.connect(_on_player_shoot)
+
+
+# arc-4 iter 296 (playtest-fix): mirror Level.gd._on_PlayerTank_shoot —
+# instantiate the bullet at the muzzle position, add to scene, start with
+# Environment (1) + Enemy (8) collision mask.
+func _on_player_shoot(bullet: PackedScene, pos: Vector2, dir: int, shell_class: int = 0) -> void:
+	var b: Node2D = bullet.instantiate()
+	add_child(b)
+	b.start(pos, dir, 9, shell_class)

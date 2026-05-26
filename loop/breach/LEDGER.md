@@ -17,6 +17,27 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 296 — BUILD — playtest-fix: wire shoot signal in Q1ProofRoomScene + add end-to-end fire harness
+
+- Date: 2026-05-26
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; bug fix + honest verification gap closure).
+- Trigger: User attempted to playtest Q1ProofRoom.tscn at iter 295 and reported "I can't fire." Investigation: Q1ProofRoomScene.gd never connected the player's `shoot` signal to a bullet-spawn handler (Level.gd:17 + ProceduralLevel.gd:34 both do; the Q1 scene was missing it). _fire() emitted the signal but no listener instantiated the Bullet, so the player saw no projectile.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — basic firing must work for the playtest brief's prediction scoring to be possible. The fix is unblocking, not new scope.
+- Same-family check: this iter is a direct response to user feedback (strong signal); break of the iter-295 HALT explicitly authorized by user re-engagement. No family violation.
+- Constraints respected: all 7. Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** — Q1ProofRoomScene.gd is arc-4-owned (not in any of the 4 substrate freeze layers); no Layer 1/2/3 touch. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 87/87 PASS.
+- **HONEST GAP NAMED:** iter 289's per-lane "playthrough" harness called `Bullet._on_body_entered(body)` DIRECTLY, completely bypassing the shoot-signal → bullet-instantiation path. Iter 288's scene harness verified bodies + meta but never fired a bullet via the input flow. iter 290's brief claimed "playable + runtime-verified" — the runtime verification was scoped to units that all assumed integration worked. 85+ test-breach targets all green and the most basic player→fire→bullet flow was broken in the playable scene. This is exactly the seductive-but-hollow pattern consult-001 Q3 (0.92) warned about and iter-282 /meta named ("execution discipline substituting for direction-audit discipline") — user playtest surfaced it in seconds.
+- Fix:
+  - scripts/Q1ProofRoomScene.gd: `_spawn_player()` now calls `spawned_player.shoot.connect(_on_player_shoot)` after add_child; new `_on_player_shoot(bullet, pos, dir, shell_class)` handler mirrors Level.gd:36 (instantiate bullet, add_child, b.start(pos, dir, 9, shell_class) with Environment+Enemy collision mask 9).
+  - loop/breach/test_breach_q1_proof_fire_end_to_end.gd (NEW — 3 cases): scene+player precondition / pt._fire() spawns Bullet via wired shoot signal (the regression catcher) / spawned Bullet damages gate brick + ticks route-currency. Without the fix the harness fails at case 2 ("_fire() did not spawn a Bullet via shoot signal"); WITH the fix it passes. Verified BOTH paths via `git stash` round-trip.
+  - Makefile: .PHONY + check-breach-q1-proof-fire-e2e + test-breach aggregate; 87 targets now.
+- substrate_writes_this_arc: unchanged at 92 (Q1ProofRoomScene.gd is arc-4-owned, not substrate).
+- quiet_signal_counter RESET → 0 via SIGNAL_RECEIPT: source_id=user-feedback-iter296-cannot-fire; first_seen_iter=296; consumed_by_iter=296; changed_next_action=yes; resulting_artifact=Q1ProofRoomScene.gd shoot wiring + e2e regression harness.
+- Finding: **The verification claim "playable + runtime-verified" at iter 290 was overstated.** Unit harnesses verified layers in isolation; the integration was not exercised end-to-end. iter 296's new harness closes that specific gap and would catch any future regression of the same shape. Broader principle for future sprints (queue to PROMPT amendment if user direction allows): when a sprint produces a playable artifact, REQUIRE at least one end-to-end test that exercises input → output through the actual scene wiring, not just unit-level checks of each layer.
+
+---
+
 ## iter 295 — META — user-direction HALT: playtest + score consult-001 predictions
 
 - Date: 2026-05-26
