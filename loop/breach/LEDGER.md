@@ -17,6 +17,39 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 297 — BUILD — playtest-fix #1+#4: kill reload-bar loop bug + remove tank-adjacent pip (user feedback)
+
+- Date: 2026-05-26
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; user-feedback-driven cleanup).
+- Trigger: user playtest of Q1ProofRoom.tscn at iter 297 surfaced 4 issues:
+  1. tank-adjacent pip is unwanted ("reload bar shouldn't stay with my tank")
+  2. z-index of UI elements needs review (DEFERRED to iter 298+ — needs more investigation)
+  3. shell chips should move bottom-center WoT-style, replace legacy ammo tray (DEFERRED to iter 298 — bigger refactor)
+  4. reload bar appears to loop on its own after firing (cosmetic bug)
+- This iter handles #1 and #4. #2 + #3 queued for iter 298+.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — user feedback is the strongest signal for direction. Calibration vs consult-001 prediction 2 is happening live: user is overriding the tank-adjacent placement (consult-001 conf 0.84 — uncalibrated). Gate passes.
+- Same-family check: iter 296 BUILD → 297 BUILD. Both user-feedback-driven.
+- Constraints respected: all 7.
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** — no Layer 1/2/3 substrate writes; PlayerTank.gd changes are arc-4-only (the deleted pip lived inside loadout-gated block; the reload bar logic change reads _last_fire_time which already defaults to -100.0 on arc-2/3 baseline, producing the same "full bar = ready" rendering as before since arc-2/3 never builds the bar). `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 86/86 PASS (was 87; removed pip harness).
+- Falsifications:
+  - **Bug #4 root cause:** GunTimer is `one_shot = false` (Godot Timer default) in PlayerTank.tscn. After cooldown elapses → timer auto-restarts → time_left cycles back to wait_time → _update_reload_bar reads "filling" forever. can_shoot stayed true so gameplay was unaffected, but the visual read as broken. Fix: drive progress from `_last_fire_time` (monotonic, stamped only in _fire) instead of `GunTimer.time_left`. Same monotonic stamp the iter-294 H6 logic already uses, so both readouts now agree.
+- Files:
+  - scripts/PlayerTank.gd:
+    - `_update_reload_bar` rewired to read `_last_fire_time` + `gt.wait_time` (no longer queries `gt.time_left`; immune to the looping-timer artifact)
+    - REMOVED `_build_reload_pip()` + `_update_reload_pip()` helpers + `_reload_pip_bg` / `_reload_pip_fg` / `RELOAD_PIP_W` / `RELOAD_PIP_H` / `RELOAD_PIP_X` / `RELOAD_PIP_Y` fields + constants
+    - REMOVED `_build_reload_pip()` call from _setup_hud + `_update_reload_pip()` call from _update_run_hud
+  - loop/breach/test_breach_reload_bar.gd updated to verify new `_last_fire_time`-driven logic (set _last_fire_time = now → mid-cd; set far in past → ready-restored)
+  - loop/breach/test_breach_reload_pip.gd DELETED (pip removed)
+  - Makefile: check-breach-reload-pip target + .PHONY entry + test-breach aggregate entry all removed
+- Empirical: harness post-fire fg.size.x = 0.00 (was incorrectly 38.00 due to looping timer); post-cooldown fg.size.x = max_w 38.00 (ready restored). H6 pressure-fade harness still green (uses same `_last_fire_time` source so behavior is consistent).
+- Finding: **The verification-gap pattern struck again, smaller.** iter-274's harness verified mid-cooldown via `gt.wait_time` manipulation — never noticed that the timer in real play LOOPS because `one_shot = false`, so the assertion only passed on its synthetic single-frame test. User playtest surfaced the cosmetic bug in one fire. Fix uses the monotonic-stamp source that the iter-294 H6 work already established — single source of truth for "is the player in cooldown?" The pip removal completes a user-direct override of consult-001 prediction-2's "tank-adjacent" placement recommendation; that prediction will score "miss" when calibration runs.
+- substrate_writes_this_arc: unchanged at 92 (PlayerTank.gd changes are arc-4-only inside loadout-gated path).
+- quiet_signal_counter RESET → 0 via SIGNAL_RECEIPT: source_id=user-playtest-feedback-iter297-4-items; first_seen_iter=297; consumed_by_iter=297; changed_next_action=yes (cleanup + 2 deferred items); resulting_artifact=PlayerTank.gd reload-bar fix + pip removal + LEDGER note for iter-298 z-index + WoT-tray refactor.
+
+---
+
 ## iter 296 — BUILD — playtest-fix: wire shoot signal in Q1ProofRoomScene + add end-to-end fire harness
 
 - Date: 2026-05-26

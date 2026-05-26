@@ -93,24 +93,22 @@ func _initialize() -> void:
 		quit(1); return
 	print("  color: matches current_shell (AP) — %s" % str(pt._reload_bar_fg.color))
 
-	# Mid-reload: arm GunTimer with non-zero time_left, expect width < max.
+	# Mid-reload (iter 297 rewire): _update_reload_bar now reads
+	# _last_fire_time (a monotonic stamp) instead of GunTimer.time_left,
+	# because GunTimer is one_shot=false in PlayerTank.tscn and its
+	# time_left cycles forever post-fire (user-reported "reload bar
+	# loops on its own" — fixed by source-of-truth change).
 	if not pt.has_node("GunTimer"):
 		push_error("FAIL — PlayerTank scene missing GunTimer child")
 		quit(1); return
 	var gt: Timer = pt.get_node("GunTimer")
-	gt.wait_time = 1.0
-	gt.start()
-	# Force time_left to 0.5 (50% reloaded) so the assertion is deterministic.
-	# Godot Timer.start() resets time_left = wait_time; we can't directly
-	# write time_left, but we can advance by sleeping... Instead, since
-	# _update_reload_bar reads time_left/wait_time, we verify the formula
-	# by manipulating wait_time to a value we know:
-	gt.wait_time = 2.0  # if time_left ≈ 1.0 (just started but advancing) → progress < 1
-	# Wait a frame so the timer actually ticks.
-	await process_frame
+	gt.wait_time = 2.0
+	# Simulate "just fired" by stamping _last_fire_time = now.
+	pt._last_fire_time = Time.get_ticks_msec() / 1000.0
 	pt._update_reload_bar()
-	if pt._reload_bar_fg.size.x >= max_w - 0.5:
-		push_error("FAIL — after firing, fg width %.2f still ≈ max_w %.2f (no cooldown progress)" \
+	# At elapsed ≈ 0 / wait_time = 2.0, progress ≈ 0 → fg width ≈ 0.
+	if pt._reload_bar_fg.size.x >= max_w * 0.5:
+		push_error("FAIL — just-fired fg width %.2f ≥ half max_w %.2f (expected small)" \
 				% [pt._reload_bar_fg.size.x, max_w])
 		quit(1); return
 	if pt._reload_bar_fg.size.x < 0.0:
@@ -119,7 +117,17 @@ func _initialize() -> void:
 		quit(1); return
 	print("  mid-cooldown: fg.size.x = %.2f (< max_w %.2f; progress visible)" \
 			% [pt._reload_bar_fg.size.x, max_w])
-	gt.stop()  # clean up before color-cycle check
+	# Simulate cooldown elapsed by setting _last_fire_time far in past.
+	pt._last_fire_time = Time.get_ticks_msec() / 1000.0 - (gt.wait_time + 1.0)
+	pt._update_reload_bar()
+	if absf(pt._reload_bar_fg.size.x - max_w) > 0.5:
+		push_error("FAIL — post-cooldown fg width %.2f, want max_w %.2f (ready)" \
+				% [pt._reload_bar_fg.size.x, max_w])
+		quit(1); return
+	print("  post-cooldown: fg.size.x = %.2f (= max_w; ready-to-fire after wait_time elapsed)" \
+			% pt._reload_bar_fg.size.x)
+	# Reset _last_fire_time for color-cycle check.
+	pt._last_fire_time = -100.0
 
 	# Cycle shell → color updates next tick.
 	pt.current_shell = BulletT.SHELL_CLASS_HE
