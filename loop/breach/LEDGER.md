@@ -17,6 +17,55 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 305 — META — natural session close: PushNotification + halt per framing-audit gate
+
+- Date: 2026-05-26
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; honest session pause).
+- Trigger: iters 302-304 = 3 consecutive BUILDs of "structural hardening downstream of consult-001" without fresh user signal. The iter-273 strengthened admissibility rule explicitly forbids the 4th such iter without one of: consult artifact, PushNotification, bootstrap target, new harness probe, prompt amendment, OR session close. Iter 304's commitment was to escalate at iter 305 if no fresh signal landed. None landed. Following through.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — the trigger has been fully served (Q1 proof room shipped + verified + brief written + all playtest feedback resolved + consult-001 applied + visual-verification discipline encoded). Continuing now would be the cargo-cult pattern. The /meta finding from iter 282 explicitly named this: "the loop could become extremely good at managing the absence of evidence... while still avoiding 'did the game become more compelling to an actual player'." Honest stop.
+- Same-family check: iters 302-304 = 3 BUILDs of consult-cleanup / structural-hardening / visual-verification. The 4th would be the inadmissibility threshold. Iter 305 META + halt is the rule-compliant response.
+- Constraints respected: all 7 (META — no code).
+- Constraints risked: none.
+- Hash anchor: n/a (no substrate touch).
+- Files: loop/breach/LEDGER.md, loop/breach/STATE.md.
+- PushNotification fired: "tanke iter 305: loop halting. consult-001 8/8 applied. All 4 playtest feedback items resolved. Q1 proof room playable + verified. Awaiting fresh direction (playtest scoring, Round 25, new round, or stop)."
+- **Loop HALTED.** No ScheduleWakeup. Resumes when user writes /loop OR a new direction OR scores predictions.
+
+## What this session delivered (iters 270-304)
+
+| Phase | Iter range | Output |
+|---|---|---|
+| Round 24 open + Phase A widgets | 270-278 | 5 procedural HUD widgets shipped (reload bar, speed meter, shell chips, kill-flash, active-cards ribbon) |
+| Dice hooks + framing audit | 279-283 | /second-opinion fired (consult-001); /meta named frame-mismatch; PROMPT framing-audit gate added; user chose Option B = Q1 reframe |
+| Q1 sprint | 284-290 | Q1 proof room shipped: BreachBand + ASCII layout + parser + scene + spawn + per-lane harness + brief. Playable scene at scenes/Q1ProofRoom.tscn. |
+| consult-001 backlog | 291-294 | Q3 recap surfacing, reload-pip (later removed), H1 acceptance gate strengthen, H6 visibility classes |
+| User playtest feedback | 295-300 | Halt for scoring (iter 295) + user playtest surfaced 4 items + all resolved iters 297-300 (reload bug, pip removal, z-index audit, typography, WoT shell tray) |
+| Structural hardening | 301-304 | Visual-verification discipline encoded in PROMPT, baseline screenshots committed, e2e card-pick harness, H5 sub-rec toast + post-pick baseline |
+
+## Final state
+
+- **Hash anchor `23d6a2ec3bf2821f` preserved** through ~22 substrate writes across the arc.
+- **test-breach 89/89 green** (24 new harness targets added since iter 274: reload-bar, speed-meter, shell-chips, kill-flash, active-cards-ribbon, q1-proof, run-recap-routes, route-gate-wiring, q1-proof-parser, q1-proof-scene, q1-proof-playthrough, q1-proof-fire-e2e, hud-z-stack, h6-pressure-fade, card-pickup-toast, card-pick-e2e, route-currency-summary, reload-pip [later removed])
+- **test-all 5/5** green throughout (arc-3 regression guard never broke)
+- **PROMPT.md** now carries 3 structural defenses: same-family admissibility (iter 273), framing-audit gate (iter 283), visual-verification discipline (iter 301)
+- **consult-001** fully applied 8 of 8 actionable items; 9th (Stardew-pacing) user-declined at iter 283
+- **Q1 proof room** playable at scenes/Q1ProofRoom.tscn; brief at loop/breach/Q1-PROOF-ROOM-PLAYTEST-BRIEF.md; 3 falsifiable consult-001 predictions awaiting user scoring in CONSULT-LEDGER.md
+- **Baseline screenshots** at tools/refs/q1_baseline.png + tools/refs/q1_post_pick_baseline.png
+
+## Resume signals
+
+- User writes /loop with fresh prompt → loop continues
+- User plays Q1ProofRoom.tscn + scores consult-001 predictions in CONSULT-LEDGER → loop calibrates + picks next sprint based on outcome
+- User picks Stardew-pacing pivot (Option C from iter 283) → ~30+ iter reframe
+- User opens Round 25 (REVIEW-QUEUE #27 visual identity) → /agentify image_gen sprint
+- User writes "playtest" / "halt" / "stop" → no-op (loop already halted)
+
+- substrate_writes_this_arc: unchanged at 96.
+- quiet_signal_counter: 0 (no SIGNAL_RECEIPT reset on this iter — META iters don't reset per iter-273 rules).
+
+---
+
 ## iter 304 — BUILD — apply iter-301 visual-verification discipline to iter-302 toast (post-pick baseline)
 
 - Date: 2026-05-26
