@@ -17,6 +17,31 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 298 — BUILD — z-index audit (user feedback #2): explicit HUD layering hierarchy
+
+- Date: 2026-05-26
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; structural cleanup of layering rules).
+- Trigger: user feedback #2 from iter 297 ("z-index review for UI elements... when there is a popup, understand how much overlap and will UI show above it"). Audit was deferred from iter 297 because it needed proper investigation, not just a single edit.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — explicit z-stack contract closes a latent fragility: prior HUD relied on insertion-order stacking, so transient toasts could render OVER popups depending on which was added later. Direct downstream of playtest-driven hardening.
+- Same-family check: iter 297 BUILD → 298 BUILD. Both user-feedback-driven.
+- Constraints respected: all 7. Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** — HUD z-index additions only fire when the corresponding panel is built; arc-2/3 procedural baseline doesn't build the loadout-gated panels and only sets z_index on the death panel/label/restart hint (which exist on arc-2/3 too but stay invisible; z_index is metadata, doesn't affect terrain hash). Enemy kill-flash ring z-bump (49→52) only fires when `_last_damage_shell >= 0` — arc-2/3 bullets never set it. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 87/87 PASS.
+- Files:
+  - loop/breach/iter-298-z-index-audit.md (NEW — comprehensive layering map: world-layer z_index table, HUD-layer build-order sequence, proposed 7-tier constant table, overlap analysis for death overlay)
+  - scripts/PlayerTank.gd: + 7 HUD_Z_* constants (BASE=0 / RUN_CONTEXT=1 / INFO=10 / MODAL=20 / DEATH=30 / BANNER=35 / TOAST=40); explicit `z_index = HUD_Z_*` set at 8 build sites: archetype panel (MODAL), levelup panel (MODAL), shell codex (INFO), active-cards panel (RUN_CONTEXT), route panel (RUN_CONTEXT), shell panel (RUN_CONTEXT), death panel + death label + restart hint + breach prompt panel + breach prompt label (DEATH), band banner (BANNER), pickup toasts (TOAST)
+  - scripts/Enemy.gd: kill-flash ring edges z_index 49 → 52 (above HP bar at z=50/51 so ring not occluded on kill frame)
+  - loop/breach/test_breach_hud_z_stack.gd (NEW — 4 assertions: constants strictly ordered / built panels carry the right z_index / lazy popups get MODAL when built / pickup toast spawned during death overlay z_index > death panel z_index)
+  - Makefile: .PHONY + check-breach-hud-z-stack + test-breach aggregate; 87 targets now
+- Empirical: BASE(0) < RUN_CONTEXT(1) < INFO(10) < MODAL(20) < DEATH(30) < BANNER(35) < TOAST(40); toast at z=40 renders OVER death panel at z=30 confirming always-reach contract; world-layer ring z=52 now over HP bar z=50/51.
+- Finding: **HUD z-stack now explicit + tested.** Death overlay is on its own tier (30) above all run-time HUD (0-20); transient toasts (40) and band banner (35) reach the player even over the death overlay, preserving the always-on confirmation principle. Lazy-built popups (archetype + levelup) get the MODAL tier (20) so they correctly sit above run-context strips (1) but below death overlay (30). The latent insertion-order fragility — that a toast fired during a popup could render over it solely because of build order — is now structurally prevented.
+- Z-index reservation table maps the design intent for any FUTURE HUD work: future popups slot into 20 (modal) or 10 (info); transient feedback slots into 35-40; combat HUD stays at 0. Documented in iter-298-z-index-audit.md.
+- Remaining user-feedback item: #3 (move shell chips to center-bottom WoT-style, replace legacy ammo tray) — iter 299. Bigger refactor since it deletes the iter-35 _shell_panel.
+- substrate_writes_this_arc: 92 → 93 (PlayerTank.gd ×56 — added HUD_Z constants + z_index assignments; Enemy.gd ×8 — z-bump).
+- quiet_signal_counter stays at 0 (downstream of iter-297 user-feedback source).
+
+---
+
 ## iter 297 — BUILD — playtest-fix #1+#4: kill reload-bar loop bug + remove tank-adjacent pip (user feedback)
 
 - Date: 2026-05-26

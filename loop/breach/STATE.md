@@ -1,8 +1,8 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: round-24-user-playtest-feedback (iter 297 fixed reload-bar loop bug + removed tank pip; #2 z-index + #3 WoT tray queued)
-iter: 297
+phase: round-24-user-playtest-feedback (iter 298 z-index audit shipped; #3 WoT tray refactor queued)
+iter: 298
 round24_blueprint: loop/breach/iter-270-round24-architect.md
 round24_status: opening — Phase A (HUD-as-status) → Phase B (scaling + tier breakthroughs) → Phase C (enemy-HP recurve). Stardew delta — same BC primitives, modern HUD + progression feel. User-directed iter 270 (2026-05-24).
 asset_gen_standing_capability: /agentify image_gen (ChatGPT) is the standing visual-asset pipeline — confirmed via Round 9 (4 tank archetype concept sprites) and Pro Consult 011 (motif-first procedural masks per H5). The full pipeline (prompt → image → palette extraction → 16×16 / 8×8 silhouette compliance → atlas pack) shipped end-to-end at iters 142-149. Sanctioned for HUD icons, card art, enemy variants, depot art, banner art, level decorations. Procedural PIL (`tools/gen_tile.py`, `tools/gen_archetype_sprites.py`) remains the same-iter fallback. iter 271 amendment lifts this from Round-9-specific to standing.

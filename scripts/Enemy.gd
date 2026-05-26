@@ -657,28 +657,28 @@ func _spawn_kill_flash_ring(parent_node: Node) -> void:
 	top.size = Vector2(KILL_FLASH_RING_OUTER, stroke)
 	top.position = global_position - Vector2(half, half)
 	top.color = ring_color
-	top.z_index = 49
+	top.z_index = 52  # iter 298 — above HP bar (50/51) so ring not occluded on kill
 	parent_node.add_child(top)
 	# bottom edge
 	var bot: ColorRect = ColorRect.new()
 	bot.size = Vector2(KILL_FLASH_RING_OUTER, stroke)
 	bot.position = global_position - Vector2(half, -(half - stroke))
 	bot.color = ring_color
-	bot.z_index = 49
+	bot.z_index = 52  # iter 298 — above HP bar
 	parent_node.add_child(bot)
 	# left edge (inside top/bottom edges so they don't overlap)
 	var left: ColorRect = ColorRect.new()
 	left.size = Vector2(stroke, KILL_FLASH_RING_OUTER - 2.0 * stroke)
 	left.position = global_position - Vector2(half, half - stroke)
 	left.color = ring_color
-	left.z_index = 49
+	left.z_index = 52  # iter 298 — above HP bar
 	parent_node.add_child(left)
 	# right edge
 	var right: ColorRect = ColorRect.new()
 	right.size = Vector2(stroke, KILL_FLASH_RING_OUTER - 2.0 * stroke)
 	right.position = global_position - Vector2(-(half - stroke), half - stroke)
 	right.color = ring_color
-	right.z_index = 49
+	right.z_index = 52  # iter 298 — above HP bar
 	parent_node.add_child(right)
 	for edge in [top, bot, left, right]:
 		var tw: Tween = edge.create_tween()

@@ -1097,6 +1097,8 @@ func _build_archetype_panel(canvas: CanvasLayer) -> void:
 	_archetype_panel.size = Vector2(264, 188)
 	_archetype_panel.color = Color(0.05, 0.05, 0.08, 0.96)
 	_archetype_panel.visible = false
+	# iter 298 z-index audit: MODAL popup tier (run start / pick screens)
+	_archetype_panel.z_index = HUD_Z_MODAL
 	canvas.add_child(_archetype_panel)
 	_codex_line(_archetype_panel, "— PICK YOUR TANK —", Vector2(40, 12), 13,
 		Color(1.0, 0.95, 0.6, 1.0))
@@ -1239,6 +1241,8 @@ func _build_levelup_panel(canvas: CanvasLayer) -> void:
 	_levelup_panel.size = Vector2(264, 132)
 	_levelup_panel.color = Color(0.05, 0.05, 0.08, 0.96)
 	_levelup_panel.visible = false
+	# iter 298 z-index audit: MODAL popup tier
+	_levelup_panel.z_index = HUD_Z_MODAL
 	canvas.add_child(_levelup_panel)
 	_codex_line(_levelup_panel, "— PICK AN UPGRADE —", Vector2(40, 10), 13,
 		Color(1.0, 0.95, 0.6, 1.0))
@@ -1591,6 +1595,7 @@ func _show_pickup_toast(text: String, color: Color) -> void:
 	toast.add_theme_color_override("font_color", color)
 	toast.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 	toast.add_theme_constant_override("outline_size", 2)
+	toast.z_index = HUD_Z_TOAST  # iter 298 z-index audit — always-on-top feedback
 	canvas.add_child(toast)
 	var tween: Tween = toast.create_tween()
 	tween.set_parallel(true)
@@ -1956,6 +1961,7 @@ func _setup_hud() -> void:
 	_death_panel.size = Vector2(208, 130)
 	_death_panel.color = Color(0.0, 0.0, 0.0, 0.65)  # dark semi-transparent
 	_death_panel.visible = false
+	_death_panel.z_index = HUD_Z_DEATH  # iter 298 z-index audit
 	canvas.add_child(_death_panel)
 	_death_label = Label.new()
 	_death_label.name = "DeathLabel"
@@ -1969,6 +1975,7 @@ func _setup_hud() -> void:
 	_death_label.add_theme_constant_override("outline_size", 2)
 	_death_label.add_theme_font_size_override("font_size", 12)
 	_death_label.visible = false
+	_death_label.z_index = HUD_Z_DEATH  # iter 298
 	canvas.add_child(_death_label)
 	# iter 76: separate pulsing [R] RESTART hint (Q3 polish)
 	_restart_hint_label = Label.new()
@@ -1981,6 +1988,7 @@ func _setup_hud() -> void:
 	_restart_hint_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 	_restart_hint_label.add_theme_constant_override("outline_size", 2)
 	_restart_hint_label.visible = false
+	_restart_hint_label.z_index = HUD_Z_DEATH  # iter 298
 	canvas.add_child(_restart_hint_label)
 	# arc-4 iter 78 (Round 10 Phase 3): breach-mode playtest prompt
 	# panel — gated on loadout != null (the established breach-mode
@@ -1994,6 +2002,7 @@ func _setup_hud() -> void:
 		_breach_prompt_panel.size = Vector2(272, 56)  # iter 83: +12 for band-visit line
 		_breach_prompt_panel.color = Color(0.0, 0.0, 0.0, 0.65)
 		_breach_prompt_panel.visible = false
+		_breach_prompt_panel.z_index = HUD_Z_DEATH  # iter 298 — same layer as death overlay
 		canvas.add_child(_breach_prompt_panel)
 		_breach_prompt_label = Label.new()
 		_breach_prompt_label.name = "BreachPromptLabel"
@@ -2007,6 +2016,7 @@ func _setup_hud() -> void:
 		_breach_prompt_label.add_theme_constant_override("outline_size", 2)
 		_breach_prompt_label.add_theme_font_size_override("font_size", 8)
 		_breach_prompt_label.visible = false
+		_breach_prompt_label.z_index = HUD_Z_DEATH  # iter 298 — same layer as death overlay
 		canvas.add_child(_breach_prompt_label)
 	# Roguelike ascender HUD (iter 11) — top-right.
 	# iter 019 (F003 fix): gated on show_ascender_hud. When false (OG mode),
@@ -2184,6 +2194,7 @@ func _build_active_cards_ribbon(canvas: CanvasLayer) -> void:
 	_active_cards_panel.size = Vector2(total_w, ACTIVE_CARD_CHIP_H + 2.0)
 	_active_cards_panel.color = Color(0.04, 0.04, 0.06, 0.6)
 	_active_cards_panel.visible = false  # only appear once a card is picked
+	_active_cards_panel.z_index = HUD_Z_RUN_CONTEXT  # iter 298 z-index audit
 	canvas.add_child(_active_cards_panel)
 	for i in ACTIVE_CARDS_MAX_VISIBLE:
 		var x: float = ACTIVE_CARDS_X + float(i) * (ACTIVE_CARD_CHIP_W + ACTIVE_CARD_CHIP_GAP)
@@ -2341,6 +2352,25 @@ func _update_shell_chips() -> void:
 # rejected the tank-adjacent placement.
 
 
+# arc-4 iter 298 (z-index audit per user feedback #2): explicit HUD-layer
+# stacking constants so popups don't depend on insertion order.
+# Doc: loop/breach/iter-298-z-index-audit.md
+#   HUD_Z_BASE        — HP bar, reload bar, shell chips, ascender, speed, level/XP
+#   HUD_Z_RUN_CONTEXT — route panel, active-cards ribbon, legacy shell tray
+#   HUD_Z_INFO        — shell codex (run-start primer)
+#   HUD_Z_MODAL       — archetype pick, levelup pick, depot panel
+#   HUD_Z_DEATH       — death panel/label/restart hint/breach prompt
+#   HUD_Z_BANNER      — band-arrival banner (transient confirmation)
+#   HUD_Z_TOAST       — pickup toasts (transient feedback always reaches player)
+const HUD_Z_BASE: int = 0
+const HUD_Z_RUN_CONTEXT: int = 1
+const HUD_Z_INFO: int = 10
+const HUD_Z_MODAL: int = 20
+const HUD_Z_DEATH: int = 30
+const HUD_Z_BANNER: int = 35
+const HUD_Z_TOAST: int = 40
+
+
 # arc-4 iter 275: per-frame text update for the speed meter. Computes
 # effective speed = base speed × overdrive_mult (if burst active),
 # divides by SPEED_BASELINE (32 = BC default), formats one-decimal ratio.
@@ -2397,6 +2427,7 @@ func _build_shell_panel(canvas: CanvasLayer) -> void:
 	_shell_panel.position = Vector2(2, 209)
 	_shell_panel.size = Vector2(316, 26)
 	_shell_panel.color = SHELL_PANEL_BG_DEFAULT
+	_shell_panel.z_index = HUD_Z_RUN_CONTEXT  # iter 298 (gets replaced iter 299 anyway)
 	canvas.add_child(_shell_panel)
 	_shell_slot_classes = [
 		BulletT.SHELL_CLASS_AP, BulletT.SHELL_CLASS_HE,
@@ -2509,6 +2540,7 @@ func _build_shell_codex(canvas: CanvasLayer) -> void:
 	_shell_codex.position = Vector2(28, 26)
 	_shell_codex.size = Vector2(264, 206)
 	_shell_codex.color = Color(0.05, 0.05, 0.08, 0.96)
+	_shell_codex.z_index = HUD_Z_INFO  # iter 298 z-index audit
 	canvas.add_child(_shell_codex)
 	_codex_line(_shell_codex, "BREACH ECONOMY", Vector2(12, 8), 13,
 		Color(1.0, 0.95, 0.6, 1.0))
@@ -2626,6 +2658,7 @@ func _show_band_banner(band) -> void:
 	banner.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 	banner.add_theme_constant_override("outline_size", 2)
 	banner.add_theme_font_size_override("font_size", 11)
+	banner.z_index = HUD_Z_BANNER  # iter 298 z-index audit
 	canvas.add_child(banner)
 	_band_banner = banner
 	var tween: Tween = banner.create_tween()
@@ -2688,6 +2721,7 @@ func _build_route_strip() -> void:
 	_route_panel.position = Vector2(2, 195)
 	_route_panel.size = Vector2(316, 13)
 	_route_panel.color = Color(0.07, 0.07, 0.09, 0.82)
+	_route_panel.z_index = HUD_Z_RUN_CONTEXT  # iter 298 z-index audit
 	canvas.add_child(_route_panel)
 	var n: int = _route_bands.size()
 	var cell_w: float = 316.0 / float(n)
