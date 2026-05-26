@@ -17,6 +17,27 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 299 — BUILD — typography harmonization: HP/Depth/Time/Best/Speed/Level labels → 8pt (user feedback "messy top-left")
+
+- Date: 2026-05-26
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; visual polish pass).
+- Trigger: user playtest screenshot of top-left showing chaos — giant "HP 3/3" text overlapping the reload bar at y=24-28, LVL label crammed next to HP bar, shell chips with strikethrough artifact from HP label outline. Root cause: HP/Depth/Time/Best/Speed labels had NO `font_size` override → rendered at Godot default 16pt in a 320×240 pixel-art viewport.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — Phase A's whole purpose was visual legibility ("make systems visible"). Shipping 16pt labels in a pixel-art viewport defeated that mandate; user's playtest screenshot surfaced it.
+- Same-family check: iter 298 BUILD → 299 BUILD. Both user-feedback-driven.
+- Constraints respected: all 7.
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f` **verified bit-identical** — pure label-cosmetic changes; no behavior change, no Layer-1 substrate touch. `make test` exit 0; `make test-all` 5/5 PASS; `make test-breach` 87/87 PASS.
+- Files: scripts/PlayerTank.gd — added `add_theme_font_size_override("font_size", 8)` to: _hp_label (was default 16), _depth_label (was 16), _time_label (was 16), _best_label (was 16), _speed_label (was 16), _level_label (was 9 → 8 for consistency). Repositioned: _hp_label y 10→11, _time_label y 16→14, _best_label y 28→24, _speed_label y 40→34 (tightened spacing now that labels are compact).
+- Empirical: screenshot of Q1ProofRoom.tscn at iter 299 shows clean top-left (HP bar + "HP 3/3" small + reload bar visible as thin line + shell chips row clear of overlap) and top-right column (DEPTH 0 / TIME 0:02 / BEST / SPD tightly stacked at 8pt). Previously the labels at 16pt were ~3× larger than intended and collided.
+- Finding: **This was an accumulated-debt mess from 30+ iters adding widgets without harmonizing typography.** Every label added in different iters used Godot's default font_size (16) unless explicitly overridden. Compact HUD elements (chips, breach prompt, level label) had explicit 8pt; expository elements (HP, depth, time, best) didn't. The fix is conventional pixel-art-HUD typography: ALL compact HUD elements at 8pt unless they're titles/headers (codex/popup titles stay 12-13pt). Future labels should default to 8pt.
+- Recommended PROMPT amendment for future iters: when adding a new HUD label, always set `font_size = 8` unless the label is a title/header inside a modal popup (use 12-13). Catches the same regression structurally. Queued for next user-direction check.
+- Remaining: #3 (move shell chips bottom-center WoT-style + remove legacy ammo tray) — iter 300.
+- substrate_writes_this_arc: 93 → 94 (PlayerTank.gd ×57 — pure cosmetic theme overrides + repositions).
+- quiet_signal_counter stays at 0 (downstream of iter-297 user-feedback source).
+
+---
+
 ## iter 298 — BUILD — z-index audit (user feedback #2): explicit HUD layering hierarchy
 
 - Date: 2026-05-26

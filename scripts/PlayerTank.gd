@@ -1946,11 +1946,16 @@ func _setup_hud() -> void:
 	canvas.add_child(_hp_bar_fg)
 	_hp_label = Label.new()
 	_hp_label.name = "HPLabel"
-	_hp_label.position = Vector2(4, 10)  # iter 49: moved below bar
+	_hp_label.position = Vector2(4, 11)  # iter 49: moved below bar; iter 299: tightened to font_size 8
 	_hp_label.text = "HP %d/%d" % [hp, max_hp]
 	_hp_label.add_theme_color_override("font_color", Color.WHITE)
 	_hp_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 	_hp_label.add_theme_constant_override("outline_size", 2)
+	# iter 299 typography pass: was rendering at Godot default 16pt,
+	# overlapping the reload bar (y=24) AND the LVL label (x=44, y=2).
+	# 8pt matches the shell-chip labels + breach prompt + level label
+	# (which was already 9pt). Compact HUD is the convention.
+	_hp_label.add_theme_font_size_override("font_size", 8)
 	canvas.add_child(_hp_label)
 	# iter 71 (F011 typography): dark semi-transparent backing panel behind
 	# death label improves readability against any terrain. Larger font_size
@@ -2031,14 +2036,16 @@ func _setup_hud() -> void:
 		_depth_label.add_theme_color_override("font_color", Color.WHITE)
 		_depth_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 		_depth_label.add_theme_constant_override("outline_size", 2)
+		_depth_label.add_theme_font_size_override("font_size", 8)  # iter 299
 		canvas.add_child(_depth_label)
 		_time_label = Label.new()
 		_time_label.name = "TimeLabel"
-		_time_label.position = Vector2(232, 16)
+		_time_label.position = Vector2(232, 14)  # iter 299: tightened spacing 16→14
 		_time_label.text = "TIME 0:00"
 		_time_label.add_theme_color_override("font_color", Color.WHITE)
 		_time_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 		_time_label.add_theme_constant_override("outline_size", 2)
+		_time_label.add_theme_font_size_override("font_size", 8)  # iter 299
 		canvas.add_child(_time_label)
 	# arc-4 iter 35-36: breach-mode shell panel + run-start codex. Gated
 	# on loadout != null so arc-2/3 HUD is bit-identical (neither built).
@@ -2059,22 +2066,24 @@ func _setup_hud() -> void:
 		_run_best_depth = _load_best_depth()
 		_best_label = Label.new()
 		_best_label.name = "BestLabel"
-		_best_label.position = Vector2(232, 28)
+		_best_label.position = Vector2(232, 24)  # iter 299: tightened 28→24
 		_best_label.text = "BEST %d" % _run_best_depth
 		_best_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.5, 1.0))
 		_best_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 		_best_label.add_theme_constant_override("outline_size", 2)
+		_best_label.add_theme_font_size_override("font_size", 8)  # iter 299
 		canvas.add_child(_best_label)
 		# arc-4 iter 275 (Round 24 Phase A widget 3): speed meter — top-right
 		# column, under BEST. Shows current speed normalized to BC baseline
 		# (32). Reflects RAM init, MOMENTUM card, and OVERDRIVE burst.
 		_speed_label = Label.new()
 		_speed_label.name = "SpeedLabel"
-		_speed_label.position = Vector2(232, 40)
+		_speed_label.position = Vector2(232, 34)  # iter 299: tightened 40→34
 		_speed_label.text = "SPD 1.0×"
 		_speed_label.add_theme_color_override("font_color", Color(0.65, 0.95, 0.65, 1.0))
 		_speed_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 		_speed_label.add_theme_constant_override("outline_size", 2)
+		_speed_label.add_theme_font_size_override("font_size", 8)  # iter 299
 		canvas.add_child(_speed_label)
 		# arc-4 iter 56 (Round 8a): XP bar + level readout — the visible
 		# roguelite progression beat (playtest-3). Top strip, right of HP.
@@ -2085,7 +2094,7 @@ func _setup_hud() -> void:
 		_level_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.4, 1.0))
 		_level_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 		_level_label.add_theme_constant_override("outline_size", 2)
-		_level_label.add_theme_font_size_override("font_size", 9)
+		_level_label.add_theme_font_size_override("font_size", 8)  # iter 299: was 9
 		canvas.add_child(_level_label)
 		_xp_bar_bg = ColorRect.new()
 		_xp_bar_bg.name = "XPBarBG"
