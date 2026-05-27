@@ -1,14 +1,14 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: round-25-probe-sprint-open (iter 306 — Option B per post_halt_direction nudge; probe sprint over visual identity; blueprint at loop/breach/iter-306-round25-probe-sprint-architect.md; first probe target = Q1 headless bot run at iter 307)
-iter: 306
+phase: round-25-probe-1-shipped (iter 307 — Q1 headless bot run driver + harness + report live at tools/q1_bot_run.gd + loop/breach/probes/probe-001-q1-bot-baseline.md; 5 numbered findings F1-F5; next iter 308 diagnoses Probe 2 vs Round close)
+iter: 307
 round24_blueprint: loop/breach/iter-270-round24-architect.md
 round24_status: opening — Phase A (HUD-as-status) → Phase B (scaling + tier breakthroughs) → Phase C (enemy-HP recurve). Stardew delta — same BC primitives, modern HUD + progression feel. User-directed iter 270 (2026-05-24).
 asset_gen_standing_capability: /agentify image_gen (ChatGPT) is the standing visual-asset pipeline — confirmed via Round 9 (4 tank archetype concept sprites) and Pro Consult 011 (motif-first procedural masks per H5). The full pipeline (prompt → image → palette extraction → 16×16 / 8×8 silhouette compliance → atlas pack) shipped end-to-end at iters 142-149. Sanctioned for HUD icons, card art, enemy variants, depot art, banner art, level decorations. Procedural PIL (`tools/gen_tile.py`, `tools/gen_archetype_sprites.py`) remains the same-iter fallback. iter 271 amendment lifts this from Round-9-specific to standing.
 round25_candidate: Visual identity layer — re-skin existing systems with /agentify-generated assets where they currently use stubs/palette swaps. Likely 30-50 iters. Opens after Round 24 Phase C ships, OR earlier if user redirects. Keeps the loop substantive past Round 24 close — addresses the user's iter-271 "longer running" directive by ensuring substantive surfaces are queued (saturation = bug, not feature).
 longer_running_discipline: "Longer-running loop" is NOT solved by extending cron — it's solved by ensuring the loop is always in active build. Saturation (e.g. iter-200-268 70-iter idle pattern) = bug. Cron stays at 240s active-build; queued substantive surfaces (Round 25 candidate + open-ended surface list in PROMPT.md) keep the loop bootstrapping forward.
-quiet_signal_counter: 1  # iter 306 bumped 0 → 1 — resume-via-/loop is NOT a fresh user_direction (re-references prior post_halt_direction which was already implicitly consumed at iter 305 close). META iter without anchor lift; no SIGNAL_RECEIPT entry. Next 2 iters should ship structural evidence (probe-1 + probe report) or counter hits 3 and forces escalate.
+quiet_signal_counter: 0  # iter 307 reset 1 → 0 — Probe 1 shipped concrete numerical artifacts (4 JSON data tables + 5 numbered findings + harness defending data shape). SIGNAL_RECEIPT entry below under quiet_signal_source_ids_used kind=structural_lift.
 halt_cause_label: none  # iter 272, strengthened iter 273 — signal-starvation / derivation-gap (can-halt) / stone-converged / wrong-loop (halts). Loop HALTS on: user signal + correctness violations + derivation-gap-cannot-resolve + wrong-loop. Other labels are metadata that force transition behavior.
 last_strong_signal_iter: 272  # iter 273 — last iter that reset quiet_signal_counter (272 user direction: PROMPT amendment via /second-opinion synthesis; consumed iter 273 into 8-patch amendment)
 feel_consult_cap: 3  # iter 273 LOWERED per /second-opinion — uncalibrated [FEEL-CONSULT] cap is 3 by default; calibrated cap 4 reachable only after CONSULT-LEDGER shows ≥2 prediction hits + hit rate ≥50% against real playtests; [FEEL] cap stays 5 (real playtest only); [IDENTITY-PROTECTED] anchors NEVER lift via [FEEL-CONSULT]; non-consultable feel criteria NEVER lift via consult (see RUBRIC.md tag legend)
@@ -44,6 +44,12 @@ quiet_signal_source_ids_used:  # iter 273 — list of source_ids that have alrea
     consumed_by_iter: 295
     changed_next_action: yes (loop HALTS)
     resulting_artifact: STATE phase update + LEDGER iter 295 META; loop awaits user playtest + scoring of consult-001's 3 predictions
+  - kind: structural_lift
+    source_id: probe-001-q1-bot-baseline-2026-05-27
+    first_seen_iter: 307
+    consumed_by_iter: 307
+    changed_next_action: yes
+    resulting_artifact: tools/q1_bot_run.gd + loop/breach/test_breach_q1_bot_run.gd + loop/breach/probes/probe-001-q1-bot-baseline.md + 4 JSON data tables (tools/out/q1_bot_run_*.json); 5 numbered findings F1-F5 producing structural floor evidence for "shells as route currency" identity
 consult_calibration: {hits: 0, partial: 0, misses: 0, untested: 0}  # iter 273 — score of consult predictions against later real playtests; updated when user plays + scores. ≥2 hits AND hit rate ≥50% → calibrated_cap can rise to 4. Repeated misses → uncalibrated_cap lowers further or [FEEL-CONSULT] disabled.
 post_halt_direction_iter_305: |
   Direction added 2026-05-27 pre-resume after user "kick the loop running again
@@ -140,8 +146,8 @@ last_consult: iter 280  # consult-001 — adversarial-over-artifact, Phase A clo
 consult_001_status: resolved-applied-h5-only  # 5 other recommendations (H4 / H6 / Q1 / Q3 / H1-gate-strengthen / reload-bar-dup / Stardew-pacing) backlogged in CONSULT-LEDGER; Phase B opening deferred pending breach-economy-proof-room (Q1) decision.
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: ACTIVE — Round 25 (probe sprint) open at iter 306. First probe (Q1 headless bot run) targeted at iter 307 CAPABILITY. Round caps at 3 probes OR 12 iters; substrate budget caps at 5 writes (currently 92; max 97). Cadence 240s. Visual-identity Round 25 stays queued at REVIEW-QUEUE #27.
-next_action: iter 307 CAPABILITY — implement Probe 1 (Q1 headless bot run). Build `tools/q1_bot_run.gd` SceneTree driver mirroring `tools/q1_screenshot.gd` pattern. Drive PlayerTank via direct `_fire()` + `_input_dir` stubs. Run 3 fixed policies × ≤1000 frames each. Output JSON log to `tools/out/q1_bot_run_<policy>.json`. New harness `loop/breach/test_breach_q1_bot_run.gd` verifies bot finishes cleanly + produces non-empty `record_shot_hit` log per policy. Substrate writes: 0. Per blueprint § Probe 1.
+loop_state: ACTIVE — Round 25 Probe 1 SHIPPED at iter 307. 5 numbered findings F1-F5 captured to probe-001 report. Routes pattern 1/1/1/1 ONLY for dominant_per_lane policy; ALWAYS_AP destroys 1/10 gate blocks vs 6/10 for DOMINANT (HE radius blast = 5×). Substrate writes still 92. Round 25 budget: 5 writes remaining for whole round.
+next_action: iter 308 DIAGNOSE — choose between (a) advancing to Probe 2 (shell × terrain matrix per blueprint), (b) closing Round 25 mid-round if F1-F5 already serve loop needs + bootstrapping a new surface, OR (c) META iter that consolidates Probe 1 findings into REVIEW-QUEUE for user visibility (this would be the user-look-trigger move). Loop diagnoses based on STATE + LEDGER tail + REVIEW-QUEUE freshness at iter 308 wake.
 
   When loop resumes options (per user direction):
     - Direction "score me up" / debrief filled → loop updates consult_calibration + decides next sprint based on prediction outcomes

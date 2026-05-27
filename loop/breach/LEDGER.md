@@ -17,6 +17,40 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 307 — CAPABILITY — Round 25 Probe 1: Q1 headless bot run driver + harness + report
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift — Round 25 explicitly does NOT lift [FEEL-CONSULT]; structural evidence accreted for later anchor candidates: C3 Ammo/C9 Recap).
+- Trigger: iter 306 blueprint targeted iter 307 CAPABILITY = Probe 1. Loop wake at scheduled 240s after iter 306 META.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — Round 25 (probe sprint) is the Option-B-nudged variant; Probe 1 produces structural evidence calibrating the "shells as route currency" identity claim that the Q1 sprint shipped. Anchor-tied to iter-283 user direction; downstream of iter-306 blueprint sanctioned by post_halt_direction.
+- Same-family check: iter 306 META → iter 307 CAPABILITY. Healthy alternation; productive same-family is fine — this CAPABILITY iter produces a concrete deliverable (driver + harness + report) not narration.
+- Constraints respected: 1, 6, 7 (probe surfaces death-attribution / recap-currency data; uses existing verb-not-stat shell classes; no combat modal added).
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` verified bit-identical post-edit on procedural baseline (seed 42 / default config) — no Layer 1/2/3 substrate touch.
+- Falsifications: 2 caught mid-iter:
+  - **F-iter307-1**: `const POLICY_NAMES: PackedStringArray = PackedStringArray([...])` failed to parse — Godot rejects PackedStringArray constructor in const context as "not constant expression." Fixed by changing to `const POLICY_NAMES: Array = [...]`. Same Godot-4 quirk that bit prior iters around typed const init.
+  - **F-iter307-2**: harness case 4 had inverted logic — `if t_steel_pre != null: FAIL` was the opposite of intent (the assertion is steel SURVIVES AP, so non-null is GOOD). Caught by harness fail-on-first-run; fixed inline.
+- Files added:
+  - `tools/q1_bot_run.gd` (NEW — SceneTree driver; 3 fixed bot policies × 4 gate targets; synthetic Bullet._on_body_entered per `test_breach_q1_proof_playthrough.gd` precedent; snapshot-based stat capture survives queue_free; writes 4 JSON files to tools/out/)
+  - `loop/breach/test_breach_q1_bot_run.gd` (NEW — 4-case harness: driver-constants smoke check + dominant_per_lane symmetry assertion + always_ap baseline assertion + AP-cannot-breach-steel cross-pollination assertion)
+  - `loop/breach/probes/probe-001-q1-bot-baseline.md` (NEW — probe report: 5 numbered findings F1-F5 + non-consultable list + next-probe candidates)
+  - `tools/out/q1_bot_run_always_ap.json`, `q1_bot_run_round_robin.json`, `q1_bot_run_dominant_per_lane.json`, `q1_bot_run_all.json` (NEW per-policy data)
+- Files modified: Makefile (added `check-breach-q1-bot-run` + `q1-bot-run` standalone targets; added new harness to `test-breach` aggregate at 87 OK markers now).
+- Empirical findings (per probe-001 report):
+  - **F1**: dominant_per_lane is the ONLY policy with routes pattern 1/1/1/1 — structural floor evidence for "shells as route currency" identity claim.
+  - **F2**: HE-on-steel records ZERO route hit (silent waste) — SteelBlock has no take_damage method → Bullet's _try_record_shot_hit guard skips. Truthful ledger but real risk: player sees no feedback for wrong-shell-vs-terrain.
+  - **F3**: AP-at-armored-Heavy records as route despite 0 damage (armor mitigates AP to 0; take_damage(0) still fires record). Ledger conflates "shell consumed at gate-body" with "shell damaged gate-body." Backlog: consider `deal > 0` guard on record_shot_hit.
+  - **F4**: HE radius blast destroys 5 adjacent bricks → dominant_per_lane breaches 6/10 gate blocks with 4 shells; other policies destroy only 1/10. Asymmetric cost/effect numerically validated.
+  - **F5**: probe contract met — bot finishes cleanly + non-empty hit log per policy + data shape differentiates.
+- substrate_writes_this_arc: unchanged at 92. Round 25 budget: 92 → max 97 (5 writes remaining for whole round).
+- test-breach: 86 → 87 OK markers; exit 0.
+- test-all: 5/5 PASS exit 0.
+- quiet_signal_counter: 1 → 0. SIGNAL_RECEIPT entry: this CAPABILITY iter produced a concrete probe deliverable (driver + harness + report + JSON) — qualifies as `kind: structural_lift` per iter-273 rules ("A `[STRUCTURE]` rubric anchor lift (numerical, not re-narration)" — Probe 1 produced 4 numerical data tables that did not previously exist; structural floor evidence captured for later anchor lift consideration).
+- Finding: **Round 25 Probe 1 ships clean.** Calibration data exists for the Q1 proof room. The bot-run is REPEATABLE (deterministic synthetic fire) and the harness defends against future regression of the data-shape. Next iter (308) candidates: (a) close Round 25 mid-round if the 5 findings already serve the loop's needs, OR (b) advance to Probe 2 (shell × terrain matrix) per blueprint. Loop diagnoses at iter 308 start.
+
+---
+
 ## iter 306 — META — open Round 25 (probe-sprint variant per post_halt_direction Option B nudge)
 
 - Date: 2026-05-27

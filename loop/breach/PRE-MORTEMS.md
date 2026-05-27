@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 307 — CAPABILITY — Round 25 Probe 1: Q1 headless bot run driver + harness
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1, 6, 7 (probe enriches death-attribution / recap-currency data via existing verb-not-stat shell classes; no combat modal added).
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — iter-306 blueprint targeted iter 307 CAPABILITY = Probe 1; downstream of post_halt_direction Option B nudge. Anchor-tied.
+- Same-family check: iter 306 META → iter 307 CAPABILITY. Healthy alternation; CAPABILITY delivers concrete driver + harness + report (not narration).
+- Predicted failure: synthetic-fire approach skips the runtime physics chain (PlayerTank._fire → emit shoot → physics → _on_body_entered) but iter-296 fire e2e harness already validates that path. Risk: probe data could diverge from real player experience because synthetic-fire bypasses GunTimer cooldowns + movement constraints. Mitigation: report explicitly frames probe as "structural floor evidence" — not "what real players will do."
+- Falsifiable claim: post-iter, (a) tools/q1_bot_run.gd parses + runs to completion via `make q1-bot-run`; (b) 4 JSON files written to tools/out/q1_bot_run_*.json; (c) harness test_breach_q1_bot_run.gd PASSES 4 cases (driver constants + dominant_per_lane symmetry + always_ap baseline + AP-cannot-breach-steel); (d) probe-001 report exists at loop/breach/probes/ with ≥3 numbered findings; (e) substrate_writes_this_arc unchanged at 92.
+- Sentence test: n/a (probe + harness; no upgrade work).
+- Substrate touched: NONE. Files added are tooling (tools/q1_bot_run.gd), harness (loop/breach/test_breach_q1_bot_run.gd), probe report (loop/breach/probes/probe-001-q1-bot-baseline.md), JSON output (tools/out/q1_bot_run_*.json). Makefile + LEDGER + STATE + PRE-MORTEMS appended.
+- Hash-anchor verification plan: no Layer 1/2/3 substrate touch → hash anchor 23d6a2ec3bf2821f bit-identical on procedural baseline (seed 42 / default config). Will re-run procedural oracle post-edit to confirm.
+
+---
+
 ## iter 306 — META — open Round 25 (probe-sprint variant per Option B nudge)
 
 - Date: 2026-05-27
