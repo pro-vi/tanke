@@ -24,6 +24,23 @@ Format:
 
 ---
 
+## iter 310 — META — Round 25 close + REVIEW-QUEUE consolidation (anti-accretion net zero)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 (META — no code).
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283) — fires at Round close: gate passes. Round 25 served the user's iter-270 trigger lineage via Option B nudge; probe reports are the user-facing artifacts.
+- Same-family check: iters 307/308/309 CAPABILITY × 3 → iter 310 META. Healthy alternation.
+- Anti-accretion check: ADD #31 (Round 25 close summary) + CLOSE #26 (Round 24 direction, superseded). Net zero. WATCH-FOR signal #2 compliant.
+- Predicted failure: closing #26 without user explicit ack risks "loop unilaterally archives a user-trigger entry." Mitigation: the closure note CITES the iter-305 natural close + iter-283 user-direction-Option-B as the supersession path; the original entry is preserved (audit trail), only the status is annotated.
+- Falsifiable claim: post-iter, (a) REVIEW-QUEUE has #31 (Round 25 close) added + #26 status marked CLOSED with iter-310 closure note; (b) STATE.phase reflects round-25-CLOSED-formally; (c) LEDGER iter 310 META entry written; (d) substrate_writes_this_arc unchanged at 92.
+- Sentence test: n/a (META).
+- Substrate touched: NONE (REVIEW-QUEUE + LEDGER + STATE + PRE-MORTEMS only).
+- Hash-anchor verification plan: no Layer 1/2/3 substrate touch → hash anchor 23d6a2ec3bf2821f bit-identical on procedural baseline.
+
+---
+
 ## iter 309 — CAPABILITY — Round 25 Probe 3: HUD coverage math + label-size audit
 
 - Date: 2026-05-27

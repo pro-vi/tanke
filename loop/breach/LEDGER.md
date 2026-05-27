@@ -17,6 +17,27 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 310 — META — Round 25 close + REVIEW-QUEUE consolidation (anti-accretion compliant: +1 add #31, -1 close #26)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; META iter formally closes Round 25 + REVIEW-QUEUE).
+- Trigger: STATE.next_action queued iter 310 META for Round 25 close + REVIEW-QUEUE consolidation under anti-accretion constraint (WATCH-FOR signal #2: 3+ new entries without closures = accretion anti-pattern).
+- Framing-audit gate (PROMPT § iter 283) — fires at Round close: does this serve user's iter-270 trigger? YES — Round 25 probe sprint produced calibration data CITABLE against the user's iter-270 "modern delta from raw BC" framing (HUD coverage 7.1%, ledger conflation surfaced, route-currency identity structurally floor-evidenced). Probe reports are READ artifacts for the user; this META iter consolidates them into REVIEW-QUEUE for visibility.
+- Same-family check: iters 307 → 308 → 309 CAPABILITY × 3 → iter 310 META. Healthy alternation; META iter closes the round + ships a concrete REVIEW-QUEUE consolidation + closes an open item.
+- Anti-accretion check: ADD #31 (Round 25 close summary) + CLOSE #26 (Round 24 direction, superseded). Net zero accretion. WATCH-FOR signal compliant.
+- Constraints respected: all 7 (META — REVIEW-QUEUE + LEDGER + STATE only).
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` verified bit-identical on procedural baseline. No substrate touch.
+- Falsifications: none.
+- Files: loop/breach/REVIEW-QUEUE.md (NEW entry #31 Round 25 close + closure note on #26), loop/breach/LEDGER.md, loop/breach/STATE.md, loop/breach/PRE-MORTEMS.md.
+- Empirical: REVIEW-QUEUE delta +1 / -1 (net zero); LEDGER iter-310 entry consolidates Round 25 finding for resume readers.
+- Finding: **Round 25 (probe sprint) FORMALLY CLOSED.** 3 probes shipped iters 307/308/309 with 0 substrate writes, hash anchor preserved, test-breach 86 → 89, 5+6+5 = 16 numbered findings across the 3 probe reports. consult-001 EXPIRED at iter 309 (metadata-only). Anti-accretion compliant — #26 (Round 24 direction) closed alongside #31 add. Iter 311 candidates per probe-003 next-iter posture: (a) bootstrap Round 26 visual-identity variant (REVIEW-QUEUE #27 — sanctioned candidate from post_halt_direction Option A), (b) more work-valid-without-playtest probes (diminishing returns), or (c) voluntary halt if structural ceiling fully approached. Loop diagnoses at iter 311 wake; default direction without fresh user signal = Round 26 visual identity (sanctioned + queued + standing asset_gen capability).
+- substrate_writes_this_arc: unchanged at 92.
+- quiet_signal_counter: 0 (META iter closes a round + does anti-accretion bookkeeping; not a fresh structural artifact but a necessary closure act per WATCH-FOR. No SIGNAL_RECEIPT — META closures don't reset per iter-273 rules; previous reset from iter 307-309 structural_lift entries already at floor).
+
+---
+
 ## iter 309 — CAPABILITY — Round 25 Probe 3: HUD coverage math + label-size audit + consult-001 expiration note
 
 - Date: 2026-05-27
