@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 314 — BUILD — Round 26 Phase A close: probe-004 ship report
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 (report-only; no code).
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283) — fires at Phase close: trigger lineage citable; Phase A serves Round 26 visual identity sprint scope. Gate passes.
+- Same-family check: iter 313 BUILD → iter 314 BUILD. 2 BUILDs in a row; each ships concrete deliverable; productive same-family.
+- Predicted failure: probe-004 report could be too generic OR could double-count the brick variant work that's already documented in DG-001 + iter 311 blueprint + LEDGER iters 311-313. Mitigation: focus on the CONSOLIDATED done-criteria CHECK + 4 numbered findings F1-F4 not present in the per-iter LEDGER entries; explicit Phase B trajectory recommendation distinguishes the report from the per-iter LEDGER.
+- Falsifiable claim: post-iter, (a) probe-004 report exists at loop/breach/probes/; (b) report contains done-criteria check table with 6 rows all PASS; (c) report names ≥4 findings + Phase B trajectory recommendation; (d) STATE.phase reflects round-26-phase-A-CLOSED; (e) substrate_writes_this_arc unchanged at 93.
+- Sentence test: n/a.
+- Substrate touched: NONE.
+- Hash-anchor verification plan: no Layer 1/2/3 substrate touch → hash anchor 23d6a2ec3bf2821f bit-identical on procedural baseline.
+
+---
+
 ## iter 313 — BUILD — Round 26 Phase A — BrickBlock variant_texture override field
 
 - Date: 2026-05-27

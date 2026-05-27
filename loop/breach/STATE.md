@@ -1,8 +1,8 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: round-26-phase-A-wiring-shipped (iter 313 BUILD — BrickBlock.gd substrate write #3 this arc adding variant_texture @export field; default null preserves arc-2/3 baseline bit-identical; 4-case harness verifies both codepaths; test-breach 89 → 90; iter 314 closes Phase A with probe-004 ship report)
-iter: 313
+phase: round-26-phase-A-CLOSED (iter 314 BUILD — probe-004 ship report at loop/breach/probes/probe-004-round26-phaseA-brick-variant.md; Phase A done criteria 6-of-6 PASS; F3 honest note: variant_texture field shipped but NOT YET ACTIVATED — Phase B activation is the smallest visible-change extension)
+iter: 314
 round24_blueprint: loop/breach/iter-270-round24-architect.md
 round24_status: opening — Phase A (HUD-as-status) → Phase B (scaling + tier breakthroughs) → Phase C (enemy-HP recurve). Stardew delta — same BC primitives, modern HUD + progression feel. User-directed iter 270 (2026-05-24).
 asset_gen_standing_capability: /agentify image_gen (ChatGPT) is the standing visual-asset pipeline — confirmed via Round 9 (4 tank archetype concept sprites) and Pro Consult 011 (motif-first procedural masks per H5). The full pipeline (prompt → image → palette extraction → 16×16 / 8×8 silhouette compliance → atlas pack) shipped end-to-end at iters 142-149. Sanctioned for HUD icons, card art, enemy variants, depot art, banner art, level decorations. Procedural PIL (`tools/gen_tile.py`, `tools/gen_archetype_sprites.py`) remains the same-iter fallback. iter 271 amendment lifts this from Round-9-specific to standing.
@@ -68,6 +68,12 @@ quiet_signal_source_ids_used:  # iter 273 — list of source_ids that have alrea
     consumed_by_iter: 312
     changed_next_action: yes (Phase A pivot from enemy sprite to terrain tile variant)
     resulting_artifact: loop/breach/derivation-gaps.md (NEW append-only log) + img/brick_012.png (NEW first Phase A asset via gen_tile.py sanctioned path) + iter-311 blueprint amended with pivot note
+  - kind: structural_lift
+    source_id: round-26-phase-A-close-probe-004-2026-05-27
+    first_seen_iter: 314
+    consumed_by_iter: 314
+    changed_next_action: yes
+    resulting_artifact: loop/breach/probes/probe-004-round26-phaseA-brick-variant.md (NEW Phase A ship report) + cumulative Round 26 Phase A artifacts (blueprint + brick_012.png + BrickBlock.variant_texture wiring + harness +1 OK marker); iter 315 default = Phase B activation (BreachBand.brick_variant field + Level._replace_blocks read-through)
 consult_calibration: {hits: 0, partial: 0, misses: 0, untested: 0}  # iter 273 — score of consult predictions against later real playtests; updated when user plays + scores. ≥2 hits AND hit rate ≥50% → calibrated_cap can rise to 4. Repeated misses → uncalibrated_cap lowers further or [FEEL-CONSULT] disabled.
 post_halt_direction_iter_305: |
   Direction added 2026-05-27 pre-resume after user "kick the loop running again
@@ -165,8 +171,8 @@ last_consult: iter 280  # consult-001 — adversarial-over-artifact, Phase A clo
 consult_001_status: resolved-applied-h5-only  # 5 other recommendations (H4 / H6 / Q1 / Q3 / H1-gate-strengthen / reload-bar-dup / Stardew-pacing) backlogged in CONSULT-LEDGER; Phase B opening deferred pending breach-economy-proof-room (Q1) decision.
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: ACTIVE — Round 26 Phase A wiring shipped at iter 313 BUILD. BrickBlock.gd substrate write #3 (+1 this iter; arc total now 93). variant_texture @export field defaults null → arc-2/3 baseline bit-identical (sprites_1.png frame 5); when set → standalone 8×8 tile (frame=0 hframes=1 vframes=1). Harness (`test_breach_brick_variant.gd`) verifies both codepaths + take_damage + beam_hp paths unaffected. test-breach 89 → 90. Round 26 substrate budget: 1 of 3-5 used.
-next_action: iter 314 BUILD — Phase A close. Ship probe-004 report at `loop/breach/probes/probe-004-round26-phaseA-brick-variant.md` consolidating: (a) iter 311 blueprint scope, (b) iter 312 derivation-gap DG-001 + brick_012.png asset + Phase A pivot, (c) iter 313 BrickBlock.variant_texture wiring + harness. Phase A done criteria check: ≤3 substrate writes (achieved at 1) + hash bit-identical (verified) + harness +1 (achieved 89 → 90) + asset shipped (✓ brick_012.png). After iter 314 closes Phase A, loop diagnoses whether to continue Round 26 into Phase B (activation wiring — Level.gd reads band-config + sets override per spawned brick) OR close Round 26 mid-scope + bootstrap next surface.
+loop_state: ACTIVE — Round 26 Phase A FORMALLY CLOSED at iter 314 BUILD. Probe-004 ship report consolidates the 4-iter Phase A scope (blueprint + pivot + asset + wiring + harness). Done criteria 6-of-6 PASS. F3 honest note: `variant_texture` field exists but no caller sets it — Phase A is structurally complete but VISUALLY INVISIBLE in-game. Probe-004 F4 recommendation: advance to Phase B activation at iter 315 (smallest "real visible change" extension).
+next_action: iter 315 BUILD — Round 26 Phase B activation. Wire BreachBand.gd with optional `brick_variant: Texture2D = null` field + Level.gd._replace_blocks() to read active band's brick_variant + pass to each instantiated BrickBlock via `b.variant_texture = active_band.brick_variant`. Update configs/breach_default.tres to assign brick_012.png to brick_maze band (depth 30-70). Harness verifies (a) brick_maze band → bricks render brick_012; (b) tutorial_choke band → bricks render canonical; (c) arc-2/3 procedural baseline → canonical bricks; (d) hash 23d6a2ec3bf2821f bit-identical. Substrate writes target: 1-2 (BreachBand.gd ×1 + Level.gd ×1). Round 26 budget after iter 315: 2-3 of 3-5 used. Phase B done = visible band-specific brick rendering in-game.
 
   When loop resumes options (per user direction):
     - Direction "score me up" / debrief filled → loop updates consult_calibration + decides next sprint based on prediction outcomes

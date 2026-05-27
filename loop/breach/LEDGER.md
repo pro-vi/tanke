@@ -17,6 +17,37 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 314 — BUILD — Round 26 Phase A close: probe-004 ship report consolidating blueprint + pivot + asset + wiring + harness
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; Phase A close ships a consolidated read-artifact for the user).
+- Trigger: iter 313 shipped Phase A wiring + harness; blueprint § iter 314 = probe-004 ship report. Closes Phase A's 4-iter scope (311-314).
+- Framing-audit gate (PROMPT § iter 283) — fires at Phase close: does this serve user's iter-270 trigger lineage? YES — Phase A consolidated report is the user-facing artifact for the visual identity sprint's first phase; gate passes via iter-270 + iter-271 + iter-305 post_halt_direction Option A lineage.
+- Same-family check: iter 311 META → 312 CAPABILITY → 313 BUILD → 314 BUILD. 2 BUILDs in a row but each ships concrete deliverable (313 substrate+harness, 314 probe report); productive same-family.
+- Constraints respected: all 7 (BUILD ships docs + report; no code change).
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` verified bit-identical on procedural baseline. No substrate touch this iter.
+- Falsifications: none.
+- Files added: `loop/breach/probes/probe-004-round26-phaseA-brick-variant.md` (NEW — Phase A consolidated ship report: 4-iter scope summary table + 6 done-criteria checks (ALL PASS) + 4 numbered findings F1-F4 + "what this probe can't tell us" + Round 26 next-iter posture recommendation).
+- Phase A done criteria verification (all 6 PASS):
+  - Sprite asset shipped: brick_012.png ✓
+  - Silhouette grammar gate cited (within-role-variant pattern documented in DG-001) ✓
+  - Loadout/data-gated wire (default null preserves arc-2/3 baseline) ✓
+  - Hash anchor 23d6a2ec3bf2821f bit-identical ✓
+  - test-breach +1 (89 → 90) ✓
+  - Substrate writes ≤3 (used 1) ✓
+- Findings recorded:
+  - **F1**: Pivot uncovered real dependency gap — gen_sprite.py = MLX = P1 NO-GO. Lesson: every blueprint claiming tool extension must grep the tool's source for forbidden deps before iter-1 commits.
+  - **F2**: Within-role variants invert silhouette gate's purpose. Backlog: `silhouette_gate.py --variant-mode` flag.
+  - **F3**: `variant_texture` field is shipped but NOT ACTIVATED — no caller sets it on any instantiated brick. Phase A is structurally complete but VISUALLY INVISIBLE; Phase B activation needed for player-visible change.
+  - **F4**: Round 26 trajectory choice — (a) advance to Phase B activation (~1-2 iters, ~1-2 writes, smallest real visible change) OR (b) close Round 26 + bootstrap different surface. Recommendation: (a) Phase B at iter 315 because Phase A's invisible-but-capable state isn't a satisfying closure point.
+- Finding: **Round 26 Phase A formally closes at iter 314.** 4 iters scope, 1 substrate write, hash anchor preserved, harness +1, derivation-gap DG-001 logged honestly, brick_012.png asset shipped via sanctioned tooling. Iter 315 default = Phase B activation per probe-004 F4 recommendation: wire BreachBand.gd `brick_variant: Texture2D = null` field + Level.gd._replace_blocks() to read active band variant + pass to instantiated bricks; configs/breach_default.tres assigns brick_012 to brick_maze band; harness verifies band-specific tile rendering.
+- substrate_writes_this_arc: unchanged at 93.
+- quiet_signal_counter: 0 (probe report is a structural artifact consolidating ~4 iters of work; reset already at floor from prior iters; SIGNAL_RECEIPT entry below).
+
+---
+
 ## iter 313 — BUILD — Round 26 Phase A — BrickBlock variant_texture override field (substrate write #1 of round; arc-2/3 baseline preserved)
 
 - Date: 2026-05-27
