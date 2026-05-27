@@ -183,6 +183,7 @@ Bottom line (verbatim): "Phase A was real progress, not fake shipping — but it
 - max_iters_without_real_playtest: 30 (default)
 - expires_at_iter: 309
 - expires_on_next_real_playtest: yes
+- **EXPIRED at iter 309 (2026-05-27) without prediction scoring.** No [FEEL-CONSULT] anchor was ever lifted via this consult (cap=3 uncalibrated; lift was contingent on prediction scoring which never landed). Per PROMPT § Expiry rules, the lift "reverts to structural floor" — but since no lift fired, expiration is a no-op on rubric state. The 3 falsifiable predictions remain UNSCORED (kind: untested in consult_calibration tally); future real playtest may still score them and update calibration retroactively. The consult's structural recommendations (H4/H5/Q1/Q3/H1/H6) were applied independently of the [FEEL-CONSULT] lift mechanism — those gains persist.
 
 ### Scoring (filled in by user after playtest)
 - iter_scored: TBD

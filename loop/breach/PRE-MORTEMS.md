@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 309 — CAPABILITY — Round 25 Probe 3: HUD coverage math + label-size audit
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1, 4 (probe enforces UI readability constraints that PROMPT names but no harness has backed); 7.
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283): YES — closes the 3-probe blueprint per iter-306 plan; anchor-tied to Round 25 (Option B nudge).
+- Same-family check: iter 307 CAPABILITY → 308 CAPABILITY → 309 CAPABILITY. 3 in a row, productive same-family (each ships concrete probe deliverable). The iter-273 admissibility rule targets NO-SIGNAL families; probes producing numerical findings + new harness assertions are signal, not noise.
+- Predicted failure: HUD enumeration may double-count nested ColorRects (parent + child both summed → coverage inflated). Mitigation: count only ColorRect + Label as primitive paint units; skip generic Container areas. Also: the codex panel will dominate if not dismissed (264×206 ≈ 71% of viewport) — must call _dismiss_codex first to measure steady-state HUD, not boot screen.
+- Falsifiable claim: post-iter, (a) harness PASSES 4 cases; (b) coverage < 25% of 320×240 viewport; (c) all visible labels have font_size ≥ 8; (d) probe-003 report contains ≥4 numbered findings; (e) tools/out/hud_coverage.json contains the measurements.
+- Sentence test: n/a (probe + harness; no upgrade work).
+- Substrate touched: NONE.
+- Hash-anchor verification plan: no Layer 1/2/3 substrate touch → hash anchor 23d6a2ec3bf2821f bit-identical on procedural baseline (seed 42).
+
+---
+
 ## iter 308 — CAPABILITY — Round 25 Probe 2: shell × target pressure matrix
 
 - Date: 2026-05-27

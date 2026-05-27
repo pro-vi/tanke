@@ -17,6 +17,40 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 309 — CAPABILITY — Round 25 Probe 3: HUD coverage math + label-size audit + consult-001 expiration note
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift — Round 25 ban on [FEEL-CONSULT] lifts; structural floor evidence accreted).
+- Trigger: iter 308 close → STATE.next_action gave 3 candidates; chose Probe 3 advance (closes blueprint's 3-probe plan). Also: consult-001 expires at iter 309 per blueprint buffer — handled with a CONSULT-LEDGER note explaining the no-op nature of the expiration (no [FEEL-CONSULT] lift ever fired; the consult's structural recommendations were applied independently).
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — Probe 3 enforces "HUD area ≤ 25% of viewport" constraint that PROMPT § blueprint names but no prior harness backed; iter 299 typography floor (≥ 8pt) likewise now locked. Anchor-tied to Round 25 (Option B nudge).
+- Same-family check: iter 307 CAPABILITY → 308 CAPABILITY → 309 CAPABILITY. 3 in a row but each ships CONCRETE probe deliverable producing numerical findings (not narration). Productive same-family by iter-273 rule (which targets NO-SIGNAL families specifically).
+- Constraints respected: 1, 4 (probe enforces UI readability constraints that gate every future HUD addition); 7 (no stat-soup).
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` verified bit-identical post-edit. No Layer 1/2/3 substrate touch.
+- Falsifications: 1 caught mid-iter:
+  - **F-iter309-1**: initial harness run reported HUD coverage 82.3% (way over 25% budget). Debug print of visible ColorRects surfaced the cause: ShellCodex 264×206 = 54384 px² = 71% of viewport. The codex is the run-start primer panel, shown ONLY before first play, not during steady-state. Fixed by calling `pt._dismiss_codex()` after instantiation — measures steady-state HUD, not boot screen. Lesson: probe scope must explicitly choose "what state of the game am I measuring?" — without that explicit decision the harness conflates onboarding overlay with combat HUD.
+- Files added:
+  - `loop/breach/test_breach_hud_coverage.gd` (NEW — 4-case harness: HUD coverage ≤ 25% budget + label-size floor ≥ 8pt + visible/hidden CanvasItem count + quadrant breakdown TL/TR/BL/BR + JSON output to tools/out/hud_coverage.json)
+  - `loop/breach/probes/probe-003-hud-coverage.md` (NEW — probe report: coverage = 7.1% steady-state, 17.9% headroom available, all 10 visible labels at 8pt, no Godot-default-16pt regressions, quadrant breakdown showing top-right is 0% ColorRect mass)
+  - `tools/out/hud_coverage.json` (NEW per-run data; gitignored)
+- Files modified:
+  - Makefile (`check-breach-hud-coverage` target + added to test-breach aggregate at 89 OK markers now)
+  - loop/breach/CONSULT-LEDGER.md (added EXPIRED note to consult-001 § Expiration explaining the no-op nature: cap=3 uncalibrated means lift never fired, so expiration is metadata-only; structural recommendations were applied independently)
+- Empirical findings (per probe-003 report):
+  - **F1**: HUD coverage 7.1% of viewport (5424 px² / 76800 px²); 17.9% headroom remaining for Round 26 visual identity work without breaching the 25% structural cap.
+  - **F2**: All 10 visible labels at 8pt; the iter-299 typography fix is now structurally locked against regression. Hidden modal labels (death panel 12pt / levelup 10pt / archetype 9pt) excluded from the floor since they're focal/modal not steady-HUD.
+  - **F3**: Top-right quadrant is 0% ColorRect mass (labels only). Natural slot for Round 26 visual identity additions to balance the bottom-heavy current layout.
+  - **F4**: 45 hidden vs 21 visible CanvasItems — lazy HUD architecture means most builds are state-conditional, not always-on.
+  - **F5**: Round 25 closes at 3-of-3 probes per blueprint. Substrate writes through Round 25 = **0** (budget was 5; entirely untouched). Hash anchor preserved through 3 probes. test-breach 86 → 89 (+3 OK markers).
+- substrate_writes_this_arc: unchanged at 92.
+- test-breach: 88 → 89 OK markers; exit 0.
+- test-all: 5/5 PASS exit 0.
+- quiet_signal_counter: 0 (this CAPABILITY iter ships another concrete probe deliverable; SIGNAL_RECEIPT entry below).
+- Finding: **Round 25 Probe 3 ships clean. Round 25 closes its 3-probe blueprint at iter 309 with all structural calibration evidence captured.** consult-001 expires at iter 309 — handled with CONSULT-LEDGER note explaining the expiration is metadata-only (no [FEEL-CONSULT] lift ever fired). Iter 310 candidates: (a) META iter closing Round 25 + consolidating Probes 1+2+3 into REVIEW-QUEUE entry IF a closure also fires (anti-accretion compliance), (b) bootstrap next surface from PROMPT § work-valid-without-playtest list, (c) voluntary halt if probes saturate structural ceiling. Loop diagnoses at iter 310 wake.
+
+---
+
 ## iter 308 — CAPABILITY — Round 25 Probe 2: shell × target pressure matrix driver + harness + report
 
 - Date: 2026-05-27
