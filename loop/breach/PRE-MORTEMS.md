@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 318 — CAPABILITY — Round 27 Probe 5: Q1 replay capture driver + harness + report
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 6 (replay captures death-attribution / per-event recap evidence); all 7.
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283): YES via iter-317 blueprint anchor.
+- Same-family check: iter 317 META → iter 318 CAPABILITY. Healthy alternation.
+- Predicted failure: synthetic-fire approach doesn't produce true per-frame data. Mitigation: rename + document "event-indexed timeseries" in driver + report; future frame-indexed implementation deferred to Phase B+ if user re-engages.
+- Falsifiable claim: post-iter, (a) tools/q1_replay_capture.gd parses + runs to completion; (b) tools/out/q1_replay_dominant_per_lane.json exists with 10-event sequence (1 initial + 4 pre/post pairs + 1 final); (c) harness PASSES 3 cases; (d) probe-005 report at loop/breach/probes/ with ≥5 numbered findings; (e) hash anchor `23d6a2ec3bf2821f` bit-identical post-edit.
+- Sentence test: n/a.
+- Substrate touched: NONE.
+- Hash-anchor verification plan: no Layer 1/2/3 substrate touch → hash anchor bit-identical on procedural baseline.
+
+---
+
 ## iter 317 — META — open Round 27 (replay capture probe)
 
 - Date: 2026-05-27

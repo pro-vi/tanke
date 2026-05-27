@@ -1,8 +1,8 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: round-27-open (iter 317 META — Round 27 single-probe replay-capture sprint blueprinted; 3-iter scope 317-319; Probe 5 spec = per-frame Q1 playthrough JSON timeseries; substrate writes target 0; loop-selected next frontier per stone-converged halt-cause-label resolution path after post_halt_direction Options A+B both served by Rounds 25+26)
-iter: 317
+phase: round-27-probe-5-shipped (iter 318 CAPABILITY — Q1 replay capture driver + harness + probe-005 report shipped in single iter; event-indexed timeseries of dominant_per_lane bot run captured; HE radius blast event drops terrain 10 → 5 visibly; iter 319 default = formal META close + saturation-watch PushNotification per blueprint)
+iter: 318
 round24_blueprint: loop/breach/iter-270-round24-architect.md
 round24_status: opening — Phase A (HUD-as-status) → Phase B (scaling + tier breakthroughs) → Phase C (enemy-HP recurve). Stardew delta — same BC primitives, modern HUD + progression feel. User-directed iter 270 (2026-05-24).
 asset_gen_standing_capability: /agentify image_gen (ChatGPT) is the standing visual-asset pipeline — confirmed via Round 9 (4 tank archetype concept sprites) and Pro Consult 011 (motif-first procedural masks per H5). The full pipeline (prompt → image → palette extraction → 16×16 / 8×8 silhouette compliance → atlas pack) shipped end-to-end at iters 142-149. Sanctioned for HUD icons, card art, enemy variants, depot art, banner art, level decorations. Procedural PIL (`tools/gen_tile.py`, `tools/gen_archetype_sprites.py`) remains the same-iter fallback. iter 271 amendment lifts this from Round-9-specific to standing.
@@ -80,6 +80,12 @@ quiet_signal_source_ids_used:  # iter 273 — list of source_ids that have alrea
     consumed_by_iter: 315
     changed_next_action: yes
     resulting_artifact: scripts/BrickBlock.gd substrate write #4 (apply_variant_lookup public method refactor) + scripts/Loadout.gd brick_variant field + scripts/Q1ProofRoomScene.gd post-pass + loop/breach/test_breach_brick_variant_activation.gd (NEW 4-case harness) + tools/refs/q1_baseline.png updated (visual verification per iter-301 discipline). Q1ProofRoom visibly renders brick_012 variant; arc-2/3 baseline preserved bit-identical.
+  - kind: structural_lift
+    source_id: round-27-probe-5-q1-replay-capture-2026-05-27
+    first_seen_iter: 318
+    consumed_by_iter: 318
+    changed_next_action: yes
+    resulting_artifact: tools/q1_replay_capture.gd (NEW driver) + loop/breach/test_breach_q1_replay_capture.gd (NEW 3-case harness) + loop/breach/probes/probe-005-q1-replay-capture.md (NEW report with 5 findings F1-F5) + tools/out/q1_replay_dominant_per_lane.json (NEW event sequence data); TEMPORAL evidence shape captured for the first time this arc; HE radius blast event drops terrain 10 → 5 in one event (Probe 2 F4 dramatized in time); routes ledger temporal sequence cross-checks Probe 1 F1 (0/0/0/0 → 1/1/1/1).
 consult_calibration: {hits: 0, partial: 0, misses: 0, untested: 0}  # iter 273 — score of consult predictions against later real playtests; updated when user plays + scores. ≥2 hits AND hit rate ≥50% → calibrated_cap can rise to 4. Repeated misses → uncalibrated_cap lowers further or [FEEL-CONSULT] disabled.
 post_halt_direction_iter_305: |
   Direction added 2026-05-27 pre-resume after user "kick the loop running again
@@ -178,10 +184,11 @@ last_consult: iter 280  # consult-001 — adversarial-over-artifact, Phase A clo
 consult_001_status: resolved-applied-h5-only  # 5 other recommendations (H4 / H6 / Q1 / Q3 / H1-gate-strengthen / reload-bar-dup / Stardew-pacing) backlogged in CONSULT-LEDGER; Phase B opening deferred pending breach-economy-proof-room (Q1) decision.
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: ACTIVE — Round 27 (replay capture probe) opened at iter 317 META per stone-converged halt-cause-label resolution path. Loop selected Option (c) instrumentation extension over (a) visual Phase C / (b) gameplay axis / (d) voluntary halt. Rationale: ships NEW evidence shape (temporal not static); 0 substrate writes; 3-iter scope; same-family with Round 25 probes but separated by Round 26 → admissible. Blueprint at loop/breach/iter-317-round27-architect.md.
-next_action: iter 318 CAPABILITY — implement Probe 5 driver. Build `tools/q1_replay_capture.gd` extending the iter-307 q1_bot_run.gd pattern with per-frame state recorder. Pick dominant_per_lane policy (Probe 1 showed clearest routes pattern). Output `tools/out/q1_replay_dominant_per_lane.json` — array of per-frame state dicts: {frame_number, player_position, shell_class_selected, shell_fired_this_frame, enemies_alive list, terrain_remaining, run_recap snapshot}. Harness `loop/breach/test_breach_q1_replay_capture.gd` 3-case smoke: driver runs to completion + JSON ≥10 frames + schema keys present. Substrate writes: 0.
-
-  Saturation watch: if user hasn't re-engaged by iter 320 (Round 27 close + 1), default to PushNotification + voluntary halt under PROMPT § halt-cause classifier `stone-converged → ASK USER`. Continuation past 14 iters of standing-direction-only work without user signal trends toward iter-282 /meta "managing absence of evidence" anti-pattern.
+loop_state: ACTIVE — Round 27 Probe 5 substantively SHIPPED at iter 318 CAPABILITY (driver + harness + report + JSON data all in one iter). Honest reframe of blueprint's "per-frame" claim → "event-indexed timeseries" (synthetic-fire bypasses real-time physics; documented in driver + report). 5 findings F1-F5 captured. test-breach 91 → 92.
+next_action: iter 319 META — Round 27 formal close + voluntary halt decision. Per blueprint saturation watch: user hasn't re-engaged in 13 iters of this resume session (306-318); per PROMPT § halt-cause classifier stone-converged path, the loop should PushNotification + halt at this inflection so the user gets a clear session-digest + can choose next direction OR explicit halt. Iter 319 plan:
+    (1) Update REVIEW-QUEUE: ADD #33 (Round 27 close summary) + CLOSE one item (likely #14 PLAYTEST REQUEST since the loop has now produced more structural follow-up than the entry originally requested; user playtest is the only meaningful next signal). Anti-accretion net zero.
+    (2) PushNotification user with concise session digest (13 iters, 2 substrate writes, 5 probe reports + visual identity, hash preserved, await direction).
+    (3) NO ScheduleWakeup — voluntary halt. Loop resumes on user signal (new /loop, playtest scoring, or explicit halt).
 
   When loop resumes options (per user direction):
     - Direction "score me up" / debrief filled → loop updates consult_calibration + decides next sprint based on prediction outcomes

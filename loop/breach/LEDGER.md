@@ -17,6 +17,40 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 318 — CAPABILITY — Round 27 Probe 5: Q1 replay capture driver + harness + report (event-indexed temporal evidence)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift — Round 27 ships per blueprint; structural floor evidence for temporal dynamics).
+- Trigger: iter 317 blueprint targeted iter 318 CAPABILITY for Probe 5. Loop wake at scheduled 240s after iter 317 META.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger lineage? PARTIALLY — replay capture produces TEMPORAL evidence that prior STATIC probes (Rounds 25 + 26) couldn't capture. Anchor-tied to broader iter-270 lineage; consistent with iter-317 blueprint framing-audit acceptance.
+- Same-family check: iter 317 META → iter 318 CAPABILITY. Healthy alternation.
+- Honest reframe in implementation: blueprint said "per-frame state recorder" but synthetic-fire approach (mirrors iter-307 q1_bot_run.gd + iter-289 playthrough.gd) bypasses real-time physics. Renamed approach to "event-indexed timeseries" in the driver + report. The `capture_mode` field in output JSON makes this explicit. Frame-indexed would need PlayerTank._input_dir + GunTimer awaits + 60Hz loop — deferred to Phase B+ if user re-engages.
+- Constraints respected: 6 (replay captures death-attribution / per-event recap evidence — exactly the kind of data CONSULT §9 constraint 6 names); all 7 generally.
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` verified bit-identical on procedural baseline post-edit. No Layer 1/2/3 substrate touch.
+- Falsifications: none mid-iter (lessons from prior Round 25 probes carried — no const PackedStringArray issue, no inverted-logic bug).
+- Files added:
+  - `tools/q1_replay_capture.gd` (NEW driver — instantiates Q1ProofRoom + records pre/post state around each dominant_per_lane shot + initial/final snapshots; outputs JSON event sequence of 10 dicts; capture_mode = "event_indexed_synthetic_fire")
+  - `loop/breach/test_breach_q1_replay_capture.gd` (NEW 3-case harness — driver constants + temporal structural invariants 1/1/1/1 routes + HE radius temporal evidence)
+  - `loop/breach/probes/probe-005-q1-replay-capture.md` (NEW probe report — 10-event sequence table + 5 numbered findings F1-F5 + non-consultable list + Round 27 close + saturation watch recommendation)
+  - `tools/out/q1_replay_dominant_per_lane.json` (NEW driver output; gitignored)
+- Files modified: Makefile (added `check-breach-q1-replay-capture` + `q1-replay-capture` standalone targets; harness added to test-breach aggregate at 92 OK markers).
+- Empirical findings (per probe-005 report):
+  - **F1**: HE radius blast destroys 5 bricks in ONE event (terrain 10 → 5 across event 0). Probe 2 F4 ("HE radius is scene-level effect") dramatized in temporal form.
+  - **F2**: Routes ledger fills 0/0/0/0 → 1/1/1/1 across 4 events. Probe 1 F1 cross-checked in event-indexed form.
+  - **F3**: HEAT × Heavy spans 2 events without resolution (hp 3 → 1; not killed). Aggregate stats hide this tactical decision point; timeseries reveals it.
+  - **F4**: Only 1 enemy killed across 4 events (AP × Light at event 3); the 4 clearance Lights at rows 3/4/5 never engaged. dominant_per_lane is gate-clearing not combat-clearing.
+  - **F5**: Final state has 4 unfinished obstacles. dominant_per_lane closes route currency loop (1/1/1/1) but doesn't exit the room.
+- Round 27 substantive deliverable COMPLETE at iter 318. Blueprint scheduled iter 319 as formal META close, but the work is done in 1 substantive iter (driver + harness + report all shipped). Iter 319 can either: (a) ship the formal META close + saturation-watch decision, OR (b) skip directly to a PushNotification + halt at iter 318 if the loop assesses saturation now.
+- substrate_writes_this_arc: unchanged at 94. Round 27 budget: 0 of 0 used (pure tooling round per blueprint).
+- test-breach: 91 → 92 OK markers; exit 0.
+- test-all: 5/5 PASS exit 0.
+- quiet_signal_counter: 0 (CAPABILITY ships concrete probe + harness + report + JSON data; SIGNAL_RECEIPT below as kind=structural_lift).
+- Finding: **Round 27 Probe 5 ships clean.** Temporal evidence captured for the first time this arc. The HE radius event (event 0: terrain 10 → 5) is the most-visible "shells are route currency" dramatization yet produced — Probes 1+2's static findings F4 + F1 made temporally explicit. Cumulative session this resume: 5 probe reports + 1 visual identity pipeline across 13 iters; 2 substrate writes; hash anchor preserved; test-breach 86 → 92 (+6 OK markers). Iter 319 should formally close Round 27 + recommend voluntary halt PushNotification per blueprint's saturation watch (user hasn't re-engaged in 13 iters of standing-direction work).
+
+---
+
 ## iter 317 — META — open Round 27 (replay capture probe; loop-selected next frontier per stone-converged halt-cause-label)
 
 - Date: 2026-05-27
