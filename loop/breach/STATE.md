@@ -45,6 +45,53 @@ quiet_signal_source_ids_used:  # iter 273 — list of source_ids that have alrea
     changed_next_action: yes (loop HALTS)
     resulting_artifact: STATE phase update + LEDGER iter 295 META; loop awaits user playtest + scoring of consult-001's 3 predictions
 consult_calibration: {hits: 0, partial: 0, misses: 0, untested: 0}  # iter 273 — score of consult predictions against later real playtests; updated when user plays + scores. ≥2 hits AND hit rate ≥50% → calibrated_cap can rise to 4. Repeated misses → uncalibrated_cap lowers further or [FEEL-CONSULT] disabled.
+post_halt_direction_iter_305: |
+  Direction added 2026-05-27 pre-resume after user "kick the loop running again
+  without feedback" + risk-discussion + Option B nudge accepted.
+
+  SANCTIONED next-round candidates (loop chooses which to bootstrap):
+    1. Round 25 visual identity (REVIEW-QUEUE #27 — /agentify image_gen sprint
+       for card art / enemy variants / depot art / banner art / floor decoration
+       / particle sprites; asset_gen_standing_capability already authorized).
+    2. Work-valid-without-playtest probes per PROMPT § iter-273 list:
+       instrumentation, bot/surrogate runs, deterministic combat probes, economy
+       sims, archetype isolation rooms, UI readability passes, content
+       production, prediction-ledger entries. These produce harness-citable
+       [STRUCTURE] evidence even without user feedback.
+
+  DECLINED-STILL (loop must NOT self-open):
+    - Stardew-pacing pivot (consult-001 Q3 verdict 0.87 + user iter-283 decision
+      to take Q1 proof room Option B instead). Requires explicit user reversal
+      to re-open. The consult's highest-confidence direction-pick (0.87) but
+      explicitly user-rejected; do not self-authorize the reversal.
+
+  HARD CONSTRAINT — anti-theory-laundering defense:
+    - Max 1 (ONE) NEW adversarial consult before consult-001's 3 falsifiable
+      predictions get scored in CONSULT-LEDGER.
+    - After 1 new consult fires, loop MUST use work-valid-without-playtest
+      probes for substantive surfaces — NOT accumulate more uncalibrated
+      [FEEL-CONSULT] verdicts.
+    - Rationale: consult_calibration is {hits:0, partial:0, misses:0,
+      untested:0}. Accreting more consult-ledger entries without scoring
+      credit IS the "polished hallucination cache" failure mode the iter-273
+      amendment explicitly defends against. Theory-laundering anti-pattern
+      per Psyche [[theory-laundering]] concept. 80% test applies: if you
+      deleted 80% of the consult ledger right now, would the loop's next
+      decisions get worse? With zero calibration, no.
+
+  RESUME EXPECTATION: iter 306 META — read STATE + LEDGER tail + REVIEW-QUEUE,
+  diagnose which sanctioned surface to bootstrap. Likely Round 25 (clean
+  queued substantive surface); could also be work-valid-without-playtest probe
+  if Round 25 SPIKE shows asset-gen pipeline needs warmup. Either is fine.
+
+  WATCH-FOR signals (user will check on resume):
+    - substrate_writes_this_arc crossing 120 without playtest = calcification
+      risk per [[loops-need-death]] companion frame.
+    - 3+ new REVIEW-QUEUE entries without ANY closures = accretion-without-
+      death anti-pattern winning.
+    - Loop firing a 2nd new adversarial consult before consult-001 scored =
+      HARD CONSTRAINT violation; user expects this to NOT happen.
+
 round23_status: closed-iter-201 (5 phases shipped; pick_card_on_levelup default false ABSORBED into Round 24 Phase A — flag flips true as part of HUD legibility work since cards are now visibly part of the loop)
 round23_blueprint: loop/breach/iter-196-round23-architect.md
 hash_anchor_at_iter_146: 23d6a2ec3bf2821f  # bit-identical through 70 substrate writes — PlayerTank archetype sprite swap is gated on loadout != null + archetype != DEFAULT; procedural baseline (loadout=null) keeps sprites_0.png + frame_base=0; TankSprite.gd frame_base field defaults to 0 (bit-identical at default)
