@@ -1,8 +1,8 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: round-26-phase-B-activated (iter 315 BUILD — BrickBlock self-discovery + Loadout.brick_variant + Q1ProofRoom end-to-end; brick variant visibly active in Q1 proof room; baseline screenshot updated; test-breach 90 → 91; substrate writes 93 → 94)
-iter: 315
+phase: round-26-CLOSED-formally (iter 316 META — Round 26 visual identity sprint CLOSED; REVIEW-QUEUE #32 added + #28 closed for anti-accretion net zero; brick variant pipeline shipped end-to-end + visibly verified; loop at natural between-rounds inflection)
+iter: 316
 round24_blueprint: loop/breach/iter-270-round24-architect.md
 round24_status: opening — Phase A (HUD-as-status) → Phase B (scaling + tier breakthroughs) → Phase C (enemy-HP recurve). Stardew delta — same BC primitives, modern HUD + progression feel. User-directed iter 270 (2026-05-24).
 asset_gen_standing_capability: /agentify image_gen (ChatGPT) is the standing visual-asset pipeline — confirmed via Round 9 (4 tank archetype concept sprites) and Pro Consult 011 (motif-first procedural masks per H5). The full pipeline (prompt → image → palette extraction → 16×16 / 8×8 silhouette compliance → atlas pack) shipped end-to-end at iters 142-149. Sanctioned for HUD icons, card art, enemy variants, depot art, banner art, level decorations. Procedural PIL (`tools/gen_tile.py`, `tools/gen_archetype_sprites.py`) remains the same-iter fallback. iter 271 amendment lifts this from Round-9-specific to standing.
@@ -74,6 +74,12 @@ quiet_signal_source_ids_used:  # iter 273 — list of source_ids that have alrea
     consumed_by_iter: 314
     changed_next_action: yes
     resulting_artifact: loop/breach/probes/probe-004-round26-phaseA-brick-variant.md (NEW Phase A ship report) + cumulative Round 26 Phase A artifacts (blueprint + brick_012.png + BrickBlock.variant_texture wiring + harness +1 OK marker); iter 315 default = Phase B activation (BreachBand.brick_variant field + Level._replace_blocks read-through)
+  - kind: structural_lift
+    source_id: round-26-phase-B-activation-2026-05-27
+    first_seen_iter: 315
+    consumed_by_iter: 315
+    changed_next_action: yes
+    resulting_artifact: scripts/BrickBlock.gd substrate write #4 (apply_variant_lookup public method refactor) + scripts/Loadout.gd brick_variant field + scripts/Q1ProofRoomScene.gd post-pass + loop/breach/test_breach_brick_variant_activation.gd (NEW 4-case harness) + tools/refs/q1_baseline.png updated (visual verification per iter-301 discipline). Q1ProofRoom visibly renders brick_012 variant; arc-2/3 baseline preserved bit-identical.
 consult_calibration: {hits: 0, partial: 0, misses: 0, untested: 0}  # iter 273 — score of consult predictions against later real playtests; updated when user plays + scores. ≥2 hits AND hit rate ≥50% → calibrated_cap can rise to 4. Repeated misses → uncalibrated_cap lowers further or [FEEL-CONSULT] disabled.
 post_halt_direction_iter_305: |
   Direction added 2026-05-27 pre-resume after user "kick the loop running again
@@ -172,10 +178,13 @@ last_consult: iter 280  # consult-001 — adversarial-over-artifact, Phase A clo
 consult_001_status: resolved-applied-h5-only  # 5 other recommendations (H4 / H6 / Q1 / Q3 / H1-gate-strengthen / reload-bar-dup / Stardew-pacing) backlogged in CONSULT-LEDGER; Phase B opening deferred pending breach-economy-proof-room (Q1) decision.
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: ACTIVE — Round 26 Phase B ACTIVATED at iter 315 BUILD. iter-313 variant_texture capability is now LIVE in Q1ProofRoom via Loadout.brick_variant + BrickBlock self-discovery + post-pass. Q1 bricks render brick_012 variant; arc-2/3 baseline bricks render canonical. Hash anchor 23d6a2ec3bf2821f preserved. test-breach 90 → 91. Round 26 budget 2 of 3-5 writes used.
-next_action: iter 316 META — Round 26 close OR Phase C decision. Two trajectories: (a) close Round 26 here — Phase A capability + Phase B activation both shipped + visually verified; minimal further scope to add without (i) more asset gen which needs more substrate writes OR (ii) /agentify image_gen which needs user authorization. (b) Continue Round 26 into Phase C — examples: more terrain variants (grass/steel via gen_tile.py — same pattern), card icons, depot art. Each Phase C surface = ~1-2 iters + ~1-2 substrate writes. Default recommendation: (a) close Round 26 at Phase B since the core capability is shipped + visible. Loop diagnoses at iter 316 wake.
-
-  Note: this is approaching the 11th iter of this session resume (306-315). The pattern observed: probes 1-3 shipped Round 25 (iters 306-310), then Phase A capability + Phase B activation shipped Round 26 (iters 311-315). Loop has produced concrete artifacts every iter; no idle. Saturation watch: user has been auto-firing /loop without re-engagement — Round 26 close at iter 316 + bootstrap-next-or-halt is the natural rhythm point.
+loop_state: ACTIVE — Round 26 FORMALLY CLOSED at iter 316 META. Probes-sprint (Round 25) + visual-identity (Round 26) sequence complete across iters 306-316. substrate_writes 94 of 120 cliff. test-breach 91/91 green. Hash anchor preserved through all 11 iters of this session resume. consult-001 expired metadata-only. Anti-accretion compliant (Round 26 close +1 / Phase A pending -1 = net zero).
+next_action: iter 317 DIAGNOSE — at natural between-rounds inflection. Per PROMPT § HALT CONDITIONS the loop does NOT halt on "ran out of work"; per § RUBRIC IS MEASUREMENT + § WORK VALID WITHOUT PLAYTEST surfaces remain. Candidate next-round directions (loop selects at iter 317 wake):
+    (a) Round 27 visual identity Phase C — more terrain variants (steel, grass, water via gen_tile.py + same Loadout.X_variant + BrickBlock-mirror pattern). Each ~2 iters, ~2 writes. Pipeline already validated.
+    (b) Round 27 gameplay axis — content production (more bands per BANDS.md scope, more enemy variants per ENEMY_TYPES table). Higher substrate impact (~3-5 writes per item).
+    (c) Round 27 instrumentation extension — replay capture per PROMPT § work-valid-without-playtest list. Non-substrate (tools-only).
+    (d) PushNotification user + voluntary halt — 11 iters of this resume session without user re-engagement; the next direction needs explicit user signal vs the loop's continued standing-direction execution.
+  Recommendation: (d) — produce a PushNotification summarizing the session (Rounds 25+26 closed; 2 substrate writes; pipeline shipped; visual diff verified) AND describing the candidate next-round options. The loop has been operating on standing direction for 11 iters; honest move is to surface the work + ask user to choose between standing-direction continuation and explicit pivot. If user signals nothing, iter 317+ continues with (a) or (c) defaulted.
 
   When loop resumes options (per user direction):
     - Direction "score me up" / debrief filled → loop updates consult_calibration + decides next sprint based on prediction outcomes

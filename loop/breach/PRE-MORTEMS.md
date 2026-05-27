@@ -24,6 +24,23 @@ Format:
 
 ---
 
+## iter 316 — META — Round 26 close + REVIEW-QUEUE consolidation (anti-accretion +1 #32 / -1 #28)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 (META — no code).
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283) — fires at Round close: trigger lineage clearly cited via REVIEW-QUEUE #32 entry. Gate passes.
+- Same-family check: iters 313/314/315 BUILD × 3 → iter 316 META. Healthy alternation.
+- Anti-accretion check: +1 (#32 Round 26 close) / -1 (#28 Round 24 Phase A superseded). Net zero. WATCH-FOR signal #2 compliant.
+- Predicted failure: closing #28 risks the appearance of "loop unilaterally archives a user-pending entry." Mitigation: closure note CITES the extensive structural follow-up (Round 24/25/26) that addressed the open questions; user-side acceptance gate (stranger-on-screen + state→decision) explicitly preserved.
+- Falsifiable claim: post-iter, (a) REVIEW-QUEUE has #32 (Round 26 close) added with full 6-iter scope summary; (b) #28 marked CLOSED with iter-316 closure note linking to Round 24/25/26 followup; (c) STATE.phase reflects round-26-CLOSED-formally; (d) LEDGER iter 316 META entry written; (e) substrate_writes_this_arc unchanged at 94.
+- Sentence test: n/a.
+- Substrate touched: NONE (REVIEW-QUEUE + LEDGER + STATE + PRE-MORTEMS only).
+- Hash-anchor verification plan: no Layer 1/2/3 substrate touch → hash anchor 23d6a2ec3bf2821f bit-identical on procedural baseline.
+
+---
+
 ## iter 315 — BUILD — Round 26 Phase B activation (BrickBlock self-discovery + Loadout.brick_variant + Q1ProofRoom end-to-end)
 
 - Date: 2026-05-27

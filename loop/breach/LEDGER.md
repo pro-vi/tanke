@@ -17,6 +17,27 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 316 — META — Round 26 close + REVIEW-QUEUE consolidation (anti-accretion +1 #32 / -1 #28 = net zero)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; META closes round + bookkeeps REVIEW-QUEUE).
+- Trigger: iter 315 shipped Phase B activation; STATE.next_action recommended (a) close Round 26 at Phase B. Honest assessment: Phase A capability + Phase B activation both shipped + visually verified; Phase C would add more terrain variants (steel/grass/water) at ~1-2 writes each — same pattern as brick. Diminishing returns on the same per-tile axis. Close here.
+- Framing-audit gate (PROMPT § iter 283) — fires at Round close: trigger lineage (iter-270 + iter-271 + iter-305 post_halt_direction) clearly cited via REVIEW-QUEUE #32 entry. Gate passes.
+- Same-family check: iters 313/314/315 BUILD × 3 → iter 316 META. Healthy alternation; META iter closes round + ships anti-accretion REVIEW-QUEUE delta.
+- Anti-accretion check: ADD #32 (Round 26 close summary) + CLOSE #28 (Round 24 Phase A pending playtest — superseded by extensive structural follow-up Rounds 24/25/26). Net zero. WATCH-FOR signal #2 compliant.
+- Constraints respected: all 7 (META — no code).
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` verified bit-identical on procedural baseline. No substrate touch.
+- Falsifications: none.
+- Files modified: loop/breach/REVIEW-QUEUE.md (#32 added Round 26 close summary + #28 marked CLOSED with closure note linking to Round 24/25/26 followup), loop/breach/LEDGER.md, loop/breach/STATE.md, loop/breach/PRE-MORTEMS.md.
+- Finding: **Round 26 (visual identity sprint variant) FORMALLY CLOSED at iter 316.** 6-iter scope (311-316), 2 substrate writes (both to BrickBlock.gd), 2 new harnesses + 1 new asset + 1 derivation-gap log + 1 probe report. Brick variant pipeline shipped end-to-end (capability + activation) AND visibly verified in Q1ProofRoom. Hash anchor preserved through all 6 iters. test-breach 89 → 91 (+2 OK markers). consult-001 expired metadata-only at iter 309 (during Round 25); structural recommendations applied independently. Anti-accretion compliant (+1/-1 = net zero).
+- substrate_writes_this_arc: unchanged at 94.
+- Session shape since iter 305 resume: 11 iters (306-316) in ~55 min. Round 25 (probes 1-3 + close) + Round 26 (Phase A + Phase B + close). 11 commits, ~700 LoC across docs/harness/probes. Hash anchor preserved bit-identical through every iter. Substrate writes: only 2 across both rounds (92 → 94; 26 writes remaining to 120 cliff). test-breach: 86 → 91 (+5 OK markers).
+- quiet_signal_counter: 0 (META closes round + ships anti-accretion bookkeeping; SIGNAL_RECEIPT entry below).
+
+---
+
 ## iter 315 — BUILD — Round 26 Phase B activation: BrickBlock self-discovery + Loadout.brick_variant + Q1ProofRoom end-to-end + visual verification
 
 - Date: 2026-05-27

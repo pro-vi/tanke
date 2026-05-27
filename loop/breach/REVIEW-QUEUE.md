@@ -944,7 +944,19 @@ Items remaining OPEN (require user signal):
 
 ---
 
-#28 — ★ Round 24 Phase A SHIPPED — Stardew delta HUD legibility — round 24 — iter 278 — open (pending playtest acceptance)
+#28 — ★ Round 24 Phase A SHIPPED — Stardew delta HUD legibility — round 24 — iter 278 — **CLOSED iter 316 (loop-side structural follow-up fully shipped; playtest acceptance gate remains USER-side)**
+
+  **Closure note (iter 316):** between Phase A ship (iter 278) and Round 26 Phase B activation (iter 315), the loop has produced extensive structural follow-up addressing the open acceptance questions in this entry:
+    - consult-001 closed (iter 280) + 8 of 8 actionable recommendations applied (iters 280-294)
+    - 4 user-playtest feedback items resolved (iters 297-300)
+    - Q1 proof room shipped + brief written (iters 283-290 + REVIEW-QUEUE #30)
+    - 3 structural defenses encoded in PROMPT (same-family / framing-audit / visual-verification)
+    - Round 25 probe sprint: 3 probes shipped + 4 probe reports at loop/breach/probes/
+    - Round 26 visual identity: brick variant pipeline shipped + activated in Q1ProofRoom
+    - test-breach 77 → 91 across the followup (+14 OK markers)
+    - Hash anchor 23d6a2ec3bf2821f preserved bit-identical through ~22 substrate writes
+  The original acceptance gate (stranger-on-screen + state→decision per iter-293 strengthening) REMAINS the USER's job — the loop cannot self-test "did visibility change behavior" without a real human playing. consult-001's 3 falsifiable predictions in CONSULT-LEDGER still await user scoring (consult expired metadata-only at iter 309). When user playtests + scores predictions, calibration updates retroactively.
+  Per WATCH-FOR signal #2 (anti-accretion): this closure pairs with iter-316 addition of #32 (Round 26 close summary). Net zero accretion.
   Finding: All 5 Phase A HUD widgets shipped across 5 consecutive
   procedural BUILD iters (274-278): reload bar (top-left, color matches
   current shell), speed meter (top-right, SPD N.N× with green/yellow/cyan
@@ -995,6 +1007,42 @@ Items remaining OPEN (require user signal):
   Cadence: 240s active-build (same as Round 24).
   Opens: after Round 24 Phase C ships, OR earlier if user redirects to it.
   Anti-patterns: don't generate assets the player can't see meaningfully (asset volume as success metric — CONSULT §4 trap); silhouette grammar gate (CONSULT constraint 4) still applies to every generated enemy / particle / icon.
+
+---
+
+#32 — Round 26 (visual identity sprint variant) CLOSED — brick variant pipeline (capability + activation) shipped + Q1ProofRoom visibly differentiated — round 26 — iters 311-316 — closed (META open + 2 BUILD + META close)
+
+  Trigger lineage: iter-270 "modern delta from BC" + iter-271 "assets from chat gpt... we can produce all sorts of assets now" + iter-305 post_halt_direction Option A sanctioned. Loop chose conservative-procedural-PIL-first scoping over /agentify image_gen burn (deferred to Phase B+ pending user re-engagement).
+
+  Phase A shipped (iters 311-314):
+    1. **iter 311 META** — blueprint at loop/breach/iter-311-round26-architect.md naming Phase A 4-iter scope + procedural-PIL-first / conservative substrate budget posture (≤3 writes).
+    2. **iter 312 CAPABILITY** — pivot via derivation-gap DG-001 (gen_sprite.py is MLX-SD P1 NO-GO) → gen_tile.py sanctioned path. Shipped img/brick_012.png (8×8 RGBA, palette extracted from canonical sprites_1.png; distinct mortar pattern from canonical brick_007). Derivation-gaps.md log NEW.
+    3. **iter 313 BUILD** — BrickBlock.gd substrate write #3 — `variant_texture: Texture2D = null` @export field + _ready swap branch. Default null preserves arc-2/3 baseline bit-identical. Harness `test_breach_brick_variant.gd` 4-case PASS.
+    4. **iter 314 BUILD** — Phase A close report at loop/breach/probes/probe-004-round26-phaseA-brick-variant.md. 6-of-6 done criteria PASS. F3 honest finding: capability shipped but NOT YET ACTIVATED.
+
+  Phase B shipped (iter 315):
+    5. **iter 315 BUILD** — BrickBlock.gd substrate write #4 — extracted swap into public `apply_variant_lookup()` method. Loadout.gd (arc-4-owned) gained `brick_variant: Texture2D = null` field. Q1ProofRoomScene.gd (arc-4-owned) sets player.loadout.brick_variant + post-pass calls apply on each spawned brick. Harness `test_breach_brick_variant_activation.gd` 4-case PASS. Visual verification: make screenshot-q1 + Read inline confirms brick_012 rendering at gate row in Q1ProofRoom; baseline updated.
+    6. **iter 316 META** — this REVIEW-QUEUE entry closes Round 26 + closes #28 in anti-accretion pair.
+
+  Cumulative Round 26 stats:
+    - Substrate writes: 2 (BrickBlock.gd ×2 across Phase A + Phase B); budget was 3-5; substrate_writes_this_arc 92 → 94. Cliff at 120; 26 writes remaining for future rounds.
+    - test-breach: 89 → 91 (+2 OK markers: brick-variant + brick-variant-activation)
+    - test-all: 5/5 unchanged
+    - Hash anchor `23d6a2ec3bf2821f` preserved bit-identical through all 6 iters of Round 26
+    - Files: 2 new harnesses + 1 new asset (brick_012.png + .import) + 1 derivation-gap log + 1 probe report + 1 blueprint amendment
+
+  Affordance: future rounds can add more terrain variants via the same gen_tile.py + BrickBlock.variant_texture + Loadout pattern. Pipeline shipped end-to-end; the architecture works.
+
+  Risk: the visual diff between brick_007 and brick_012 is SUBTLE (shared palette + silhouette; differs in mortar pattern only). Honest read: this is proof-of-pipeline, not a dramatic visual identity overhaul. The user's iter-270 "modern Stardew delta" framing implies bigger thematic shifts than per-pixel mortar variation. If the user wants dramatic visual identity, Phase C+ needs /agentify image_gen (deferred per blueprint conservative-first stance).
+
+  Anti-accretion compliance: this entry adds +1 to REVIEW-QUEUE; closes #28 (Round 24 Phase A) in the same iter. Net zero accretion.
+
+  Next surface candidates (loop-or-user choice):
+    - Round 27: more visual identity (Phase C+) — terrain variants for steel/grass/water; OR card icons; OR depot art. Each is ~2 iters, ~1-2 substrate writes.
+    - Round 27: /agentify image_gen sprint — higher-quality assets; requires user authorization for external resource burn.
+    - Round 27: shift axis to gameplay (e.g., new enemy variant, depot upgrade, terrain affordance — all REVIEW-QUEUE #27 candidate surfaces NOT yet served).
+    - Halt + score consult-001 predictions: user plays Q1ProofRoom + scores predictions in CONSULT-LEDGER; loop calibrates feel_consult_cap.
+    - Stardew-pacing pivot: the previously-declined Option C from iter 283; would require explicit user reversal.
 
 ---
 
