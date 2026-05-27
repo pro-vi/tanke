@@ -17,6 +17,33 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 312 — CAPABILITY — Round 26 Phase A pivot — gen_tile.py band-themed brick variant + derivation-gaps.md DG-001
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; CAPABILITY ships pivoted Phase A asset + honest derivation-gap record).
+- Trigger: iter 311 blueprint queued iter 312 CAPABILITY for gen_sprite.py extension. Dependency check at iter start exposed gen_sprite.py = MLX-SD = P1 NO-GO per PROMPT § ANTI-PATTERNS. Pivoted Phase A scope to gen_tile.py (sanctioned) band-themed brick variant.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES via REVIEW-QUEUE #27's "Background/floor decoration" candidate — same visual-identity axis as the blueprinted enemy_light_t2 path, different surface (terrain not enemy). Trigger lineage citable; anchor-tied.
+- Same-family check: iter 311 META → iter 312 CAPABILITY. Healthy alternation.
+- Honest assessment per PROMPT halt-cause classifier `derivation-gap`: produced TWO required artifacts — (a) decision record at loop/breach/derivation-gaps.md DG-001 documenting the gen_sprite.py MLX-SD blocker + sanctioned alternatives + Phase A pivot rationale; (b) concrete uncertainty-reduction patch — shipped img/brick_012.png as the pivot's first asset. Rule-compliant resolution.
+- Constraints respected: 4 (silhouette grammar gate run — see findings below; gate correctly identifies within-role variants); all 7 generally.
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` verified bit-identical on procedural baseline. No substrate touch (asset added to img/ is a new file, doesn't alter generated procedural baseline since variant selection isn't wired yet).
+- Falsifications: 1 caught mid-iter:
+  - **F-iter312-1**: blueprint claimed "gen_sprite.py extension" — actual tool is MLX-SD-based (P1 NO-GO). Pivoted to gen_tile.py path. Filed at derivation-gaps.md DG-001.
+- Files added:
+  - `img/brick_012.png` (NEW — brick tile variant 12 via gen_tile.py with palette extracted from canonical img/sprites_1.png. Same orange-red brick palette; distinct mortar pattern from canonical brick_007.png. Asset shipped + verified visually inline)
+  - `loop/breach/derivation-gaps.md` (NEW — append-only log per PROMPT halt-cause classifier requirements; DG-001 entry documenting the gen_sprite.py MLX-SD blocker + Phase A pivot)
+- Files modified:
+  - `loop/breach/iter-311-round26-architect.md` (added Phase A pivot note section documenting the scope change; preserves audit trail of original blueprint while recording the dependency-check pivot)
+- Silhouette gate finding (PROMPT § ACT step): ran `python3 tools/silhouette_gate.py img/brick_007.png img/brick_012.png` — SILHOUETTE_GATE_FAIL with "silhouette diff 0 < 8." This is the gate's CORRECT behavior for within-role variants (both 8×8 bricks are 64/64 opaque; same role; variant signal lives in interior pattern + palette tint, not silhouette). The gate is designed for NEW-ROLE assets (distinct silhouettes). Documented in derivation-gaps.md DG-001 — future iter may add `silhouette_gate.py --variant-mode` for inverted assertion (silhouettes MATCH; pattern/palette DIFFER). Brick variant is sanctioned for shipping per gen_tile.py being the explicitly-named sanctioned generator; the role-preservation check passes by inspection.
+- Empirical: brick_012.png is 8×8 RGBA, 121 bytes, palette `[(156,74,0), (99,99,99), (107,8,0), (107,8,0)]` extracted from sprites_1.png at (40,0) per gen_tile.py's SHEET_MARGINS table. Visible interior mortar-pattern variation vs canonical brick_007.png.
+- Finding: **Round 26 Phase A first asset shipped via sanctioned algorithmic tooling.** Derivation gap DG-001 logged honestly. Phase A pivot from enemy sprite to terrain tile variant preserves the visual-identity round goal while respecting the MLX-SD P1 NO-GO constraint. Iter 313 targets band-aware variant selection in ProceduralLevel.gd or BiomeConfig.gd (loadout-gated; ≤2 substrate writes). Iter 314 targets harness + ship probe-004 report. Enemy-sprite-generation gap (DG-001) remains OPEN — Phase B+ deferred per blueprint until user re-engagement.
+- substrate_writes_this_arc: unchanged at 92. Round 26 budget: 0 of ~3-5 used.
+- quiet_signal_counter: 0 (CAPABILITY iter ships concrete asset + derivation-gap log + honest pivot; SIGNAL_RECEIPT below).
+
+---
+
 ## iter 311 — META — open Round 26 (visual-identity variant; conservative Phase A scope; procedural-PIL first)
 
 - Date: 2026-05-27

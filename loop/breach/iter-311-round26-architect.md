@@ -98,6 +98,39 @@ Phase B+ scope decisions are deferred. Phase A is the only committed slice.
 
 ---
 
+## Phase A pivot note (added iter 312)
+
+Dependency check at iter 312 surfaced derivation-gap DG-001 (see
+`loop/breach/derivation-gaps.md`): `tools/gen_sprite.py` is MLX-SD —
+**P1 NO-GO** per PROMPT § ANTI-PATTERNS. The Phase A blueprint's
+"gen_sprite.py extension" path is structurally blocked.
+
+**Pivoted Phase A scope:** band-themed brick tile variant via
+`tools/gen_tile.py` (the sanctioned algorithmic surface). Same Round-26
+visual-identity axis per REVIEW-QUEUE #27's "Background/floor
+decoration" candidate. Real visible diff (mortar pattern + palette
+tint), 0 external resource burn, substrate budget unchanged (≤2 writes
+for ProceduralLevel.gd or BiomeConfig.gd variant selection in iter 313).
+
+**Iter 312 ships:** `img/brick_012.png` via `gen_tile.py --tile brick
+--variant 12 --from-sheet img/sprites_1.png` + derivation-gaps.md log
+entry + this pivot note. Substrate writes: 0.
+
+**Iter 313 targets:** wire band-aware tile variant selection in
+ProceduralLevel.gd (or new BiomeConfig.gd field). Loadout-gated;
+default procedural mode bit-identical. Substrate writes: 1-2.
+
+**Iter 314 targets:** harness verifies tile variant selection per band +
+ship probe-004 report documenting the Phase A pivot + outcome.
+
+The enemy-sprite-generation gap (DG-001) remains OPEN. Phase B+ may
+choose between: (a) extending gen_archetype_sprites.py's motif-first
+pattern to enemies (multi-iter engineering), (b) /agentify image_gen
+(real external cost, requires user re-engagement to authorize),
+(c) deferring novel enemy sprites until user explicitly re-engages.
+
+---
+
 ## Anti-cargo-cult check (iter 273 / iter 282)
 
 The iter-282 /meta finding warned against "becoming extremely good at managing the absence of evidence — labels, counters, tags, consults — while still avoiding 'did the game become more compelling to an actual player'."

@@ -1,8 +1,8 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: round-26-phase-A-open (iter 311 META — Round 26 visual identity sprint opened with conservative procedural-PIL-first scoping; blueprint at loop/breach/iter-311-round26-architect.md; Phase A 4-iter scope targets enemy_light_t2 sprite via gen_sprite.py extension; /agentify image_gen reserved for Phase B+ pending Phase A success OR user re-engagement)
-iter: 311
+phase: round-26-phase-A-pivoted (iter 312 CAPABILITY — Phase A blueprint pivot from gen_sprite.py [MLX-SD P1 NO-GO] to gen_tile.py band-themed brick variant; img/brick_012.png shipped via sanctioned algorithmic tool; derivation-gap DG-001 logged at loop/breach/derivation-gaps.md; iter 313 wires band-aware variant selection in ProceduralLevel.gd / BiomeConfig.gd loadout-gated)
+iter: 312
 round24_blueprint: loop/breach/iter-270-round24-architect.md
 round24_status: opening — Phase A (HUD-as-status) → Phase B (scaling + tier breakthroughs) → Phase C (enemy-HP recurve). Stardew delta — same BC primitives, modern HUD + progression feel. User-directed iter 270 (2026-05-24).
 asset_gen_standing_capability: /agentify image_gen (ChatGPT) is the standing visual-asset pipeline — confirmed via Round 9 (4 tank archetype concept sprites) and Pro Consult 011 (motif-first procedural masks per H5). The full pipeline (prompt → image → palette extraction → 16×16 / 8×8 silhouette compliance → atlas pack) shipped end-to-end at iters 142-149. Sanctioned for HUD icons, card art, enemy variants, depot art, banner art, level decorations. Procedural PIL (`tools/gen_tile.py`, `tools/gen_archetype_sprites.py`) remains the same-iter fallback. iter 271 amendment lifts this from Round-9-specific to standing.
@@ -62,6 +62,12 @@ quiet_signal_source_ids_used:  # iter 273 — list of source_ids that have alrea
     consumed_by_iter: 309
     changed_next_action: yes
     resulting_artifact: loop/breach/test_breach_hud_coverage.gd + loop/breach/probes/probe-003-hud-coverage.md + tools/out/hud_coverage.json; 5 numbered findings F1-F5 measuring HUD coverage 7.1% of viewport (17.9% headroom), 10 visible labels all at 8pt (iter-299 floor locked), quadrant breakdown showing top-right is 0% ColorRect mass. Round 25 3-probe blueprint COMPLETE.
+  - kind: correctness
+    source_id: derivation-gap-DG-001-gen_sprite.py-mlx-blocker-2026-05-27
+    first_seen_iter: 312
+    consumed_by_iter: 312
+    changed_next_action: yes (Phase A pivot from enemy sprite to terrain tile variant)
+    resulting_artifact: loop/breach/derivation-gaps.md (NEW append-only log) + img/brick_012.png (NEW first Phase A asset via gen_tile.py sanctioned path) + iter-311 blueprint amended with pivot note
 consult_calibration: {hits: 0, partial: 0, misses: 0, untested: 0}  # iter 273 — score of consult predictions against later real playtests; updated when user plays + scores. ≥2 hits AND hit rate ≥50% → calibrated_cap can rise to 4. Repeated misses → uncalibrated_cap lowers further or [FEEL-CONSULT] disabled.
 post_halt_direction_iter_305: |
   Direction added 2026-05-27 pre-resume after user "kick the loop running again
@@ -158,8 +164,8 @@ last_consult: iter 280  # consult-001 — adversarial-over-artifact, Phase A clo
 consult_001_status: resolved-applied-h5-only  # 5 other recommendations (H4 / H6 / Q1 / Q3 / H1-gate-strengthen / reload-bar-dup / Stardew-pacing) backlogged in CONSULT-LEDGER; Phase B opening deferred pending breach-economy-proof-room (Q1) decision.
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: ACTIVE — Round 26 visual identity sprint opened at iter 311 META with conservative-first Phase A scoping. Phase A pipeline: gen_sprite.py extension → silhouette gate → Spawner+Loadout wire (loadout-gated; ≤3 substrate writes) → harness +1. Budget: 4 iters max (311-314); substrate cap +3 → 95 of 120.
-next_action: iter 312 CAPABILITY — extend tools/gen_sprite.py (OR new tools/gen_enemy_tier_sprite.py) to generate enemy_light_t2 sprite variant. Output: img/enemy_light_t2.png OR new atlas frame in sprites_*.png. Must pass tools/silhouette_gate.py. Substrate writes: 0 in iter 312 (tools-only). Per blueprint § Phase A pipeline step 1+2.
+loop_state: ACTIVE — Round 26 Phase A PIVOTED at iter 312. img/brick_012.png shipped via gen_tile.py sanctioned tooling. Derivation-gap DG-001 logged honestly. Substrate writes still 92 (Round 26 budget 0 of 3-5 used). Hash anchor preserved. Phase A 4-iter scope continues at iter 313 BUILD for wiring.
+next_action: iter 313 BUILD — wire band-aware tile variant selection. Two implementation paths to evaluate: (a) extend BiomeConfig.gd with optional `brick_variant_path` field (cleaner data-driven path; ≤1 substrate write); (b) ProceduralLevel.gd hook that selects variant texture per active band (≤2 writes). Both must be loadout-gated OR band-config-gated so arc-2/3 procedural baseline produces bit-identical hash. Harness verifies (1) default config still loads brick_007.png on procedural baseline; (2) breach mode with brick_variant_path set selects brick_012.png for the configured band; (3) hash anchor unchanged on default codepath. Iter 314 ships the harness + probe-004 report closing Phase A.
 
   When loop resumes options (per user direction):
     - Direction "score me up" / debrief filled → loop updates consult_calibration + decides next sprint based on prediction outcomes

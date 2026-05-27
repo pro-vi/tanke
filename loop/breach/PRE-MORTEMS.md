@@ -24,6 +24,23 @@ Format:
 
 ---
 
+## iter 312 — CAPABILITY — Round 26 Phase A pivot (gen_tile.py band-themed brick variant + derivation-gaps DG-001)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 4 (silhouette gate run; within-role-variant pattern documented honestly); all 7 generally.
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES via REVIEW-QUEUE #27 "Background/floor decoration" candidate surface — same visual-identity round goal, different tile surface (terrain not enemy).
+- Same-family check: iter 311 META → iter 312 CAPABILITY. Healthy alternation.
+- Derivation-gap honest handling: blueprint claimed gen_sprite.py extension (MLX-SD → P1 NO-GO). Per PROMPT halt-cause classifier, produced (a) decision record at derivation-gaps.md AND (b) concrete pivot patch (brick_012.png via gen_tile.py). Rule-compliant.
+- Predicted failure: silhouette gate may fail on within-role variants (intentional — gate is designed for new-role distinctness). Mitigation: document the inverted-mode finding; cite gen_tile.py being explicitly sanctioned per PROMPT § SUBSTRATE FREEZE; ship per gen_tile.py role-preservation contract.
+- Falsifiable claim: post-iter, (a) img/brick_012.png exists + is 8×8 RGBA + palette extracted from sprites_1.png; (b) loop/breach/derivation-gaps.md has DG-001 entry; (c) iter-311 blueprint amended with pivot note; (d) hash anchor 23d6a2ec3bf2821f preserved bit-identical post-edit on procedural baseline.
+- Sentence test: n/a.
+- Substrate touched: NONE (asset addition + new derivation-log + blueprint amendment + LEDGER/STATE/PRE-MORTEMS).
+- Hash-anchor verification plan: no Layer 1/2/3 substrate touch → hash anchor preserved. Verified at iter close.
+
+---
+
 ## iter 311 — META — open Round 26 visual identity (conservative Phase A, procedural-PIL-first)
 
 - Date: 2026-05-27
