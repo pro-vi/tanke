@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 313 — BUILD — Round 26 Phase A — BrickBlock variant_texture override field
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 (BrickBlock variant is within-role; constraint 4 silhouette grammar preserved per DG-001 documentation).
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283): YES — extends iter-312 brick_012 asset into a wiring path; anchor-tied to Round 26 visual identity.
+- Same-family check: iter 312 CAPABILITY → iter 313 BUILD. Healthy alternation.
+- Predicted failure: BrickBlock _ready timing — the @onready var sprite references $Sprite2D, which is available in _ready. The `if variant_texture != null:` branch must fire AFTER sprite is assigned. _ready order: @onready first, then func _ready() body. So the branch sees a valid sprite. Verified empirically by harness.
+- Falsifiable claim: post-iter, (a) BrickBlock.gd has new @export var variant_texture: Texture2D = null + branch in _ready that swaps sprite.texture + hframes/vframes/frame when set; (b) default null preserves bit-identical sprite indexing (texture=sprites_1.png, hframes=6, vframes=2, frame=5); (c) harness PASSES 4 cases including take_damage + beam_hp regression; (d) hash anchor `23d6a2ec3bf2821f` bit-identical on procedural baseline; (e) test-breach 89 → 90.
+- Sentence test: n/a.
+- Substrate touched: scripts/BrickBlock.gd (substrate write #3 this arc).
+- Hash-anchor verification plan: post-edit `make test` + procedural oracle on seed 42 → must equal 23d6a2ec3bf2821f. The default null path through _ready is unchanged behavior; the new branch only fires when an instance is explicitly given a variant_texture (which arc-2/3 baseline never does — Level.gd._replace_blocks() doesn't set the field on instantiated bricks).
+
+---
+
 ## iter 312 — CAPABILITY — Round 26 Phase A pivot (gen_tile.py band-themed brick variant + derivation-gaps DG-001)
 
 - Date: 2026-05-27
