@@ -17,6 +17,27 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 311 — META — open Round 26 (visual-identity variant; conservative Phase A scope; procedural-PIL first)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; META blueprint opens next round).
+- Trigger: Round 25 closed iter 310; STATE.next_action default direction = Round 26 visual-identity variant per post_halt_direction Option A sanctioned candidate. Loop chose this over voluntary halt because (a) standing direction covers it, (b) PROMPT § HALT CONDITIONS forbids halting on "ran out of work," and (c) visual identity directly answers the iter-270 trigger's "modern feel" framing.
+- Framing-audit gate (PROMPT § iter 283) — fires at Round close → Round open transition: trigger lineage (iter-270 modern delta + iter-271 asset gen sanctioned + iter-305 post_halt_direction Option A) clearly cited; deliverables (enemy tier sprite variant) clearly serve the lineage. Gate passes.
+- Same-family check: iter 310 META → iter 311 META. 2 in a row but they bracket the Round 25 close → Round 26 open punctual transition. Each ships a concrete artifact (REVIEW-QUEUE close at 310, Round 26 blueprint at 311). Productive.
+- Conservative-first scoping decision: Phase A uses **procedural PIL** via gen_sprite.py extension, NOT /agentify image_gen. Reasons: substrate budget discipline (currently 92 of 120; need ~10-15 max for whole round); user has been auto-firing /loop without active engagement; /agentify image_gen burns real external resources. Phase B+ (/agentify) reserved until Phase A ships clean OR user re-engages with explicit direction.
+- Constraints respected: all 7 (META — no code; Phase A respects constraint 4 silhouette grammar; constraint 1 unchanged).
+- Constraints risked: none in META iter; Phase A will risk constraint 4 if silhouette gate fails (mitigation: hard gate, iterate procedural algo).
+- Hash anchor: `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` verified bit-identical on procedural baseline. No substrate touch this iter.
+- Falsifications: none.
+- Files: loop/breach/iter-311-round26-architect.md (NEW blueprint — Phase A 4-iter scope: META iter 311 + CAPABILITY iter 312 + BUILD iters 313+314), loop/breach/LEDGER.md, loop/breach/STATE.md, loop/breach/PRE-MORTEMS.md.
+- Empirical: blueprint defines Phase A done criteria (sprite + silhouette + Spawner wire + harness + bit-identical hash) + Phase B+ deferral conditions (user re-engagement OR Phase A clean ship).
+- Finding: **Round 26 (visual identity variant) opens with conservative Phase A scope.** First-asset target: enemy_light_t2 sprite via procedural PIL extension. Budget: ≤3 substrate writes (Spawner.gd + Loadout.gd + maybe configs/breach_default.tres), 4 iters max (311-314). Phase A done = silhouette gate PASS + spawn-side wiring loadout-gated + hash bit-identical + harness +1 OK marker. Phase B+ (using /agentify image_gen for higher-quality variants) deferred until Phase A success gate AND/OR user re-engagement.
+- substrate_writes_this_arc: unchanged at 92.
+- quiet_signal_counter: 0 (META iter without structural artifact; blueprint is a planning document, not a numerical lift; counter stays at floor from prior iter-307/308/309 resets).
+
+---
+
 ## iter 310 — META — Round 25 close + REVIEW-QUEUE consolidation (anti-accretion compliant: +1 add #31, -1 close #26)
 
 - Date: 2026-05-27

@@ -24,6 +24,23 @@ Format:
 
 ---
 
+## iter 311 — META — open Round 26 visual identity (conservative Phase A, procedural-PIL-first)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 (META — no code; Phase A respects constraint 4 silhouette grammar gate; constraint 1 unchanged).
+- CONSULT constraints risked: 4 (Phase A risks silhouette gate failure — mitigation: hard gate, iterate procedural algo until pass).
+- Framing-audit gate (PROMPT § iter 283) — fires at Round close → Round open: trigger lineage (iter-270 modern delta + iter-271 asset gen sanctioned + iter-305 post_halt_direction Option A) clearly cited; Phase A deliverable (enemy_light_t2 sprite) clearly serves "visual differentiation per depth tier" element of the visual-identity sprint scope. Gate passes.
+- Same-family check: iter 310 META → iter 311 META. Healthy alternation (Round close + Round open are punctual events with distinct deliverables, not continuous narration).
+- Conservative-first decision rationale: user has been auto-firing /loop without active engagement (likely at terminal less actively than active hours); substrate budget tight (92 of 120); /agentify image_gen is real external cost + minutes per call. Phase A defers /agentify until success gate.
+- Predicted failure: procedural PIL may produce visually-underwhelming sprite that fails silhouette gate's "readable verb at silhouette+palette+facing+intent" test. Mitigation: silhouette_gate.py is a hard quality gate; failure → iterate procedural algo OR fall back to smaller visual diff (e.g., tier-marker overlay rather than full sprite swap).
+- Falsifiable claim: post-iter, (a) loop/breach/iter-311-round26-architect.md exists with Phase A 4-iter sequencing + done criteria + Phase B+ deferral conditions; (b) STATE.phase reflects round-26-phase-A-open; (c) LEDGER iter-311 META entry written; (d) substrate_writes_this_arc unchanged at 92.
+- Sentence test: n/a (META).
+- Substrate touched: NONE (blueprint + LEDGER + STATE + PRE-MORTEMS only).
+- Hash-anchor verification plan: no Layer 1/2/3 substrate touch → hash anchor 23d6a2ec3bf2821f bit-identical on procedural baseline.
+
+---
+
 ## iter 310 — META — Round 25 close + REVIEW-QUEUE consolidation (anti-accretion net zero)
 
 - Date: 2026-05-27
