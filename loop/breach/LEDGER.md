@@ -17,6 +17,29 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 317 — META — open Round 27 (replay capture probe; loop-selected next frontier per stone-converged halt-cause-label)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; META opens single-probe round).
+- Trigger: Round 26 closed iter 316; STATE.next_action diagnosed 4 candidate directions. Loop selected Round 27 = replay capture probe per PROMPT halt-cause classifier `stone-converged` resolution path: "archive current stone, start next frontier from § work-valid-without-playtest surface list." post_halt_direction Options A+B both served; new frontier needed.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger lineage? PARTIALLY — replay capture provides TEMPORAL evidence the prior STATIC probes (Rounds 25 + 26) couldn't capture. The user's iter-270 "Stardew Valley delta" framing names pacing/rhythm/economy concerns; replay JSON is the loop's nearest approach to evidence about those without a real playtest. Citable, anchor-tied to the broader iter-270 lineage. Gate passes.
+- Same-family check: iter 313/314/315 BUILD × 3 → iter 316 META → iter 317 META. 2 METAs in a row but iter 316 was Round 26 close + iter 317 is Round 27 open — distinct punctual events, productive same-family.
+- Constraints respected: all 7 (META — no code).
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` verified bit-identical on procedural baseline. No substrate touch.
+- Falsifications: none.
+- Files added: `loop/breach/iter-317-round27-architect.md` (NEW blueprint — single-probe Round 27 scope; 3-iter budget 317-319; Probe 5 spec: per-frame Q1 playthrough state recorder + JSON timeseries; substrate writes target 0).
+- Findings:
+  - Round 27 picked over alternatives (Round 27 visual Phase C, gameplay axis, voluntary halt) because: replay capture ships a NEW kind of evidence (temporal not static); requires 0 substrate writes (extends bot driver from Round 25); has natural close at single probe (no scope creep risk).
+  - Hard constraint preserved: no 2nd adversarial consult (consult-001 still unscored).
+  - REVIEW-QUEUE posture preserved: probe ships as report under `loop/breach/probes/`, NOT as new direction-ask entry.
+  - Saturation watch active: if user hasn't re-engaged by iter 320 (Round 27 close + 1), the blueprint defaults to PushNotification + voluntary halt under `stone-converged → ASK USER`. The loop has produced 11 iters of standing-direction work; further continuation without user input becomes the iter-282 /meta "managing absence of evidence" anti-pattern.
+- substrate_writes_this_arc: unchanged at 94.
+- quiet_signal_counter: 0 (META iter opens a new round; not a fresh structural artifact; counter stays at floor from prior iter-315 reset).
+
+---
+
 ## iter 316 — META — Round 26 close + REVIEW-QUEUE consolidation (anti-accretion +1 #32 / -1 #28 = net zero)
 
 - Date: 2026-05-27

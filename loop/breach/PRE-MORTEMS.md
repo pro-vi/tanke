@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 317 — META — open Round 27 (replay capture probe)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 (META — no code).
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283) — fires at Round close → Round open: trigger lineage (iter-270 modern delta) addressed via replay capture's TEMPORAL evidence shape complementing prior STATIC probes. Citable; partial-match acceptable since iter-305 post_halt_direction Options A+B are exhausted and replay capture is the loop's selected next frontier per stone-converged classifier path.
+- Same-family check: iter 316 META → iter 317 META. 2 METAs but they bracket Round 26 close → Round 27 open punctual transition; each ships concrete artifact. Productive.
+- Predicted failure: replay capture data could be uninteresting — a deterministic synthetic playthrough doesn't reveal much about real-player behavior. Mitigation: report explicitly frames the data as "structural floor evidence of what a deterministic playthrough produces"; does NOT claim it represents real player.
+- Falsifiable claim: post-iter, (a) blueprint at loop/breach/iter-317-round27-architect.md exists with single-probe scope + 3-iter sequencing + done criteria; (b) STATE.phase reflects round-27-open; (c) LEDGER iter-317 META entry written; (d) substrate_writes_this_arc unchanged at 94.
+- Sentence test: n/a.
+- Substrate touched: NONE (blueprint + LEDGER + STATE + PRE-MORTEMS only).
+- Hash-anchor verification plan: no Layer 1/2/3 substrate touch → hash anchor 23d6a2ec3bf2821f bit-identical on procedural baseline.
+
+---
+
 ## iter 316 — META — Round 26 close + REVIEW-QUEUE consolidation (anti-accretion +1 #32 / -1 #28)
 
 - Date: 2026-05-27
