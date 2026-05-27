@@ -24,6 +24,23 @@ Format:
 
 ---
 
+## iter 306 — META — open Round 25 (probe-sprint variant per Option B nudge)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 (META — blueprint + ledger + state only).
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger lineage? YES — Option B was "kicked running again without feedback + Option B nudge accepted" per STATE.post_halt_direction_iter_305 dated 2026-05-27. Sanctioned candidate #2 (work-valid-without-playtest probes per PROMPT § iter-273 list). Gate passes via explicit pre-resume direction.
+- Same-family check: iter 305 META (session close) → iter 306 META (session open). Two MEs in a row but they bracket the session boundary; admissibility rule targets NO-SIGNAL families and this iter bootstraps a NEW concrete round with deliverable list. Productive.
+- Anti-theory-laundering check: this iter does NOT fire a new consult (hard constraint per post_halt_direction); does NOT add substrate (META + new file); does NOT widen REVIEW-QUEUE with new direction-asks (probes produce reports, not new questions).
+- Predicted failure: probe-sprint scope could drift toward "look rigorous in absence of evidence" — the cargo-cult pattern iter-273 named. Mitigation: every probe deliverable is a NUMBER table + 1-paragraph interpretation, NOT a verdict or label. If a probe report reads like a consult verdict, it's the wrong shape.
+- Falsifiable claim: post-iter, `loop/breach/iter-306-round25-probe-sprint-architect.md` exists + names 3+ concrete probes with deliverable shapes + STATE updates phase to `round-25-probe-sprint-open` + LEDGER records the round open. Next iter (307) targets Probe 1 (Q1 bot run) per the blueprint.
+- Sentence test: n/a (META).
+- Substrate touched: NONE (blueprint + LEDGER + STATE + PRE-MORTEMS only).
+- Hash-anchor verification plan: no substrate write → hash anchor `23d6a2ec3bf2821f` trivially preserved. `make test` not required for META; will run `make test-all` + `make test-breach` to confirm baseline still green post-session-resume.
+
+---
+
 ## iter 294 — BUILD — consult-001 H6 visibility classes: pressure-fade ribbon + route (user direction Option A)
 
 - Date: 2026-05-25

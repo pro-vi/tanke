@@ -17,6 +17,26 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 306 — META — open Round 25 (probe-sprint variant per post_halt_direction Option B nudge)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; META opens the round and queues the first probe).
+- Trigger: user `/loop` re-invocation after iter-305 natural session close. STATE.post_halt_direction_iter_305 (dated 2026-05-27) names 2 sanctioned candidates + "Option B nudge accepted" — work-valid-without-playtest probes per PROMPT § iter-273 list. Hard constraint: max 1 NEW adversarial consult before consult-001's 3 predictions get scored. WATCH-FOR: substrate_writes_this_arc 92 → 120 calcification cliff.
+- Framing-audit gate (PROMPT § iter 283): gate passes — Option B was pre-resume-nudged by user; the loop has explicit standing authority to open a probe sprint without AskUserQuestion confirmation tax. consult-001 expires at iter 309 (3 iters away); the probe data structurally complements (does not substitute for) user playtest scoring.
+- Same-family check: iter 305 META → iter 306 META. Bracket-the-session-boundary; this iter bootstraps a NEW concrete round with deliverable list. Admissibility rule targets NO-SIGNAL families; this is direction-set META, not status-narration.
+- Anti-theory-laundering check: does NOT fire new consult (hard constraint); does NOT add substrate (META + new file); does NOT widen REVIEW-QUEUE with new direction-asks (probes ship as REPORTS in `loop/breach/probes/`, not as new direction-questions).
+- Constraints respected: all 7 (META — blueprint + ledger + state only).
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f` verified post-session-resume on procedural baseline (seed 42 / default config). `make test-all` exit 0 (5/5: ALL_LOADER_TESTS_PASS / CHAIN_25_OK / CHAIN_35_OK / ARC_COMPLETE_OVERLAY_OK / TITLESCREEN_NAV_OK); `make test-breach` exit 0.
+- Falsifications: none.
+- Files: loop/breach/iter-306-round25-probe-sprint-architect.md (NEW blueprint — 3 probes named with deliverable shapes + iter sequencing 307-314), loop/breach/PRE-MORTEMS.md, loop/breach/LEDGER.md, loop/breach/STATE.md.
+- Finding: **Round 25 opened as probe-sprint variant** — first probe (iter 307 CAPABILITY target) is Q1 headless bot run producing per-lane shell-consumption + outcome distribution. Bot can't substitute for human playtest scoring of consult-001 predictions, but CAN produce structural data showing whether `record_shot_hit` actually fires under headless drive, whether 3 fixed bot policies produce measurably different shell-class hit distributions, and whether Q1 lanes meaningfully differentiate strategy. Round 25 caps at 3 probes OR 12 iters; round closes when probe reports consolidate into a single REVIEW-QUEUE finding. Visual-identity round (originally Round 25) stays queued at REVIEW-QUEUE #27 — opens AFTER calibration data exists to anchor visual choices against.
+- substrate_writes_this_arc: unchanged at 92 (META + new blueprint file + LEDGER/STATE/PRE-MORTEMS only; no Layer 1/2/3 substrate touch).
+- quiet_signal_counter: 0 → 1. Resume-via-/loop is NOT a NEW user_direction (it re-references prior post_halt_direction); META iter without anchor lift does not reset. SIGNAL_RECEIPT: no entry — re-narration of post_halt_direction is INERT per iter-273 source-id rules (the post_halt_direction was already consumed implicitly at session close; this iter operationalizes but doesn't bring new evidence).
+
+---
+
 ## iter 305 — META — natural session close: PushNotification + halt per framing-audit gate
 
 - Date: 2026-05-26
