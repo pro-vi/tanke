@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 315 — BUILD — Round 26 Phase B activation (BrickBlock self-discovery + Loadout.brick_variant + Q1ProofRoom end-to-end)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7.
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283): YES — converts iter-313 capability into visible in-game change.
+- Same-family check: iter 314 BUILD → iter 315 BUILD. 2 BUILDs, both anchor-tied to Round 26 visual identity. Productive same-family.
+- Predicted failure: spawn-order timing — BrickBlock._ready needs player in group "player" BEFORE bricks instantiate. Q1ProofRoomScene._ready currently spawns grid (incl. bricks) FIRST. Mitigation: refactor swap logic into public `apply_variant_lookup()` method callable by Q1ProofRoomScene as a post-pass after _spawn_player. Spawn order stays unchanged.
+- Falsifiable claim: post-iter, (a) BrickBlock.gd has public apply_variant_lookup() method; (b) Loadout.gd has @export var brick_variant: Texture2D = null; (c) Q1ProofRoomScene._spawn_player calls post-pass on spawned_terrain; (d) test_breach_brick_variant_activation harness PASSES 4 cases; (e) test_breach_q1_proof_scene continues to PASS (no regression); (f) screenshot of Q1ProofRoom visibly shows brick_012 variant at gate row; (g) hash anchor `23d6a2ec3bf2821f` bit-identical post-edit on procedural baseline.
+- Sentence test: n/a.
+- Substrate touched: scripts/BrickBlock.gd (substrate write #4 this arc — refactor _ready into apply_variant_lookup() method).
+- Hash-anchor verification plan: post-edit `make test` + procedural oracle on seed 42 → must equal 23d6a2ec3bf2821f. The arc-2/3 baseline has no "player" group OR no loadout OR null brick_variant → all branches inside apply_variant_lookup return null → variant_texture stays null → no sprite swap → bit-identical baseline.
+
+---
+
 ## iter 314 — BUILD — Round 26 Phase A close: probe-004 ship report
 
 - Date: 2026-05-27

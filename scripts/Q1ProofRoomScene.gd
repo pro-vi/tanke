@@ -116,6 +116,14 @@ func _spawn_player() -> void:
 	# loadout-gated HUD + RunRecap. Without this the route-currency
 	# wiring (iter 286) silently no-ops.
 	spawned_player.loadout = LoadoutT.new()
+	# arc-4 iter 315 (Round 26 Phase B activation): demonstrate the
+	# brick variant pipeline by setting the variant texture on the
+	# proof-room loadout. BrickBlock instances self-discover this in
+	# their _ready and swap to the variant — produces visible band-
+	# themed brick rendering in this scene only. arc-2/3 baseline +
+	# arc-4 breach mode without explicit Loadout.brick_variant set
+	# continues to render canonical sprites_1.png frame 5.
+	spawned_player.loadout.brick_variant = preload("res://img/brick_012.png")
 	spawned_player.add_to_group("player")
 	add_child(spawned_player)
 	# arc-4 iter 289: expose alias for Bullet's lvl.player reach.
@@ -125,6 +133,15 @@ func _spawn_player() -> void:
 	# Without this, _fire() emits shoot but no listener spawns a bullet
 	# → player feels like firing is broken.
 	spawned_player.shoot.connect(_on_player_shoot)
+	# arc-4 iter 315 (Round 26 Phase B post-pass): bricks were spawned
+	# in _spawn_grid BEFORE the player joined the "player" group, so
+	# their in-ready self-discovery returned null. Re-trigger lookup
+	# now that the player is in the scene + group. BrickBlock's
+	# apply_variant_lookup() is a no-op when variant_texture is
+	# already set OR when the player chain doesn't have brick_variant.
+	for ter in spawned_terrain:
+		if ter != null and is_instance_valid(ter) and ter.has_method("apply_variant_lookup"):
+			ter.apply_variant_lookup()
 
 
 # arc-4 iter 296 (playtest-fix): mirror Level.gd._on_PlayerTank_shoot —

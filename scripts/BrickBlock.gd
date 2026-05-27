@@ -31,10 +31,34 @@ var beam_hp: int = 3
 func _ready() -> void:
 	hp = max_hp
 	beam_hp = beam_hp_max
-	# arc-4 iter 313: if a variant texture is wired in, swap the
-	# Sprite2D's texture + collapse the atlas indexing to single-frame.
-	# Default null → no-op → bit-identical to arc-2/3 baseline.
-	if variant_texture != null:
+	# arc-4 iter 315 (Round 26 Phase B activation, in-ready path): if
+	# the player is already spawned + grouped + has loadout.brick_variant
+	# set, self-discover. arc-2/3 baseline: no "player" group → fallback
+	# returns null → no override → bit-identical sprite indexing.
+	# When bricks spawn BEFORE the player (Q1ProofRoomScene order), this
+	# returns null here; the caller (Q1ProofRoomScene._spawn_player
+	# post-pass) calls apply_variant_lookup() afterward.
+	apply_variant_lookup()
+
+
+# arc-4 iter 315: re-attempts the loadout-driven variant lookup +
+# applies the override if found. Safe to call multiple times (no-op
+# once variant_texture is already set). Used by callers that spawn
+# bricks BEFORE the player so the in-ready self-discovery doesn't
+# fire — they call this post-pass after the player joins the scene.
+func apply_variant_lookup() -> void:
+	if variant_texture == null:
+		var players: Array = get_tree().get_nodes_in_group("player")
+		if not players.is_empty():
+			var p = players[0]
+			if "loadout" in p and p.loadout != null \
+					and "brick_variant" in p.loadout \
+					and p.loadout.brick_variant != null:
+				variant_texture = p.loadout.brick_variant
+	# arc-4 iter 313: swap the Sprite2D texture + collapse atlas
+	# indexing when variant_texture is set. Default null → no-op →
+	# bit-identical baseline.
+	if variant_texture != null and sprite != null:
 		sprite.texture = variant_texture
 		sprite.hframes = 1
 		sprite.vframes = 1

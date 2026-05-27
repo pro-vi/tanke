@@ -17,6 +17,38 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 315 — BUILD — Round 26 Phase B activation: BrickBlock self-discovery + Loadout.brick_variant + Q1ProofRoom end-to-end + visual verification
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; activation closes the loop on the iter-313 variant_texture capability).
+- Trigger: iter 314 Phase A close + probe-004 F4 recommendation = Phase B activation. Round 26 advances from "capability exists, invisible in-game" to "capability active, visible in Q1ProofRoom."
+- Framing-audit gate (PROMPT § iter 283): YES — produces in-game visible difference user can SEE. anchor-tied to Round 26 visual identity scope.
+- Same-family check: iter 314 BUILD → iter 315 BUILD. 2 BUILDs in a row but each ships concrete deliverable (314 report, 315 activation). Productive same-family.
+- Constraints respected: 4 (silhouette gate cited for within-role variant pattern per DG-001); all 7.
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` verified bit-identical on procedural baseline post-edit. BrickBlock.gd ×4 (this arc; +1 this iter) — _ready calls `apply_variant_lookup()` which is no-op when player group is empty OR loadout chain returns null. arc-2/3 baseline never assigns loadout.brick_variant → chain returns null → bit-identical.
+- Falsifications: 2 caught mid-iter:
+  - **F-iter315-1**: initial implementation reordered Q1ProofRoomScene._ready to spawn player FIRST so BrickBlock._ready could self-discover. The reorder broke test_breach_q1_proof_scene — PlayerTank._ready apparently has side-effects on subsequent enemy spawn positions (HEAT gate Heavy at (12,14) was either not spawned correctly or position-mangled). Reverted to original spawn order (grid then player).
+  - **F-iter315-2**: with original spawn order, BrickBlock._ready self-discovery returns null (player not yet in group). Fix: refactored swap logic into public method `apply_variant_lookup()` callable by Q1ProofRoomScene._spawn_player as a post-pass after both spawn.
+- Files added: `loop/breach/test_breach_brick_variant_activation.gd` (NEW — 4-case harness: no-player baseline + null-variant baseline + self-discovery override + Q1ProofRoom end-to-end variant rendering).
+- Files modified:
+  - `scripts/BrickBlock.gd` (substrate write #4 this arc — extracted swap logic into public `apply_variant_lookup()` method; _ready now calls it; safe to call multiple times; null-guards for sprite + group + loadout chain).
+  - `scripts/Loadout.gd` (arc-4-owned; NOT substrate — added @export var brick_variant: Texture2D = null field).
+  - `scripts/Q1ProofRoomScene.gd` (arc-4-owned; NOT substrate — set spawned_player.loadout.brick_variant = preload res://img/brick_012.png + post-spawn loop calling apply_variant_lookup on each spawned_terrain brick).
+  - `Makefile` (added `check-breach-brick-variant-activation` target + added to test-breach aggregate at 91 OK markers).
+  - `tools/refs/q1_baseline.png` (UPDATED — re-captured baseline reflects iter-315 variant rendering; visible variant signal at gate row).
+- Empirical:
+  - test-breach 90 → 91 OK markers; exit 0.
+  - test-all 5/5 PASS exit 0.
+  - hash anchor `23d6a2ec3bf2821f` bit-identical post-edit on procedural baseline.
+  - Visual verification per iter-301 discipline: `make screenshot-q1` + Read inline shows the brick row in Q1ProofRoom now renders brick_012 variant (distinct mortar pattern from baseline brick_007). Subtle visual diff — both palettes share the orange-red brick family; the mortar pattern differs at the per-pixel level.
+- Finding: **Round 26 Phase B activation shipped — iter-313 variant_texture capability is now ACTIVE in Q1ProofRoom.** Bricks at gate row render brick_012 variant instead of canonical sprites_1.png frame 5. arc-2/3 baseline + arc-4 breach mode without explicit Loadout.brick_variant set continues to render canonical (bit-identical hash verified). Honest visible diff is subtle (both bricks share palette + silhouette); meaningful as proof-of-pipeline for future variants. Round 26 budget 2 of 3-5 used (BrickBlock.gd ×3 → ×4); 1-3 writes remaining for Phase C+ if loop continues.
+- substrate_writes_this_arc: 93 → 94.
+- quiet_signal_counter: 0 (BUILD ships substrate + harness + visual; correctness signal preserved).
+
+---
+
 ## iter 314 — BUILD — Round 26 Phase A close: probe-004 ship report consolidating blueprint + pivot + asset + wiring + harness
 
 - Date: 2026-05-27

@@ -47,6 +47,15 @@ const Bullet = preload("res://scripts/Bullet.gd")
 # — rear scouts no longer demand a turn."
 @export var has_rear_guard: bool = false
 
+# arc-4 iter 315 (Round 26 Phase B — visual identity sprint activation):
+# optional brick tile variant texture. When non-null, BrickBlock instances
+# self-discover this via the iter-313 variant_texture override and render
+# the variant instead of the canonical sprites_1.png frame 5. Default null
+# → arc-2/3 baseline preserved + arc-4 breach mode without explicit variant
+# config also preserved. Hash anchor 23d6a2ec3bf2821f bit-identical when
+# this field is null.
+@export var brick_variant: Texture2D = null
+
 
 # Returns true if the player can fire the given shell class. AP is
 # always allowed (baseline); HE/HEAT require positive reserve.
