@@ -1,8 +1,8 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: round-27-probe-5-shipped (iter 318 CAPABILITY — Q1 replay capture driver + harness + probe-005 report shipped in single iter; event-indexed timeseries of dominant_per_lane bot run captured; HE radius blast event drops terrain 10 → 5 visibly; iter 319 default = formal META close + saturation-watch PushNotification per blueprint)
-iter: 318
+phase: SESSION-2026-05-27-HALTED-voluntary-saturation-watch (iter 319 META — Round 27 formally closed + 13-iter resume session voluntarily halts per PROMPT halt-cause classifier `stone-converged → ASK USER via PushNotification`; user-side direction needed for further substantive work)
+iter: 319
 round24_blueprint: loop/breach/iter-270-round24-architect.md
 round24_status: opening — Phase A (HUD-as-status) → Phase B (scaling + tier breakthroughs) → Phase C (enemy-HP recurve). Stardew delta — same BC primitives, modern HUD + progression feel. User-directed iter 270 (2026-05-24).
 asset_gen_standing_capability: /agentify image_gen (ChatGPT) is the standing visual-asset pipeline — confirmed via Round 9 (4 tank archetype concept sprites) and Pro Consult 011 (motif-first procedural masks per H5). The full pipeline (prompt → image → palette extraction → 16×16 / 8×8 silhouette compliance → atlas pack) shipped end-to-end at iters 142-149. Sanctioned for HUD icons, card art, enemy variants, depot art, banner art, level decorations. Procedural PIL (`tools/gen_tile.py`, `tools/gen_archetype_sprites.py`) remains the same-iter fallback. iter 271 amendment lifts this from Round-9-specific to standing.
@@ -184,11 +184,12 @@ last_consult: iter 280  # consult-001 — adversarial-over-artifact, Phase A clo
 consult_001_status: resolved-applied-h5-only  # 5 other recommendations (H4 / H6 / Q1 / Q3 / H1-gate-strengthen / reload-bar-dup / Stardew-pacing) backlogged in CONSULT-LEDGER; Phase B opening deferred pending breach-economy-proof-room (Q1) decision.
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: ACTIVE — Round 27 Probe 5 substantively SHIPPED at iter 318 CAPABILITY (driver + harness + report + JSON data all in one iter). Honest reframe of blueprint's "per-frame" claim → "event-indexed timeseries" (synthetic-fire bypasses real-time physics; documented in driver + report). 5 findings F1-F5 captured. test-breach 91 → 92.
-next_action: iter 319 META — Round 27 formal close + voluntary halt decision. Per blueprint saturation watch: user hasn't re-engaged in 13 iters of this resume session (306-318); per PROMPT § halt-cause classifier stone-converged path, the loop should PushNotification + halt at this inflection so the user gets a clear session-digest + can choose next direction OR explicit halt. Iter 319 plan:
-    (1) Update REVIEW-QUEUE: ADD #33 (Round 27 close summary) + CLOSE one item (likely #14 PLAYTEST REQUEST since the loop has now produced more structural follow-up than the entry originally requested; user playtest is the only meaningful next signal). Anti-accretion net zero.
-    (2) PushNotification user with concise session digest (13 iters, 2 substrate writes, 5 probe reports + visual identity, hash preserved, await direction).
-    (3) NO ScheduleWakeup — voluntary halt. Loop resumes on user signal (new /loop, playtest scoring, or explicit halt).
+loop_state: HALTED (voluntary saturation halt iter 319) — 13-iter session resume (306-319) produced 3 rounds (25 probes, 26 visual identity, 27 replay capture) with 2 substrate writes, hash anchor preserved bit-identical, test-breach 86 → 92, 5 probe reports, REVIEW-QUEUE net zero (+3/-3). consult-001 expired metadata-only. PushNotification fired with session digest.
+next_action: WAIT for user signal. User options:
+    (a) /loop with fresh prompt → loop continues with new anchor
+    (b) playtest Q1ProofRoom + score consult-001 3 predictions in CONSULT-LEDGER → loop calibrates feel_consult_cap retroactively
+    (c) explicit halt/stop signal → no-op (already halted)
+    (d) Round 28 with explicit axis (gameplay/visual/instrumentation/Stardew-pacing-pivot) → loop ships per fresh blueprint
 
   When loop resumes options (per user direction):
     - Direction "score me up" / debrief filled → loop updates consult_calibration + decides next sprint based on prediction outcomes

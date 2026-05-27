@@ -24,6 +24,23 @@ Format:
 
 ---
 
+## iter 319 — META — Round 27 close + voluntary halt PushNotification (saturation watch fired)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: all 7 (META — no code).
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283) — fires at Round close + session close: trigger lineage citable; voluntary halt is the rule-compliant response to iter-282 /meta anti-pattern risk when user hasn't re-engaged in 13 iters of standing-direction work.
+- Same-family check: iter 317 META → 318 CAPABILITY → 319 META. Healthy alternation.
+- Anti-accretion check: +1 (#33 Round 27 close) / -1 (#14 PLAYTEST REQUEST superseded). Net zero. Cumulative session +3/-3 net zero.
+- Predicted failure: voluntarily halting could be seen as the loop "giving up." Mitigation: PushNotification surfaces the session digest + resume signals; user can re-engage at any point; halt is documented as `stone-converged → ASK USER` per PROMPT classifier, NOT as failure.
+- Falsifiable claim: post-iter, (a) REVIEW-QUEUE has #33 added (Round 27 close); (b) #14 marked CLOSED with closure note linking to Round 24/25/26/27 followup; (c) STATE.phase reflects SESSION-2026-05-27-HALTED-voluntary-saturation-watch; (d) PushNotification fired (load-bearing per PROMPT iter-273 rules); (e) NO ScheduleWakeup call.
+- Sentence test: n/a.
+- Substrate touched: NONE.
+- Hash-anchor verification plan: no Layer 1/2/3 substrate touch → hash anchor `23d6a2ec3bf2821f` bit-identical on procedural baseline.
+
+---
+
 ## iter 318 — CAPABILITY — Round 27 Probe 5: Q1 replay capture driver + harness + report
 
 - Date: 2026-05-27

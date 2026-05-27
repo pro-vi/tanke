@@ -17,6 +17,63 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 319 — META — Round 27 formal close + REVIEW-QUEUE +1 #33 / -1 #14 + voluntary halt PushNotification (saturation watch fired)
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift; META closes Round 27 + ships final session bookkeeping + voluntarily halts).
+- Trigger: iter 318 shipped Probe 5 substantively; STATE.next_action queued iter 319 = formal close + voluntary halt. Saturation watch from iter-317 blueprint: user hasn't re-engaged in 13 iters; the loop has produced 5 probe reports + visual identity pipeline; per PROMPT § halt-cause classifier `stone-converged` resolution path, PushNotification + halt is the rule-compliant move when continued execution risks the iter-282 /meta "managing absence of evidence" anti-pattern.
+- Framing-audit gate (PROMPT § iter 283) — fires at Round close + session close: trigger lineage citable across all 3 rounds of this resume; deliverables (5 probes + visual pipeline) serve the iter-270 anchor lineage. Gate passes; honest halt rather than continued cargo-cult.
+- Same-family check: iter 317 META → 318 CAPABILITY → 319 META. Healthy alternation. META closes the round + ships REVIEW-QUEUE delta + halts (distinct from NO-SIGNAL META).
+- Constraints respected: all 7 (META — no code).
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` verified bit-identical on procedural baseline. No substrate touch.
+- Falsifications: none.
+- Files modified: loop/breach/REVIEW-QUEUE.md (#33 added Round 27 close summary + #14 marked CLOSED with iter-319 closure note linking to Round 24/25/26/27 followup), loop/breach/LEDGER.md, loop/breach/STATE.md, loop/breach/PRE-MORTEMS.md.
+- Anti-accretion check: ADD #33 (Round 27 close) + CLOSE #14 (★ PLAYTEST REQUEST superseded by extensive Round 24/25/26/27 structural follow-up). Net zero. Cumulative session REVIEW-QUEUE delta: +3 (#31, #32, #33) / -3 (#26, #28, #14) = net zero across the 13-iter session.
+- PushNotification fired (truly load-bearing per PROMPT — user hasn't re-engaged in 13 iters; the loop's structural ceiling for this session is reached; next direction needs user input).
+- **Loop voluntarily HALTED.** No ScheduleWakeup. Per PROMPT halt-cause classifier `stone-converged → ASK USER via PushNotification`, the loop produced what it could and now waits for fresh direction.
+- substrate_writes_this_arc: unchanged at 94.
+- quiet_signal_counter: 0 (META iter formalizes the round close + session halt; no SIGNAL_RECEIPT entry since this iter doesn't lift an anchor — it bookkeeps).
+- Finding: **Round 27 (replay capture sprint) FORMALLY CLOSED at iter 319. Session voluntarily halts.** 13-iter resume session (306-319) produced: 3 probes Round 25 + visual identity Round 26 (capability + activation + visible diff) + replay capture Round 27. 2 substrate writes total. Hash anchor preserved bit-identical through all 13 iters. test-breach 86 → 92 (+6 OK markers). REVIEW-QUEUE delta net zero (+3/-3). 5 probe reports + 4 architect blueprints + 1 derivation-gap log shipped as user-facing read artifacts. consult-001 expired metadata-only (no FEEL-CONSULT lift ever fired; structural recommendations applied independently). Resume signals: fresh /loop with new direction; playtest scoring of consult-001 predictions; explicit halt/stop signal; Round 28 + direction choice.
+
+### What this session delivered (iters 306-319)
+
+| Phase | Iters | Output |
+|---|---|---|
+| Resume + Round 25 open | 306 | Probe-sprint blueprint over visual identity (Option B nudge) |
+| Round 25 probes | 307-309 | Probe 1 (Q1 bot baseline) + Probe 2 (shell × target matrix) + Probe 3 (HUD coverage) |
+| Round 25 close | 310 | Anti-accretion REVIEW-QUEUE +1/-1; Round 24 direction marked CLOSED |
+| Round 26 Phase A | 311-314 | Blueprint + brick_012.png variant asset + BrickBlock.variant_texture capability + probe-004 ship report |
+| Round 26 Phase B | 315 | BrickBlock self-discovery + Loadout.brick_variant + Q1ProofRoom end-to-end + visual verification |
+| Round 26 close | 316 | Anti-accretion REVIEW-QUEUE +1/-1; Round 24 Phase A pending playtest marked CLOSED |
+| Round 27 open | 317 | Single-probe replay capture sprint blueprint |
+| Round 27 Probe 5 | 318 | Event-indexed Q1 playthrough timeseries + 3-case harness + probe-005 ship report |
+| Round 27 close + halt | 319 | Anti-accretion REVIEW-QUEUE +1/-1; #14 PLAYTEST REQUEST marked CLOSED; voluntary halt PushNotification |
+
+### Final state
+
+- **Hash anchor `23d6a2ec3bf2821f` preserved bit-identical through 13 iters** + 2 substrate writes
+- **test-breach 86 → 92 OK markers** (+6: q1-bot-run, shell-pressure-matrix, hud-coverage, brick-variant, brick-variant-activation, q1-replay-capture)
+- **test-all 5/5** green throughout
+- **substrate_writes_this_arc 92 → 94** (BrickBlock.gd ×2 across Phase A + Phase B); 26 writes remaining to 120 cliff
+- **REVIEW-QUEUE net zero accretion** (+3 / -3)
+- **5 probe reports** at `loop/breach/probes/probe-{001..005}-*.md`
+- **4 architect blueprints** at `loop/breach/iter-{306,311,317,283}-*-architect.md` (286 from Q1 sprint)
+- **1 derivation-gap log** at `loop/breach/derivation-gaps.md` (DG-001 gen_sprite.py MLX blocker)
+- **2 visual baselines** at `tools/refs/q1_baseline.png` + `tools/refs/q1_post_pick_baseline.png`
+- **consult-001 EXPIRED metadata-only** (no [FEEL-CONSULT] lift ever fired; structural recommendations applied independently iters 280-294); 3 falsifiable predictions still UNSCORED in CONSULT-LEDGER
+
+### Resume signals
+
+- User writes /loop with fresh prompt → loop continues with new anchor
+- User plays Q1ProofRoom.tscn + scores consult-001 predictions in CONSULT-LEDGER → loop calibrates feel_consult_cap + picks next sprint based on outcome
+- User picks Stardew-pacing pivot (Option C from iter 283) → ~30+ iter reframe (previously declined; would need explicit reversal)
+- User opens Round 28 with explicit axis (gameplay vs visual vs instrumentation extension) → loop ships per blueprint
+- User writes "playtest" / "halt" / "stop" → no-op (loop already halted)
+
+---
+
 ## iter 318 — CAPABILITY — Round 27 Probe 5: Q1 replay capture driver + harness + report (event-indexed temporal evidence)
 
 - Date: 2026-05-27

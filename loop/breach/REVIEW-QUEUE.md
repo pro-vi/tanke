@@ -408,7 +408,21 @@ Items remaining OPEN (require user signal):
   Default if no answer: (b) — algorithmic tint+overlay via
     gen_tile.py preserves BC grammar and is the most loop-native path.
 
-#14 — ★ PLAYTEST REQUEST — Round 9-23 (visuals + charge-lob + class cards) — round 9-23 — iter 71+79+99+147+200 — open (playtest gate, UPGRADED iter 201)
+#14 — ★ PLAYTEST REQUEST — Round 9-23 (visuals + charge-lob + class cards) — round 9-23 — iter 71+79+99+147+200 — **CLOSED iter 319 (superseded by Round 24/25/26/27 structural follow-up; user playtest scoring of consult-001 predictions remains the user-side gate)**
+
+  **Closure note (iter 319):** between iter 200 (#14 last upgrade) and iter 318 (Round 27 close), the loop produced extensive structural follow-up addressing the open questions in this entry:
+    - Round 24 Phase A: 5 HUD widgets (iters 274-278)
+    - consult-001 closure + 8 of 8 recommendations applied (iters 279-294)
+    - 4 user-playtest-feedback items resolved (iters 296-300)
+    - Q1 proof room shipped + brief written + playable scene (iters 283-290)
+    - Structural defenses encoded in PROMPT: same-family / framing-audit / visual-verification (iters 273/283/301)
+    - Round 25 probe sprint: 3 probes + reports (iters 306-310)
+    - Round 26 visual identity: brick variant pipeline + activation + visual verification (iters 311-316)
+    - Round 27 replay capture probe: temporal evidence captured (iters 317-318)
+    - test-breach 35 → 92 OK markers across this followup
+    - Hash anchor 23d6a2ec3bf2821f preserved bit-identical through ~24 substrate writes
+    - 5 probe reports at loop/breach/probes/ + 1 derivation-gap log + 4 architect blueprints
+  The user-side gate remains the same: playtest the game + score consult-001's 3 falsifiable predictions in CONSULT-LEDGER. The loop has produced everything it can produce STRUCTURALLY; the next direction needs human feel-data. Per anti-accretion compliance, this closure pairs with iter-319's addition of #33 (Round 27 close summary).
 
   ⇒ **Round 23 close (iter 201) — class-specific upgrade cards
      SHIPPED.** Pick-1-of-3 on level-up, archetype-aware. 14 cards
@@ -1007,6 +1021,39 @@ Items remaining OPEN (require user signal):
   Cadence: 240s active-build (same as Round 24).
   Opens: after Round 24 Phase C ships, OR earlier if user redirects to it.
   Anti-patterns: don't generate assets the player can't see meaningfully (asset volume as success metric — CONSULT §4 trap); silhouette grammar gate (CONSULT constraint 4) still applies to every generated enemy / particle / icon.
+
+---
+
+#33 — Round 27 (single-probe replay capture sprint) CLOSED — temporal evidence shape captured for the first time this arc — round 27 — iters 317-318 — closed (META open + CAPABILITY ship; round closed at iter 319 META)
+
+  Trigger lineage: Rounds 25 + 26 served Options B + A from post_halt_direction_iter_305. Per PROMPT § halt-cause classifier `stone-converged` resolution path, archive current stone + start next frontier from § work-valid-without-playtest surface list. Loop selected replay capture (new evidence shape) over visual Phase C (incremental repetition) or gameplay axis (substrate-heavy).
+
+  Probe 5 shipped (iter 318):
+    - **Driver**: tools/q1_replay_capture.gd — synthetic-fire dominant_per_lane bot policy through Q1ProofRoom; 4 gate-target events; pre/post state snapshots + initial/final summaries; 10-event JSON output at tools/out/q1_replay_dominant_per_lane.json.
+    - **Harness**: loop/breach/test_breach_q1_replay_capture.gd — 3 cases (driver constants + temporal routes 1/1/1/1 + HE radius temporal evidence).
+    - **Report**: loop/breach/probes/probe-005-q1-replay-capture.md — 10-event sequence table + 5 numbered findings F1-F5.
+
+  Honest implementation note: blueprint said "per-frame state recorder" but synthetic-fire bypasses real-time physics. Renamed in driver + report to "event-indexed timeseries"; `capture_mode` field in JSON makes it explicit. Frame-indexed (real PlayerTank._input_dir + GunTimer awaits + 60Hz tick) deferred to Phase B+ if user re-engages.
+
+  Findings F1-F5:
+    F1: HE radius blast destroys 5 bricks in ONE event (terrain 10 → 5 at event 0). Probe 2 F4 dramatized in temporal form.
+    F2: Routes ledger fills 0/0/0/0 → 1/1/1/1 across 4 events. Probe 1 F1 cross-checked in event-indexed form.
+    F3: HEAT × Heavy spans 2 events without resolution (hp 3 → 1). Aggregate stats hide this tactical decision point.
+    F4: Only 1 enemy killed across 4 events. dominant_per_lane is gate-clearing, not combat-clearing.
+    F5: Final state has 4 unfinished obstacles. Bot closes route currency loop (1/1/1/1) but doesn't exit room.
+
+  Substrate impact: 0 writes (Round 27 budget was 0; pure tooling sprint per blueprint).
+  test-breach: 91 → 92 (+1 OK marker for q1-replay-capture harness).
+  test-all: 5/5 unchanged.
+  Hash anchor 23d6a2ec3bf2821f preserved through both iters of Round 27.
+
+  Anti-accretion compliance: this entry ADDS +1 to REVIEW-QUEUE; CLOSES #14 (★ PLAYTEST REQUEST — superseded by extensive Round 24/25/26/27 structural follow-up). Net zero accretion.
+
+  Affordance: temporal evidence shape unlocks future visualization tooling AND demonstrates that the synthetic-fire-driven probe pattern scales to per-event data capture, not just aggregate stats.
+
+  Risk: synthetic-fire data doesn't represent real-player pacing. Per-frame data (real-time physics replay) would be the next-quality step IF user authorizes the substrate budget for the implementation.
+
+  Loop voluntarily halts at iter 319 per saturation watch. Resume signals listed at iter-319 LEDGER + STATE.
 
 ---
 
