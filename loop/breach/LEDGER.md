@@ -17,6 +17,39 @@ Append-only. One entry per iter. Format:
 
 ---
 
+## iter 308 — CAPABILITY — Round 25 Probe 2: shell × target pressure matrix driver + harness + report
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- Score: 50/75 (no anchor lift — Round 25 ban on [FEEL-CONSULT] lifts; structural evidence accreted).
+- Trigger: iter 307 close → STATE.next_action gave 3 candidates; chose Probe 2 advance (per blueprint Probe 2 was queued at iter 310; came one iter early because iter 307 compressed CAPABILITY+BUILD).
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — Probe 2 systematizes Probe 1's F2/F3 findings (HE-on-steel silent / AP-on-armored-Heavy ledger conflation) across all (shell, target) cells; anchor-tied to Round 25 (Option B nudge).
+- Same-family check: iter 306 META → iter 307 CAPABILITY → iter 308 CAPABILITY. 2 CAPABILITY in a row, both producing concrete probe artifacts (not narration). Productive same-family.
+- Constraints respected: 1, 6, 7 (probe enriches death-attribution / recap-currency data; uses existing verb-not-stat shells).
+- Constraints risked: none.
+- Hash anchor: `23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291` verified bit-identical post-edit. No Layer 1/2/3 substrate touch.
+- Falsifications: none mid-iter (lessons from iter 307 carried — no PackedStringArray const issue, no inverted-logic bug).
+- Files added:
+  - `tools/shell_pressure_matrix.gd` (NEW — 4×4 matrix driver; per-cell MockLevel + MockPlayer harness mounting record_shot_hit to capture route ledger fires per shell/target pair; fires up to MAX_HITS_PER_CELL=10 per cell; classifies effects as damage_N_per_hit / bounces / drills; outputs aggregate JSON)
+  - `loop/breach/test_breach_shell_pressure_matrix.gd` (NEW — 6-case fingerprint harness: AP×brick control + AP×steel cross-pollination + AP×heavy 0-dmg-but-10-routes conflation lock + HEAT×heavy 2-hit-kill + APCR×steel drill + HE-per-cell-equals-AP)
+  - `loop/breach/probes/probe-002-shell-pressure-matrix.md` (NEW — probe report: 4×4 matrix table + 6 findings F1-F6 + 5 backlog candidates + Probe 1+Probe 2 cumulative picture + Round 25 next-iter posture)
+  - `tools/out/shell_pressure_matrix.json` (NEW per-run data; gitignored)
+- Files modified: Makefile (3 new targets: `check-breach-shell-pressure-matrix` + `shell-pressure-matrix` standalone + added to test-breach aggregate at 88 OK markers).
+- Empirical findings (per probe-002 report):
+  - **F1**: AP and HE are IDENTICAL on every per-cell test — HE's distinctness is the SCENE-LEVEL radius effect (`_apply_he_blast`), not per-cell damage. Implication: HE's identity surfaces only at brick clusters.
+  - **F2**: AP × armored Heavy fires 10 times, deals 0 damage, AND **records 10 routes**. The Probe 1 F3 ledger conflation is dramatized at maximum.
+  - **F3**: AP/HE/HEAT all silently bounce off steel (0 routes recorded). Compared to F2, the ledger is asymmetric — loud for armored-no-damage, silent for steel-no-damage. Backlog: optional `shells_bounced` tracking.
+  - **F4**: HEAT vs APCR on Heavy — HEAT 2 hits @ 2 dmg = strictly faster than APCR 3 hits @ 1 dmg. APCR's edge is steel-exclusive.
+  - **F5**: APCR is the only shell with positive outcome on ALL 4 targets. Universal viability is balanced by tight reserve caps.
+  - **F6**: 6 fingerprint assertions in the harness lock the canonical mechanics — Bullet armor mitigation, HEAT 2x, APCR drill, HE-per-cell-equals-AP all defended against silent regression.
+- substrate_writes_this_arc: unchanged at 92. Round 25 budget: 5 writes remaining (untouched).
+- test-breach: 87 → 88 OK markers; exit 0.
+- test-all: 5/5 PASS exit 0.
+- quiet_signal_counter: 0 (already 0 from iter 307; this iter ships another concrete probe deliverable — would reset but already at floor; SIGNAL_RECEIPT entry below).
+- Finding: **Round 25 Probe 2 ships clean.** The 4×4 matrix surfaces 5 structural findings beyond Probe 1's scene-level picture: AP=HE per-cell, ledger conflation systematized, asymmetric feedback for steel vs heavy, HEAT/APCR specialization layer, APCR's balanced universal viability. Iter 309 candidates: (a) Probe 3 (UI readability pass) per blueprint, (b) Round 25 close + bootstrap next surface, OR (c) consolidate findings into a single REVIEW-QUEUE entry IF a queue closure also fires. Loop diagnoses at iter 309 wake.
+
+---
+
 ## iter 307 — CAPABILITY — Round 25 Probe 1: Q1 headless bot run driver + harness + report
 
 - Date: 2026-05-27

@@ -24,6 +24,22 @@ Format:
 
 ---
 
+## iter 308 — CAPABILITY — Round 25 Probe 2: shell × target pressure matrix
+
+- Date: 2026-05-27
+- Tag: [STRUCTURE]
+- CONSULT constraints respected: 1, 6, 7 (probe systematizes ledger semantics that surface in death-attribution recap).
+- CONSULT constraints risked: none.
+- Framing-audit gate (PROMPT § iter 283): does this serve user's iter-270 trigger? YES — Probe 2 systematizes Probe 1's F2/F3 ledger findings; anchor-tied to Round 25 (Option B nudge). Productive direction-continuity.
+- Same-family check: iter 307 CAPABILITY → iter 308 CAPABILITY. 2 in a row but each ships a CONCRETE probe deliverable producing numerical findings (not narration). Productive.
+- Predicted failure: per-cell isolation might mis-measure HE because HE's radius blast depends on physics neighbor lookup — if MockLevel doesn't expose collision properly, HE damage might be undercounted. Mitigation: harness compares HE×brick to AP×brick on a SINGLE-brick scene with no neighbors; if HE has fewer hits-to-destroy than AP in isolation, the radius is leaking; if equal, HE is per-cell-equal-to-AP as expected.
+- Falsifiable claim: post-iter, (a) tools/shell_pressure_matrix.gd parses + runs to completion via `make shell-pressure-matrix`; (b) tools/out/shell_pressure_matrix.json contains a 4×4 grid; (c) harness PASSES 6 fingerprint assertions; (d) probe-002 report ≥5 numbered findings; (e) substrate_writes_this_arc unchanged at 92.
+- Sentence test: n/a (probe + harness; no upgrade work).
+- Substrate touched: NONE. Files added are tooling (tools/shell_pressure_matrix.gd), harness, probe report, JSON output. Makefile appended.
+- Hash-anchor verification plan: no Layer 1/2/3 substrate touch → hash anchor 23d6a2ec3bf2821f bit-identical on procedural baseline (seed 42 / default config). Will re-run procedural oracle post-edit to confirm.
+
+---
+
 ## iter 307 — CAPABILITY — Round 25 Probe 1: Q1 headless bot run driver + harness
 
 - Date: 2026-05-27

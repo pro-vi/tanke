@@ -1,8 +1,8 @@
 # Breach loop state (arc 4)
 
 ```yaml
-phase: round-25-probe-1-shipped (iter 307 — Q1 headless bot run driver + harness + report live at tools/q1_bot_run.gd + loop/breach/probes/probe-001-q1-bot-baseline.md; 5 numbered findings F1-F5; next iter 308 diagnoses Probe 2 vs Round close)
-iter: 307
+phase: round-25-probe-2-shipped (iter 308 — shell × target pressure matrix driver + harness + report live at tools/shell_pressure_matrix.gd + loop/breach/probes/probe-002-shell-pressure-matrix.md; 6 numbered findings F1-F6; next iter 309 diagnoses Probe 3 vs Round close)
+iter: 308
 round24_blueprint: loop/breach/iter-270-round24-architect.md
 round24_status: opening — Phase A (HUD-as-status) → Phase B (scaling + tier breakthroughs) → Phase C (enemy-HP recurve). Stardew delta — same BC primitives, modern HUD + progression feel. User-directed iter 270 (2026-05-24).
 asset_gen_standing_capability: /agentify image_gen (ChatGPT) is the standing visual-asset pipeline — confirmed via Round 9 (4 tank archetype concept sprites) and Pro Consult 011 (motif-first procedural masks per H5). The full pipeline (prompt → image → palette extraction → 16×16 / 8×8 silhouette compliance → atlas pack) shipped end-to-end at iters 142-149. Sanctioned for HUD icons, card art, enemy variants, depot art, banner art, level decorations. Procedural PIL (`tools/gen_tile.py`, `tools/gen_archetype_sprites.py`) remains the same-iter fallback. iter 271 amendment lifts this from Round-9-specific to standing.
@@ -50,6 +50,12 @@ quiet_signal_source_ids_used:  # iter 273 — list of source_ids that have alrea
     consumed_by_iter: 307
     changed_next_action: yes
     resulting_artifact: tools/q1_bot_run.gd + loop/breach/test_breach_q1_bot_run.gd + loop/breach/probes/probe-001-q1-bot-baseline.md + 4 JSON data tables (tools/out/q1_bot_run_*.json); 5 numbered findings F1-F5 producing structural floor evidence for "shells as route currency" identity
+  - kind: structural_lift
+    source_id: probe-002-shell-pressure-matrix-2026-05-27
+    first_seen_iter: 308
+    consumed_by_iter: 308
+    changed_next_action: yes
+    resulting_artifact: tools/shell_pressure_matrix.gd + loop/breach/test_breach_shell_pressure_matrix.gd + loop/breach/probes/probe-002-shell-pressure-matrix.md + tools/out/shell_pressure_matrix.json; 6 numbered findings F1-F6 producing per-cell mechanics matrix (4 shells × 4 targets) that systematizes Probe 1 F2/F3 ledger findings
 consult_calibration: {hits: 0, partial: 0, misses: 0, untested: 0}  # iter 273 — score of consult predictions against later real playtests; updated when user plays + scores. ≥2 hits AND hit rate ≥50% → calibrated_cap can rise to 4. Repeated misses → uncalibrated_cap lowers further or [FEEL-CONSULT] disabled.
 post_halt_direction_iter_305: |
   Direction added 2026-05-27 pre-resume after user "kick the loop running again
@@ -146,8 +152,8 @@ last_consult: iter 280  # consult-001 — adversarial-over-artifact, Phase A clo
 consult_001_status: resolved-applied-h5-only  # 5 other recommendations (H4 / H6 / Q1 / Q3 / H1-gate-strengthen / reload-bar-dup / Stardew-pacing) backlogged in CONSULT-LEDGER; Phase B opening deferred pending breach-economy-proof-room (Q1) decision.
 playtest_log: [iter 33 — 2026-05-20 — structurally complete but illegible, F003; iter 55 — 2026-05-21 — post-Round-7 — concept didn't land as roguelite, redirected to XP/level-ups + ammo drops → Round 8; iter 62 — 2026-05-22 — post-Round-8 — positive verdict but the tank primitive is too thin, redirected to TANK ARCHETYPES (Prism/Mortar/Ram) + enemy HP primitive + /agentify assets → Round 9]
 structural_ceiling: Rounds 5-6 lifted 30/50 → 39/65 (RUBRIC extended +C11/C12/C13 for the roguelite axes). The structural tier is now at its honest ceiling — the remaining ~26 points are [FEEL]/playtest-gated, and the remaining structural surfaces are substrate-blocked (C5) or unrequested scope (CONSULT 004).
-loop_state: ACTIVE — Round 25 Probe 1 SHIPPED at iter 307. 5 numbered findings F1-F5 captured to probe-001 report. Routes pattern 1/1/1/1 ONLY for dominant_per_lane policy; ALWAYS_AP destroys 1/10 gate blocks vs 6/10 for DOMINANT (HE radius blast = 5×). Substrate writes still 92. Round 25 budget: 5 writes remaining for whole round.
-next_action: iter 308 DIAGNOSE — choose between (a) advancing to Probe 2 (shell × terrain matrix per blueprint), (b) closing Round 25 mid-round if F1-F5 already serve loop needs + bootstrapping a new surface, OR (c) META iter that consolidates Probe 1 findings into REVIEW-QUEUE for user visibility (this would be the user-look-trigger move). Loop diagnoses based on STATE + LEDGER tail + REVIEW-QUEUE freshness at iter 308 wake.
+loop_state: ACTIVE — Round 25 Probes 1+2 SHIPPED (iters 307, 308). Cumulative: scene-level routes pattern 1/1/1/1 only for dominant_per_lane (Probe 1) + 4×4 per-cell matrix locking armor mitigation / HEAT 2x / APCR drill / HE-per-cell-equals-AP (Probe 2) + ledger conflation finding (AP×Heavy = 10 routes, 0 damage) systematized at MAX_HITS_PER_CELL=10. Substrate writes still 92. Round 25 budget: 5 writes remaining (untouched through 2 probes).
+next_action: iter 309 DIAGNOSE — (a) Probe 3 UI readability pass (HUD coverage math + label-size audit) closes round per blueprint, (b) Round close + bootstrap from PROMPT § work-valid-without-playtest surface list, OR (c) META iter consolidating Probe 1+2 findings into a single REVIEW-QUEUE entry IF a queue closure also fires (anti-accretion). Loop diagnoses based on STATE + LEDGER + REVIEW-QUEUE freshness at iter 309 wake. Note: iter 309 was the consult-001 expiration buffer date per blueprint — STATE may need an expiration-reminder note if user still hasn't scored predictions.
 
   When loop resumes options (per user direction):
     - Direction "score me up" / debrief filled → loop updates consult_calibration + decides next sprint based on prediction outcomes
