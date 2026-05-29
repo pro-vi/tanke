@@ -588,6 +588,13 @@ func _update_hp_bar() -> void:
 # kill counter). Bar refresh on every call so accumulator drain is
 # visible across the beam-active window.
 func take_beam_damage(amount: int) -> void:
+	# arc-4 PR-#4 S4 review fix — kill-once guard mirroring take_damage
+	# at line 514. The kill-once invariant currently holds only because
+	# take_damage zeros hp first; a future refactor could let
+	# take_beam_damage land on an already-dying enemy and re-trigger
+	# the death path. Cheap latent-fragility guard.
+	if hp <= 0:
+		return
 	if amount <= 0:
 		return
 	beam_hp = maxi(0, beam_hp - amount)

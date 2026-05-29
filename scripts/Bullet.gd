@@ -131,7 +131,10 @@ func _on_body_entered(body: Node) -> void:
 			# the iter-286 wiring missed the APCR-steel path because the
 			# steel branch returns early before the standard hit-record
 			# call site. Method-existence-gated via _try_record_shot_hit.
-			_try_record_shot_hit(body)
+			# arc-4 PR-#4 P2 #1 review fix — player-fired only (enemies
+			# don't fire APCR, but the gate stays consistent with line 180).
+			if source_label == "":
+				_try_record_shot_hit(body)
 		# Steel Salvage (iter 41, retuned iter 49): drilling
 		# >=STEEL_SALVAGE_THRESHOLD blocks with one shot refunds 1 APCR
 		# — once per shot — if the player owns the upgrade.
@@ -154,12 +157,17 @@ func _on_body_entered(body: Node) -> void:
 		# string so the body's recap can attribute the kill. The method
 		# exists only on the arc-4 player; arc-2/3 bodies don't define
 		# it, so this is a no-op on the baseline.
-		if body.has_method("set_last_damage_source"):
+		# arc-4 PR-#4 S3 review fix — only set when the hit will actually
+		# apply damage. Armor mitigation can drive deal to 0 (AP/HE on
+		# armored); without this gate, the recap killer would attribute
+		# to a hit that did 0 damage. (iframes/shield are inside
+		# take_damage and out of Bullet's visibility — separate concern.)
+		if deal > 0 and body.has_method("set_last_damage_source"):
 			body.set_last_damage_source(source_label)
 		# arc-4 iter 277 (Round 24 Phase A widget 5): propagate shell
 		# class so Enemy.gd can tint its death burst by killing shell.
 		# Method-existence gated so arc-2/3 bodies are unaffected.
-		if body.has_method("set_last_damage_shell"):
+		if deal > 0 and body.has_method("set_last_damage_shell"):
 			body.set_last_damage_shell(shell_class)
 		body.take_damage(deal)
 		# arc-4 iter 286 (Q1 sprint 3/4 per blueprint loop/breach/
@@ -168,7 +176,11 @@ func _on_body_entered(body: Node) -> void:
 		# metrics. Reads is_route_gate meta on the body (set by the level
 		# scene when spawning gate-row terrain or entrenched-gate enemies).
 		# Reaches the player via the iter-24 lvl.player pattern.
-		_try_record_shot_hit(body)
+		# arc-4 PR-#4 P2 #1 review fix — only player-fired bullets credit
+		# the recap (enemy-fired bullets have non-empty source_label set
+		# by Enemy._fire at iter 109; player bullets default to "").
+		if source_label == "":
+			_try_record_shot_hit(body)
 	if shell_class == SHELL_CLASS_HE:
 		var radius_hits: int = _apply_he_blast(body)
 		# arc-4 iter 52 (Round 7e): the HE detonation visual — a blast
@@ -282,9 +294,11 @@ func _apply_he_blast(primary_body: Node) -> int:
 			# (c) propagate attribution before take_damage so the death
 			# burst tint + recap source are correct on splash kills.
 			# Method-existence-gated so arc-2/3 bodies stay unaffected.
-			if sibling.has_method("set_last_damage_source"):
+			# arc-4 PR-#4 S3 review fix — only set when splash actually
+			# damages (armor mitigation can drive splash_deal to 0).
+			if splash_deal > 0 and sibling.has_method("set_last_damage_source"):
 				sibling.set_last_damage_source(source_label)
-			if sibling.has_method("set_last_damage_shell"):
+			if splash_deal > 0 and sibling.has_method("set_last_damage_shell"):
 				sibling.set_last_damage_shell(shell_class)
 			sibling.take_damage(splash_deal)
 			# NOTE: splash does NOT call _try_record_shot_hit — the

@@ -182,19 +182,24 @@ func _initialize() -> void:
 		quit(1); return
 	print("  case 4: unarmored brick splash takes full damage (mitigation skipped)")
 
-	# === Case 5: splash propagates set_last_damage_shell + set_last_damage_source.
-	# Reuse case-4 brick: it has those setters. After splash, last_shell
-	# should be HE; we also assert MockHeavy in case 3 got attribution.
+	# === Case 5: splash propagates set_last_damage_shell + set_last_damage_source
+	# WHEN the hit actually applies damage. The unarmored brick (case 4)
+	# took 1 damage → attribution set. The armored Heavy (case 3) took 0
+	# damage after mitigation → attribution NOT set per PR-#4 S3 review
+	# fix (don't attribute kills to hits that did zero damage).
 	if brick4.last_shell != BulletT.SHELL_CLASS_HE:
 		push_error("FAIL — splash brick last_shell=%d (want HE=%d; case c)" % [brick4.last_shell, BulletT.SHELL_CLASS_HE])
 		quit(1); return
-	if heavy3.last_shell != BulletT.SHELL_CLASS_HE:
-		push_error("FAIL — splash Heavy last_shell=%d (want HE=%d; case c)" % [heavy3.last_shell, BulletT.SHELL_CLASS_HE])
+	# Heavy in case 3 had armor mitigation drive splash_deal to 0 → S3
+	# gate skips attribution. Was -1 (initial) before any fire; should
+	# still be -1.
+	if heavy3.last_shell != -1:
+		push_error("FAIL — splash Heavy last_shell=%d (want -1; S3 deal>0 gate should skip 0-damage attribution)" % heavy3.last_shell)
 		quit(1); return
-	if heavy3.last_source != "player_he_test":
-		push_error("FAIL — splash Heavy last_source='%s' (want 'player_he_test'; case c)" % heavy3.last_source)
+	if heavy3.last_source != "":
+		push_error("FAIL — splash Heavy last_source='%s' (want ''; S3 deal>0 gate)" % heavy3.last_source)
 		quit(1); return
-	print("  case 5: splash propagates set_last_damage_shell + set_last_damage_source (case c)")
+	print("  case 5: splash propagates attribution when deal>0 (brick); SKIPS when deal=0 from armor (Heavy; S3 fix)")
 
 	# === Case 6: gate-row splash does NOT extra-record route currency.
 	# The shells_spent_on_routes ledger tracks shells SPENT, and only one
