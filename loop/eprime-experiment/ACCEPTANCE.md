@@ -36,14 +36,20 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
     `make check-bots` exits 0 AND stdout contains `BOTS_OK 7/7`. Each bot's `tick()` returns a valid Action for at least one synthetic state input (mutation test confirms broken tick() fails the verifier).
 - fail_evidence: |
     Less than 7 bot files exist OR any bot's tick() returns invalid Action on the synthetic test OR mutation (e.g. return null) doesn't trigger verifier fail.
-- status: OPEN
+- status: PASS_PENDING_FINAL
 - depends_on: []
 - reopen_condition: bot policy added/removed/renamed OR Action interface changes
 - last_verification: |
-    iter 1 (U1 contract foundation): `make check-bots-base` -> BOTS_BASE_OK.
-    BotPolicy/BotAction/BotObservation types ship; BotAction.is_valid() rejects
-    malformed actions (teeth). The criterion verifier `make check-bots`
-    (BOTS_OK 7/7) is NOT yet green — the 7 policies (U6) remain. Stays OPEN.
+    iter 6 (U6): `make check-bots` -> `BOTS_OK 7/7`. 7 policies ship under
+    scripts/bots/ (move-to-cover, dodge-shell, approach-enemy, fire-when-lined-up,
+    reload-aware-wait, panic-random, objective-rush), each extends BotPolicy with
+    a pure deterministic tick() (panic-random "random" is a deterministic hash of
+    the observation — reproducible). Each returns a valid BotAction + its defining
+    behaviour on a triggering obs. Teeth: a tick() returning null -> BOTS_FAIL
+    exit 1 (caught by the validity gate; verifier bails before behavioural asserts
+    so it never hangs). Driven by BotRegistry (bot_id->script, .new()) — code-driven
+    Path B, no .tres. Foundation: U1 (`check-bots-base` BOTS_BASE_OK) + U3
+    (`check-bot-driver` BOT_DRIVER_OK). Live-in-Q1 behaviour is exercised by AC-004.
 
 ---
 

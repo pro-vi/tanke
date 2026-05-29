@@ -112,3 +112,27 @@ Per PROMPT.md § Artifacts. Each accepted change cites ≥1 criterion ID.
 **Deviation**: architect listed tools/classify_seed.gd; implemented `--classify` in check_seed_bank.py instead (DRY — single tier formula). No separate GDScript.
 
 **Next**: U6 — 7 bot policies under scripts/bots/ + .tres instances, copying Enemy.gd heuristic primitives (cardinal projection Enemy.gd:853, LOS dot Enemy.gd:480, _opposite/_perpendicular). check-bots -> BOTS_OK 7/7 (mutation teeth: a tick() returning null fails). Then U7 batch.
+
+---
+
+## iter 6 — 2026-05-28 — U6 seven bot policies (AC-001)
+
+**criterion-id | failing-evidence | hypothesis | edit-surface | rollback**
+`AC-001 | no bot policies exist (only the base contract) | 7 pure-function policies + a registry, each returning a valid + behaviourally-correct action | scripts/bots/{BotHeuristics,BotRegistry,7 bots}.gd + verifier | rm new files`
+
+**Did**:
+- `scripts/bots/BotHeuristics.gd` — shared cardinal primitives (manhattan, cardinal_toward/away, aligned_dir, opposite, perpendicular_cardinal), the reusable form of Enemy.gd's inline projection/LOS.
+- 7 policies: MoveToCover (hug nearest obstacle), DodgeShell (orthogonal to incoming projectile), ApproachEnemy (toward + fire when aligned & reloaded), FireWhenLinedUp (stationary turret), ReloadAwareWait (kite while reloading, fire only when ready — probes consult P2), PanicRandom (deterministic-hash flail below 25% HP — reproducible, not RNG), ObjectiveRush (rush UP, breach blocking obstacle).
+- `scripts/bots/BotRegistry.gd` — bot_id->script map + `make()` (.new(), no .tres) + `ids()`/`has()`. make(unknown)->null (no silent skip, AC-007 precondition). Single source of truth for U7/U9.
+- Red→green: `test_bots.gd` — generic validity (all 7 return valid BotAction) + 11 behavioural assertions. `BOTS_OK 7/7`. Teeth: injected `return null` into approach-enemy.tick -> `BOTS_FAIL 1 failures` exit 1 (caught), restored -> BOTS_OK.
+- Makefile: `check-bots`.
+
+**Bug found + fixed (in-test)**: the first teeth attempt HUNG headless — a null-returning tick is caught by the generic loop, but a later behavioural assertion then dereferenced the null action, aborting _initialize before quit() (SceneTree never exits). Fix: the verifier now bails (quit(1)) right after the generic validity loop if any bot is broken, so it can never reach the null-deref. (See SKILL-HARVEST SH-002.)
+
+**Verified / accepted**: `make check-bots` -> `BOTS_OK 7/7`. All arc-5 checks (check-bots-base, check-bot-driver, check-telemetry-schema, check-telemetry-recorder, check-seed-bank) + `make test` + `check-hash-anchor` green.
+
+**Status moves**: AC-001 OPEN -> PASS_PENDING_FINAL (own verifier check-bots green + teeth).
+
+**Deviation**: architect listed per-bot .tres; used a code-driven BotRegistry (.new()) instead (Path B is code-driven; fewer files, no import fragility). Reversible.
+
+**Next**: U7 batch runner (loop/eprime-experiment/bot_runner.gd, extends SceneTree) — load Q1ProofRoom 84× (7 bots × 12 seeds), attach BotInputDriver + TelemetryRecorder, run to death/victory/timeout, emit telemetry JSON each, clean state reset between (test_chain_35 queue_free+await pattern). check-84-runs -> RUNS_OK 84/84. Watch: Q1 stats.cfg write-on-death (user://) + 30s timeout cap + wall <5min.
