@@ -104,12 +104,21 @@ func _ready() -> void:
 func _on_body_entered(body: Node) -> void:
 	if not _is_player(body):
 		return
+	# arc-4 PR-#4 Codex P1 review fix — re-entry hard-lock (same family
+	# as the first-pick P0 at commit 9cbe83c). If this depot was already
+	# picked, `_process` refuses to call `apply_choice` (lifetime latch
+	# blocks the second pick — iter-100 P0-A fix). With the original
+	# behavior the tree would still pause + the panel would still show,
+	# but the player would be unable to pick AND unable to move out
+	# (PROCESS_MODE_INHERIT under the pause) — hard-lock on re-entry into
+	# any cleared depot. Bail BEFORE mutating pause / panel / refs.
+	if _lifetime_picked:
+		return
 	get_tree().paused = true
-	# arc-4 iter 100 (P0-A fix): only reset _picked if this depot
-	# hasn't been picked in this run. Re-entering a picked depot
-	# stays in "PICKED" state — no second pick possible.
-	if not _lifetime_picked:
-		_picked = false
+	# arc-4 iter 100 (P0-A fix): _picked starts false on a fresh entry
+	# (we already returned above when _lifetime_picked is true, so this
+	# is reachable only on the first-pick path).
+	_picked = false
 	# Capture loadout if the body has one. Duck-typed.
 	if body.has_method("get") and "loadout" in body:
 		_player_loadout = body.loadout

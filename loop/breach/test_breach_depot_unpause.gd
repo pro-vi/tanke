@@ -84,5 +84,26 @@ func _initialize() -> void:
 		quit(1); return
 	print("  case 4: _on_body_exited after pick is a safe no-op")
 
-	print("BREACH_DEPOT_UNPAUSE_OK 4 cases — P0 depot hard-lock regression locked")
+	# === Case 5 (Codex P1 review): re-entering a CLEARED depot must NOT
+	# pause the tree (otherwise hard-lock: _process refuses pick because
+	# _lifetime_picked is true, player frozen because tree paused).
+	# Simulate the player driving out + back in.
+	depot._on_body_exited(player)
+	# Confirm pre-state: tree unpaused, _lifetime_picked still true.
+	if paused:
+		push_error("FAIL — pre-case-5: tree paused before re-entry")
+		quit(1); return
+	if not depot._lifetime_picked:
+		push_error("FAIL — pre-case-5: _lifetime_picked should still be true after first pick")
+		quit(1); return
+	depot._on_body_entered(player)
+	if paused:
+		push_error("FAIL — re-entering already-picked depot paused the tree (Codex P1 re-entry hard-lock regression)")
+		quit(1); return
+	if depot._player_loadout != null:
+		push_error("FAIL — re-entry overwrote _player_loadout on already-picked depot")
+		quit(1); return
+	print("  case 5: re-entering already-picked depot does NOT pause tree (Codex P1 re-entry fix)")
+
+	print("BREACH_DEPOT_UNPAUSE_OK 5 cases — P0 first-pick + Codex P1 re-entry hard-lock both locked")
 	quit(0)
