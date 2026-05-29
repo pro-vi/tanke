@@ -82,8 +82,23 @@ func _explode() -> void:
 			or not is_instance_valid(parent_node) \
 			or parent_node.is_queued_for_deletion():
 		return
+	# arc-4 PR-#4 P1 review fix — friendly-fire skip. MORTAR AoE
+	# previously hit the firing player (sibling of bricks/enemies under
+	# Level) — tap-fire a close shell or fire near a wall that lobs
+	# back → self-damage; AOE_DAMAGE_UP cards make each self-hit worse.
+	# Resolve the firing player via the iter-24 lvl.player duck-type
+	# pattern; defensive so harness parents without it still work.
+	var firing_player: Node = null
+	if "player" in parent_node:
+		firing_player = parent_node.player
 	for sibling in parent_node.get_children():
 		if sibling == self:
+			continue
+		# Skip firing player + any player-group member (covers Q1ProofRoom
+		# alias spawn + future multi-player scenes).
+		if firing_player != null and sibling == firing_player:
+			continue
+		if sibling.is_in_group("player"):
 			continue
 		if not (sibling is Node2D):
 			continue
