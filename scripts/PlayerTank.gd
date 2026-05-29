@@ -852,12 +852,16 @@ func _apply_beam_to_body(delta: float, hit_body: Node) -> void:
 		_apply_beam_to_targets(delta, [{"collider": hit_body}])
 
 
-# arc-4 iter 65 (Round 9c): hide the beam visual + reset the damage
-# cooldown. Called when fire is released (PRISM only).
+# arc-4 iter 65 (Round 9c): hide the beam visual when fire is released
+# (PRISM only).
+# arc-4 PR-#4 S2 review fix — do NOT reset _beam_dmg_timer here.
+# Prior behavior: tap-and-release left _beam_dmg_timer at 0, so the
+# NEXT press immediately applied beam damage on the first frame,
+# bypassing the BEAM_DAMAGE_COOLDOWN tick gate. Letting the timer
+# carry over forces the next press to wait out the remaining cooldown.
 func _stop_beam() -> void:
 	if _beam_line != null:
 		_beam_line.visible = false
-	_beam_dmg_timer = 0.0
 
 
 # arc-4 iter 66 (Round 9d): MORTAR fires a lobbed shell into the parent
@@ -883,6 +887,12 @@ func _fire_mortar(range_px: float = MORTAR_RANGE_MAX) -> void:
 	shell.aoe_radius_override = shell.AOE_RADIUS + _mortar_aoe_radius_bonus
 	lvl.add_child(shell)
 	shell.launch(origin, target)
+	# arc-4 PR-#4 P2 #2 review fix — stamp _last_fire_time so
+	# _update_reload_bar (which reads only _last_fire_time per iter 297)
+	# fills correctly over the MORTAR cooldown. Previously the bar
+	# showed READY throughout the 1.5s mortar cooldown because this
+	# stamp was set only in _fire(), not _fire_mortar().
+	_last_fire_time = Time.get_ticks_msec() / 1000.0
 
 
 # arc-4 iter 195 (PLAYTEST-FIX): MORTAR charge-lob input handler.
@@ -1188,6 +1198,15 @@ func _build_archetype_panel(canvas: CanvasLayer) -> void:
 # arc-4 iter 68 (Round 9f): show the start-pick panel + arm the
 # selecting gate (which makes _physics_process poll only for KEY_1-4).
 func _show_archetype_select() -> void:
+	# arc-4 PR-#4 P2 #4 review fix — resolve canvas + bail BEFORE
+	# mutating gate flag / pause / process_mode. Prior order had the
+	# same "pause-before-bail" shape as the P0 depot hard-lock:
+	# canvas == null would leave the tree paused + gate flag set with
+	# no panel built. Robustness only (production scenes always have
+	# $HUD), but mirrors P0 discipline.
+	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
+	if canvas == null:
+		return
 	_archetype_selecting = true
 	# arc-4 iter 091 (P0-1 fix from code-review-iter-090): pause the
 	# world so enemies don't spawn/shoot while the player reads the
@@ -1195,9 +1214,6 @@ func _show_archetype_select() -> void:
 	# so the picker input poll keeps firing.
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_tree().paused = true
-	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
-	if canvas == null:
-		return
 	if _archetype_panel == null:
 		_build_archetype_panel(canvas)
 	_refresh_archetype_panel()
@@ -1341,13 +1357,16 @@ func _show_levelup_pick(level: int) -> void:
 	var picked: Array = _pick_3_from_pool(pool)
 	if picked.size() == 0:
 		return  # defensive — pool empty, nothing to offer
+	# arc-4 PR-#4 P2 #4 review fix — resolve canvas + bail BEFORE
+	# mutating _levelup_choices / _levelup_picking / pause / process_mode.
+	# Same "pause-before-bail" shape as the P0 depot hard-lock.
+	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
+	if canvas == null:
+		return
 	_levelup_choices = picked
 	_levelup_picking = true
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_tree().paused = true
-	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
-	if canvas == null:
-		return
 	if _levelup_panel == null:
 		_build_levelup_panel(canvas)
 	_refresh_levelup_panel(level)
