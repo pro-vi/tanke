@@ -2,10 +2,10 @@
 
 ```yaml
 goal_version: bot-harness-v0.1
-phase: iter-3-done (U1+U3+U4a shipped; AC-002 + AC-005 PASS_PENDING_FINAL)
-iter: 3
+phase: iter-4-done (U1+U3+U4 shipped; AC-002 + AC-005 PASS_PENDING_FINAL; recorder built)
+iter: 4
 preloop_complete: yes
-current_criterion: AC-001 (U4b recorder + U5 seeds + U6 7-bots remain; AC-002 schema-gate green)
+current_criterion: AC-003 (U5 seeds next) then AC-001 (U6 7-bots); U4 recorder ready for U7
 stuck_counters: {AC-001: 0, AC-002: 0, AC-003: 0, AC-004: 0, AC-005: 0, AC-006: 0, AC-007: 0}
 last_action: |
   Iter 1 shipped U1 (the AC-001 contract foundation) — 3 new type files

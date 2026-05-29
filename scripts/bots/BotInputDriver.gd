@@ -22,6 +22,10 @@ var level: Node = null    # parent level (enemy / projectile / obstacle scan)
 var _iter_n: int = 0
 var _run_start_ms: int = 0
 
+# The most recent action applied — read by TelemetryRecorder for
+# ui_action_correlation + reload_cancel accounting (sibling, optional).
+var last_action: BotAction = null
+
 # Held-input state: only send press/release on change.
 var _held_dir_keycode: int = 0   # 0 = none held
 var _fire_held: bool = false
@@ -60,6 +64,7 @@ func _physics_process(_delta: float) -> void:
 # Synthesize input for a single action. Public so the unit verifier can drive it
 # without a full scene.
 func apply_action(action: BotAction) -> void:
+	last_action = action
 	# --- movement (held until direction changes) ---
 	var want_key: int = 0
 	if action.move_dir != BotAction.NONE and _DIR_KEY.has(action.move_dir):

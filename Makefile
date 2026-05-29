@@ -166,7 +166,7 @@ test-all: test check-loader check-chain check-chain-35 check-titlescreen-nav
 # flag-off baseline gates every substrate-touching iter.
 HASH_ANCHOR    := 23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291
 
-.PHONY: check-bots-base check-bot-driver check-telemetry-schema check-hash-anchor
+.PHONY: check-bots-base check-bot-driver check-telemetry-schema check-telemetry-recorder check-hash-anchor
 
 # AC-001 (U1) — bot contract foundation: BotPolicy / BotAction / BotObservation
 # load, BotAction.is_valid() rejects malformed actions (oracle teeth).
@@ -187,6 +187,13 @@ check-bot-driver:
 check-telemetry-schema:
 	@$(HEADLESS) --script res://loop/eprime-experiment/test_telemetry_schema.gd 2>&1 | grep -E "^(  fixture|  FAIL|TELEMETRY_OK|TELEMETRY_SCHEMA_FAIL|ERROR|SCRIPT ERROR)"; \
 	$(HEADLESS) --script res://loop/eprime-experiment/test_telemetry_schema.gd 2>&1 | grep -q "^TELEMETRY_OK"
+
+# AC-002 (U4b) — TelemetryRecorder produces a schema-conforming record from
+# PlayerTank signals (stub-player unit test; the live 84-run integration proof
+# is check-84-runs). Teeth: emitted record must validate + field tallies match.
+check-telemetry-recorder:
+	@$(HEADLESS) --script res://loop/eprime-experiment/test_telemetry_recorder.gd 2>&1 | grep -E "^(  case|  FAIL|RECORDER_OK|RECORDER_FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/eprime-experiment/test_telemetry_recorder.gd 2>&1 | grep -q "^RECORDER_OK"
 
 # AC-005 — cross-arc procedural hash anchor preserved bit-identical on the
 # flag-off baseline. The bot harness adds only sibling nodes + new files, so

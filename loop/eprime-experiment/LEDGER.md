@@ -71,3 +71,22 @@ Per PROMPT.md § Artifacts. Each accepted change cites ≥1 criterion ID.
 **Status moves**: AC-002 OPEN → PASS_PENDING_FINAL (own verifier green + teeth).
 
 **Next**: U4b TelemetryRecorder (producer; reuse ObservationBuilder; signals shoot/hp_changed/died/lives_changed; death_cause by nearest-threat heuristic + timeout(30s) + victory(GOAL_ROW=0); shell_hit_rate via run_recap if present; reads BotInputDriver.last_action for ui_action_correlation). Then U5 seeds, U6 7 bots, U7 batch.
+
+---
+
+## iter 4 — 2026-05-28 — U4b TelemetryRecorder (producer for AC-002/AC-004)
+
+**criterion-id | failing-evidence | hypothesis | edit-surface | rollback**
+`AC-002 | no producer emits conforming telemetry | a sibling TelemetryRecorder subscribing to PlayerTank signals + sampling ObservationBuilder emits a schema-valid JSON per run | scripts/telemetry/TelemetryRecorder.gd + smoke test + BotInputDriver.last_action | rm new files + revert the 2-line driver edit`
+
+**Did**:
+- `scripts/telemetry/TelemetryRecorder.gd` — sibling Node. _ready connects + ASSERTS shoot/hp_changed/died/lives_changed exist (fails loud if a refactor drops one). Per tick samples obs (exposure via nearest-enemy ≤12 tiles; reload_cancel = fire while reload<0.8; ui_action_correlation = fraction of UI-state flips [reload-ready / shell-chip / ribbon-visible] followed by an action change within 30 ticks, action read from driver.last_action). On_shoot tallies shells_fired_per_class; on_hp_changed accumulates damage_taken; on_died classifies death_cause by nearest threat (projectile/melee/suicide); victory (tile.y≤GOAL_ROW=0) + timeout (30s) self-finalize. shell_hit_rate from player.run_recap hit accounting when present (Q1 wires it), else 0.0. build_record() -> validate -> JSON.stringify(dict,"  ") -> FileAccess write (make_dir_recursive_absolute first).
+- BotInputDriver: +`last_action` field (set in apply_action) for the recorder.
+- Red→green: smoke test used an inner StubPlayer; first run exposed a real bug-in-test (stub at world origin tripped the y≤0 victory instantly → 0 tallies). Fixed stub start pos to (80,232) ~ row 29. Then `RECORDER_OK`: schema-conforms + shells(AP=2,HE=1) + damage(2) + identity all OK; JSON write/read roundtrip verified.
+- Makefile: `check-telemetry-recorder`.
+
+**Verified / accepted**: `make check-telemetry-recorder` → `RECORDER_OK`. Impact guards: check-telemetry-schema, check-bot-driver, check-bots-base, test, check-hash-anchor all green.
+
+**Status moves**: none (AC-002 already PASS_PENDING_FINAL from U4a; recorder's live correctness is AC-004's gate). U4 complete; unblocks U7.
+
+**Next**: U5 seed bank — author data/seed_bank/seeds.json (12 seeds, 4 easy / 4 medium / 4 hard-or-bug), classify via test_runner reachability (seed 42 = 676 cells baseline), + check-seed-bank with tier-mutation teeth. Then U6 7 bots, U7 batch.
