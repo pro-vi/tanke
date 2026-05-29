@@ -58,12 +58,13 @@ func _physics_process(_delta: float) -> void:
 	var action: BotAction = bot_policy.tick(obs)
 	if action == null:
 		action = BotAction.new()  # null policy output -> idle (safe)
-	apply_action(action)
+	apply_action(action, obs.current_shell_class)
 
 
 # Synthesize input for a single action. Public so the unit verifier can drive it
-# without a full scene.
-func apply_action(action: BotAction) -> void:
+# without a full scene. `current_shell` (Bullet.SHELL_CLASS_* or -1 if unknown)
+# lets the shell-swap pulse stop once the requested shell is selected.
+func apply_action(action: BotAction, current_shell: int = -1) -> void:
 	last_action = action
 	# --- movement (held until direction changes) ---
 	var want_key: int = 0
@@ -86,8 +87,11 @@ func apply_action(action: BotAction) -> void:
 
 	# --- shell swap: pulse physical TAB so PlayerTank's _tab_was_pressed rising
 	# edge fires _cycle_shell once per 2-tick pulse; cycles toward the target
-	# over successive ticks while requested ---
-	if action.shell_swap_to != BotAction.NO_SWAP and not _tab_held:
+	# over successive ticks. STOP once the requested shell is selected (or if
+	# already on it) so it doesn't overshoot/cycle past the target. current_shell
+	# == -1 (unknown) keeps pulsing while requested. (Codex PR#5 P2.)
+	var want_swap := action.shell_swap_to != BotAction.NO_SWAP and action.shell_swap_to != current_shell
+	if want_swap and not _tab_held:
 		_send_key(KEY_TAB, true)
 		_tab_held = true
 	elif _tab_held:

@@ -66,6 +66,26 @@ func _initialize() -> void:
 	d.release_all()
 	await _settle()
 
+	# --- case 5: shell-swap STOPS once the requested shell is selected ---
+	# (TEETH for Codex PR#5 P2 — requesting the shell you're already on must NOT pulse)
+	d.release_all(); await _settle()
+	d.apply_action(BotAction.new(BotAction.NONE, false, 2), 2)  # request HEAT, already on HEAT
+	await _settle()
+	if Input.is_physical_key_pressed(KEY_TAB):
+		print("  FAIL — case5 TEETH: TAB pulsed despite already on requested shell"); failures += 1
+	else:
+		print("  case shell-swap-stops-on-target OK")
+	# ...but DOES pulse when current differs from the request
+	d.release_all(); await _settle()
+	d.apply_action(BotAction.new(BotAction.NONE, false, 2), 0)  # request HEAT, on AP
+	await _settle()
+	if not Input.is_physical_key_pressed(KEY_TAB):
+		print("  FAIL — case5: TAB not pulsed when requested shell differs from current"); failures += 1
+	else:
+		print("  case shell-swap-pulses-when-differs OK")
+	d.apply_action(BotAction.new(BotAction.NONE, false, BotAction.NO_SWAP), 0); await _settle()
+	d.release_all(); await _settle()
+
 	if failures == 0:
 		print("BOT_DRIVER_OK")
 		quit(0)
