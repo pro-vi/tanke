@@ -61,6 +61,9 @@ func _initialize() -> void:
 
 
 # A RunRecap dry on HE only.
+# arc-4 PR-#4 P2 #3 review fix — apcr_reserve_at_death is now captured.
+# Pin to non-zero so the "dry on HE only" scenario still holds (was
+# implicit 0 pre-fix → would flip dry list to ["HE", "APCR"]).
 func _make_recap_dry_he() -> RunRecapT:
 	var rr: RunRecapT = RunRecapT.new()
 	rr.depth_reached = 95
@@ -68,11 +71,13 @@ func _make_recap_dry_he() -> RunRecapT:
 	rr.killing_pressure = "test pressure"
 	rr.he_reserve_at_death = 0
 	rr.heat_reserve_at_death = 2
+	rr.apcr_reserve_at_death = 2
 	rr.captured = true
 	return rr
 
 
 # A RunRecap with full reserves.
+# arc-4 PR-#4 P2 #3 review fix — apcr also non-zero for the comfortable case.
 func _make_recap_comfortable() -> RunRecapT:
 	var rr: RunRecapT = RunRecapT.new()
 	rr.depth_reached = 50
@@ -80,6 +85,7 @@ func _make_recap_comfortable() -> RunRecapT:
 	rr.killing_pressure = "test pressure"
 	rr.he_reserve_at_death = 4
 	rr.heat_reserve_at_death = 2
+	rr.apcr_reserve_at_death = 2
 	rr.captured = true
 	return rr
 

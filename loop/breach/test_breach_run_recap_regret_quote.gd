@@ -52,6 +52,9 @@ func _make_recap_dry_he_in_band(band_name: String) -> RunRecapT:
 	rr.killing_pressure = "test pressure"
 	rr.he_reserve_at_death = 0
 	rr.heat_reserve_at_death = 2
+	# arc-4 PR-#4 P2 #3 review fix — apcr captured now; pin non-zero
+	# so "dry on HE only" scenario holds.
+	rr.apcr_reserve_at_death = 2
 	# Configure shells so build_tag returns "mixed breacher"
 	# (no shell dominates: AP 14, HE 5, HEAT 2).
 	rr.shells_fired[BulletT.SHELL_CLASS_AP] = 14

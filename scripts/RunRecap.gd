@@ -19,6 +19,11 @@ var killing_pressure: String = ""    # that band's dominant_pressure text
 var killer: String = "shell impact"  # what dealt the fatal blow
 var he_reserve_at_death: int = 0
 var heat_reserve_at_death: int = 0
+# arc-4 PR-#4 P2 #3 review fix — APCR was added as the 4th shell
+# class via the iter-33 user override but never captured here. Now
+# included so an APCR-heavy death gets the right "Dry on APCR"
+# diagnosis instead of a misleading silence.
+var apcr_reserve_at_death: int = 0
 var captured: bool = false
 
 # arc-4 iter 82 (Round 11 Phase 1 — band-shape recorder per CONSULT
@@ -35,6 +40,10 @@ var shells_fired: Dictionary = {
 	Bullet.SHELL_CLASS_AP: 0,
 	Bullet.SHELL_CLASS_HE: 0,
 	Bullet.SHELL_CLASS_HEAT: 0,
+	# arc-4 PR-#4 P2 #3 review fix — APCR included so iteration order +
+	# total_shells_fired's `for k in shells_fired` cover all 4 classes
+	# instead of falling into the dynamic `else` branch at record_shot.
+	Bullet.SHELL_CLASS_APCR: 0,
 }
 
 # arc-4 iter 285 (Q1 reframe, consult-001 Q3 verdict 0.92 — route-currency
@@ -192,6 +201,11 @@ func capture_death(depth: int, band, loadout) -> void:
 	if loadout != null:
 		he_reserve_at_death = loadout.he_reserve
 		heat_reserve_at_death = loadout.heat_reserve
+		# arc-4 PR-#4 P2 #3 review fix — capture APCR reserve. The field
+		# is duck-typed on Loadout (iter 33 added it); defensive `in`
+		# check keeps arc-2/3-style loadouts working.
+		if "apcr_reserve" in loadout:
+			apcr_reserve_at_death = int(loadout.apcr_reserve)
 	captured = true
 
 
@@ -210,12 +224,19 @@ func build_tag() -> String:
 	var he: int = shells_fired.get(Bullet.SHELL_CLASS_HE, 0)
 	var heat: int = shells_fired.get(Bullet.SHELL_CLASS_HEAT, 0)
 	var ap: int = shells_fired.get(Bullet.SHELL_CLASS_AP, 0)
-	if he == 0 and heat == 0:
+	# arc-4 PR-#4 P2 #3 review fix — APCR was added at iter 33 but
+	# build_tag still bucketed APCR-heavy runs as "lane sniper" because
+	# the AP-only check tested only he == 0 and heat == 0. An APCR
+	# rapid-driller run would get the wrong identity tag.
+	var apcr: int = shells_fired.get(Bullet.SHELL_CLASS_APCR, 0)
+	if he == 0 and heat == 0 and apcr == 0:
 		return "lane sniper"        # AP-only — precision, conservation
-	if he >= heat and he >= ap:
+	if he >= heat and he >= ap and he >= apcr:
 		return "rubble plow"        # HE-dominant — breaches terrain
-	if heat >= he and heat >= ap:
+	if heat >= he and heat >= ap and heat >= apcr:
 		return "bunker cracker"     # HEAT-dominant — anti-armor
+	if apcr >= he and apcr >= heat and apcr >= ap:
+		return "steel driller"      # APCR-dominant — punches steel + armor
 	return "mixed breacher"
 
 
@@ -354,16 +375,18 @@ func resource_sentence(canonical_answer: String) -> String:
 	return "Dry on %s; band wanted %s." % [dry_label, brief]
 
 
-# arc-4 iter 110: list shells the player was dry on at death (HE +
-# HEAT — APCR isn't captured by RunRecap yet; that's a Gap-2-adjacent
-# follow-on, not blocking this iter). Returns ["HE"], ["HEAT"],
-# ["HE", "HEAT"], or [].
+# arc-4 iter 110: list shells the player was dry on at death.
+# arc-4 PR-#4 P2 #3 review fix — APCR now included; was previously a
+# known follow-on. Returns any combination of ["HE", "HEAT", "APCR"]
+# or empty if all reserves non-zero at death.
 func _dry_shells_list() -> Array[String]:
 	var dry: Array[String] = []
 	if he_reserve_at_death == 0:
 		dry.append("HE")
 	if heat_reserve_at_death == 0:
 		dry.append("HEAT")
+	if apcr_reserve_at_death == 0:
+		dry.append("APCR")
 	return dry
 
 
@@ -384,19 +407,20 @@ func _dry_matches_canonical(brief: String, dry: Array[String]) -> bool:
 
 # arc-4 iter 108: format the resource clause. Reports only the
 # reserves that are LOW (== 0); if all reserves are comfortable,
-# returns the positive "with shells to spare" framing. Note this
-# only knows HE + HEAT (the fields RunRecap captured); APCR was
-# added in iter 33 but not captured at death — that's a follow-on
-# fix (Gap 2's surface, not blocking γ).
+# returns the positive "with shells to spare" framing.
+# arc-4 PR-#4 P2 #3 review fix — APCR now captured + reported (was
+# the iter-33 follow-on noted in the prior comment).
 func _format_resource_clause() -> String:
 	var clauses: Array[String] = []
 	if he_reserve_at_death == 0:
 		clauses.append("0 HE")
 	if heat_reserve_at_death == 0:
 		clauses.append("0 HEAT")
+	if apcr_reserve_at_death == 0:
+		clauses.append("0 APCR")
 	if clauses.is_empty():
-		return "with %d HE / %d HEAT to spare" % [
-			he_reserve_at_death, heat_reserve_at_death]
+		return "with %d HE / %d HEAT / %d APCR to spare" % [
+			he_reserve_at_death, heat_reserve_at_death, apcr_reserve_at_death]
 	return ", ".join(clauses)
 
 
@@ -460,5 +484,5 @@ func format() -> String:
 		"  build         : %s" % build_tag(),
 		"  killed by     : %s" % killer,
 		"  shells fired  : AP %d / HE %d / HEAT %d" % [ap, he, heat],
-		"  reserve left  : HE %d / HEAT %d" % [he_reserve_at_death, heat_reserve_at_death],
+		"  reserve left  : HE %d / HEAT %d / APCR %d" % [he_reserve_at_death, heat_reserve_at_death, apcr_reserve_at_death],
 	]) + band_line

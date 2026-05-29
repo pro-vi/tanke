@@ -78,6 +78,11 @@ func _make_recap_standard() -> RunRecapT:
 	rr.killer = "shell impact"
 	rr.he_reserve_at_death = 0
 	rr.heat_reserve_at_death = 1
+	# arc-4 PR-#4 P2 #3 review fix — apcr_reserve_at_death is now
+	# captured by RunRecap (was implicit 0 pre-fix). Set non-zero so
+	# the test scenario stays "dry on HE only" (band canonical wanted
+	# APCR; player still has APCR but ran out of HE for clusters).
+	rr.apcr_reserve_at_death = 2
 	rr.archetype = 2  # MORTAR
 	rr.shells_fired[BulletT.SHELL_CLASS_AP] = 14
 	rr.shells_fired[BulletT.SHELL_CLASS_HE] = 5
@@ -124,13 +129,14 @@ func _test_comfortable_reserves() -> bool:
 	rr.he_reserve_at_death = 4
 	rr.heat_reserve_at_death = 2
 	var s: String = rr.verdict_sentence("")
-	if not ("with 4 HE / 2 HEAT to spare" in s):
-		push_error("FAIL comfortable — expected 'with 4 HE / 2 HEAT to spare' in:\n%s" % s)
+	# arc-4 PR-#4 P2 #3 review fix — comfortable framing now includes APCR.
+	if not ("with 4 HE / 2 HEAT / 2 APCR to spare" in s):
+		push_error("FAIL comfortable — expected 'with 4 HE / 2 HEAT / 2 APCR to spare' in:\n%s" % s)
 		return false
 	if "0 HE" in s or "0 HEAT" in s:
 		push_error("FAIL comfortable — verdict mentioned a 0-reserve clause incorrectly:\n%s" % s)
 		return false
-	print("  comfortable reserves — 'with 4 HE / 2 HEAT to spare' (no 0-clauses)")
+	print("  comfortable reserves — 'with 4 HE / 2 HEAT / 2 APCR to spare' (no 0-clauses)")
 	return true
 
 
