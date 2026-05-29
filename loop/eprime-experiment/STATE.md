@@ -2,10 +2,10 @@
 
 ```yaml
 goal_version: bot-harness-v0.1
-phase: iter-1-done (U1 contract foundation shipped; AC-005 verifier green+teeth; input-synthesis risk retired)
-iter: 1
+phase: iter-2-done (U1 contract + U3 BotInputDriver + shared ObservationBuilder shipped; AC-005 green)
+iter: 2
 preloop_complete: yes
-current_criterion: AC-001 (U1 contract foundation done; U3 BotInputDriver + U6 7-bots remain before check-bots green)
+current_criterion: AC-001/AC-002 (U1+U3 done; U4 telemetry + U5 seeds + U6 7-bots remain)
 stuck_counters: {AC-001: 0, AC-002: 0, AC-003: 0, AC-004: 0, AC-005: 0, AC-006: 0, AC-007: 0}
 last_action: |
   Iter 1 shipped U1 (the AC-001 contract foundation) — 3 new type files

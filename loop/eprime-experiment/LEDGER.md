@@ -29,3 +29,24 @@ Per PROMPT.md § Artifacts. Each accepted change cites ≥1 criterion ID.
 **Status moves**: AC-005 OPEN → PASS_PENDING_FINAL (own verifier green + teeth). AC-001 stays OPEN (foundation green; `make check-bots` 7/7 pending U6).
 
 **Next**: U3 BotInputDriver → then U4/U5/U6 (independent) → U7 batch → U8 composite → U9 orchestration → final-verify `make bot-harness`.
+
+---
+
+## iter 2 — 2026-05-28 — U3 BotInputDriver + shared ObservationBuilder
+
+**criterion-id | failing-evidence | hypothesis | edit-surface | rollback**
+`AC-001 | no driver translates BotAction -> PlayerTank input | a sibling BotInputDriver (keycode+physical, held-key mgmt) drives the tank zero-touch | scripts/bots/{ObservationBuilder,BotInputDriver}.gd + verifier | rm new files`
+
+**Did**:
+- `scripts/bots/ObservationBuilder.gd` — static `build(player, level, iter_n, time_sec) -> BotObservation`, the shared observation factory (U3 driver + U4 recorder both use it). Reads screen-visible PlayerTank state (hp/shell/reload/reserves/cards/speed/pos) + scene-tree spatial state (enemies in group "enemy"; bullets = Area2D children with start()+source_label; brick/steel StaticBody2D obstacles). Defensive `.get()` reads with fallbacks.
+- `scripts/bots/BotInputDriver.gd` — sibling Node holding `bot_policy` (Path B). Per `_physics_process`: build obs → `policy.tick(obs)` → `apply_action()`. Input synthesis sets BOTH keycode+physical_keycode; held-key state so press/release only on change (held dir keeps moving, held fire auto-fires at GunTimer cooldown); shell-swap pulses physical TAB; `release_all()` for clean teardown across U7's 84 reloads.
+- Red→green: `test_bot_input_driver.gd` parse-failed (BotInputDriver undeclared) → after creating files + `--import`, `BOT_DRIVER_OK`. Teeth: case2 (dir change U→L must release ui_up) + case3 (idle must release all) catch stuck-key bugs.
+- Makefile: `check-bot-driver`.
+
+**Verified / accepted**:
+- `make check-bot-driver` → `BOT_DRIVER_OK` (exit 0).
+- Impact guards green: `make test` exit 0, `make check-bots-base` exit 0, `make check-hash-anchor` → HASH_OK (no substrate perturbation; new files are siblings).
+
+**Status moves**: none (AC-001 needs U6's 7 bots for `check-bots`; AC-002 needs U4). U3 unblocks U6/U7.
+
+**Next**: U4 TelemetryRecorder + schema + good/bad fixtures (AC-002) — reuse ObservationBuilder; death_cause by nearest-threat heuristic + timeout + victory; find FileAccess/JSON.stringify precedent. Then U5 seeds, U6 bots, U7 batch.
