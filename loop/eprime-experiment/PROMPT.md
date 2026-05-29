@@ -133,7 +133,7 @@ Selection order: unmet dependencies first → cheapest verifier feedback → hig
 
 ## Iteration protocol
 
-1. Read `loop/eprime-experiment/ACCEPTANCE.md`, `loop/eprime-experiment/STATE.md`, latest verification artifacts, and the source authority files. Confirm the goal version still matches the frozen inventory.
+1. Read `loop/eprime-experiment/STATE.md` (orientation + next_action), `loop/eprime-experiment/ACCEPTANCE.md` (the 7 frozen criteria), `loop/eprime-experiment/iter-0-architect.md` (Deep blueprint — 9 implementation units, substrate-touch checklist, bug-trace cross-check), and latest verification artifacts. Confirm the goal version still matches the frozen inventory. Follow the blueprint's implementation order: U1 → U2 → (U3 ‖ U4) → U5 → U6 → U7 → (U8 ‖ U9). U2 is the ONE substrate touch — apply default-on gating template + hash-anchor verification per blueprint § Substrate-touch checklist.
 2. **Oracle integrity check** before editing:
    - criteria text unchanged except `status` / `last_verification`,
    - verifiers unchanged except via approved Oracle Change Notes,

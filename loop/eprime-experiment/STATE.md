@@ -2,18 +2,24 @@
 
 ```yaml
 goal_version: bot-harness-v0.1
-phase: pre-loop (scaffolding files emitted by /loopgen 2026-05-28; awaiting branch + commit + first iter)
+phase: ready-iter-1 (all preloop done; branch arc-5-bot-harness; scaffolding committed at 9426240; awaiting runner fire)
 iter: 0
-preloop_complete: no
-current_criterion: none
+preloop_complete: yes
+current_criterion: none (iter 1 will open U1 per blueprint implementation order)
 stuck_counters: {AC-001: 0, AC-002: 0, AC-003: 0, AC-004: 0, AC-005: 0, AC-006: 0, AC-007: 0}
-last_action: /loopgen emitted PROMPT.md + ACCEPTANCE.md + STATE.md to loop/eprime-experiment/
+last_action: /architect emitted iter-0-architect.md; user committed all 4 files + pushed arc-5-bot-harness branch (9426240)
 next_action: |
-  1. User reviews emitted files
-  2. User invokes /architect on the bot-harness implementation (parent design)
-  3. User creates branch arc-5-bot-harness
-  4. User commits scaffolding files
-  5. First runner iter begins — pick AC-001 / AC-002 / AC-003 (independent, any order)
+  Iter 1: open U1 from iter-0-architect.md (BotPolicy base class + Action +
+  Observation types — 3 new files under scripts/bots/). Follow PROMPT.md
+  § Iteration protocol 10-step ritual. Implementation order is:
+  U1 → U2 → (U3 ‖ U4) → U5 → U6 → U7 → (U8 ‖ U9). Each U-ID maps to
+  AC criteria per blueprint § Implementation Units.
+
+  U2 is the ONE substrate touch — hash-anchor verification mandatory
+  pre-commit; default-off gating template required.
+
+  Final-verify: `make bot-harness` (emits `BOT_HARNESS_OK 84/84` on success).
+  Halt with `criteria-met` when all 7 criteria PASS in single final-verify.
 oracle_change_notes: []
 ```
 
@@ -68,11 +74,11 @@ These carry from `loop/breach/PROMPT.md` lineage as operational disciplines — 
 - **Adversarial-consult discipline** (arc-4 iter 273) — N/A for this scaffolding (no [FEEL] anchors; pure [STRUCTURE])
 - **Sentence test for upgrades** — N/A (no upgrades; this is instrumentation)
 
-## Read-on-first-iter
+## Read-on-first-iter (MANDATORY before any code change)
 
-1. This file (`STATE.md`) — orientation
-2. `loop/eprime-experiment/PROMPT.md` — the protocol
-3. `loop/eprime-experiment/ACCEPTANCE.md` — the 7 criteria
-4. `/Users/provi/Development/_projs/tanke/loop/originals/iter027-meta-arc3-ceiling.md` — arc-3 PATTERN 5 (input-synthesis) which is the precedent for bot driving via `Input.parse_input_event`
-5. `loop/breach/CONSULT-LEDGER.md` — consult-001 §3 architecture
-6. `/architect` blueprint for bot-harness implementation (when user emits it as step 3)
+1. This file (`STATE.md`) — orientation + next_action
+2. `loop/eprime-experiment/PROMPT.md` — the protocol (10-step iteration ritual + oracle discipline + halt classifier)
+3. `loop/eprime-experiment/ACCEPTANCE.md` — the 7 frozen criteria with verifiers + pass_evidence + fail_evidence
+4. `loop/eprime-experiment/iter-0-architect.md` — Deep blueprint with 9 implementation units (U1..U9), 9 decisive architectural choices, substrate-touch checklist, bug-trace cross-check, risks
+5. `/Users/provi/Development/_projs/tanke/loop/originals/iter027-meta-arc3-ceiling.md` — arc-3 PATTERN 5 (input-synthesis via `Input.parse_input_event`) — precedent for U2 + U3 implementation
+6. `loop/breach/CONSULT-LEDGER.md` — consult-001 §3 bot-playtester architecture rationale + P2+P3 predictions the harness measures structurally
