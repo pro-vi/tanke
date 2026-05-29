@@ -156,3 +156,26 @@ Per PROMPT.md § Artifacts. Each accepted change cites ≥1 criterion ID.
 **Status moves**: AC-004 OPEN → PASS_PENDING_FINAL.
 
 **Next**: U8 — Makefile `bot-harness` composite (final-verify): check-hash-anchor → check-bots-base → check-bots → check-bot-driver → check-telemetry-schema → check-telemetry-recorder → check-seed-bank → check-84-runs, emit `BOT_HARNESS_OK 84/84`. Then U9 orchestration (tools/bot_runner.sh + bot_summary.py + check-orchestration). Then run the final-verify → criteria-met.
+
+---
+
+## iter 8 — 2026-05-28 — U9 orchestration entry point (AC-007) + U8 bot-harness composite (AC-006)
+
+**criterion-id | failing-evidence | hypothesis | edit-surface | rollback**
+`AC-007 | no outer-loop entry point | tools/bot_runner.sh (subset run -> summary JSON) + bot_summary.py aggregator; unknown bot fails loud | tools/{bot_runner.sh,bot_summary.py,check_orchestration.sh} + Makefile | rm new files`
+`AC-006 | no composite final-verify | Makefile bot-harness chains all sub-checks in one repo state + emits BOT_HARNESS_OK 84/84 | Makefile | revert target`
+
+**Did (U9 / AC-007)**:
+- `tools/bot_runner.sh` — entry point: --bots/--seeds/--out; runs bot_runner.gd (per-run JSONs to a temp dir) then bot_summary.py -> summary JSON at --out. Exits non-zero with NO summary on batch failure / unknown bot (no silent skip).
+- `tools/bot_summary.py` — aggregates per-run telemetry into {run_count, runs[], per_bot, per_seed, death_causes, files}.
+- `tools/check_orchestration.sh` — happy path (2 bots × 2 seeds = 4 run entries) + teeth (unknown bot -> non-zero, no summary). `ORCHESTRATION_OK`.
+- Makefile: `check-orchestration`.
+
+**Did (U8 / AC-006)**:
+- Makefile `bot-harness` composite: prereqs (in order) check-hash-anchor → check-bots-base → check-bots → check-bot-driver → check-telemetry-schema → check-telemetry-recorder → check-seed-bank → check-84-runs → check-orchestration, then `@echo BOT_HARNESS_OK 84/84`. `make -n` confirms hash-anchor runs first (fail-fast on substrate drift).
+
+**Verified / accepted**: `make check-orchestration` → ORCHESTRATION_OK (exit 0). Composite chain order confirmed.
+
+**Status moves**: AC-006 OPEN → PASS_PENDING_FINAL; AC-007 OPEN → PASS_PENDING_FINAL. ALL 7 criteria now PASS_PENDING_FINAL.
+
+**Next**: run the final-verify — `make test` && `make test-all` && `make bot-harness` (AC-006 requires all three). On `BOT_HARNESS_OK 84/84`: set all 7 PASS, write VERIFY.md matrix, emit `criteria-met` → `stop-and-summarize`.

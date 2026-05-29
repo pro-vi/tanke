@@ -195,10 +195,16 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
     `make test` exits 0 AND `make test-all` exits 0 AND `make bot-harness` exits 0. `make bot-harness` stdout contains exact line `BOT_HARNESS_OK 84/84`. All 3 commands run in sequence from clean state without manual intervention.
 - fail_evidence: |
     Any of the 3 commands exits non-zero, OR `make bot-harness` runs but `BOT_HARNESS_OK 84/84` not in stdout, OR any sub-check fails silently.
-- status: OPEN
+- status: PASS_PENDING_FINAL
 - depends_on: [AC-001, AC-002, AC-003, AC-004, AC-005]
 - reopen_condition: Makefile changes OR any underlying sub-target changes
-- last_verification: null
+- last_verification: |
+    iter 8 (U8): `make bot-harness` composite wired — prereq chain (in order):
+    check-hash-anchor -> check-bots-base -> check-bots -> check-bot-driver ->
+    check-telemetry-schema -> check-telemetry-recorder -> check-seed-bank ->
+    check-84-runs -> check-orchestration, then emits `BOT_HARNESS_OK 84/84`.
+    Each sub-check green individually; full composite run is the final-verify
+    (this iteration). AC-006 also requires `make test` + `make test-all` green.
 
 ---
 
@@ -214,7 +220,13 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
     `make check-orchestration` exits 0 AND stdout contains `ORCHESTRATION_OK`. Test invocation: `tools/bot_runner --bots move-to-cover,panic-random --seeds 1,7 --out /tmp/bot_summary.json` produces a parseable summary JSON with 4 run entries. Mutation test: invoking with `--bots <nonexistent>` must fail with a clear error (not a silent skip).
 - fail_evidence: |
     Entry point doesn't exist, CLI args don't work, summary JSON malformed/missing, nonexistent bot silently skipped.
-- status: OPEN
+- status: PASS_PENDING_FINAL
 - depends_on: [AC-001, AC-002, AC-003, AC-004]
 - reopen_condition: orchestration CLI surface changes OR summary JSON schema changes
-- last_verification: null
+- last_verification: |
+    iter 8 (U9): `make check-orchestration` -> `ORCHESTRATION_OK`.
+    tools/bot_runner.sh --bots move-to-cover,panic-random --seeds 1,7 --out
+    <summary.json> produces a parseable summary JSON with exactly 4 run entries
+    (via tools/bot_summary.py aggregating per-bot/per-seed/death-cause). Teeth:
+    --bots no-such-bot exits non-zero with NO summary written (no silent skip).
+    NO LLM drives the tank — scripted-bot batch layer the LLM uses BETWEEN runs.

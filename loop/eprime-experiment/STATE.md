@@ -2,10 +2,10 @@
 
 ```yaml
 goal_version: bot-harness-v0.1
-phase: iter-7-done (U1+U3+U4+U5+U6+U7 shipped; AC-001+002+003+004+005 PASS_PENDING_FINAL)
-iter: 7
+phase: iter-8-done (ALL units U1-U9 shipped; all 7 criteria PASS_PENDING_FINAL — final-verify next)
+iter: 8
 preloop_complete: yes
-current_criterion: AC-006 (U8 Makefile composite `bot-harness` = final-verify) + AC-007 (U9 orchestration). Then run final-verify.
+current_criterion: ALL — run final-verify `make test && make test-all && make bot-harness`; on BOT_HARNESS_OK 84/84 set all 7 PASS, write VERIFY.md, emit criteria-met.
 stuck_counters: {AC-001: 0, AC-002: 0, AC-003: 0, AC-004: 0, AC-005: 0, AC-006: 0, AC-007: 0}
 last_action: |
   Iter 1 shipped U1 (the AC-001 contract foundation) — 3 new type files

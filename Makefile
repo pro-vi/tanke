@@ -166,7 +166,7 @@ test-all: test check-loader check-chain check-chain-35 check-titlescreen-nav
 # flag-off baseline gates every substrate-touching iter.
 HASH_ANCHOR    := 23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291
 
-.PHONY: check-bots-base check-bots check-bot-driver check-telemetry-schema check-telemetry-recorder check-seed-bank check-84-runs check-hash-anchor
+.PHONY: check-bots-base check-bots check-bot-driver check-telemetry-schema check-telemetry-recorder check-seed-bank check-84-runs check-hash-anchor check-orchestration bot-harness
 
 # AC-001 (U1) — bot contract foundation: BotPolicy / BotAction / BotObservation
 # load, BotAction.is_valid() rejects malformed actions (oracle teeth).
@@ -225,6 +225,22 @@ check-hash-anchor:
 	@$(HEADLESS) --script res://loop/test_runner.gd -- --seed 42 --json 2>/dev/null \
 		| grep '^{' \
 		| python3 -c "import sys,json; d=json.load(sys.stdin); h=d.get('tile_hash',''); ok=h=='$(HASH_ANCHOR)'; print(('HASH_OK ' if ok else 'HASH_BROKEN ')+h); sys.exit(0 if ok else 1)"
+
+# AC-007 — the LLM-between-runs orchestration entry point (tools/bot_runner.sh):
+# a subset run produces a parseable summary JSON; an unknown bot fails loudly.
+check-orchestration:
+	@out=$$(GODOT=$(GODOT) bash $(PROJECT_DIR)/tools/check_orchestration.sh 2>&1); \
+	echo "$$out" | grep -E "^(  case|  FAIL|ORCHESTRATION_OK|ORCHESTRATION_FAIL)"; \
+	echo "$$out" | grep -q "^ORCHESTRATION_OK"
+
+# AC-006 — THE FINAL-VERIFY. Composite proving the whole bot-harness inventory
+# (AC-001..AC-007) in ONE repo state: hash anchor first (fail fast on substrate
+# drift), then the bot contract + driver + telemetry schema/recorder + seed bank
+# + the 84-run integration + the orchestration entry point. Prereqs run in order;
+# any failure aborts before the sentinel. Emits `BOT_HARNESS_OK 84/84` only when
+# every sub-check passed.
+bot-harness: check-hash-anchor check-bots-base check-bots check-bot-driver check-telemetry-schema check-telemetry-recorder check-seed-bank check-84-runs check-orchestration
+	@echo "BOT_HARNESS_OK 84/84"
 
 # Arc-4 breach mode: verify configs/breach_default.tres loads cleanly
 # with >=2 distinct bands and per-band terrain-weight overrides (C4
