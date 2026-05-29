@@ -129,9 +129,15 @@ func _ready() -> void:
 		_player = level.get_node_or_null("PlayerTank") as Node2D
 		_grass_tilemap = level.get_node_or_null("Tiles/Grass") as TileMapLayer
 		# arc-4 iter 63 (Round 9a): breach-mode HP-bar HUD — built only when
-		# the parent level has breach mode enabled AND max_hp > 1 (no point
-		# in a bar for one-shot enemies).
-		if "breach_mode_enabled" in level and level.breach_mode_enabled and max_hp > 1:
+		# the parent level has breach mode enabled AND the enemy is
+		# anything other than one-shot AT BOTH damage pools.
+		# arc-4 PR-#4 P1 review fix — was `max_hp > 1` only, so 1-HP
+		# enemies with multi-tick beam_hp (Light/Fast at beam_hp_max=3)
+		# showed zero drain feedback during the PRISM beam. Now keyed on
+		# max(max_hp, beam_hp_max) so the bar appears for any enemy that
+		# has a multi-step drain on EITHER pool.
+		if "breach_mode_enabled" in level and level.breach_mode_enabled \
+				and max(max_hp, beam_hp_max) > 1:
 			_build_hp_bar()
 	_fire_timer = randf() * fire_cooldown  # stagger initial volleys
 	_choose_direction_toward_player()

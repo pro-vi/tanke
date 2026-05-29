@@ -66,20 +66,26 @@ func _initialize() -> void:
 	lvl2.queue_free()
 	await process_frame
 
-	# === breach-mode enemy with max_hp=1 → no HP bar.
+	# === breach-mode enemy with max_hp=1 AND beam_hp_max=1 → no HP bar.
+	# arc-4 PR-#4 P1 review fix changed the HP-bar gate from `max_hp > 1`
+	# to `max(max_hp, beam_hp_max) > 1` so 1-HP enemies with multi-tick
+	# beam pools (Lights have beam_hp_max=3 now) get drain feedback.
+	# For the "truly one-shot, both pools" case the assertion still holds:
+	# pin both to 1 explicitly so the bar stays hidden.
 	var lvl3 := StubBreachLevel.new()
 	lvl3.breach_mode_enabled = true
 	root.add_child(lvl3)
 	var enemy3: Node = EnemyScene.instantiate()
 	enemy3.max_hp = 1
+	enemy3.beam_hp_max = 1  # one-shot on BOTH pools
 	enemy3.enemy_type = "Light"
 	lvl3.add_child(enemy3)
 	await process_frame
 	if enemy3.get_node_or_null("HPBarBG") != null:
-		push_error("FAIL — max_hp=1 enemy built HP bar (no damaged-alive state)")
+		push_error("FAIL — max_hp=1 AND beam_hp_max=1 enemy built HP bar (no damaged-alive state on either pool)")
 		quit(1); return
-	print("  max_hp=1 enemy builds no HP bar")
+	print("  max_hp=1 + beam_hp_max=1 enemy builds no HP bar (truly one-shot)")
 	lvl3.queue_free()
 
-	print("BREACH_HP_OK enemy HP primitive + bar gated on breach_mode + max_hp>1")
+	print("BREACH_HP_OK enemy HP primitive + bar gated on breach_mode + max(max_hp, beam_hp_max) > 1")
 	quit(0)

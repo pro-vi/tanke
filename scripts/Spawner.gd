@@ -61,6 +61,10 @@ const ENEMY_TYPES: Array = [
 		"base_frame": 8,
 		"speed": 24.0,
 		"max_hp": 1,
+		# arc-4 PR-#4 P1 review fix — beam_hp_max proportional to bullet
+		# HP so PRISM beam TTK tracks enemy toughness instead of being
+		# a flat 10 ticks for every type. Light=3 (one-shot rusher).
+		"beam_hp_max": 3,
 		"fire_cooldown": 3.5,  # iter 26: fires rarely (was 1.5)
 		"direction_commit_time": 3.0,  # iter 26: commits to a lane (was 0.8)
 		"bullet_damage": 1,  # iter 52
@@ -73,6 +77,10 @@ const ENEMY_TYPES: Array = [
 		"base_frame": 32,
 		"speed": 14.0,
 		"max_hp": 2,
+		# arc-4 PR-#4 P1 review fix — corridor-denier; takes ~3× the beam
+		# ticks of a Light. Preserves the "Heavy is the beam meatshield"
+		# read the iter-86 sprite-scale + iter-23 armor cues already set.
+		"beam_hp_max": 9,
 		"fire_cooldown": 0.8,
 		"direction_commit_time": 0.8,
 		"bullet_damage": 2,  # iter 52: corridor-denier hits harder
@@ -90,6 +98,8 @@ const ENEMY_TYPES: Array = [
 		"base_frame": 16,
 		"speed": 32.0,
 		"max_hp": 1,
+		# arc-4 PR-#4 P1 review fix — fragile rusher; same beam TTK as Light.
+		"beam_hp_max": 3,
 		"fire_cooldown": 1.0,
 		"direction_commit_time": 0.8,
 		"bullet_damage": 1,  # iter 52: volume-based pressure, not per-bullet
@@ -465,6 +475,11 @@ func _telegraph_then_spawn(plan: Dictionary) -> void:
 	if lvl != null and "breach_mode_enabled" in lvl and lvl.breach_mode_enabled:
 		mhp += int(BREACH_HP_BONUS.get(type_data.name, 0))
 	enemy.set("max_hp", mhp)
+	# arc-4 PR-#4 P1 review fix — per-type beam_hp_max. Without this,
+	# Enemy.gd's @export default of 10 leaked through, so the PRISM
+	# beam took identical 10-tick TTK on every enemy (1-HP Light or
+	# 3-HP Heavy). Now beam TTK tracks bullet HP per ENEMY_TYPES entry.
+	enemy.set("beam_hp_max", int(type_data.get("beam_hp_max", 10)))
 	enemy.set("fire_cooldown", type_data.fire_cooldown)
 	enemy.set("direction_commit_time", type_data.direction_commit_time)  # iter 26
 	enemy.set("bullet_damage", type_data.bullet_damage)  # iter 52
