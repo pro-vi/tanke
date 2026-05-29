@@ -79,6 +79,7 @@ func _initialize() -> void:
 
 	# === Case 2: dominant_per_lane → routes pattern 1/1/1/1 (each shell class fires once at canonical lane).
 	var room1: Node = Q1ProofRoomScene.instantiate()
+	room1.enable_enemy_ai = false  # PR-#4 Codex P2 opt-out: keep enemies inert for deterministic probe/harness
 	root.add_child(room1)
 	await process_frame
 	await process_frame
@@ -115,6 +116,7 @@ func _initialize() -> void:
 	# === Case 3: always_ap baseline — 4 AP shots produce 3 routes (steel bounces silently)
 	# AND enemies_damage=1 (Light killed; Heavy armor-mitigated to 0 dmg).
 	var room2: Node = Q1ProofRoomScene.instantiate()
+	room2.enable_enemy_ai = false  # PR-#4 Codex P2 opt-out: keep enemies inert for deterministic probe/harness
 	root.add_child(room2)
 	await process_frame
 	await process_frame

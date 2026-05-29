@@ -157,6 +157,17 @@ func _ready() -> void:
 			_sprite.self_modulate = Color(1.0, 0.95, 0.4, 1.0)
 
 
+## arc-4 PR-#4 Codex P2 review fix — post-spawn player retro-link.
+## Enemy._ready captures `_player` once via get_node_or_null("PlayerTank"),
+## so scenes that spawn enemies BEFORE the player (e.g. Q1ProofRoomScene
+## per its iter-289 spawn order) leave `_player` null forever — enemies
+## stay inert because _physics_process returns at the null guard below.
+## Callers can use this setter to retro-link after spawning the player.
+## Safe to call any time; null assignments are tolerated.
+func set_player(p: Node2D) -> void:
+	_player = p
+
+
 func _physics_process(delta: float) -> void:
 	if _player == null or not is_instance_valid(_player):
 		return

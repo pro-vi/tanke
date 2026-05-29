@@ -51,17 +51,21 @@ func _find_terrain_at(room: Node, col: int, row: int) -> Node:
 
 
 func _find_enemy_at(room: Node, col: int, row: int) -> Node:
-	var px: Vector2 = Q1ProofRoomT.grid_to_pixel(col, row, 8)
+	# arc-4 PR-#4 Codex P2 review fix — enemies move now (retro-linked
+	# at scene _ready). Match on spawn-encoded name "Enemy_<type>_<col>_<row>"
+	# instead of current position to avoid races with _physics_process.
+	var name_suffix: String = "_%d_%d" % [col, row]
 	for e in room.spawned_enemies:
 		if e == null or not is_instance_valid(e) or e.is_queued_for_deletion():
 			continue
-		if absf(e.position.x - px.x) < 0.5 and absf(e.position.y - px.y) < 0.5:
+		if (e.name as String).ends_with(name_suffix):
 			return e
 	return null
 
 
 func _initialize() -> void:
 	var room: Node = Q1ProofRoomScene.instantiate()
+	room.enable_enemy_ai = false  # PR-#4 Codex P2 opt-out: keep enemies inert for deterministic probe/harness
 	root.add_child(room)
 	await process_frame
 	await process_frame

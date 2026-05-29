@@ -14,6 +14,7 @@ const UpgradeCatalogT = preload("res://scripts/UpgradeCatalog.gd")
 
 func _initialize() -> void:
 	var room: Node = Q1ProofRoomScene.instantiate()
+	room.enable_enemy_ai = false  # PR-#4 Codex P2 opt-out: keep enemies inert for deterministic probe/harness
 	root.add_child(room)
 	await process_frame
 	await process_frame

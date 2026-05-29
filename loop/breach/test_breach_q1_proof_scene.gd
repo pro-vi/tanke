@@ -28,6 +28,7 @@ const Q1ProofRoomT = preload("res://scripts/Q1ProofRoom.gd")
 func _initialize() -> void:
 	# === Case 1: instantiate without error.
 	var room: Node = Q1ProofRoomScene.instantiate()
+	room.enable_enemy_ai = false  # PR-#4 Codex P2 opt-out: keep enemies inert for deterministic probe/harness
 	if room == null:
 		push_error("FAIL — Q1ProofRoom.tscn failed to instantiate")
 		quit(1); return
@@ -53,8 +54,14 @@ func _initialize() -> void:
 			gate_bricks += 1
 		elif "SteelBlock" in terr.name:
 			gate_steels += 1
+	# arc-4 PR-#4 Codex P2 review fix — enemies now MOVE (their _player
+	# is retro-linked at scene _ready), so checking current position
+	# would race with their _physics_process. Use the spawn-encoded name
+	# ("Enemy_<type>_<col>_<row>") set in Q1ProofRoomScene._spawn_enemy_at
+	# to verify gate-row placement at SPAWN time.
+	var gate_row_suffix: String = "_%d" % Q1ProofRoomT.GATE_ROW
 	for enemy in room.spawned_enemies:
-		if absf(enemy.position.y - gate_y_pixel) > 0.5:
+		if not (enemy.name as String).ends_with(gate_row_suffix):
 			continue
 		if enemy.enemy_type == "Heavy":
 			gate_heavies += 1

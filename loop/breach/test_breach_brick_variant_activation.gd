@@ -94,6 +94,7 @@ func _initialize() -> void:
 
 	# === Case 4: end-to-end via Q1ProofRoomScene.
 	var room: Node = Q1ProofRoomScene.instantiate()
+	room.enable_enemy_ai = false  # PR-#4 Codex P2 opt-out: keep enemies inert for deterministic probe/harness
 	root.add_child(room)
 	await process_frame
 	await process_frame

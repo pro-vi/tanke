@@ -20,9 +20,7 @@ window/size/viewport_width=320
 window/size/viewport_height=240
 window/size/window_width_override=1280
 window/size/window_height_override=960
-window/dpi/allow_hidpi=true
 window/stretch/mode="viewport"
-window/stretch/aspect="keep"
 
 [layer_names]
 

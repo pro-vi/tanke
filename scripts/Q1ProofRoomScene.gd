@@ -36,6 +36,15 @@ const CELL_PX: int = 8
 # replaces this with a pick UI showing all 4 lanes.
 const V1_PLAYER_LANE: String = "HE"
 
+# arc-4 PR-#4 Codex P2 review fix opt-out — controls whether the
+# post-spawn pass retro-links enemies to the player. Default true so
+# live play exercises moving/aiming/firing enemies (the Codex P2 fix).
+# Harnesses + probes that need determinism (e.g. counting bullets,
+# matching positions) instantiate the scene and set this false BEFORE
+# add_child(), so the _ready post-pass skips the link and enemies stay
+# inert at their spawn positions.
+@export var enable_enemy_ai: bool = true
+
 # Public references for the harness.
 var spawned_terrain: Array[Node] = []
 var spawned_enemies: Array[Node] = []
@@ -142,6 +151,18 @@ func _spawn_player() -> void:
 	for ter in spawned_terrain:
 		if ter != null and is_instance_valid(ter) and ter.has_method("apply_variant_lookup"):
 			ter.apply_variant_lookup()
+	# arc-4 PR-#4 Codex P2 review fix — enemies were also spawned
+	# BEFORE the player, so Enemy._ready's get_node_or_null("PlayerTank")
+	# cache returned null and _physics_process returns at the null guard
+	# forever → every enemy in the proof room is inert. Retro-link them
+	# now that the player exists. Defensive: method-existence + valid
+	# guards in case of unrelated nodes in spawned_enemies. Gated by
+	# `enable_enemy_ai` so harnesses that need determinism (bullet
+	# counts, spawn-position checks) can opt out.
+	if enable_enemy_ai:
+		for e in spawned_enemies:
+			if e != null and is_instance_valid(e) and e.has_method("set_player"):
+				e.set_player(spawned_player)
 
 
 # arc-4 iter 296 (playtest-fix): mirror Level.gd._on_PlayerTank_shoot —
