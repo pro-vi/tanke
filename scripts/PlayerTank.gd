@@ -516,6 +516,16 @@ func _physics_process(delta: float) -> void:
 	# arc-4 iter 59 (Round 8d): the shield HUD indicator tracks the timer.
 	if _shield_label != null:
 		_shield_label.visible = _shield_timer > 0.0
+	# arc-4 PR-#4 P1 review fix — REAR_GUARD auto-fires while dead.
+	# Previously this block ran BEFORE the `if _dead: return` guard, so
+	# a corpse with REAR_GUARD owned + an enemy in the rear cone would
+	# keep emitting AP shells on cooldown while the death overlay was
+	# up (_physics_process still ticks since death doesn't pause the
+	# tree). Moved BELOW the dead-guard so dead tanks stay quiet.
+	if _dead:
+		_handle_restart_input()
+		return
+
 	# arc-4 iter 116 (Round 14 Phase 2, substrate write ×44): REAR_GUARD
 	# auto-defense tick. Closes the open_killbox C8 anchor-3 gap. When
 	# the loadout has has_rear_guard AND the cooldown is clear AND an
@@ -530,10 +540,6 @@ func _physics_process(delta: float) -> void:
 			if target != null:
 				_fire_rear_guard()
 				_rear_guard_cd = REAR_GUARD_COOLDOWN
-
-	if _dead:
-		_handle_restart_input()
-		return
 
 	# Roguelike ascender: track depth + run time (iter 11)
 	_run_time += delta
