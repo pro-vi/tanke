@@ -7,7 +7,12 @@ goal_fingerprint:
     - .research-or-similar/refs/second-opinion-2026-05-25-loop-design.md (parent reframe)
     - /agentify Pro consult 2026-05-27 (queryId 939b4880-880a-42aa-aa22-5760f54a4830 — §3 bot-playtester, §8 wind-tunnel, Procgen seed-bank lesson)
   final_verify: make bot-harness
-last_baseline_verify: pending
+last_baseline_verify: |
+  iter 9 (2026-05-28) — final-verify PASSED in one repo state @ commit on
+  arc-5-bot-harness: `make test` exit 0, `make test-all` 5/5, `make bot-harness`
+  -> BOT_HARNESS_OK 84/84 (HASH_OK + BOTS_OK 7/7 + BOT_DRIVER_OK + TELEMETRY_OK
+  2/2 + RECORDER_OK + SEED_BANK_OK 12/12 + RUNS_OK 84/84 + ORCHESTRATION_OK).
+  All 7 criteria PASS. See loop/eprime-experiment/VERIFY.md.
 ---
 
 # ACCEPTANCE — bot-harness-v0.1
@@ -36,7 +41,7 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
     `make check-bots` exits 0 AND stdout contains `BOTS_OK 7/7`. Each bot's `tick()` returns a valid Action for at least one synthetic state input (mutation test confirms broken tick() fails the verifier).
 - fail_evidence: |
     Less than 7 bot files exist OR any bot's tick() returns invalid Action on the synthetic test OR mutation (e.g. return null) doesn't trigger verifier fail.
-- status: PASS_PENDING_FINAL
+- status: PASS
 - depends_on: []
 - reopen_condition: bot policy added/removed/renamed OR Action interface changes
 - last_verification: |
@@ -76,7 +81,7 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
     `make check-telemetry-schema` exits 0 AND stdout contains `TELEMETRY_OK <N>/<N> files conform`. The check runs against a fixture telemetry JSON (oracle-independence: a hand-crafted INVALID fixture in `tests/fixtures/telemetry_bad.json` must fail the verifier first; a hand-crafted VALID fixture must pass).
 - fail_evidence: |
     Schema validator missing OR fixture-bad passes OR fixture-good fails OR any required field missing from emitted JSON.
-- status: PASS_PENDING_FINAL
+- status: PASS
 - depends_on: []
 - reopen_condition: schema changes (any field added/removed/renamed) OR new bot generates non-conforming JSON
 - last_verification: |
@@ -106,7 +111,7 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
     `make check-seed-bank` exits 0 AND stdout contains `SEED_BANK_OK 12/12 (4 easy / 4 medium / 4 hard-or-bug)`. Each seed is reachability-tested against `loop/test_runner.gd` and the actual tier-classification matches the declared tier (mutation test: declare an easy seed as "hard" → verifier fails).
 - fail_evidence: |
     Wrong count (not 12), wrong partition (not 4/4/4), seed-not-reachable, OR declared tier doesn't match measured reachability.
-- status: PASS_PENDING_FINAL
+- status: PASS
 - depends_on: []
 - reopen_condition: seed added/removed OR tier reclassified
 - last_verification: |
@@ -135,7 +140,7 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
     `make check-84-runs` exits 0 AND stdout contains `RUNS_OK 84/84 (timeout: <N>, death: <M>, victory: <K>; N+M+K=84)`. All 84 JSON files exist in `data/telemetry/` AND every one parses + conforms to schema. Total wall time <5 min.
 - fail_evidence: |
     <84 JSON files, OR any JSON fails parse/schema, OR any run produced a Godot crash (stderr from Godot contains "SCRIPT ERROR" or "Process Killed"), OR total wall time >10 min.
-- status: PASS_PENDING_FINAL
+- status: PASS
 - depends_on: [AC-001, AC-002, AC-003]
 - reopen_condition: bot count changes OR seed count changes OR scenario scene changes
 - last_verification: |
@@ -165,7 +170,7 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
     `make check-hash-anchor` exits 0 AND stdout contains exact line `HASH_OK 23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291`. Verifier runs: `godot --headless --path . --script res://loop/test_runner.gd -- --seed 42 --json | grep '^{' | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print('HASH_OK '+d['tile_hash']) if d['tile_hash']=='23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291' else (print('HASH_BROKEN '+d['tile_hash']) or sys.exit(1))"`. Mutation test: temporarily editing a Layer-1 file to perturb the procedural output must trigger HASH_BROKEN.
 - fail_evidence: |
     Hash mismatch on flag-off codepath, OR substrate file modified without default-on gating, OR verifier never ran post-substrate-write.
-- status: PASS_PENDING_FINAL
+- status: PASS
 - depends_on: []
 - reopen_condition: any substrate write (Layer 1/2/3)
 - last_verification: |
@@ -195,7 +200,7 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
     `make test` exits 0 AND `make test-all` exits 0 AND `make bot-harness` exits 0. `make bot-harness` stdout contains exact line `BOT_HARNESS_OK 84/84`. All 3 commands run in sequence from clean state without manual intervention.
 - fail_evidence: |
     Any of the 3 commands exits non-zero, OR `make bot-harness` runs but `BOT_HARNESS_OK 84/84` not in stdout, OR any sub-check fails silently.
-- status: PASS_PENDING_FINAL
+- status: PASS
 - depends_on: [AC-001, AC-002, AC-003, AC-004, AC-005]
 - reopen_condition: Makefile changes OR any underlying sub-target changes
 - last_verification: |
@@ -220,7 +225,7 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
     `make check-orchestration` exits 0 AND stdout contains `ORCHESTRATION_OK`. Test invocation: `tools/bot_runner --bots move-to-cover,panic-random --seeds 1,7 --out /tmp/bot_summary.json` produces a parseable summary JSON with 4 run entries. Mutation test: invoking with `--bots <nonexistent>` must fail with a clear error (not a silent skip).
 - fail_evidence: |
     Entry point doesn't exist, CLI args don't work, summary JSON malformed/missing, nonexistent bot silently skipped.
-- status: PASS_PENDING_FINAL
+- status: PASS
 - depends_on: [AC-001, AC-002, AC-003, AC-004]
 - reopen_condition: orchestration CLI surface changes OR summary JSON schema changes
 - last_verification: |

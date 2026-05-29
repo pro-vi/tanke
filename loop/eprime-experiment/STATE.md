@@ -2,10 +2,11 @@
 
 ```yaml
 goal_version: bot-harness-v0.1
-phase: iter-8-done (ALL units U1-U9 shipped; all 7 criteria PASS_PENDING_FINAL — final-verify next)
-iter: 8
+phase: COMPLETE — criteria-met (all 7 criteria PASS via final-verify; see VERIFY.md)
+iter: 9
 preloop_complete: yes
-current_criterion: ALL — run final-verify `make test && make test-all && make bot-harness`; on BOT_HARNESS_OK 84/84 set all 7 PASS, write VERIFY.md, emit criteria-met.
+halt_cause: criteria-met
+current_criterion: none — terminal. `make test` + `make test-all` + `make bot-harness` (BOT_HARNESS_OK 84/84) all green in one repo state 2026-05-28.
 stuck_counters: {AC-001: 0, AC-002: 0, AC-003: 0, AC-004: 0, AC-005: 0, AC-006: 0, AC-007: 0}
 last_action: |
   Iter 1 shipped U1 (the AC-001 contract foundation) — 3 new type files
@@ -115,7 +116,11 @@ Selection order for first iter: AC-001, AC-002, AC-003 (all independent, no depe
 
 ## Halt-cause history
 
-(none yet — iter 0)
+- iter 9 (2026-05-28): **`criteria-met`** — all 7 criteria (AC-001..AC-007)
+  reached PASS in a single `make bot-harness` final-verify (BOT_HARNESS_OK
+  84/84), with `make test` + `make test-all` (5/5) green in the same repo
+  state. Bot-harness scaffolding for the E′ experiment is shipped. See
+  loop/eprime-experiment/VERIFY.md.
 
 ## Skill harvest
 

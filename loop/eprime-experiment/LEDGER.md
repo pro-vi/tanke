@@ -179,3 +179,20 @@ Per PROMPT.md § Artifacts. Each accepted change cites ≥1 criterion ID.
 **Status moves**: AC-006 OPEN → PASS_PENDING_FINAL; AC-007 OPEN → PASS_PENDING_FINAL. ALL 7 criteria now PASS_PENDING_FINAL.
 
 **Next**: run the final-verify — `make test` && `make test-all` && `make bot-harness` (AC-006 requires all three). On `BOT_HARNESS_OK 84/84`: set all 7 PASS, write VERIFY.md matrix, emit `criteria-met` → `stop-and-summarize`.
+
+---
+
+## iter 9 — 2026-05-28 — FINAL-VERIFY → criteria-met
+
+**Ran the final-verify in one repo state (wall ~33s):**
+- `make test` → exit 0.
+- `make test-all` → 5/5 (ALL_LOADER_TESTS_PASS, CHAIN_25_OK, CHAIN_35_OK, ARC_COMPLETE_OVERLAY_OK, TITLESCREEN_NAV_OK) — arc-3 regression intact.
+- `make bot-harness` → HASH_OK → BOTS_BASE_OK → BOTS_OK 7/7 → BOT_DRIVER_OK → TELEMETRY_OK 2/2 → RECORDER_OK → SEED_BANK_OK 12/12 → RUNS_OK 84/84 (timeout:13 death:69 victory:2) → ORCHESTRATION_OK → **BOT_HARNESS_OK 84/84**.
+
+**All 7 criteria proven PASS in the same invocation that verifies the hash anchor.** Set AC-001..AC-007 → PASS; wrote VERIFY.md; stamped ACCEPTANCE frontmatter last_baseline_verify.
+
+**Halt: `criteria-met` → `stop-and-summarize`.** The bot-harness scaffolding for the tanke E′ experiment is shipped: 7 deterministic GDScript policies + telemetry contract + 12-seed bank + 84-run headless batch + LLM-between-runs orchestration entry point — zero substrate touch (AR-001), cross-arc hash anchor preserved by construction.
+
+**Skill harvest produced**: SH-001 (Godot class-cache regen), SH-002 (headless verifier fail-fast before null-deref), SH-003 (GDScript lambdas capture locals by value).
+
+**Follow-up (out of scope for this loop)**: arm-loop blueprints (Arm 1 subtraction, Arm 2 E′) consume this scaffolding; scoring consult-001 P2/P3 predictions from the telemetry; flagging a historical-regression seed into the hard-or-bug tier; opening a PR for arc-5-bot-harness.
