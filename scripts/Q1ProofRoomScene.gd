@@ -125,6 +125,17 @@ func _spawn_player() -> void:
 	# loadout-gated HUD + RunRecap. Without this the route-currency
 	# wiring (iter 286) silently no-ops.
 	spawned_player.loadout = LoadoutT.new()
+	# arc-4 PR-#4 Codex P1 review fix — seed finite-shell reserves so
+	# the proof room is actually playable. Fresh Loadout defaults all
+	# three to 0; PlayerTank._cycle_shell skips empties and
+	# Loadout.consume falls back to AP, so the player would start the
+	# HE lane with 0 HE and never exercise the HE / HEAT / APCR
+	# route-currency design without bypassing through the synthetic-
+	# fire harness path. Comfortable starter mix matches the max-cap
+	# fields (he=6 / heat=3 / apcr=4) but stays below for headroom.
+	spawned_player.loadout.he_reserve = 5
+	spawned_player.loadout.heat_reserve = 3
+	spawned_player.loadout.apcr_reserve = 4
 	# arc-4 iter 315 (Round 26 Phase B activation): demonstrate the
 	# brick variant pipeline by setting the variant texture on the
 	# proof-room loadout. BrickBlock instances self-discover this in
