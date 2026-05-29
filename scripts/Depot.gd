@@ -92,7 +92,10 @@ var _rolled_kinds: Array[int] = []  # arc-4 iter 40: drawn offers (lazy)
 
 
 func _ready() -> void:
-	# Depot must run while the scene tree is paused so body_exited can fire.
+	# Depot must run while the scene tree is paused so the input poll
+	# (_process keys 1/2/3) keeps firing during the pick UI. body_exited
+	# fires from physics on the player's motion, NOT from the depot's
+	# processing — see the PR-#4 P0 review fix in apply_choice.
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
@@ -355,6 +358,15 @@ func apply_choice(idx: int) -> void:
 	# and moves on (depot dwell stays short).
 	_hide_panel()
 	depot_picked.emit(self, kind)
+	# arc-4 PR-#4 P0 review fix — depot hard-lock: previously the only
+	# unpause path was _on_body_exited, but the player is
+	# PROCESS_MODE_INHERIT and freezes under the tree pause, so it can
+	# never leave the Area2D → permanent freeze on every pick. Unpause
+	# here and clear the captured player refs; _on_body_exited becomes
+	# a redundant no-op cleanup when the player drives away normally.
+	get_tree().paused = false
+	_player_loadout = null
+	_player = null
 
 
 # Apply one UpgradeKind effect to a loadout. Public so the harness can
