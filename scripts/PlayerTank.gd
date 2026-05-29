@@ -278,6 +278,13 @@ var _archetype_choice_labels: Array[Label] = []
 # discipline. State is loadout-gated like the rest of the breach UI;
 # arc-2/3 mode never builds this panel.
 var _levelup_picking: bool = false
+# arc-4 PR-#4 P1 review fix — when one XP grant crosses ≥2 level
+# thresholds (kill batch, big depth jump, multi-kill), _grant_xp used
+# to call _show_levelup_pick once per level. Each call overwrote
+# _levelup_choices + re-armed the pause inside the running frame, so
+# only the LAST panel survived — owed N picks, got 1. Track the
+# backlog here; _pick_levelup_card re-shows on the next pick.
+var _pending_levelup_picks: int = 0
 var _levelup_panel: ColorRect = null
 var _levelup_choice_labels: Array[Label] = []
 var _levelup_choices: Array = []  # 3 CardKind values for the current pick
@@ -1393,6 +1400,14 @@ func _pick_levelup_card(idx: int) -> void:
 	var kind: int = int(_levelup_choices[idx])
 	_apply_card(kind)
 	_exit_levelup_pick()
+	# arc-4 PR-#4 P1 review fix — present the NEXT queued pick UI when
+	# this grant crossed multiple thresholds. _grant_xp queued the rest
+	# of the picks here; we re-show one per pick until the backlog
+	# drains. Re-shows use the current `_level` since per-level pool
+	# differences are by archetype, not by level number.
+	if _pending_levelup_picks > 0:
+		_pending_levelup_picks -= 1
+		_show_levelup_pick(_level)
 
 
 # Apply a card by CardKind. Phase 2 (iter 198) only wires HP_PLUS_1
@@ -2948,6 +2963,12 @@ func _grant_xp(amount: int) -> void:
 	if amount <= 0 or loadout == null:
 		return
 	_xp += amount
+	# arc-4 PR-#4 P1 review fix — count multi-level threshold crossings
+	# rather than firing _show_levelup_pick per iteration. Auto-boost
+	# still applies per level (it's a stat mutation, not a UI flow).
+	# The pick UI is QUEUED: show the first one now, the rest as the
+	# player picks each preceding card (_pick_levelup_card → re-show).
+	var picks_this_grant: int = 0
 	while _xp >= _xp_to_next:
 		_xp -= _xp_to_next
 		_level += 1
@@ -2959,7 +2980,12 @@ func _grant_xp(amount: int) -> void:
 		# bonus card. Once playtest validates the pick experience, the
 		# auto-boost may be removed.
 		if pick_card_on_levelup:
-			_show_levelup_pick(_level)
+			picks_this_grant += 1
+	if pick_card_on_levelup and picks_this_grant > 0:
+		# Show the first pick UI now; queue the rest. Each
+		# _pick_levelup_card decrements the backlog + re-shows the next.
+		_pending_levelup_picks += picks_this_grant - 1
+		_show_levelup_pick(_level)
 	_update_xp_hud()
 
 
