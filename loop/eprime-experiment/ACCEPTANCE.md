@@ -135,10 +135,21 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
     `make check-84-runs` exits 0 AND stdout contains `RUNS_OK 84/84 (timeout: <N>, death: <M>, victory: <K>; N+M+K=84)`. All 84 JSON files exist in `data/telemetry/` AND every one parses + conforms to schema. Total wall time <5 min.
 - fail_evidence: |
     <84 JSON files, OR any JSON fails parse/schema, OR any run produced a Godot crash (stderr from Godot contains "SCRIPT ERROR" or "Process Killed"), OR total wall time >10 min.
-- status: OPEN
+- status: PASS_PENDING_FINAL
 - depends_on: [AC-001, AC-002, AC-003]
 - reopen_condition: bot count changes OR seed count changes OR scenario scene changes
-- last_verification: null
+- last_verification: |
+    iter 7 (U7): `make check-84-runs` -> `RUNS_OK 84/84 (timeout: 13, death: 69,
+    victory: 2; 13+69+2=84)`. loop/eprime-experiment/bot_runner.gd (extends
+    SceneTree) loads scenes/Q1ProofRoom.tscn 84× (7 bots × 12 seeds), seeds the
+    RNG per seed (deterministic enemy-fire stagger), attaches BotInputDriver +
+    TelemetryRecorder as PlayerTank siblings, drives via Input.parse_input_event
+    (NOT mocked — real headless integration), runs to death/victory/timeout,
+    writes + re-reads-from-disk + schema-validates each telemetry JSON. 0 Godot
+    SCRIPT ERROR; wall ~14s (<5min) via --fixed-fps 60 (frame-based game-time in
+    the recorder, headless-stable). Death-cause spread (40 projectile/23 melee/6
+    suicide/13 timeout/2 victory) = meaningful arm-loop signal. Deterministic:
+    identical distribution on re-run. Generated JSONs gitignored (regenerable).
 
 ---
 

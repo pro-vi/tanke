@@ -166,7 +166,7 @@ test-all: test check-loader check-chain check-chain-35 check-titlescreen-nav
 # flag-off baseline gates every substrate-touching iter.
 HASH_ANCHOR    := 23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291
 
-.PHONY: check-bots-base check-bots check-bot-driver check-telemetry-schema check-telemetry-recorder check-seed-bank check-hash-anchor
+.PHONY: check-bots-base check-bots check-bot-driver check-telemetry-schema check-telemetry-recorder check-seed-bank check-84-runs check-hash-anchor
 
 # AC-001 (U1) — bot contract foundation: BotPolicy / BotAction / BotObservation
 # load, BotAction.is_valid() rejects malformed actions (oracle teeth).
@@ -207,6 +207,16 @@ check-telemetry-recorder:
 # (test_runner.gd). Teeth: a mis-declared tier fails (tier-mutation rejected).
 check-seed-bank:
 	@python3 $(PROJECT_DIR)/tools/check_seed_bank.py --godot $(GODOT) --project $(PROJECT_DIR) --seeds $(PROJECT_DIR)/data/seed_bank/seeds.json
+
+# AC-004 — the integration proof: 7 bots x 12 seeds = 84 headless Q1ProofRoom
+# runs, each emitting a schema-conforming telemetry JSON, no Godot crash, in
+# <5 min. --fixed-fps decouples from wall clock (runs as fast as CPU allows;
+# ~14s for all 84). NOT mocked — this IS the live headless integration.
+# Single-run capture (the batch is expensive) gates on RUNS_OK 84/84.
+check-84-runs:
+	@out=$$($(HEADLESS) --fixed-fps 60 --script res://loop/eprime-experiment/bot_runner.gd 2>&1); \
+	echo "$$out" | grep -E "^(RUNS_OK|RUNS_FAIL|  RUN_FAIL|SCRIPT ERROR)"; \
+	echo "$$out" | grep -q "^RUNS_OK 84/84"
 
 # AC-005 — cross-arc procedural hash anchor preserved bit-identical on the
 # flag-off baseline. The bot harness adds only sibling nodes + new files, so

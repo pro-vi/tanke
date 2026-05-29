@@ -25,3 +25,15 @@ Reusable process lessons surfaced by this loop. Format per PROMPT.md § Skill Ha
 - **why it generalizes**: Any loop that authors headless oracles and runs mutation tests against them will eventually mutate a function into returning a type the oracle then dereferences. Without fail-fast + an external timeout, the mutation test hangs the whole loop.
 - **suggested patch wording**: (above — add to the repo overlay / `/architect` test-scenario guidance for headless harnesses.)
 - **accidental-encouragement risk**: Low. Fail-fast could mask *later* independent failures by bailing on the first stage — acceptable for a gate (any failure = fail) but note it in harnesses meant to enumerate ALL failures for triage; there, collect-then-guard-each-deref instead of bailing.
+
+---
+
+## SH-003 (iter 7): GDScript lambdas capture LOCAL variables by value — `signal.connect(func(x): local = x)` silently no-ops
+
+- **target skill**: this scaffolding; generalizes to any GDScript code in `/architect` / `/build` that uses lambdas + signals.
+- **observed gap**: A common pattern to "capture a signal payload into a variable" — `var captured := {}; obj.signal.connect(func(t): captured = t)` — does NOT work when `captured` is a LOCAL: GDScript lambdas capture enclosing locals by VALUE, so the assignment mutates the lambda's private copy, leaving the outer local untouched. It DOES work when the target is a MEMBER variable (the lambda reaches it via `self`). This is silent: no error, the variable just stays at its default.
+- **evidence iteration**: iter 7. The batch runner's per-run capture used a local + `recorded.connect(func(t): captured = t)` and reported "no telemetry emitted" for all 84 runs even though 84 valid files were written. The earlier 1-run probe used the identical pattern but worked — because the probe's capture var was a class MEMBER, not a local. Diagnosis took a full 84-run cycle.
+- **proposed rule**: "To read a value produced by a signal/callback in GDScript, do NOT assign to an enclosing LOCAL inside the lambda (captured by value — the write is lost). Either (a) assign to a class MEMBER var, (b) have the producer STORE the result in a field the consumer reads directly (preferred for one-shot reads — e.g. recorder._result), or (c) await the signal instead of connecting a lambda."
+- **why it generalizes**: The local-by-value capture is a language-level GDScript semantic; any agent reaching for the idiomatic 'collect into a closure variable' pattern (common from JS/Python habits where closures capture by reference) hits it. It is silent and survives small tests (which often use members), surfacing only at scale.
+- **suggested patch wording**: (above — add to `/architect`/`/build` GDScript gotchas, and the repo overlay.)
+- **accidental-encouragement risk**: Negligible — it steers toward member-var or direct-field reads, both safe.

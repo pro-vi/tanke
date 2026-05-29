@@ -136,3 +136,23 @@ Per PROMPT.md § Artifacts. Each accepted change cites ≥1 criterion ID.
 **Deviation**: architect listed per-bot .tres; used a code-driven BotRegistry (.new()) instead (Path B is code-driven; fewer files, no import fragility). Reversible.
 
 **Next**: U7 batch runner (loop/eprime-experiment/bot_runner.gd, extends SceneTree) — load Q1ProofRoom 84× (7 bots × 12 seeds), attach BotInputDriver + TelemetryRecorder, run to death/victory/timeout, emit telemetry JSON each, clean state reset between (test_chain_35 queue_free+await pattern). check-84-runs -> RUNS_OK 84/84. Watch: Q1 stats.cfg write-on-death (user://) + 30s timeout cap + wall <5min.
+
+---
+
+## iter 7 — 2026-05-28 — U7 batch runner: 84 runs clean (AC-004)
+
+**criterion-id | failing-evidence | hypothesis | edit-surface | rollback**
+`AC-004 | no batch runner | a SceneTree runner loads Q1ProofRoom 84×, drives each bot×seed, emits conforming telemetry, no crash, <5min | loop/eprime-experiment/bot_runner.gd + recorder frame-timing fix + Makefile + .gitignore | rm runner, revert recorder`
+
+**Did**:
+- **Timing fix (decisive)**: headless physics is wall-synced by default → a 30s-game run would take 30 wall-sec → 84 runs ≈ 42min. Fix: run with `--fixed-fps 60` (decouples from wall clock, runs at CPU speed) AND switch the recorder's timeout/survival to FRAME-based game-time (`_elapsed_sec = _tick/60`). Result: 84 runs in ~14s wall.
+- **Probe first**: a throwaway 1-run probe validated the whole pipeline (scene loads, player spawns, bot drives the tank via Input singleton — moved (16,232)→(35,132), enemies kill it, run_recap hit-accounting works hit_rate=1.0, telemetry schema-valid). Wall 116ms/run.
+- `loop/eprime-experiment/bot_runner.gd` (extends SceneTree): CLI --bots/--seeds/--out; per combo seed(seed) → load Q1 → 4 frames → find PlayerTank → attach BotInputDriver(policy) + TelemetryRecorder(siblings) → step to recorder finalize (death/victory/timeout) → release_all → read rec._result → re-read JSON from disk + schema-validate → queue_free + 2 frames. RUNS_OK only if all 84 conform; unknown bot → RUNS_FAIL (no silent skip).
+- **Bug found + fixed**: first batch reported "no telemetry emitted" for all 84 yet wrote 84 files — GDScript lambdas capture LOCALS by value, so `recorded.connect(func(t): captured=t)` no-ops the outer local (the probe worked only because its capture var was a MEMBER). Fix: recorder stores `_result`; runner reads `rec._result` directly. (SKILL-HARVEST candidate.)
+- Makefile `check-84-runs` (single-run capture, expensive); `.gitignore` data/telemetry/*.json (generated).
+
+**Verified / accepted**: `make check-84-runs` → `RUNS_OK 84/84 (timeout: 13, death: 69, victory: 2)` exit 0, 0 SCRIPT ERROR, ~14s, all 84 disk JSONs conform, deterministic across re-runs. `make check-hash-anchor` HASH_OK; `make test` green.
+
+**Status moves**: AC-004 OPEN → PASS_PENDING_FINAL.
+
+**Next**: U8 — Makefile `bot-harness` composite (final-verify): check-hash-anchor → check-bots-base → check-bots → check-bot-driver → check-telemetry-schema → check-telemetry-recorder → check-seed-bank → check-84-runs, emit `BOT_HARNESS_OK 84/84`. Then U9 orchestration (tools/bot_runner.sh + bot_summary.py + check-orchestration). Then run the final-verify → criteria-met.

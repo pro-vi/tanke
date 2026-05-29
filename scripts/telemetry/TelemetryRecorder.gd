@@ -17,7 +17,8 @@ extends Node
 # Needs the chosen action; read from the BotInputDriver sibling (`driver`).
 
 const SHELL_NAMES := ["AP", "HE", "HEAT", "APCR"]
-const TIMEOUT_SEC := 30.0
+const PHYSICS_FPS := 60.0     # game-time clock (physics ticks/sec)
+const TIMEOUT_SEC := 30.0     # game-time cap (frame-based; headless-stable)
 const EXPOSURE_RADIUS_TILES := 12
 const GOAL_ROW := 0          # Q1ProofRoom victory row (PLAYER_START_ROW=29 -> 0)
 const CORR_WINDOW := 30      # ticks to watch for an action change after a UI flip
@@ -51,6 +52,7 @@ var _prev_reload_ready: int = -1   # -1 unknown, else 0/1
 var _prev_shell: int = -1
 var _prev_ribbon: int = -1         # 0/1 visible
 var _prev_action_sig := "__init__"
+var _result: Dictionary = {}   # the finalized record (read by the batch runner)
 
 signal recorded(telemetry: Dictionary)
 
@@ -180,6 +182,7 @@ func finalize(cause: String) -> void:
 		return
 	_ended = true
 	var t := build_record(cause)
+	_result = t
 	if out_path != "":
 		_write_json(t)
 	recorded.emit(t)
@@ -235,8 +238,10 @@ func _read_hit_rate(fired_total: int) -> float:
 	return clampf(float(hits) / float(fired_total), 0.0, 1.0)
 
 
+# Game time (physics-frame count / fps), NOT wall clock — stable whether the
+# batch runs real-time or as-fast-as-possible (--fixed-fps headless).
 func _elapsed_sec() -> float:
-	return float(Time.get_ticks_msec() - _start_ms) / 1000.0
+	return float(_tick) / PHYSICS_FPS
 
 
 func _write_json(dict: Dictionary) -> void:
