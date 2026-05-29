@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/AmmoPickup.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="ammo_shape"]
+size = Vector2(10, 10)
+
+[node name="AmmoPickup" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("ammo_shape")
+
+[node name="Chip" type="ColorRect" parent="."]
+offset_left = -5.0
+offset_top = -5.0
+offset_right = 5.0
+offset_bottom = 5.0
+color = Color(1, 1, 1, 1)
+mouse_filter = 2

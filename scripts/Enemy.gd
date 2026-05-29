@@ -1,5 +1,11 @@
 extends CharacterBody2D
 
+# arc-4 iter 277: BulletT preload for shell_modulate_color (kill-flash
+# burst tint). Lazy-loaded only when _spawn_death_effect runs the
+# arc-4 branch; arc-2/3 _last_damage_shell stays -1 and the static
+# call site is never reached.
+const BulletT = preload("res://scripts/Bullet.gd")
+
 # Enemy types (iter 24 behavioral split): "Light" (naive chaser) /
 # "Heavy" (corridor-denier: pauses + bursts when aligned with player).
 # Set by Spawner.gd at instantiate time per ENEMY_TYPES table.
@@ -24,6 +30,20 @@ signal aim_canceled
 # and aim-telegraph). Light=white default, Fast=cyan, Heavy=white (its red
 # AIM_FIRE telegraph is sufficient distinction).
 @export var sprite_tint: Color = Color(1, 1, 1, 1)
+# arc-4 iter 139 (PLAYTEST-FIX-2 from user "feel like 10 hp"):
+# separate beam-damage pool. Bullets damage `hp` (1-shot biased
+# per BC tradition); beam damages `beam_hp` (10-step drain for
+# visible DPS). Either pool reaching 0 kills the enemy. HP bar
+# shows MIN(hp_ratio, beam_hp_ratio) so the more-depleted pool
+# dictates the visual.
+@export var beam_hp_max: int = 10
+# arc-4 iter 113 (Round 13 Phase 2, sanctioned substrate write ×4):
+# SCOUT_TELEGRAPH outline flag. Set by Spawner at instantiate-time
+# when the player owns has_scout_telegraph AND this enemy is a Light.
+# When true, _ready overrides self_modulate with a warm yellow tint
+# so the scout reads as visible/tagged from spawn. Default false
+# preserves arc-2/3 baseline.
+@export var scout_telegraph_outline: bool = false
 # iter 86: per-type sprite scale — Heavy bigger (toughness), Fast smaller
 # (agility), Light default. Adds visual ID layer alongside iter-67 color tint.
 @export var sprite_scale: float = 1.0
@@ -58,6 +78,10 @@ signal aim_canceled
 @export var aim_cancel_cooldown: float = 1.5
 
 var hp: int = max_hp
+# arc-4 iter 139 (PLAYTEST-FIX-2): beam pool initialized in _ready
+# from beam_hp_max (so Spawner can set per-type overrides before
+# _ready fires, same pattern as max_hp).
+var beam_hp: int = 10
 var direction: int = Constants.Dir.D  # start facing down (comes from top)
 var _player: Node2D
 var _grass_tilemap: TileMapLayer = null
@@ -75,13 +99,27 @@ var _lkp: Variant = null  # Vector2 when set, null when no LKP
 var _reached_lkp: bool = false
 var _search_until: float = 0.0  # _state_time threshold past which SEARCH expires
 var _aim_cancel_timer: float = 0.0  # iter 51: stuns Heavy out of AIM_FIRE after hit-cancel
+# arc-4 iter 277 (Round 24 Phase A widget 5): kill-flash — tracks the
+# shell class of the most recent damage so _spawn_death_effect can
+# tint the burst by killing shell. Default -1 = unknown / legacy; the
+# yellow generic burst stays for the procedural / arc-2/3 baseline.
+var _last_damage_shell: int = -1
 @export var lkp_reach_radius: float = 12.0
 @export var lkp_search_duration: float = 2.5
 @onready var _sprite: Sprite2D = $Sprite2D
+# arc-4 iter 63 (Round 9a): breach-mode HP-bar HUD (sanctioned per the
+# iter-062 Round-9 amendment). Built only when the parent level has
+# breach mode enabled AND max_hp > 1; visible only while damaged.
+const HP_BAR_WIDTH: float = 16.0
+var _hp_bar_bg: ColorRect = null
+var _hp_bar_fg: ColorRect = null
 
 
 func _ready() -> void:
 	hp = max_hp
+	# arc-4 iter 139 (PLAYTEST-FIX-2): init beam pool from exported
+	# max (allows Spawner per-type overrides via set() before _ready).
+	beam_hp = beam_hp_max
 	add_to_group("enemy")
 	# iter 101 (review-fix): sibling lookups instead of root-walk find_child;
 	# avoids ambiguity during scene reload windows and binds lifetime to the
@@ -90,6 +128,17 @@ func _ready() -> void:
 	if level != null:
 		_player = level.get_node_or_null("PlayerTank") as Node2D
 		_grass_tilemap = level.get_node_or_null("Tiles/Grass") as TileMapLayer
+		# arc-4 iter 63 (Round 9a): breach-mode HP-bar HUD — built only when
+		# the parent level has breach mode enabled AND the enemy is
+		# anything other than one-shot AT BOTH damage pools.
+		# arc-4 PR-#4 P1 review fix — was `max_hp > 1` only, so 1-HP
+		# enemies with multi-tick beam_hp (Light/Fast at beam_hp_max=3)
+		# showed zero drain feedback during the PRISM beam. Now keyed on
+		# max(max_hp, beam_hp_max) so the bar appears for any enemy that
+		# has a multi-step drain on EITHER pool.
+		if "breach_mode_enabled" in level and level.breach_mode_enabled \
+				and max(max_hp, beam_hp_max) > 1:
+			_build_hp_bar()
 	_fire_timer = randf() * fire_cooldown  # stagger initial volleys
 	_choose_direction_toward_player()
 	_update_sprite_for_direction()
@@ -99,6 +148,24 @@ func _ready() -> void:
 	if _sprite != null:
 		_sprite.self_modulate = sprite_tint
 		_sprite.scale = Vector2(sprite_scale, sprite_scale)
+		# arc-4 iter 113 (Round 13 Phase 2): SCOUT_TELEGRAPH override.
+		# When set by Spawner (player has has_scout_telegraph AND this is
+		# a Light enemy), replace the per-type tint with a warm yellow so
+		# the scout is visible/tagged from spawn. Sentence: "helps me
+		# climb tutorial_choke by changing how I see Light scouts."
+		if scout_telegraph_outline:
+			_sprite.self_modulate = Color(1.0, 0.95, 0.4, 1.0)
+
+
+## arc-4 PR-#4 Codex P2 review fix — post-spawn player retro-link.
+## Enemy._ready captures `_player` once via get_node_or_null("PlayerTank"),
+## so scenes that spawn enemies BEFORE the player (e.g. Q1ProofRoomScene
+## per its iter-289 spawn order) leave `_player` null forever — enemies
+## stay inert because _physics_process returns at the null guard below.
+## Callers can use this setter to retro-link after spawning the player.
+## Safe to call any time; null assignments are tolerated.
+func set_player(p: Node2D) -> void:
+	_player = p
 
 
 func _physics_process(delta: float) -> void:
@@ -449,12 +516,30 @@ func _update_forest_hide() -> void:
 
 
 func take_damage(amount: int) -> void:
+	# arc-4 iter 090 (P1-1 from code-review-iter-090.md): idempotency
+	# guard. queue_free() is deferred, so a same-frame second damage
+	# source (MORTAR AoE + bullet, RAM swing + collision, beam tick
+	# overlap) can re-enter take_damage on an already-dying enemy.
+	# Without this guard, killed.emit() fires twice → Spawner counts
+	# double, ammo drops re-roll, XP doubles.
+	if hp <= 0:
+		return
+	# arc-4 PR-#4 Codex P2 review fix — guard amount <= 0 BEFORE the
+	# side effects. Bullet still calls take_damage(0) when armor
+	# mitigates AP/HE on Heavies; the iter-51 AIM_FIRE cancel block
+	# below would fire `aim_canceled` on a 0-damage hit and interrupt
+	# the wind-up, breaking the armor rule ("AP/HE bounce off armor").
+	# Also short-circuits the _update_hp_bar redraw on a no-op hit.
+	if amount <= 0:
+		return
 	hp -= amount
 	if hp <= 0:
 		killed.emit()  # iter 101: synchronous kill notification (Spawner counts here)
 		_spawn_death_effect()
 		queue_free()
 		return
+	# arc-4 iter 63 (Round 9a): reflect the new HP in the breach-mode bar.
+	_update_hp_bar()
 	# iter 51: Heavy mid-AIM_FIRE → cancel wind-up, brief stun cooldown.
 	# Cancel feedback IS the visual (white stagger flash overrides red telegraph);
 	# regular _flash_hit gets skipped per iter-41 Heavy-AIM_FIRE rule anyway.
@@ -468,6 +553,75 @@ func take_damage(amount: int) -> void:
 			aim_canceled.emit()
 		return
 	_flash_hit()
+
+
+# arc-4 iter 63 (Round 9a): build the breach-mode HP-bar HUD — two
+# small ColorRects (dark bg + red fg) above the sprite. Visible only
+# while damaged (toggled in _update_hp_bar on take_damage).
+func _build_hp_bar() -> void:
+	_hp_bar_bg = ColorRect.new()
+	_hp_bar_bg.name = "HPBarBG"
+	_hp_bar_bg.size = Vector2(HP_BAR_WIDTH, 2)
+	_hp_bar_bg.position = Vector2(-HP_BAR_WIDTH * 0.5, -12)
+	_hp_bar_bg.color = Color(0.08, 0.08, 0.1, 0.85)
+	_hp_bar_bg.visible = false
+	_hp_bar_bg.z_index = 50
+	_hp_bar_bg.mouse_filter = 2
+	add_child(_hp_bar_bg)
+	_hp_bar_fg = ColorRect.new()
+	_hp_bar_fg.name = "HPBarFG"
+	_hp_bar_fg.size = Vector2(HP_BAR_WIDTH, 2)
+	_hp_bar_fg.position = Vector2(-HP_BAR_WIDTH * 0.5, -12)
+	_hp_bar_fg.color = Color(0.95, 0.3, 0.3, 1.0)
+	_hp_bar_fg.visible = false
+	_hp_bar_fg.z_index = 51
+	_hp_bar_fg.mouse_filter = 2
+	add_child(_hp_bar_fg)
+
+
+# arc-4 iter 63: reflect the current hp/max_hp in the HP bar — visible
+# + fg width tracks the damage ratio. Called from take_damage on every
+# non-fatal hit; a no-op if the bar was never built (arc-2/3 or
+# max_hp = 1).
+# arc-4 iter 139 (PLAYTEST-FIX-2 from user "feel like 10 hp, beam
+# does DPS"): bar shows MIN of bullet-HP ratio and beam-HP ratio,
+# so the more-depleted pool dictates the visible bar drain. With
+# beam_hp_max=10 and beam doing 1 hp per tick, the bar drops in 10
+# discrete steps across ~2.5s of continuous beam.
+func _update_hp_bar() -> void:
+	if _hp_bar_bg == null or _hp_bar_fg == null or max_hp <= 0:
+		return
+	_hp_bar_bg.visible = true
+	_hp_bar_fg.visible = true
+	var bullet_ratio: float = clampf(float(hp) / float(max_hp), 0.0, 1.0)
+	var beam_ratio: float = 1.0
+	if beam_hp_max > 0:
+		beam_ratio = clampf(float(beam_hp) / float(beam_hp_max), 0.0, 1.0)
+	var ratio: float = minf(bullet_ratio, beam_ratio)
+	_hp_bar_fg.size = Vector2(HP_BAR_WIDTH * ratio, 2.0)
+
+
+# arc-4 iter 139 (PLAYTEST-FIX-2): beam-pool damage. Drains beam_hp
+# (separate from bullet hp); when beam_hp <= 0, fall through to
+# take_damage to use the existing death path (signals, ammo drops,
+# kill counter). Bar refresh on every call so accumulator drain is
+# visible across the beam-active window.
+func take_beam_damage(amount: int) -> void:
+	# arc-4 PR-#4 S4 review fix — kill-once guard mirroring take_damage
+	# at line 514. The kill-once invariant currently holds only because
+	# take_damage zeros hp first; a future refactor could let
+	# take_beam_damage land on an already-dying enemy and re-trigger
+	# the death path. Cheap latent-fragility guard.
+	if hp <= 0:
+		return
+	if amount <= 0:
+		return
+	beam_hp = maxi(0, beam_hp - amount)
+	_update_hp_bar()
+	if beam_hp <= 0 and hp > 0:
+		# Trigger death via the existing path so killed signal +
+		# ammo drop + kill counter all fire correctly.
+		take_damage(hp)
 
 
 # iter 51: Heavy hit-cancel during AIM_FIRE. Interrupts wind-up burst,
@@ -507,13 +661,82 @@ func _flash_hit() -> void:
 # BC-style death burst — yellow ColorRect at enemy position, fades + scales
 # up over 0.3s, then auto-frees. Parented to level (not enemy) so the
 # tween survives the enemy's queue_free.
+# arc-4 iter 277: setter called by Bullet.gd just before take_damage so
+# _spawn_death_effect knows which shell class to tint the burst with.
+# Method-existence gated at the call site — arc-2/3 paths still hit
+# Enemy.gd but the field is purely additive (no behavioral impact when
+# not set; the burst falls back to its iter-78 yellow color).
+func set_last_damage_shell(sc: int) -> void:
+	_last_damage_shell = sc
+
+
+# arc-4 iter 281 (consult-001 H4 fix): 24×24 hollow ring around the
+# 16×16 kill-flash core. 4 edge ColorRects, 2-px stroke, shell-color
+# tint at alpha 0.45 (faint), same 0.3s fade tween + scale-to-1.4
+# as the core. Caller gates on _last_damage_shell >= 0.
+const KILL_FLASH_RING_OUTER: float = 24.0
+const KILL_FLASH_RING_STROKE: float = 2.0
+const KILL_FLASH_RING_ALPHA: float = 0.45
+const KILL_FLASH_TWEEN_S: float = 0.3
+const KILL_FLASH_RING_SCALE_TO: float = 1.4
+func _spawn_kill_flash_ring(parent_node: Node) -> void:
+	var shell_color: Color = BulletT.shell_modulate_color(_last_damage_shell)
+	var ring_color: Color = Color(shell_color.r, shell_color.g, shell_color.b, KILL_FLASH_RING_ALPHA)
+	var half: float = KILL_FLASH_RING_OUTER * 0.5
+	var stroke: float = KILL_FLASH_RING_STROKE
+	# top edge
+	var top: ColorRect = ColorRect.new()
+	top.size = Vector2(KILL_FLASH_RING_OUTER, stroke)
+	top.position = global_position - Vector2(half, half)
+	top.color = ring_color
+	top.z_index = 52  # iter 298 — above HP bar (50/51) so ring not occluded on kill
+	parent_node.add_child(top)
+	# bottom edge
+	var bot: ColorRect = ColorRect.new()
+	bot.size = Vector2(KILL_FLASH_RING_OUTER, stroke)
+	bot.position = global_position - Vector2(half, -(half - stroke))
+	bot.color = ring_color
+	bot.z_index = 52  # iter 298 — above HP bar
+	parent_node.add_child(bot)
+	# left edge (inside top/bottom edges so they don't overlap)
+	var left: ColorRect = ColorRect.new()
+	left.size = Vector2(stroke, KILL_FLASH_RING_OUTER - 2.0 * stroke)
+	left.position = global_position - Vector2(half, half - stroke)
+	left.color = ring_color
+	left.z_index = 52  # iter 298 — above HP bar
+	parent_node.add_child(left)
+	# right edge
+	var right: ColorRect = ColorRect.new()
+	right.size = Vector2(stroke, KILL_FLASH_RING_OUTER - 2.0 * stroke)
+	right.position = global_position - Vector2(-(half - stroke), half - stroke)
+	right.color = ring_color
+	right.z_index = 52  # iter 298 — above HP bar
+	parent_node.add_child(right)
+	for edge in [top, bot, left, right]:
+		var tw: Tween = edge.create_tween()
+		tw.set_parallel(true)
+		tw.tween_property(edge, "modulate:a", 0.0, KILL_FLASH_TWEEN_S)
+		tw.tween_property(edge, "scale",
+				Vector2(KILL_FLASH_RING_SCALE_TO, KILL_FLASH_RING_SCALE_TO),
+				KILL_FLASH_TWEEN_S)
+		tw.chain().tween_callback(edge.queue_free)
+
+
 func _spawn_death_effect() -> void:
 	var parent_node: Node = get_parent()
 	if parent_node == null or not is_instance_valid(parent_node):
 		return
 	var burst: ColorRect = ColorRect.new()
 	burst.size = Vector2(16, 16)
-	burst.color = Color(1.0, 0.9, 0.3, 0.9)  # warm yellow burst
+	# arc-4 iter 277 (Round 24 Phase A widget 5): kill-flash — tint by
+	# killing shell when known. Procedural / arc-2/3 bullets never call
+	# set_last_damage_shell, so _last_damage_shell stays -1 and the
+	# legacy yellow burst renders bit-identical.
+	if _last_damage_shell >= 0:
+		var shell_color: Color = BulletT.shell_modulate_color(_last_damage_shell)
+		burst.color = Color(shell_color.r, shell_color.g, shell_color.b, 0.9)
+	else:
+		burst.color = Color(1.0, 0.9, 0.3, 0.9)  # warm yellow burst (legacy)
 	burst.position = global_position - Vector2(8, 8)  # center on enemy
 	burst.z_index = 50
 	parent_node.add_child(burst)
@@ -522,6 +745,14 @@ func _spawn_death_effect() -> void:
 	tween.tween_property(burst, "modulate:a", 0.0, 0.3)
 	tween.tween_property(burst, "scale", Vector2(1.6, 1.6), 0.3)
 	tween.chain().tween_callback(burst.queue_free)
+	# arc-4 iter 281 (consult-001 H4 fix, conf 0.74): drama bump —
+	# add a faint 24×24 hollow ring around the 16×16 core to make
+	# "which shell did this" survive peripheral vision. Same 0.3s
+	# lifetime; 4 edge ColorRects (2-px stroke) at the shell color
+	# with alpha 0.45. Only spawns when shell class is known (arc-2/3
+	# legacy yellow burst stays at 1 ColorRect — bit-identical).
+	if _last_damage_shell >= 0:
+		_spawn_kill_flash_ring(parent_node)
 	# iter 78 (Q5 priority 4 "explore roguelite mechanics"): Heavy 25% drop
 	# chance for HP pickup. Player walking over → +1 HP (clamped to max_hp).
 	if enemy_type == "Heavy" and randf() < 0.25:
@@ -678,5 +909,11 @@ func _fire() -> void:
 	var muzzle_offset: Vector2 = _direction_vector(direction) * 8.0
 	var spawn_pos: Vector2 = global_position + muzzle_offset
 	bullet.set("damage", bullet_damage)  # iter 52: per-type damage
+	# arc-4 iter 109 (Round 12 Gap 2): tag the bullet with its source
+	# enemy type so the player's RunRecap.killer names the actual
+	# cause instead of "shell impact". The field is on Bullet.gd
+	# (arc-4 substrate write ×9); set() is defensive in case a
+	# non-Bullet scene is wired here.
+	bullet.set("source_label", "%s bullet" % enemy_type.to_lower())
 	get_parent().add_child(bullet)
 	bullet.start(spawn_pos, direction, bullet_target_mask)

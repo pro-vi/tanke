@@ -126,11 +126,92 @@ def gen_water(seed: int, frame: int = 0) -> Image.Image:
     return img
 
 
+# --- arc-4 iter 17: shell-class HUD icons (APCR added iter 35) ---------
+# Algorithmic 8x8 icons for the 4 breach shell classes. Designed for the
+# CONSULT §9 constraint 4 silhouette grammar: each icon is readable by
+# SILHOUETTE (AP = narrow dart, HE = fat ellipse, HEAT = wide chevron,
+# APCR = heavy headed bolt) and PALETTE (AP = pale steel, HE = warm
+# yellow, HEAT = crimson, APCR = steel-blue — matching the Bullet.gd
+# modulate colors). One-frame intent: thin=precise, round=splash,
+# chevron=armor-focus, heavy-bolt=hard-penetrator.
+
+SHELL_PALETTES = {
+    "ap": [(235, 235, 240), (175, 178, 190), (110, 112, 125)],   # pale steel
+    "he": [(255, 217, 64), (228, 168, 30), (148, 100, 20)],      # warm yellow
+    "heat": [(255, 92, 64), (220, 52, 40), (138, 32, 30)],       # crimson
+    "apcr": [(150, 210, 255), (80, 145, 215), (38, 78, 140)],    # steel-blue
+}
+
+
+def _gen_shell(kind: str) -> Image.Image:
+    p = SHELL_PALETTES[kind]
+    img = Image.new("RGBA", (TILE_SIZE, TILE_SIZE))
+    draw = ImageDraw.Draw(img)
+    if kind == "ap":
+        # THIN TALL DART — single-column spine, full height. One-frame
+        # intent: precise / piercing. Occupies only the centre column.
+        draw.line([(4, 0), (4, 7)], fill=p[0])
+        img.putpixel((4, 1), p[1])
+        img.putpixel((4, 4), p[1])
+        img.putpixel((4, 7), p[2])
+    elif kind == "he":
+        # FAT ROUND BLOB — wide filled ellipse, mid-height. One-frame
+        # intent: splash / area. Occupies a broad rounded mass.
+        draw.ellipse([1, 2, 6, 6], fill=p[0])
+        draw.ellipse([3, 3, 4, 5], fill=p[1])
+        img.putpixel((3, 1), p[0])
+        img.putpixel((4, 1), p[0])
+    elif kind == "heat":
+        # WIDE CHEVRON — two diagonals meeting at the top apex, splayed
+        # to the base corners. One-frame intent: focused armor-pierce.
+        # Occupies the diagonals + a short stem — distinct from both the
+        # AP centre-spine and the HE round mass.
+        for i in range(4):
+            img.putpixel((4 - i, 1 + i), p[0])  # left diagonal
+            img.putpixel((4 + i, 1 + i), p[0])  # right diagonal
+        draw.line([(4, 1), (4, 4)], fill=p[1])  # stem
+        img.putpixel((4, 0), p[2])              # apex tip
+    elif kind == "apcr":
+        # HEAVY HEADED BOLT — a 2-wide shaft under a 4-wide head. One-frame
+        # intent: hard penetrator. Thicker than the AP dart, solid (not the
+        # HE round mass), straight (not the HEAT chevron).
+        for x in range(2, 6):
+            img.putpixel((x, 1), p[0])          # 4-wide head
+        img.putpixel((3, 0), p[0])
+        img.putpixel((4, 0), p[0])
+        for y in range(2, 7):
+            img.putpixel((3, y), p[1])          # 2-wide shaft
+            img.putpixel((4, y), p[1])
+        img.putpixel((3, 7), p[2])              # tail
+        img.putpixel((4, 7), p[2])
+    return img
+
+
+def gen_shell_ap(seed: int = 0) -> Image.Image:
+    return _gen_shell("ap")
+
+
+def gen_shell_he(seed: int = 0) -> Image.Image:
+    return _gen_shell("he")
+
+
+def gen_shell_heat(seed: int = 0) -> Image.Image:
+    return _gen_shell("heat")
+
+
+def gen_shell_apcr(seed: int = 0) -> Image.Image:
+    return _gen_shell("apcr")
+
+
 GENERATORS = {
     "brick": gen_brick,
     "steel": gen_steel,
     "grass": gen_grass,
     "water": gen_water,
+    "shell_ap": gen_shell_ap,
+    "shell_he": gen_shell_he,
+    "shell_heat": gen_shell_heat,
+    "shell_apcr": gen_shell_apcr,
 }
 
 
@@ -150,7 +231,7 @@ def main():
 
     args.out.mkdir(parents=True, exist_ok=True)
 
-    if args.from_sheet is not None:
+    if args.from_sheet is not None and args.tile in SHEET_MARGINS:
         margins = SHEET_MARGINS[args.tile]
         extracted = extract_palette(args.from_sheet, margins)
         # Mutate the in-memory palette so generators pick it up.

@@ -1,6 +1,15 @@
 extends Node2D
 
 const RosterT = preload("res://scripts/Roster.gd")
+# arc-4 iter 58 (Round 8c): enemy ammo drops. A killed enemy has
+# AMMO_DROP_CHANCE to drop an AmmoPickup at its death position. Gated on
+# breach mode (the player carries a Loadout); arc-2/3 drops nothing.
+const AmmoPickupScene = preload("res://scenes/AmmoPickup.tscn")
+const AMMO_DROP_CHANCE: float = 0.4
+# arc-4 iter 63 (Round 9a): enemy HP bumped in breach mode so HEAT /
+# beam / multi-hit gameplay reads. arc-2/3 (breach_mode_enabled=false)
+# keeps the original max_hp values bit-identical.
+const BREACH_HP_BONUS: Dictionary = {"Light": 1, "Heavy": 1, "Fast": 1}
 
 @export var enemy_scene: PackedScene
 @export var spawn_interval: float = 2.0
@@ -52,6 +61,10 @@ const ENEMY_TYPES: Array = [
 		"base_frame": 8,
 		"speed": 24.0,
 		"max_hp": 1,
+		# arc-4 PR-#4 P1 review fix — beam_hp_max proportional to bullet
+		# HP so PRISM beam TTK tracks enemy toughness instead of being
+		# a flat 10 ticks for every type. Light=3 (one-shot rusher).
+		"beam_hp_max": 3,
 		"fire_cooldown": 3.5,  # iter 26: fires rarely (was 1.5)
 		"direction_commit_time": 3.0,  # iter 26: commits to a lane (was 0.8)
 		"bullet_damage": 1,  # iter 52
@@ -64,11 +77,16 @@ const ENEMY_TYPES: Array = [
 		"base_frame": 32,
 		"speed": 14.0,
 		"max_hp": 2,
+		# arc-4 PR-#4 P1 review fix — corridor-denier; takes ~3× the beam
+		# ticks of a Light. Preserves the "Heavy is the beam meatshield"
+		# read the iter-86 sprite-scale + iter-23 armor cues already set.
+		"beam_hp_max": 9,
 		"fire_cooldown": 0.8,
 		"direction_commit_time": 0.8,
 		"bullet_damage": 2,  # iter 52: corridor-denier hits harder
 		"sprite_tint": Color(1.0, 1.0, 1.0, 1.0),  # iter 67: white (telegraph handles ID)
 		"sprite_scale": 1.15,  # iter 86: bigger = toughness signal
+		"armored": true,  # arc-4 iter 23: AP/HE mitigated; only HEAT bypasses
 	},
 	# iter 40: 3rd type "Fast" — harassment rusher. Continuous fire while
 	# moving (no state machine, no aim, no telegraph). Distinct from Light
@@ -80,6 +98,8 @@ const ENEMY_TYPES: Array = [
 		"base_frame": 16,
 		"speed": 32.0,
 		"max_hp": 1,
+		# arc-4 PR-#4 P1 review fix — fragile rusher; same beam TTK as Light.
+		"beam_hp_max": 3,
 		"fire_cooldown": 1.0,
 		"direction_commit_time": 0.8,
 		"bullet_damage": 1,  # iter 52: volume-based pressure, not per-bullet
@@ -449,19 +469,53 @@ func _telegraph_then_spawn(plan: Dictionary) -> void:
 	enemy.set("enemy_type", type_data.name)  # iter 24: behavioral switch in Enemy.gd
 	enemy.set("sprite_base_frame", type_data.base_frame)
 	enemy.set("speed", type_data.speed)
-	enemy.set("max_hp", type_data.max_hp)
+	# arc-4 iter 63 (Round 9a): bump max_hp in breach mode for the HP primitive.
+	var mhp: int = type_data.max_hp
+	var lvl: Node = get_parent()
+	if lvl != null and "breach_mode_enabled" in lvl and lvl.breach_mode_enabled:
+		mhp += int(BREACH_HP_BONUS.get(type_data.name, 0))
+	enemy.set("max_hp", mhp)
+	# arc-4 PR-#4 P1 review fix — per-type beam_hp_max. Without this,
+	# Enemy.gd's @export default of 10 leaked through, so the PRISM
+	# beam took identical 10-tick TTK on every enemy (1-HP Light or
+	# 3-HP Heavy). Now beam TTK tracks bullet HP per ENEMY_TYPES entry.
+	enemy.set("beam_hp_max", int(type_data.get("beam_hp_max", 10)))
 	enemy.set("fire_cooldown", type_data.fire_cooldown)
 	enemy.set("direction_commit_time", type_data.direction_commit_time)  # iter 26
 	enemy.set("bullet_damage", type_data.bullet_damage)  # iter 52
 	enemy.set("sprite_tint", type_data.sprite_tint)  # iter 67
 	enemy.set("sprite_scale", type_data.sprite_scale)  # iter 86
+	# arc-4 iter 113 (Round 13 Phase 2, sanctioned substrate write ×5):
+	# SCOUT_TELEGRAPH affordance — when the player owns the upgrade,
+	# Light enemies spawn with a warm yellow tint so the player can
+	# see them earlier and pre-aim. Sentence-test compliant per C8
+	# anchor 3 (closes tutorial_choke band-coverage gap). Defensive:
+	# the loadout field check is duck-typed (arc-2/3 player has no
+	# loadout property; flag never set; no behavior change).
+	if type_data.name == "Light" and _player != null \
+			and is_instance_valid(_player) and "loadout" in _player \
+			and _player.loadout != null \
+			and "has_scout_telegraph" in _player.loadout \
+			and _player.loadout.has_scout_telegraph:
+		enemy.set("scout_telegraph_outline", true)
+	# arc-4 iter 23: armored enemies join the "armored" group — Bullet.gd
+	# mitigates AP/HE against group members; HEAT bypasses. Uses a group
+	# tag (a Node method) rather than an Enemy.gd @export, so no Layer-2
+	# Enemy.gd substrate write is needed.
+	# F002: gated on breach mode — the Heavy ENEMY_TYPES entry is shared
+	# with arc-3 OG mode; without this gate, OG Heavy enemies would be
+	# tagged armored and the OG player's AP would deal 0 damage to them.
+	if type_data.get("armored", false) and _is_breach_mode():
+		enemy.add_to_group("armored")
 	enemy.global_position = pos
 	# iter 101 (review-fix): explicit domain signals replace tree_exited
 	# piggy-backing for kill counter. tree_exited still drives _enemies_alive
 	# decrement (correct for any exit cause).
 	enemy.tree_exited.connect(_on_enemy_freed)
 	if enemy.has_signal("killed"):
-		enemy.killed.connect(_on_enemy_killed)
+		# arc-4 iter 58: bind the enemy so _on_enemy_killed can drop ammo
+		# at its death position.
+		enemy.killed.connect(_on_enemy_killed.bind(enemy))
 	if enemy.has_signal("aim_canceled"):
 		enemy.aim_canceled.connect(_on_enemy_aim_canceled)
 	parent_node.add_child(enemy)
@@ -487,6 +541,14 @@ func _pick_enemy_type() -> Dictionary:
 		if picked.is_empty():
 			picked = ENEMY_TYPES[0]
 		return picked
+	# arc-4 iter 15: breach-mode roster. When the parent level is in
+	# breach mode and the active BreachBand declares enemy_weights, those
+	# weights drive the pick — replacing the arc-2 DEPTH_BANDS table.
+	# Gated: arc-2 procedural + arc-3 OG paths never enter this branch,
+	# so the hash anchor + OG behavior stay bit-identical.
+	var breach_weights: Dictionary = _breach_band_weights()
+	if not breach_weights.is_empty():
+		return _weighted_pick(breach_weights)
 	var band: Dictionary = _current_band()
 	# iter 27: band-entry guarantee
 	if _band_first_spawn_pending:
@@ -497,18 +559,61 @@ func _pick_enemy_type() -> Dictionary:
 			if not forced.is_empty():
 				return forced
 	var weights: Dictionary = band.get("type_weights", {})
+	# arc-4 PR-#4 P2 #5 review fix — total gate must use the SAME fallback
+	# as _weighted_pick (0.0), or a band that omits an enemy type would
+	# show a nonzero total here but never actually roll that type below
+	# (since _weighted_pick uses 0.0 fallback at lines 575 + 581). Latent
+	# today because all DEPTH_BANDS list every type, but future bands
+	# that omit a type would skew the distribution + invalidate the
+	# total-gate invariant.
 	var total: float = 0.0
 	for t in ENEMY_TYPES:
-		total += float(weights.get(t.name, t.weight))
+		total += float(weights.get(t.name, 0.0))
+	if total <= 0.0:
+		return ENEMY_TYPES[0]
+	return _weighted_pick(weights)
+
+
+# arc-4 iter 15: weighted pick from a {role_name: weight} map. Shared by
+# the arc-2 DEPTH_BANDS path and the breach-mode path.
+func _weighted_pick(weights: Dictionary) -> Dictionary:
+	var total: float = 0.0
+	for t in ENEMY_TYPES:
+		total += float(weights.get(t.name, 0.0))
 	if total <= 0.0:
 		return ENEMY_TYPES[0]
 	var roll: float = randf() * total
 	var accum: float = 0.0
 	for t in ENEMY_TYPES:
-		accum += float(weights.get(t.name, t.weight))
+		accum += float(weights.get(t.name, 0.0))
 		if roll <= accum:
 			return t
 	return ENEMY_TYPES[0]
+
+
+# arc-4 iter 23: is the parent level in breach mode? Used to gate
+# breach-only behavior (armored enemy tagging) off the arc-2/3 paths.
+func _is_breach_mode() -> bool:
+	var lvl: Node = get_parent()
+	if lvl == null:
+		return false
+	return ("breach_mode_enabled" in lvl) and lvl.breach_mode_enabled
+
+
+# arc-4 iter 15: read the active BreachBand's enemy_weights via the
+# parent level. Returns {} when not in breach mode (→ arc-2 fallback).
+func _breach_band_weights() -> Dictionary:
+	var lvl: Node = get_parent()
+	if lvl == null:
+		return {}
+	if not ("breach_mode_enabled" in lvl) or not lvl.breach_mode_enabled:
+		return {}
+	if not ("_current_breach_band" in lvl) or lvl._current_breach_band == null:
+		return {}
+	var band = lvl._current_breach_band
+	if "enemy_weights" in band and band.enemy_weights is Dictionary:
+		return band.enemy_weights
+	return {}
 
 
 # iter 27: helper for guarantee_first_type lookup
@@ -536,8 +641,29 @@ func _on_enemy_freed() -> void:
 		stage_cleared.emit()
 
 
-func _on_enemy_killed() -> void:
+func _on_enemy_killed(enemy: Node) -> void:
 	enemies_killed += 1
+	_try_ammo_drop(enemy)
+
+
+# arc-4 iter 58 (Round 8c): a killed enemy may drop an ammo pickup at
+# its death position (playtest-3 — "does enemy drop ammo?"). The
+# breach-mode gate is checked BEFORE randf(), so an arc-2/3 run consumes
+# zero RNG here — the seed-42 procedural baseline stays bit-identical.
+func _try_ammo_drop(enemy: Node) -> void:
+	if not (enemy is Node2D):
+		return
+	var lvl: Node = get_parent()
+	if lvl == null:
+		return
+	var player: Node = lvl.get_node_or_null("PlayerTank")
+	if player == null or not ("loadout" in player) or player.loadout == null:
+		return
+	if randf() >= AMMO_DROP_CHANCE:
+		return
+	var pickup: Area2D = AmmoPickupScene.instantiate()
+	pickup.global_position = (enemy as Node2D).global_position
+	lvl.add_child(pickup)
 
 
 func _on_enemy_aim_canceled() -> void:

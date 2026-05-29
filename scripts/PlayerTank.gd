@@ -1,6 +1,43 @@
 extends CharacterBody2D
 
-signal shoot
+# arc-4 breach mode: PlayerTank carries a Loadout (finite HE/HEAT
+# reserves) + a current_shell cursor cycled via KEY_TAB. Default
+# loadout = null preserves arc-2/3 baseline behavior (unlimited AP).
+# Sanctioned substrate write per PROMPT §SUBSTRATE FREEZE +
+# CONSULT 001 "no player has yet sacrificed one resource to alter one
+# route — that is the atomic verb".
+const BulletT = preload("res://scripts/Bullet.gd")
+const LoadoutT = preload("res://scripts/Loadout.gd")
+const RunRecapT = preload("res://scripts/RunRecap.gd")
+const MetaProgressT = preload("res://scripts/MetaProgress.gd")
+# arc-4 Round 23 (iter 197+): class-specific upgrade card catalog.
+const UpgradeCatalogT = preload("res://scripts/UpgradeCatalog.gd")
+
+# arc-4 iter 146 (Pro Consult 011 step 4/5): per-archetype atlas. PRISM row 0,
+# MORTAR row 1, RAM row 2; each row 8 cells matching TankSprite.gd dir_set
+# layout (U=[0,1], L=[2,3], D=[4,5], R=[6,7]). Default texture stays
+# sprites_0.png so arc-2/3 mode + DEFAULT archetype = bit-identical.
+const ARCHETYPE_ATLAS_TEX = preload("res://img/archetype_sprites.png")
+const DEFAULT_ATLAS_TEX = preload("res://img/sprites_0.png")
+# Per-archetype base frame in the archetype atlas (hframes=16, vframes=3).
+# DEFAULT keeps frame_base=0 against sprites_0.png (existing behavior).
+const _ARCHETYPE_FRAME_BASE = {
+	TankArchetype.PRISM: 0,
+	TankArchetype.MORTAR: 16,
+	TankArchetype.RAM: 32,
+}
+
+# arc-4 iter 64 (Round 9b): tank archetype enum — distinct personalities
+# the user named in playtest-4 (Red Alert / Into the Breach references).
+# Per-archetype behaviour lands in 9c (PRISM beam), 9d (MORTAR lob), 9e
+# (RAM collision + swing). DEFAULT preserves the current breach behavior
+# bit-identically.
+enum TankArchetype { DEFAULT, PRISM, MORTAR, RAM }
+
+# arc-4: shoot signal carries the chosen shell_class. Default in any
+# emit-site that doesn't override = SHELL_CLASS_AP (= 0), preserving
+# arc-2/3 callers bit-identically.
+signal shoot(bullet_scene: PackedScene, pos: Vector2, dir: int, shell_class: int)
 signal hp_changed(new_hp: int, max_hp: int)
 signal died
 
@@ -21,6 +58,40 @@ var _shield_timer: float = 0.0
 @export var screen_shake_magnitude: float = 3.0  # px at 320×240
 @export var screen_shake_duration: float = 0.25
 @export var screen_shake_steps: int = 5
+# arc-4: optional Loadout. null = arc-2/3 baseline (unlimited AP).
+# When set, current_shell cycles via KEY_TAB and HE/HEAT consume reserves.
+@export var loadout: LoadoutT = null
+# arc-4 iter 64 (Round 9b): chosen tank archetype for this run. DEFAULT
+# = the existing breach behavior (bit-identical). PRISM / MORTAR / RAM
+# gate per-archetype code paths in 9c/9d/9e.
+@export var archetype: int = TankArchetype.DEFAULT
+# arc-4 iter 27 (C3 anchor 4): shell-swap reload cost. After a swap the
+# tank cannot fire for shell_swap_cost seconds — pre-commitment under
+# reload pressure (CONSULT §2 "the interesting WoT idea"). Only ever
+# armed in breach mode (a swap requires a loadout); arc-2/3 unaffected.
+@export var shell_swap_cost: float = 0.5
+# arc-4 iter 28 (C8 anchor 3): OVERDRIVE sprint burst. The open_killbox
+# band's positioning answer — a speed burst (KEY_SHIFT) to break flanker
+# sightlines. Granted by the depot OVERDRIVE upgrade (loadout.has_overdrive).
+@export var overdrive_mult: float = 1.6      # speed × this during a burst
+@export var overdrive_burst: float = 1.0     # burst duration (s)
+@export var overdrive_cooldown: float = 2.5  # cooldown after a burst (s)
+
+var current_shell: int = 0  # = BulletT.SHELL_CLASS_AP; cycled via KEY_TAB
+var _tab_was_pressed: bool = false
+var _swap_cooldown: float = 0.0  # >0 = mid reload beat, _fire blocked
+var _overdrive_timer: float = 0.0   # >0 = sprint burst active
+var _overdrive_cd: float = 0.0      # >0 = burst on cooldown
+var _shift_was_pressed: bool = false
+# arc-4: death-attribution recap. Created per-run in _ready when breach
+# mode is active (loadout != null). Null in arc-2/3 — those code paths
+# never touch run_recap, so behavior stays bit-identical.
+var run_recap = null
+# arc-4 iter 109 (Round 12 Gap 2): the source string for the most
+# recent damage event, set by `set_last_damage_source` just before
+# `take_damage`. Read in `_die()` to stamp `run_recap.killer`.
+# Empty string = no attribution → falls back to "shell impact".
+var _last_damage_source: String = ""
 
 @onready var sprite: Sprite2D = $Sprite2D
 
@@ -38,18 +109,249 @@ var _iframe_timer: float = 0.0
 var _dead: bool = false
 var _restart_armed: bool = false
 var _hp_label: Label
+# arc-4 iter 35: breach-mode shell panel (4 slots — AP/HE/HEAT/APCR).
+# iter 300 (user feedback #3): the iter-35 legacy `_shell_panel` and its
+# 4 slot fields REMOVED. Replaced by the iter-276 shell chips relocated
+# to bottom-center (WoT-style) with shell-name + reserve labels.
+var _shell_codex: ColorRect = null  # arc-4 iter 36: run-start shell primer
+# arc-4 iter 274 (Round 24 Phase A widget 2): reload bar — visualizes
+# GunTimer cooldown progress. fg width = bg_w * progress; fg color =
+# current shell's color (reuses _shell_color so the reload chrome
+# matches the in-flight bullet). Built only inside the loadout-gated
+# block in _setup_hud, so arc-2/3 HUD is bit-identical to before.
+var _reload_bar_bg: ColorRect = null
+var _reload_bar_fg: ColorRect = null
+# arc-4 iter 292 (consult-001 conf 0.84) reload-pip REMOVED iter 297
+# per user playtest feedback ("don't want the reload bar attached to
+# my tank"). The consult prediction will score "miss" on tank-adjacent
+# placement when calibration runs. Top-left bar remains as sole reload
+# readout; iter-298 may move it bottom-center (WoT convention) per
+# user feedback #3.
+# arc-4 iter 294 (consult-001 H6 visibility classes, conf 0.81 — user
+# direction Option A at iter-294 AskUserQuestion): pressure-fade for
+# the run-context HUD strips. ribbon + route panel fade to FADE_ALPHA
+# during HIGH_PRESSURE_WINDOW seconds after firing; restore to 1.0
+# when the player has not fired recently (i.e. pressure has eased).
+# Combat-critical widgets (HP / reload bar / reload pip / shell chips /
+# speed meter) stay at full alpha always.
+const H6_PRESSURE_WINDOW_S: float = 2.0
+const H6_FADE_ALPHA: float = 0.3
+const H6_FULL_ALPHA: float = 1.0
+var _last_fire_time: float = -100.0  # init far in past so _is_high_pressure() == false
+# arc-4 iter 275 (Round 24 Phase A widget 3): speed meter. Top-right
+# column under BEST; displays SPD N.N× normalized to BC baseline (32).
+# Built only inside loadout-gated block — arc-2/3 bit-identical.
+var _speed_label: Label = null
+const SPEED_BASELINE: float = 32.0
+# arc-4 iter 276 (Round 24 Phase A widget 1 v1): shell chips — compact
+# top-left row showing AP/HE/HEAT/APCR with the active class highlighted
+# and reserve counts. V1 is procedural (palette-aligned ColorRects);
+# /agentify image_gen icons can swap in later via a CAPABILITY iter.
+# Built only inside loadout-gated block — arc-2/3 bit-identical.
+var _shell_chips_panel: ColorRect = null
+var _shell_chip_bgs: Array[ColorRect] = []
+var _shell_chip_labels: Array[Label] = []
+# iter 300 (user feedback #3 — WoT-style bottom-center placement,
+# replacing the legacy iter-35 _shell_panel that lived at y=209):
+# shell chips moved from top-left to bottom-center, enlarged from
+# 20×12 to 32×16, labels carry full shell name + reserve like the
+# legacy tray. Centered: 4 chips × (32 + 2 gap) = 134 wide → x = 93.
+const SHELL_CHIP_W: float = 32.0
+const SHELL_CHIP_H: float = 16.0
+const SHELL_CHIP_GAP: float = 2.0
+const SHELL_CHIPS_X: float = 93.0  # (viewport_w 320 - 134) / 2 → centered
+const SHELL_CHIPS_Y: float = 215.0  # near bottom, above where legacy tray was
+# arc-4 iter 278 (Round 24 Phase A widget 4 v1): active-cards ribbon —
+# bottom-left strip above the route panel; each picked card adds a
+# category-tinted chip with a 2-letter abbreviation. Procedural V1;
+# /agentify per-card art icons swap in via CAPABILITY iter later.
+var _active_cards_panel: ColorRect = null
+var _active_cards_chip_bgs: Array[ColorRect] = []
+var _active_cards_chip_labels: Array[Label] = []
+var _applied_cards: Array[int] = []
+const ACTIVE_CARDS_X: float = 2.0
+const ACTIVE_CARDS_Y: float = 180.0
+# iter 280 (consult-001 H5 fix, conf 0.95): chip width widened 18 → 28
+# to fit 3-5 char semantic tokens. Per consult: "BD not parseable after
+# 5s; abbreviations are recall aids, not first-read affordances."
+const ACTIVE_CARD_CHIP_W: float = 28.0
+const ACTIVE_CARD_CHIP_H: float = 12.0
+const ACTIVE_CARD_CHIP_GAP: float = 2.0
+const ACTIVE_CARDS_MAX_VISIBLE: int = 8
+# arc-4 iter 116 (Round 14 Phase 2): REAR_GUARD cooldown timer +
+# tunables. _rear_guard_cd ticks down to 0.0; when 0.0 + an enemy
+# is in the rear cone + loadout has the flag, fires an AP backward
+# at no shell cost, then re-arms the cooldown.
+const REAR_GUARD_RANGE: float = 96.0          # max distance to scan
+const REAR_GUARD_COOLDOWN: float = 2.5        # seconds between auto-fires
+const REAR_GUARD_CONE_COS: float = 0.707      # cos(45°) → 90° total cone
+var _rear_guard_cd: float = 0.0
+# arc-4 iter 102 (P1-C fix from code-review-iter-100): track the live
+# band-arrival banner so a Y-boundary-oscillating player can't stack
+# Labels indefinitely. Each new band crossing frees the prior banner
+# before spawning the next.
+var _band_banner: Label = null
+# arc-4 iter 102 (P1-D fix): default + flash colors for the shell-panel
+# BG. When _fire is rejected by _swap_cooldown > 0, the panel briefly
+# flashes warm-orange — making the input rejection visible. Preserves
+# the iter-27 swap-cost design (the reload beat IS the commitment cost);
+# only the silent-drop UX failure is fixed.
+const SHELL_PANEL_BG_DEFAULT: Color = Color(0.07, 0.07, 0.09, 0.82)
+const SHELL_PANEL_BG_REJECTED: Color = Color(1.0, 0.35, 0.15, 0.95)
+const SHELL_PANEL_REJECT_FADE_S: float = 0.18
+# arc-4 iter 50 (Round 7c): persistent run-route strip — one cell per
+# depth band, in this run's shuffled order, the current band highlighted.
+var _route_panel: ColorRect = null
+var _route_cell_bgs: Array[ColorRect] = []
+var _route_cell_labels: Array[Label] = []
+var _route_bands: Array = []
+# arc-4 iter 104 (P2-C fix from code-review-iter-100): highest band
+# idx ever visited this run. Cells <= this idx (excluding the
+# current cell) keep their "cleared" tint, even after the player
+# retreats to a lower band. -1 = no band visited yet.
+var _route_max_cleared_idx: int = -1
+# arc-4 iter 56 (Round 8a): XP + level-up — the roguelite power curve
+# (playtest-3). Breach-mode only (gated on loadout != null).
+const XP_PER_KILL: int = 12
+const XP_PER_DEPTH_ROW: int = 3
+const XP_BASE: int = 60       # XP to reach level 2
+const XP_STEP: int = 30       # +XP_STEP to each successive threshold
+const RELOAD_STEP: float = 0.1
+const RELOAD_MIN: float = 0.35
+var _xp: int = 0
+var _level: int = 1
+var _xp_to_next: int = XP_BASE
+var _xp_kills_counted: int = 0
+var _xp_depth_counted: int = 0
+var _spawner: Node = null
+var _xp_bar_bg: ColorRect = null
+var _xp_bar_fg: ColorRect = null
+var _level_label: Label = null
+# arc-4 iter 59 (Round 8d): shields last longer in breach mode.
+const BREACH_SHIELD_DURATION: float = 6.0
+var _shield_label: Label = null
+# arc-4 iter 65 (Round 9c): PRISM Tank beam — continuous line-cast,
+# damages first body, stop-and-fire. Built only when archetype=PRISM.
+const BEAM_RANGE: float = 160.0
+# arc-4 iter 193 (PLAYTEST-FIX): double PRISM start DPS per user
+# direction — was 0.25 (4 ticks/sec). Now 0.125 (8 ticks/sec) doubles
+# the DPS at the start of a run without changing per-tick damage.
+const BEAM_DAMAGE_COOLDOWN: float = 0.125
+var _beam_line: Line2D = null
+var _beam_dmg_timer: float = 0.0
+# arc-4 iter 66 (Round 9d): MORTAR Tank — lobbed AoE shell, fires over
+# walls, slow rate of fire. The shell handles arc + AoE; PlayerTank
+# just spawns it on _fire when archetype=MORTAR.
+const MortarShellScene = preload("res://scenes/MortarShell.tscn")
+const MORTAR_RANGE: float = 96.0
+const MORTAR_GUN_COOLDOWN: float = 1.5
+# arc-4 iter 195 (PLAYTEST-FIX): MORTAR charge-lob — tap = short lob
+# (min range), hold = farther (up to max range). Charge curve linear
+# over MORTAR_CHARGE_TIME. Landing reticle glides outward while
+# charging ("angry birds top-down" feel per user).
+const MORTAR_RANGE_MIN: float = 32.0
+const MORTAR_RANGE_MAX: float = MORTAR_RANGE  # 96.0, alias for charge-cap
+const MORTAR_CHARGE_TIME: float = 1.0
+var _mortar_charging: bool = false
+var _mortar_charge_t: float = 0.0  # 0..1, 1 = full charge
+var _mortar_reticle: Node2D = null
+# arc-4 iter 67 (Round 9e): RAM Tank — collision damage + short-range
+# swing + built-in sprint. The movement-as-weapon archetype.
+const RAM_COLLISION_DAMAGE: int = 1
+const RAM_DAMAGE_COOLDOWN: float = 0.35
+const RAM_SWING_DAMAGE: int = 2
+const RAM_SWING_RANGE: float = 18.0
+const RAM_SWING_COOLDOWN: float = 0.5
+const RAM_SPEED_BONUS: int = 6
+var _ram_collision_timer: float = 0.0
+var _ram_swing_timer: float = 0.0
+# arc-4 iter 68 (Round 9f): start-pick selection screen. The auto-show
+# in _ready is gated on this @export (default false → harnesses are
+# unaffected); the live BreachLevel.tscn overrides to true.
+@export var force_archetype_select: bool = false
+var _archetype_initialized: bool = false
+var _archetype_selecting: bool = false
+var _archetype_panel: ColorRect = null
+var _archetype_choice_labels: Array[Label] = []
+# arc-4 Round 23 Phase 2 (iter 198): level-up pick-1-of-3 card UI.
+# Mirrors the iter-68 archetype-pick pattern + iter-91 P0-1 pause
+# discipline. State is loadout-gated like the rest of the breach UI;
+# arc-2/3 mode never builds this panel.
+var _levelup_picking: bool = false
+# arc-4 PR-#4 P1 review fix — when one XP grant crosses ≥2 level
+# thresholds (kill batch, big depth jump, multi-kill), _grant_xp used
+# to call _show_levelup_pick once per level. Each call overwrote
+# _levelup_choices + re-armed the pause inside the running frame, so
+# only the LAST panel survived — owed N picks, got 1. Track the
+# backlog here; _pick_levelup_card re-shows on the next pick.
+var _pending_levelup_picks: int = 0
+var _levelup_panel: ColorRect = null
+var _levelup_choice_labels: Array[Label] = []
+var _levelup_choices: Array = []  # 3 CardKind values for the current pick
+# arc-4 Round 23 Phase 3 (iter 199): per-run multiplier accumulators
+# for card upgrades. Default 1.0/0/false = no card picked yet; each
+# card application mutates these. Persist across archetype switches
+# (the card is the player's, not the archetype's). Survives _revert_
+# archetype like _reload_reduction does (iter 92).
+var _beam_dps_mult: float = 1.0     # multiplied into BEAM_DAMAGE_COOLDOWN (lower = faster)
+var _beam_range_mult: float = 1.0   # multiplied into BEAM_RANGE (higher = farther)
+var _beam_pierce: bool = false      # skip ray-cast first-body stop for visual + damage
+var _mortar_cooldown_mult: float = 1.0  # multiplied into MORTAR_GUN_COOLDOWN (lower = faster)
+var _mortar_aoe_damage_bonus: int = 0    # added to AOE_DAMAGE per shell
+var _mortar_aoe_radius_bonus: float = 0.0  # added to AOE_RADIUS per shell
+# RAM card accumulators
+var _ram_swing_damage_bonus: int = 0
+var _ram_collision_damage_bonus: int = 0
+# DEFAULT MOMENTUM card — +20% move speed per pick (stacks
+# multiplicatively). At 1.0 = no card. Capped at 2.0 (2× base).
+var _momentum_mult: float = 1.0
+# arc-4 PR-#4 P1 review fix — base speed snapshot (captured in _ready
+# pre-_init_archetype). Effective `speed` derives from this + the
+# MOMENTUM multiplier + the RAM_SPEED_BONUS additive, via
+# _recompute_speed(). Replaces the prior in-place mutations of `speed`
+# at three sites (MOMENTUM card, RAM init, RAM revert) that compounded
+# multiplicatively-then-additively and left permanent inflation when
+# MOMENTUM landed during RAM.
+var _base_speed: int = 0
+# arc-4 iter 200 (Round 23 Phase 4): feature flag for wiring the
+# level-up event into _show_levelup_pick. Default false — existing
+# _apply_level_boost auto-cycle path is preserved so test_breach_xp /
+# test_breach_xp_reload_persistence / test_breach_level_up_ceilings
+# don't break. Flip to true when the pick UI is the desired player
+# experience (iter 201 close-out or later, gated on playtest).
+@export var pick_card_on_levelup: bool = false
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fg: ColorRect = null
 var _death_label: Label
 var _death_panel: ColorRect = null  # iter 71: dark backing panel behind death label
 var _restart_hint_label: Label = null  # iter 76: pulsing [R] RESTART hint
+
+# arc-4 iter 78 (Round 10 Phase 3): breach-mode playtest prompt
+# overlay shown on death only. Per Consult 008's H5 ("deferral !=
+# passivity") — improves playtest verdict quality without changing
+# design surface. Built + shown only when loadout != null (breach
+# mode); arc-2/3 codepath unchanged.
+var _breach_prompt_panel: ColorRect = null
+var _breach_prompt_label: Label = null
 var _restart_hint_tween: Tween = null
+
+# arc-4 iter 092 (P0-2 fix from code-review-iter-090): cache the
+# scene's default GunTimer.wait_time + track cumulative XP-earned
+# reload reduction. The previous design hard-reset wait_time to 1.0
+# on archetype switches, wiping FASTER_RELOAD level-up bonuses.
+# New model: reduction is a "savings" that persists across switches;
+# each archetype's effective wait_time = archetype_base − reduction
+# (floored at RELOAD_MIN).
+var _base_default_gun_wait_time: float = 1.0
+var _reload_reduction: float = 0.0
 # Roguelike ascender state (iter 11 — Pro Consult 003 reframe)
 var _start_y: float = 0.0
 var _min_y_reached: float = 0.0
 var _run_time: float = 0.0
 var _depth_label: Label
 var _time_label: Label
+var _best_label: Label = null  # arc-4 iter 42: live best-depth readout
+var _run_best_depth: int = 0
 # iter 30: depth milestone flash (Pro Consult 005 META — ascent legibility)
 var _last_milestone_depth: int = 0
 @export var depth_milestone_step: int = 10
@@ -90,20 +392,123 @@ func _ready() -> void:
 	_start_y = global_position.y
 	_min_y_reached = _start_y
 	_last_y_for_velocity = _start_y  # iter 31: instrumentation seed
+	# arc-4: breach-mode death recap (only when a loadout is assigned).
+	if loadout != null:
+		# arc-4 iter 44 (F004): the loadout is a SHARED Resource
+		# (BreachLevel bakes breach_starter_loadout.tres). consume() +
+		# depot upgrades mutate it, and reload_current_scene reuses the
+		# resource cache — so without a private per-run copy, run 2+
+		# would start with run 1's depleted reserves + purchased
+		# upgrades. duplicate() gives each run a fresh loadout from the
+		# .tres template; the template is never mutated.
+		loadout = loadout.duplicate()
+		run_recap = RunRecapT.new()
+		# arc-4 iter 095 (P1-4 fix from code-review-iter-090):
+		# capture the START-OF-RUN archetype immediately. The field
+		# is documented as "TankArchetype at run start" — for runs
+		# that don't show the pick screen (force_archetype_select=
+		# false), this @export default IS the run-start identity.
+		# _pick_archetype updates this on the picked archetype below;
+		# _on_breach_band_changed no longer overwrites it.
+		run_recap.archetype = archetype
 	# iter 101 (review-fix): sibling lookup via Tiles parent, not root-walk.
 	var level: Node = get_parent()
 	if level != null:
 		_grass_tilemap = level.get_node_or_null("Tiles/Grass") as TileMapLayer
 	_camera = get_parent().get_node_or_null("Camera2D") as Camera2D
+	# arc-4 iter 56 (Round 8a): the Spawner sibling tracks enemies_killed
+	# — polled by _tick_xp for kill XP. Cached here; null in arc-2/3 is fine.
+	_spawner = get_parent().get_node_or_null("Spawner")
 	_setup_hurtbox()
 	_setup_hud()
+	# arc-4 iter 42 (Round 6d): band-arrival banner — connect to the
+	# breach level's band-change signal. The signal exists only on
+	# ProceduralLevel and fires only when breach_mode_enabled, so this
+	# is breach-mode-only; arc-2/3 never connects.
+	if loadout != null and level != null and level.has_signal("breach_band_changed"):
+		level.breach_band_changed.connect(_on_breach_band_changed)
+	# arc-4 iter 50 (Round 7c): build the run-route strip deferred — the
+	# level's _init_breach_mode shuffles the band order in the level's
+	# _ready, which runs AFTER this child _ready. Deferring reads
+	# breach_config once the shuffle is done.
+	if loadout != null:
+		call_deferred("_build_route_strip")
 	hp_changed.emit(hp, max_hp)
 	_update_run_hud()
+	# arc-4 iter 092 (P0-2 fix): capture the scene's default GunTimer
+	# wait_time BEFORE any per-archetype init mutates it. MORTAR
+	# overrides to MORTAR_GUN_COOLDOWN, so we must capture the
+	# DEFAULT base first for the FASTER_RELOAD bonus math to compose.
+	if has_node("GunTimer"):
+		_base_default_gun_wait_time = ($GunTimer as Timer).wait_time
+	# arc-4 PR-#4 P1 review fix — capture the base speed BEFORE any
+	# archetype init mutates it. The @export `speed` default is 32; a
+	# scene override (.tscn) is picked up here. From this point on,
+	# `speed` is a DERIVED value computed by _recompute_speed() from
+	# _base_speed + _momentum_mult + (archetype == RAM ? RAM_SPEED_BONUS : 0).
+	_base_speed = speed
+	# arc-4 iter 68 (Round 9f): per-archetype init is extracted into a
+	# single function — also called after _pick_archetype (post-_ready)
+	# when the user picks a non-DEFAULT archetype from the start-pick
+	# screen. Guarded by _archetype_initialized so it fires at most once
+	# per archetype change.
+	_init_archetype()
+	# arc-4 iter 68 (Round 9f): start-pick selection — when breach mode
+	# + archetype is still the unset DEFAULT + the .tscn has opted in +
+	# more than one archetype is unlocked.
+	if loadout != null and archetype == TankArchetype.DEFAULT and force_archetype_select:
+		var best: int = MetaProgressT.best_depth()
+		var unlocked: Array = MetaProgressT.unlocked_archetypes(best)
+		if unlocked.size() > 1:
+			_show_archetype_select()
 
 
 func _physics_process(delta: float) -> void:
+	# arc-4 iter 68 (Round 9f): while the archetype-select screen is up,
+	# everything else pauses — only the picker polls input. Released on
+	# _pick_archetype.
+	# arc-4 iter 091 (P0-1 fix): defensive dead-during-selector escape.
+	# Even though the iter-091 tree-pause SHOULD prevent the player from
+	# dying while the selector is up, if some path bypasses pause (e.g.
+	# a scripted death, an HUD codex dismiss damage path), exit the
+	# selector cleanly and route to restart input.
+	if _archetype_selecting:
+		if _dead:
+			_exit_archetype_select()
+			_handle_restart_input()
+			return
+		_poll_archetype_select_input()
+		return
+	# arc-4 Round 23 Phase 2 (iter 198): pick-1-of-3 card screen.
+	# Same dead-during-pick escape as the archetype selector.
+	if _levelup_picking:
+		if _dead:
+			_exit_levelup_pick()
+			_handle_restart_input()
+			return
+		_poll_levelup_pick_input()
+		return
+	# arc-4 iter 36: the shell codex is dismissed by the first gameplay
+	# input — the player reads the breach-economy primer, then plays.
+	# arc-4 iter 101 (P1-B fix from code-review-iter-100): return after
+	# dismiss so the same-frame ui_accept doesn't continue to _fire()
+	# (which would consume a shell + arm GunTimer cooldown unintentionally).
+	if _shell_codex != null and _shell_codex.visible and _any_gameplay_input():
+		_dismiss_codex()
+		return
 	if _iframe_timer > 0.0:
 		_iframe_timer -= delta
+	# arc-4 iter 27: tick down the shell-swap reload beat.
+	if _swap_cooldown > 0.0:
+		_swap_cooldown -= delta
+	# arc-4 iter 28: tick the OVERDRIVE sprint burst → cooldown.
+	if _overdrive_timer > 0.0:
+		_overdrive_timer -= delta
+		if _overdrive_timer <= 0.0:
+			_overdrive_timer = 0.0
+			_overdrive_cd = overdrive_cooldown
+	elif _overdrive_cd > 0.0:
+		_overdrive_cd -= delta
 	# iter 82: tick down shield invulnerability
 	if _shield_timer > 0.0:
 		_shield_timer -= delta
@@ -115,10 +520,33 @@ func _physics_process(delta: float) -> void:
 			sprite.self_modulate = Color(0.7, 0.85, 1.0, 1.0)
 		else:
 			sprite.self_modulate = Color(1, 1, 1, 1)
-
+	# arc-4 iter 59 (Round 8d): the shield HUD indicator tracks the timer.
+	if _shield_label != null:
+		_shield_label.visible = _shield_timer > 0.0
+	# arc-4 PR-#4 P1 review fix — REAR_GUARD auto-fires while dead.
+	# Previously this block ran BEFORE the `if _dead: return` guard, so
+	# a corpse with REAR_GUARD owned + an enemy in the rear cone would
+	# keep emitting AP shells on cooldown while the death overlay was
+	# up (_physics_process still ticks since death doesn't pause the
+	# tree). Moved BELOW the dead-guard so dead tanks stay quiet.
 	if _dead:
 		_handle_restart_input()
 		return
+
+	# arc-4 iter 116 (Round 14 Phase 2, substrate write ×44): REAR_GUARD
+	# auto-defense tick. Closes the open_killbox C8 anchor-3 gap. When
+	# the loadout has has_rear_guard AND the cooldown is clear AND an
+	# enemy is in the rear 90° cone within REAR_GUARD_RANGE, fire an
+	# AP shell backward (free; no shell consumed) and arm the cooldown.
+	# Loadout-gated → arc-2/3 player (no loadout) is bit-identical.
+	if loadout != null and loadout.has_rear_guard:
+		if _rear_guard_cd > 0.0:
+			_rear_guard_cd = maxf(0.0, _rear_guard_cd - delta)
+		if _rear_guard_cd <= 0.0:
+			var target = _find_rear_cone_enemy()
+			if target != null:
+				_fire_rear_guard()
+				_rear_guard_cd = REAR_GUARD_COOLDOWN
 
 	# Roguelike ascender: track depth + run time (iter 11)
 	_run_time += delta
@@ -156,17 +584,76 @@ func _physics_process(delta: float) -> void:
 		sprite.play()
 	else:
 		sprite.stop()
+	# arc-4 iter 65 (Round 9c): PRISM stop-and-fire — no movement while
+	# the beam is firing. The player commits, gets exposed in exchange.
+	# arc-4 iter 193 (PLAYTEST-FIX): zero the MOVEMENT vector but
+	# preserve `input_vector` for the sprite-facing call below. Before
+	# this fix, zeroing input_vector caused `sprite.set_dir_set` to
+	# keep the old dir_set (no input → no branch matched), so the
+	# hull sprite stayed facing the prior direction even though the
+	# `direction` variable (and the beam ray) had rotated — visible
+	# as a beam pointing one way while the hull faced another.
+	var move_vector: Vector2 = input_vector
+	if archetype == TankArchetype.PRISM and Input.is_action_pressed("ui_accept"):
+		move_vector = Vector2.ZERO
 
-	velocity = input_vector * float(speed)
+	# arc-4 iter 28: OVERDRIVE sprint — KEY_SHIFT triggers a speed burst
+	# when the depot upgrade is owned. Gated on loadout.has_overdrive, so
+	# arc-2/3 movement is bit-identical (no loadout → branch never taken).
+	# arc-4 iter 67 (Round 9e): sprint is unlocked by the OVERDRIVE depot
+	# upgrade OR by the RAM archetype (built-in).
+	var _sprint_unlocked: bool = (loadout != null and loadout.has_overdrive) or archetype == TankArchetype.RAM
+	if _sprint_unlocked:
+		var shift_now: bool = Input.is_physical_key_pressed(KEY_SHIFT)
+		if shift_now and not _shift_was_pressed \
+				and _overdrive_timer <= 0.0 and _overdrive_cd <= 0.0:
+			_overdrive_timer = overdrive_burst
+		_shift_was_pressed = shift_now
+	# arc-4 iter 67 (Round 9e): RAM damage/swing cooldowns tick down.
+	if archetype == TankArchetype.RAM:
+		_ram_collision_timer -= delta
+		_ram_swing_timer -= delta
+	var move_speed: float = float(speed)
+	if _overdrive_timer > 0.0:
+		move_speed *= overdrive_mult
+	velocity = move_vector * move_speed
 	sprite.set_dir_set(input_vector)
 
 	var collision: KinematicCollision2D = move_and_collide(velocity * delta)
 	if collision:
 		velocity = velocity.slide(collision.get_normal())
+		# arc-4 iter 67 (Round 9e): RAM damages any body it collides with.
+		if archetype == TankArchetype.RAM and _ram_collision_timer <= 0.0:
+			var collider: Object = collision.get_collider()
+			if collider != null and collider.has_method("take_damage"):
+				collider.take_damage(RAM_COLLISION_DAMAGE + _ram_collision_damage_bonus)
+				_ram_collision_timer = RAM_DAMAGE_COOLDOWN
 	sprite.colliding = collision != null
 
-	if Input.is_action_pressed("ui_accept"):
+	# arc-4 iter 65 (Round 9c) + iter 67 (Round 9e): per-archetype fire
+	# input handling — PRISM beams, RAM swings, DEFAULT/MORTAR via _fire.
+	if archetype == TankArchetype.PRISM:
+		if Input.is_action_pressed("ui_accept"):
+			_tick_beam(delta)
+		else:
+			_stop_beam()
+	elif archetype == TankArchetype.RAM:
+		if Input.is_action_pressed("ui_accept") and _ram_swing_timer <= 0.0:
+			_ram_swing()
+			_ram_swing_timer = RAM_SWING_COOLDOWN
+	elif archetype == TankArchetype.MORTAR:
+		_tick_mortar_charge(delta)
+	elif Input.is_action_pressed("ui_accept"):
 		_fire()
+
+	# arc-4: shell cycle via KEY_TAB (just-pressed edge). No InputMap
+	# action registered — raw key check keeps project.godot untouched.
+	# Only engages when a loadout is set; otherwise we stay on AP.
+	if loadout != null:
+		var tab_now: bool = Input.is_physical_key_pressed(KEY_TAB)
+		if tab_now and not _tab_was_pressed:
+			_cycle_shell()
+		_tab_was_pressed = tab_now
 
 
 func set_dir(new_dir: int) -> void:
@@ -178,14 +665,963 @@ func set_dir(new_dir: int) -> void:
 
 
 func _fire() -> void:
-	if can_shoot:
+	if not can_shoot:
+		return
+	# arc-4 iter 27: a shell swap imposes a reload beat — no fire until
+	# it elapses. The pre-commitment cost of choosing a shell.
+	# arc-4 iter 102 (P1-D fix): flash the shell-panel BG so the reject
+	# is visible. Without this the input is silently dropped and the
+	# player reads it as a broken input, not as the commitment-cost
+	# design surface.
+	if _swap_cooldown > 0.0:
+		_flash_shell_panel_reject()
+		return
+	# arc-4 iter 66 (Round 9d): MORTAR fires a lobbed shell, not a
+	# discrete bullet — branch before the shell-consume + shoot.emit path.
+	if archetype == TankArchetype.MORTAR:
+		_fire_mortar()
 		$GunTimer.start()
-		shoot.emit(Bullet, $Muzzle.global_position, direction)
 		can_shoot = false
+		return
+	# arc-4: determine the actual shell to fire. With no loadout, we
+	# always fire AP (arc-2/3 baseline). With a loadout, we attempt the
+	# current_shell — consume() falls back to AP if the chosen reserve
+	# is empty (the player wasted a frame's fire on an empty mag — that
+	# IS the breach-economy commitment cost surface).
+	var actual_shell: int = BulletT.SHELL_CLASS_AP
+	if loadout != null:
+		actual_shell = loadout.consume(current_shell)
+	$GunTimer.start()
+	shoot.emit(Bullet, $Muzzle.global_position, direction, actual_shell)
+	can_shoot = false
+	# arc-4 iter 294 (consult-001 H6): stamp pressure timestamp on every
+	# committed fire (not on _swap_cooldown rejections). _update_run_hud
+	# checks elapsed time vs H6_PRESSURE_WINDOW_S to fade run-context HUD.
+	_last_fire_time = Time.get_ticks_msec() / 1000.0
+	if run_recap != null:
+		run_recap.record_shot(actual_shell)
+
+
+# arc-4: cycle current_shell among AP/HE/HEAT/APCR, skipping classes the
+# loadout can't fire (zero reserve). If loadout is null this is a no-op
+# (input check up-stream gates it).
+func _cycle_shell() -> void:
+	if loadout == null:
+		return
+	# AP → HE → HEAT → APCR → AP (skip out-of-reserve when cycling onto it).
+	var order: Array[int] = [
+		BulletT.SHELL_CLASS_AP,
+		BulletT.SHELL_CLASS_HE,
+		BulletT.SHELL_CLASS_HEAT,
+		BulletT.SHELL_CLASS_APCR,
+	]
+	var idx: int = order.find(current_shell)
+	if idx < 0:
+		idx = 0
+	# Try at most order.size() hops (full ring).
+	for hop in order.size():
+		idx = (idx + 1) % order.size()
+		if loadout.can_fire(order[idx]):
+			if order[idx] != current_shell:
+				current_shell = order[idx]
+				# arc-4 iter 27: a real swap arms the reload beat —
+				# unless the iter-41 QUICK_SWAP rule-changer is owned.
+				if not loadout.quick_swap:
+					_swap_cooldown = shell_swap_cost
+			return
+	# All other classes empty; stay on current.
 
 
 func _on_GunTimer_timeout() -> void:
 	can_shoot = true
+
+
+# arc-4 iter 65 (Round 9c): build the PRISM beam visual — a Line2D
+# from the muzzle along the tank's facing. Hidden until firing.
+# iter 69 (Round 9g): idempotent — no-op when already built, so a
+# DEFAULT→PRISM→DEFAULT→PRISM switch cycle doesn't stack Line2D nodes.
+func _build_beam_line() -> void:
+	if _beam_line != null:
+		return
+	_beam_line = Line2D.new()
+	_beam_line.name = "BeamLine"
+	_beam_line.points = [Vector2(8, 0), Vector2(BEAM_RANGE, 0)]
+	_beam_line.width = 2.0
+	_beam_line.default_color = Color(0.4, 0.95, 1.0, 0.9)
+	_beam_line.z_index = 30
+	_beam_line.visible = false
+	add_child(_beam_line)
+
+
+# arc-4 iter 138 (PLAYTEST-FIX from user): thick-beam tuning.
+# Replaces the iter-65 thin-ray cast with a 2-step approach:
+#   (1) ray-cast with mask=9 (Environment+Enemy, NOT water layer 10)
+#       to find the visual end-point of the beam (stops at first
+#       solid hit; passes through water as bullets do).
+#   (2) shape-intersect with an 8px-tall RectangleShape2D over the
+#       beam corridor → finds ALL damageable bodies in the path.
+#       When beam is aimed along a horizontal tile seam (player
+#       muzzle at Y multiple of 8), the rect overlaps 2 adjacent
+#       rows → both get damaged simultaneously (user spec: "4 tiles
+#       = 1 block; centered beam hits 2 horizontal tiles at the
+#       same time").
+#   (3) per-target damage accumulator via set_meta — each beam tick
+#       adds BEAM_DAMAGE_PER_TICK to the target's accumulator; when
+#       ≥ 1.0, take_damage(1) + decrement. HP bar drains visibly
+#       in discrete steps across the beam-active window.
+const BEAM_HEIGHT_PX: float = 8.0              # one tile tall = covers seam-adjacent rows
+# arc-4 iter 139 (PLAYTEST-FIX-2): each cooldown tick = 1 beam HP
+# (no accumulator). With BEAM_DAMAGE_COOLDOWN = 0.25s, that's 4 HP/sec
+# DPS. Enemy beam_hp_max = 10 → 2.5s + 10 visible bar steps. Brick
+# beam_hp_max = 3 → 0.75s.
+const BEAM_DAMAGE_PER_TICK: int = 1
+func _tick_beam(delta: float) -> void:
+	if _beam_line == null:
+		return
+	var muzzle: Node2D = $Muzzle
+	var origin: Vector2 = muzzle.global_position
+	var dir: Vector2 = Vector2(1.0, 0.0).rotated(rotation)
+	# arc-4 iter 199 (Round 23 Phase 3): BEAM_RANGE_UP card applies via
+	# _beam_range_mult; BEAM_PIERCE skips the first-body stop in both
+	# the visual ray AND the damage corridor (shape already covers all
+	# bodies in the path, so PIERCE just extends the visual + damage
+	# reach to the full range).
+	var effective_range: float = BEAM_RANGE * _beam_range_mult
+	var end_pos: Vector2 = origin + dir * effective_range
+	var ss := get_world_2d().direct_space_state
+	var ray_q := PhysicsRayQueryParameters2D.create(origin, end_pos)
+	ray_q.exclude = [self]
+	ray_q.collision_mask = 9
+	var ray_hit: Dictionary = ss.intersect_ray(ray_q)
+	var beam_dist: float = effective_range
+	if not _beam_pierce and not ray_hit.is_empty():
+		beam_dist = origin.distance_to(ray_hit.position)
+	_beam_line.points = [muzzle.position, muzzle.position + Vector2(beam_dist, 0.0)]
+	_beam_line.visible = true
+	# (2) Shape-intersect for damage application — covers the beam
+	# corridor including any horizontal-seam-adjacent rows. Width =
+	# the beam's visible length, height = one tile (BEAM_HEIGHT_PX).
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(beam_dist, BEAM_HEIGHT_PX)
+	var shape_q := PhysicsShapeQueryParameters2D.new()
+	shape_q.shape = shape
+	# Center of the rect at (origin + dir * beam_dist / 2.0), rotated
+	# to align with beam direction.
+	shape_q.transform = Transform2D(rotation, origin + dir * (beam_dist * 0.5))
+	shape_q.collision_mask = 9
+	shape_q.exclude = [self]
+	var bodies: Array = ss.intersect_shape(shape_q, 16)
+	_apply_beam_to_targets(delta, bodies)
+
+
+# arc-4 iter 138 (PLAYTEST-FIX): per-target beam-damage accumulator.
+# Each beam tick adds BEAM_DAMAGE_PER_TICK to the target's stored
+# accumulator (via set_meta); when accumulator >= 1.0, take_damage(1)
+# fires + decrement by 1.0. Multiple targets each track independently
+# so a thick-beam multi-hit doesn't share the damage budget. Steel-
+# style bodies (no take_damage) are skipped (beam passes their cell
+# but they don't break).
+func _apply_beam_to_targets(delta: float, bodies: Array) -> void:
+	_beam_dmg_timer -= delta
+	if _beam_dmg_timer > 0.0:
+		return
+	for entry in bodies:
+		var body: Node = entry.get("collider")
+		if body == null:
+			continue
+		# arc-4 iter 139 (PLAYTEST-FIX-2): prefer the beam-pool path
+		# (take_beam_damage) so the beam drains a dedicated 10-HP pool
+		# for visible DPS-style drain. Falls back to take_damage for
+		# legacy bodies (arc-2/3 brick/enemy without the beam pool).
+		if body.has_method("take_beam_damage"):
+			body.take_beam_damage(BEAM_DAMAGE_PER_TICK)
+		elif body.has_method("take_damage"):
+			body.take_damage(BEAM_DAMAGE_PER_TICK)
+	# arc-4 iter 199 (Round 23 Phase 3): BEAM_DPS_UP card applies via
+	# _beam_dps_mult. Lower mult = shorter cooldown = higher tick rate.
+	_beam_dmg_timer = BEAM_DAMAGE_COOLDOWN * _beam_dps_mult
+
+
+# arc-4 iter 138 (PLAYTEST-FIX): thin back-compat shim — harness
+# test_breach_prism still drives the single-body path via this
+# method. Forwards to the new array-of-bodies pipeline.
+func _apply_beam_to_body(delta: float, hit_body: Node) -> void:
+	if hit_body == null:
+		_apply_beam_to_targets(delta, [])
+	else:
+		_apply_beam_to_targets(delta, [{"collider": hit_body}])
+
+
+# arc-4 iter 65 (Round 9c): hide the beam visual when fire is released
+# (PRISM only).
+# arc-4 PR-#4 S2 review fix — do NOT reset _beam_dmg_timer here.
+# Prior behavior: tap-and-release left _beam_dmg_timer at 0, so the
+# NEXT press immediately applied beam damage on the first frame,
+# bypassing the BEAM_DAMAGE_COOLDOWN tick gate. Letting the timer
+# carry over forces the next press to wait out the remaining cooldown.
+func _stop_beam() -> void:
+	if _beam_line != null:
+		_beam_line.visible = false
+
+
+# arc-4 iter 66 (Round 9d): MORTAR fires a lobbed shell into the parent
+# level — target is MORTAR_RANGE in the tank's facing direction; the
+# shell handles the arc + impact AoE.
+# arc-4 iter 195 (PLAYTEST-FIX): now takes an optional range arg for
+# charge-lob. Default = MORTAR_RANGE_MAX preserves harness/tests that
+# call _fire_mortar() directly without arguments.
+func _fire_mortar(range_px: float = MORTAR_RANGE_MAX) -> void:
+	var muzzle: Node2D = $Muzzle
+	var lvl: Node = get_parent()
+	if lvl == null:
+		return
+	var origin: Vector2 = muzzle.global_position
+	var dir: Vector2 = Vector2(1.0, 0.0).rotated(rotation)
+	var target: Vector2 = origin + dir * range_px
+	var shell = MortarShellScene.instantiate()
+	# arc-4 iter 199 (Round 23 Phase 3): per-shell overrides from
+	# AOE_DAMAGE_UP / AOE_RADIUS_UP cards. Bonuses persist across the
+	# run via _mortar_aoe_damage_bonus / _mortar_aoe_radius_bonus
+	# accumulators on PlayerTank (not on the shell class).
+	shell.aoe_damage_override = shell.AOE_DAMAGE + _mortar_aoe_damage_bonus
+	shell.aoe_radius_override = shell.AOE_RADIUS + _mortar_aoe_radius_bonus
+	lvl.add_child(shell)
+	shell.launch(origin, target)
+	# arc-4 PR-#4 P2 #2 review fix — stamp _last_fire_time so
+	# _update_reload_bar (which reads only _last_fire_time per iter 297)
+	# fills correctly over the MORTAR cooldown. Previously the bar
+	# showed READY throughout the 1.5s mortar cooldown because this
+	# stamp was set only in _fire(), not _fire_mortar().
+	_last_fire_time = Time.get_ticks_msec() / 1000.0
+
+
+# arc-4 iter 195 (PLAYTEST-FIX): MORTAR charge-lob input handler.
+# Called every _physics_process when archetype == MORTAR. Detects
+# ui_accept just_pressed → start charge; while held → accumulate
+# charge + update reticle position; just_released → fire shell at
+# the charge-derived range, then reset.
+func _tick_mortar_charge(delta: float) -> void:
+	# Respect the global swap/cooldown gates: if can_shoot is false,
+	# the player is mid-reload — don't let them charge.
+	if not can_shoot:
+		_mortar_cancel_charge()
+		return
+	var pressed: bool = Input.is_action_pressed("ui_accept")
+	var just_pressed: bool = Input.is_action_just_pressed("ui_accept")
+	var just_released: bool = Input.is_action_just_released("ui_accept")
+	if just_pressed and not _mortar_charging:
+		_mortar_charging = true
+		_mortar_charge_t = 0.0
+		_mortar_reticle_show()
+	if _mortar_charging and pressed:
+		_mortar_charge_t = clampf(_mortar_charge_t + delta / MORTAR_CHARGE_TIME, 0.0, 1.0)
+		_mortar_reticle_update()
+	if _mortar_charging and just_released:
+		var range_px: float = lerpf(MORTAR_RANGE_MIN, MORTAR_RANGE_MAX, _mortar_charge_t)
+		_fire_mortar(range_px)
+		$GunTimer.start()
+		can_shoot = false
+		_mortar_cancel_charge()
+
+
+func _mortar_cancel_charge() -> void:
+	_mortar_charging = false
+	_mortar_charge_t = 0.0
+	_mortar_reticle_hide()
+
+
+func _mortar_reticle_target() -> Vector2:
+	# Charge-derived landing point in the muzzle's facing direction.
+	var muzzle: Node2D = get_node_or_null("Muzzle")
+	if muzzle == null:
+		return global_position
+	var origin: Vector2 = muzzle.global_position
+	var dir: Vector2 = Vector2(1.0, 0.0).rotated(rotation)
+	var range_px: float = lerpf(MORTAR_RANGE_MIN, MORTAR_RANGE_MAX, _mortar_charge_t)
+	return origin + dir * range_px
+
+
+func _mortar_reticle_show() -> void:
+	if _mortar_reticle != null:
+		_mortar_reticle.visible = true
+		_mortar_reticle_update()
+		return
+	# Build the reticle lazily on first charge — placed as a sibling of
+	# PlayerTank so it lives in the level's coordinate space and isn't
+	# rotated by the tank body's set_rotation().
+	var lvl: Node = get_parent()
+	if lvl == null:
+		return
+	_mortar_reticle = Node2D.new()
+	_mortar_reticle.name = "MortarReticle"
+	_mortar_reticle.z_index = 30
+	# Crosshair: a 12x12 outline square + small dot center. Cheap and
+	# readable at top-down view ("angry birds landing spot" per user).
+	var ring: ColorRect = ColorRect.new()
+	ring.size = Vector2(12, 12)
+	ring.position = Vector2(-6, -6)
+	ring.color = Color(0, 0, 0, 0)  # transparent fill — only the border via 4 lines
+	ring.mouse_filter = 2
+	_mortar_reticle.add_child(ring)
+	# Four 1-px edge strips for the outline (cheap "ring" look).
+	for r in [
+		[Vector2(-6, -6), Vector2(12, 1)],  # top
+		[Vector2(-6, 5),  Vector2(12, 1)],  # bottom
+		[Vector2(-6, -6), Vector2(1, 12)],  # left
+		[Vector2(5, -6),  Vector2(1, 12)],  # right
+	]:
+		var edge: ColorRect = ColorRect.new()
+		edge.position = r[0]
+		edge.size = r[1]
+		edge.color = Color(1.0, 0.85, 0.4, 0.9)  # warm yellow ring
+		edge.mouse_filter = 2
+		_mortar_reticle.add_child(edge)
+	# Center dot.
+	var dot: ColorRect = ColorRect.new()
+	dot.size = Vector2(2, 2)
+	dot.position = Vector2(-1, -1)
+	dot.color = Color(1.0, 0.85, 0.4, 1.0)
+	dot.mouse_filter = 2
+	_mortar_reticle.add_child(dot)
+	lvl.add_child(_mortar_reticle)
+	_mortar_reticle_update()
+
+
+func _mortar_reticle_update() -> void:
+	if _mortar_reticle == null:
+		return
+	_mortar_reticle.global_position = _mortar_reticle_target()
+
+
+func _mortar_reticle_hide() -> void:
+	if _mortar_reticle != null:
+		_mortar_reticle.visible = false
+
+
+# arc-4 iter 69 (Round 9g): undo the current archetype's per-init mods
+# before switching to a new one. Keeps speed / GunTimer / beam-line
+# clean across multiple switches.
+# arc-4 iter 88 (BUILD-QUALITY): also clears per-archetype timer state
+# (S1/S2/S3 from iter-87 audit). Side effect: stopping the GunTimer
+# before resetting wait_time means a SWITCH cancels any pending
+# MORTAR reload — the new archetype's first fire is immediate. Read
+# as "swap reloads instantly," consistent with the iter-69 user
+# direction ("almost like switching a weapon").
+func _revert_archetype() -> void:
+	# arc-4 iter 146: restore default sprite atlas before next _init.
+	# Idempotent — _apply_archetype_sprite(DEFAULT) is a no-op if already
+	# on sprites_0.png + frame_base 0.
+	_apply_archetype_sprite(TankArchetype.DEFAULT)
+	if archetype == TankArchetype.PRISM and _beam_line != null:
+		_beam_line.visible = false
+		_beam_dmg_timer = 0.0  # S2: clear pending beam damage cooldown
+	elif archetype == TankArchetype.MORTAR and has_node("GunTimer"):
+		var gt: Timer = $GunTimer
+		gt.stop()  # S3: cancel any pending 1.5s cooldown before reset
+		# arc-4 iter 092 (P0-2 fix): restore default-archetype base
+		# minus any accumulated FASTER_RELOAD reduction, instead of
+		# hardcoded 1.0 (which wiped the XP bonus).
+		gt.wait_time = maxf(RELOAD_MIN, _base_default_gun_wait_time - _reload_reduction)
+		can_shoot = true  # consistent post-stop state
+		# arc-4 iter 195 (PLAYTEST-FIX): cancel any in-progress charge
+		# and free the reticle on archetype-switch — leaving the reticle
+		# visible would be a visual bug after the player swaps away.
+		_mortar_cancel_charge()
+		if _mortar_reticle != null:
+			_mortar_reticle.queue_free()
+			_mortar_reticle = null
+	elif archetype == TankArchetype.RAM:
+		# arc-4 PR-#4 P1 review fix — speed derives from _recompute_speed
+		# now; this revert is a no-op marker (the next _recompute_speed
+		# after archetype changes will drop RAM_SPEED_BONUS automatically).
+		# Caller (_revert_archetype) sets the new archetype after this
+		# block, then re-init calls _recompute_speed. To make revert
+		# self-contained when no re-init follows (DEFAULT case), call
+		# _recompute_speed explicitly after the caller updates archetype.
+		_ram_swing_timer = 0.0  # S1: clear pending swing cooldown
+
+
+# arc-4 iter 69 (Round 9g): mid-run archetype switch — called by the
+# new Depot SWITCH_TO_* upgrades. Reverts current state, sets the new
+# value, re-runs init. Public so Depot.apply_upgrade drives it; idempotent
+# on same-value.
+func switch_archetype(value: int) -> void:
+	# arc-4 iter 093 (P1-3 fix from code-review-iter-090): reject
+	# out-of-range values silently (with a warning) — prevents
+	# `archetype = 99` putting the tank in undefined state where
+	# no _init_archetype branch matches and no _revert_archetype
+	# branch can restore.
+	if value < TankArchetype.DEFAULT or value > TankArchetype.RAM:
+		push_warning("switch_archetype: invalid value %d (valid range %d-%d)" % [value, TankArchetype.DEFAULT, TankArchetype.RAM])
+		return
+	if value == archetype:
+		return
+	_revert_archetype()
+	archetype = value
+	_archetype_initialized = false
+	_init_archetype()
+
+
+# arc-4 iter 68 (Round 9f): per-archetype init — extracted from _ready
+# so post-_ready selection can re-init when the user picks. Guarded by
+# _archetype_initialized so re-calls without an archetype change are no-ops.
+# arc-4 iter 146 (Pro Consult 011 step 4/5): swap sprite texture +
+# frame_base when archetype changes. Gating: only takes effect when
+# loadout != null (= arc-4 breach mode). DEFAULT archetype always
+# restores sprites_0.png + frame_base 0, so arc-2/3 baseline + arc-4
+# DEFAULT runs are bit-identical to before. Hash anchor preserved on
+# procedural baseline (loadout=null in that codepath).
+func _apply_archetype_sprite(arch: int) -> void:
+	if sprite == null:
+		return
+	# `frame_base` is a TankSprite dynamic field. sprite.set("frame_base",
+	# ...) works because (a) when sprite IS a TankSprite (the production
+	# config per PlayerTank.tscn), the field exists with default 0; (b)
+	# even if some test substitutes a plain Sprite2D, Godot's set() on
+	# an absent property creates a dynamic entry — no AttributeError.
+	# Gating: arc-2/3 mode (no loadout) keeps the original texture.
+	if loadout == null:
+		sprite.texture = DEFAULT_ATLAS_TEX
+		sprite.vframes = 18
+		sprite.set("frame_base", 0)
+		return
+	if arch == TankArchetype.DEFAULT or not _ARCHETYPE_FRAME_BASE.has(arch):
+		sprite.texture = DEFAULT_ATLAS_TEX
+		sprite.vframes = 18
+		sprite.set("frame_base", 0)
+		_set_shell_hud_visible(true)
+		return
+	sprite.texture = ARCHETYPE_ATLAS_TEX
+	sprite.vframes = 3
+	sprite.hframes = 16
+	sprite.set("frame_base", _ARCHETYPE_FRAME_BASE[arch])
+	# arc-4 iter 190 (PLAYTEST-FIX): hide shell-cycle HUD for non-DEFAULT
+	# archetypes. PRISM uses beam, MORTAR lobs (no cycle), RAM uses
+	# physical collision — the AP/HE/HEAT/APCR strip + codex are CRUFT
+	# for them, eating bottom-screen space and adding visual noise.
+	_set_shell_hud_visible(false)
+
+
+func _set_shell_hud_visible(show: bool) -> void:
+	# iter 300: legacy _shell_panel removed; retarget to the bottom-center
+	# shell chips panel. arc-2/3 has neither built (loadout-gated), so this
+	# stays a silent no-op on procedural baseline.
+	if _shell_chips_panel != null:
+		_shell_chips_panel.visible = show
+	# Hide individual chip bgs + labels too so the row doesn't render
+	# even if the wrapper panel isn't queried.
+	for bg in _shell_chip_bgs:
+		if bg != null:
+			bg.visible = show
+	for lbl in _shell_chip_labels:
+		if lbl != null:
+			lbl.visible = show
+	# Shell codex is the run-start primer that explains shells — only
+	# meaningful for DEFAULT. Don't auto-show it (visibility controlled
+	# elsewhere); only force-hide when non-DEFAULT.
+	if not show and _shell_codex != null:
+		_shell_codex.visible = false
+
+
+# arc-4 PR-#4 P1 review fix — single derivation of effective `speed`
+# from base + MOMENTUM multiplier + RAM additive. Stops the in-place
+# `speed +=` / `speed -=` / `speed *=` mutations across MOMENTUM card,
+# RAM init, RAM revert that compounded when MOMENTUM landed during RAM:
+#   prior bug: RAM 32→38, MOMENTUM round(38*1.2)=46, revert 46-6=40.
+#                 (permanent +2 inflation per MOMENTUM-during-RAM pick)
+#   fixed:     _base_speed=32 always; _momentum_mult tracks card stacks;
+#              RAM is a pure additive on top. Revert composes cleanly.
+# Defensive against zero base (instantiation paths that mutate speed
+# before _ready runs).
+func _recompute_speed() -> void:
+	if _base_speed <= 0:
+		_base_speed = max(1, speed)  # late-init fallback
+	var s: int = int(round(float(_base_speed) * _momentum_mult))
+	if archetype == TankArchetype.RAM:
+		s += RAM_SPEED_BONUS
+	speed = s
+
+
+func _init_archetype() -> void:
+	if _archetype_initialized:
+		return
+	_archetype_initialized = true
+	_apply_archetype_sprite(archetype)
+	if archetype == TankArchetype.PRISM:
+		_build_beam_line()
+	elif archetype == TankArchetype.MORTAR:
+		# arc-4 iter 092 (P0-2 fix): apply accumulated FASTER_RELOAD
+		# reduction to MORTAR's base cooldown (not just hard-set).
+		# arc-4 iter 096 (P2-3 fix): stop the GunTimer before setting
+		# wait_time so DEFAULT→MORTAR doesn't carry stale cooldown
+		# (mirrors the iter-88 _revert_archetype hygiene).
+		var gt: Timer = $GunTimer
+		gt.stop()
+		gt.wait_time = maxf(RELOAD_MIN, MORTAR_GUN_COOLDOWN * _mortar_cooldown_mult - _reload_reduction)
+		can_shoot = true
+	# arc-4 PR-#4 P1 review fix — RAM speed bonus is now a derived
+	# additive in _recompute_speed(), not an in-place mutation. Recompute
+	# at the END of init so any archetype that needs it (currently RAM
+	# only) gets the bonus + future archetypes get it via the same path.
+	_recompute_speed()
+	# DEFAULT — no per-archetype init.
+
+
+# arc-4 iter 68 (Round 9f): build the start-pick panel. Shown by
+# _show_archetype_select; hidden after _pick_archetype.
+func _build_archetype_panel(canvas: CanvasLayer) -> void:
+	_archetype_panel = ColorRect.new()
+	_archetype_panel.name = "ArchetypePanel"
+	_archetype_panel.position = Vector2(28, 26)
+	_archetype_panel.size = Vector2(264, 188)
+	_archetype_panel.color = Color(0.05, 0.05, 0.08, 0.96)
+	_archetype_panel.visible = false
+	# iter 298 z-index audit: MODAL popup tier (run start / pick screens)
+	_archetype_panel.z_index = HUD_Z_MODAL
+	canvas.add_child(_archetype_panel)
+	_codex_line(_archetype_panel, "— PICK YOUR TANK —", Vector2(40, 12), 13,
+		Color(1.0, 0.95, 0.6, 1.0))
+	for i in 4:
+		var lbl: Label = Label.new()
+		lbl.name = "ArchetypeRow%d" % i
+		lbl.position = Vector2(18, 48 + i * 22)
+		lbl.add_theme_color_override("font_color", Color.WHITE)
+		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		lbl.add_theme_constant_override("outline_size", 2)
+		lbl.add_theme_font_size_override("font_size", 10)
+		_archetype_panel.add_child(lbl)
+		_archetype_choice_labels.append(lbl)
+	_codex_line(_archetype_panel, "Press 1-4 to pick.", Vector2(18, 158), 9,
+		Color(0.78, 0.8, 0.86, 1.0))
+
+
+# arc-4 iter 68 (Round 9f): show the start-pick panel + arm the
+# selecting gate (which makes _physics_process poll only for KEY_1-4).
+func _show_archetype_select() -> void:
+	# arc-4 PR-#4 P2 #4 review fix — resolve canvas + bail BEFORE
+	# mutating gate flag / pause / process_mode. Prior order had the
+	# same "pause-before-bail" shape as the P0 depot hard-lock:
+	# canvas == null would leave the tree paused + gate flag set with
+	# no panel built. Robustness only (production scenes always have
+	# $HUD), but mirrors P0 discipline.
+	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
+	if canvas == null:
+		return
+	_archetype_selecting = true
+	# arc-4 iter 091 (P0-1 fix from code-review-iter-090): pause the
+	# world so enemies don't spawn/shoot while the player reads the
+	# pick screen. PlayerTank stays processing (PROCESS_MODE_ALWAYS)
+	# so the picker input poll keeps firing.
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	get_tree().paused = true
+	if _archetype_panel == null:
+		_build_archetype_panel(canvas)
+	_refresh_archetype_panel()
+	_archetype_panel.visible = true
+
+
+# arc-4 iter 091 (P0-1 fix): centralized selector cleanup — unpause
+# the tree, restore default process_mode, hide the panel. Called by
+# _pick_archetype (normal path) and the dead-during-selector escape
+# in _physics_process.
+func _exit_archetype_select() -> void:
+	_archetype_selecting = false
+	if _archetype_panel != null:
+		_archetype_panel.visible = false
+	get_tree().paused = false
+	process_mode = Node.PROCESS_MODE_INHERIT
+
+
+# arc-4 iter 68 (Round 9f): populate the panel's 4 rows from the
+# current unlock state — unlocked rows show "[N]  NAME"; locked rows
+# are dimmed + name the depth tier.
+func _refresh_archetype_panel() -> void:
+	var best: int = MetaProgressT.best_depth()
+	var unlocked: Array = MetaProgressT.unlocked_archetypes(best)
+	var arche_info: Array = [
+		[TankArchetype.DEFAULT, "DEFAULT  (multi-shell)", 0],
+		[TankArchetype.PRISM, "PRISM  (continuous beam)", MetaProgressT.UNLOCK_PRISM_DEPTH],
+		[TankArchetype.MORTAR, "MORTAR  (lobbed AoE)", MetaProgressT.UNLOCK_MORTAR_DEPTH],
+		[TankArchetype.RAM, "RAM  (collision + sprint)", MetaProgressT.UNLOCK_RAM_DEPTH],
+	]
+	for i in arche_info.size():
+		if i >= _archetype_choice_labels.size():
+			break
+		var info: Array = arche_info[i]
+		var arch_val: int = int(info[0])
+		var nm: String = String(info[1])
+		var lock_depth: int = int(info[2])
+		var lbl: Label = _archetype_choice_labels[i]
+		var idx_in_unlocked: int = unlocked.find(arch_val)
+		if idx_in_unlocked >= 0:
+			lbl.text = "[%d]  %s" % [idx_in_unlocked + 1, nm]
+			lbl.modulate = Color(1, 1, 1, 1)
+		else:
+			lbl.text = "     %s  -  unlock at depth %d" % [nm, lock_depth]
+			lbl.modulate = Color(0.5, 0.5, 0.55, 1)
+
+
+# arc-4 iter 68 (Round 9f): apply a picked archetype + re-init +
+# release the selecting gate. Public so the harness drives it without
+# needing to fake input.
+func _pick_archetype(value: int) -> void:
+	if not _archetype_selecting:
+		return
+	# arc-4 iter 094 (P1-2 fix from code-review-iter-090): route
+	# through switch_archetype so _revert_archetype runs if the
+	# current archetype is non-DEFAULT (latent today — start-pick is
+	# always from DEFAULT — but defensive against future callers
+	# that drive _pick_archetype from a non-DEFAULT state, where the
+	# old direct-assignment path would leak RAM_SPEED_BONUS / MORTAR
+	# GunTimer / PRISM beam state).
+	switch_archetype(value)
+	# arc-4 iter 095 (P1-4 fix): the pick-screen choice IS the
+	# run-start archetype (overrides the _ready DEFAULT capture).
+	# Only update if the switch succeeded — if switch_archetype
+	# rejected out-of-range or same-value, archetype didn't change
+	# and run_recap should reflect the actual state.
+	if run_recap != null:
+		run_recap.archetype = archetype
+	# arc-4 iter 091 (P0-1 fix): centralized cleanup — also unpauses
+	# tree + restores process_mode. Always runs even if switch_archetype
+	# early-returned (out-of-range or same-value).
+	_exit_archetype_select()
+
+
+# arc-4 iter 68 (Round 9f): KEY_1-4 = the Nth unlocked archetype.
+func _pick_archetype_by_index(idx: int) -> void:
+	var unlocked: Array = MetaProgressT.unlocked_archetypes(MetaProgressT.best_depth())
+	if idx < 0 or idx >= unlocked.size():
+		return
+	_pick_archetype(int(unlocked[idx]))
+
+
+# arc-4 iter 68 (Round 9f): KEY_1-4 input poll — used by
+# _physics_process while _archetype_selecting.
+func _poll_archetype_select_input() -> void:
+	if Input.is_physical_key_pressed(KEY_1):
+		_pick_archetype_by_index(0)
+	elif Input.is_physical_key_pressed(KEY_2):
+		_pick_archetype_by_index(1)
+	elif Input.is_physical_key_pressed(KEY_3):
+		_pick_archetype_by_index(2)
+	elif Input.is_physical_key_pressed(KEY_4):
+		_pick_archetype_by_index(3)
+
+
+# =====================================================================
+# arc-4 Round 23 Phase 2 (iter 198): pick-1-of-3 level-up card UI.
+# Mirrors the iter-68 archetype-pick pattern + iter-91 P0-1 pause
+# discipline. The pick panel pops at level-up time, shows 3 cards
+# drawn from the current archetype's pool, KEY_1/2/3 selects, then
+# _apply_card mutates state. apply_card branches are Phase 3-4 work
+# (iter 199-200); iter 198 ships the UI machinery + HP_PLUS_1 as
+# the one working card path so the system is end-to-end exercisable.
+# =====================================================================
+
+func _build_levelup_panel(canvas: CanvasLayer) -> void:
+	_levelup_panel = ColorRect.new()
+	_levelup_panel.name = "LevelupPanel"
+	_levelup_panel.position = Vector2(28, 56)
+	_levelup_panel.size = Vector2(264, 132)
+	_levelup_panel.color = Color(0.05, 0.05, 0.08, 0.96)
+	_levelup_panel.visible = false
+	# iter 298 z-index audit: MODAL popup tier
+	_levelup_panel.z_index = HUD_Z_MODAL
+	canvas.add_child(_levelup_panel)
+	_codex_line(_levelup_panel, "— PICK AN UPGRADE —", Vector2(40, 10), 13,
+		Color(1.0, 0.95, 0.6, 1.0))
+	for i in 3:
+		var lbl: Label = Label.new()
+		lbl.name = "CardRow%d" % i
+		lbl.position = Vector2(14, 36 + i * 26)
+		lbl.add_theme_color_override("font_color", Color.WHITE)
+		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		lbl.add_theme_constant_override("outline_size", 2)
+		lbl.add_theme_font_size_override("font_size", 10)
+		_levelup_panel.add_child(lbl)
+		_levelup_choice_labels.append(lbl)
+	_codex_line(_levelup_panel, "Press 1-3 to pick.", Vector2(14, 116), 9,
+		Color(0.78, 0.8, 0.86, 1.0))
+
+
+# Show the pick panel for the given level. Draws 3 distinct cards from
+# the current archetype's pool; if the pool has fewer than 3 entries
+# the panel shows all of them (pool size 4 is current v1 default).
+func _show_levelup_pick(level: int) -> void:
+	# Skip the pick entirely in arc-2/3 mode — no loadout means the
+	# level-up surface isn't even active.
+	if loadout == null:
+		return
+	var pool: Array[int] = UpgradeCatalogT.pool_for(archetype)
+	var picked: Array = _pick_3_from_pool(pool)
+	if picked.size() == 0:
+		return  # defensive — pool empty, nothing to offer
+	# arc-4 PR-#4 P2 #4 review fix — resolve canvas + bail BEFORE
+	# mutating _levelup_choices / _levelup_picking / pause / process_mode.
+	# Same "pause-before-bail" shape as the P0 depot hard-lock.
+	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
+	if canvas == null:
+		return
+	_levelup_choices = picked
+	_levelup_picking = true
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	get_tree().paused = true
+	if _levelup_panel == null:
+		_build_levelup_panel(canvas)
+	_refresh_levelup_panel(level)
+	_levelup_panel.visible = true
+
+
+# Pick up to 3 distinct entries from pool (random selection). Returns
+# fewer than 3 only if the pool itself has fewer than 3 entries.
+func _pick_3_from_pool(pool: Array[int]) -> Array:
+	var out: Array = []
+	var working: Array = pool.duplicate()
+	working.shuffle()
+	for i in mini(3, working.size()):
+		out.append(working[i])
+	return out
+
+
+# Populate the panel's 3 rows from _levelup_choices.
+func _refresh_levelup_panel(level: int) -> void:
+	for i in _levelup_choice_labels.size():
+		var lbl: Label = _levelup_choice_labels[i]
+		if i >= _levelup_choices.size():
+			lbl.text = ""
+			continue
+		var kind: int = int(_levelup_choices[i])
+		var name_str: String = UpgradeCatalogT.label_for(kind)
+		var sentence: String = UpgradeCatalogT.sentence_for(kind)
+		lbl.text = "[%d]  %s  —  %s" % [i + 1, name_str, sentence]
+
+
+# Centralized cleanup — mirrors _exit_archetype_select. Always called
+# after a pick OR on the dead-during-pick escape.
+func _exit_levelup_pick() -> void:
+	_levelup_picking = false
+	if _levelup_panel != null:
+		_levelup_panel.visible = false
+	get_tree().paused = false
+	process_mode = Node.PROCESS_MODE_INHERIT
+
+
+# Apply the chosen card. Public so harness can drive without
+# faking input. Phases 3-4 (iter 199-200) fill in the remaining
+# CardKind branches; iter 198 ships HP_PLUS_1 + HP_PLUS_2 as
+# the first working paths.
+func _pick_levelup_card(idx: int) -> void:
+	if not _levelup_picking:
+		return
+	if idx < 0 or idx >= _levelup_choices.size():
+		return
+	var kind: int = int(_levelup_choices[idx])
+	_apply_card(kind)
+	_exit_levelup_pick()
+	# arc-4 PR-#4 P1 review fix — present the NEXT queued pick UI when
+	# this grant crossed multiple thresholds. _grant_xp queued the rest
+	# of the picks here; we re-show one per pick until the backlog
+	# drains. Re-shows use the current `_level` since per-level pool
+	# differences are by archetype, not by level number.
+	if _pending_levelup_picks > 0:
+		_pending_levelup_picks -= 1
+		_show_levelup_pick(_level)
+
+
+# Apply a card by CardKind. Phase 2 (iter 198) only wires HP_PLUS_1
+# and HP_PLUS_2 (the simplest universal cards). Phases 3-4 will fill
+# in BEAM_*, AOE_*, SWING_*, COLLISION_*, SPRINT_*, FASTER_RELOAD,
+# SHELL_CAP_PLUS_1, MOMENTUM.
+func _apply_card(kind: int) -> void:
+	# arc-4 iter 278 (Round 24 Phase A widget 4): record the pick + refresh
+	# the active-cards ribbon. Ribbon is built loadout-gated so the
+	# update path is a silent noop when _active_cards_panel is null
+	# (procedural / arc-2/3 mode never instantiates the ribbon).
+	_applied_cards.append(kind)
+	_update_active_cards_ribbon()
+	# arc-4 iter 302 (consult-001 H5 sub-recommendation): surface the full
+	# card name + sentence-test description as a transient toast on pickup,
+	# so the ribbon's 2-letter token becomes a REMINDER not the first
+	# explanation. Color matches the ribbon chip's category color so
+	# the player learns the visual mapping. Uses the existing iter-80
+	# _show_pickup_toast infrastructure (1.5s fade-out, stagger-aware,
+	# z_index = HUD_Z_TOAST so it reaches the player over popups).
+	_show_pickup_toast(
+		"%s — %s" % [
+			UpgradeCatalogT.label_for(kind),
+			UpgradeCatalogT.sentence_for(kind),
+		],
+		_card_chip_color(kind),
+	)
+	var msg: String = UpgradeCatalogT.label_for(kind)
+	match kind:
+		UpgradeCatalogT.CardKind.HP_PLUS_1:
+			if max_hp < MAX_HP_CEILING:
+				max_hp += 1
+				hp += 1
+			else:
+				hp = max_hp
+			hp_changed.emit(hp, max_hp)
+		UpgradeCatalogT.CardKind.HP_PLUS_2:
+			# RAM-exclusive: +2 max_hp (clamped) — tank flavor.
+			var added: int = 0
+			for _i in 2:
+				if max_hp < MAX_HP_CEILING:
+					max_hp += 1
+					hp += 1
+					added += 1
+			if added == 0:
+				hp = max_hp
+			hp_changed.emit(hp, max_hp)
+		# arc-4 iter 199 (Round 23 Phase 3): PRISM cards
+		UpgradeCatalogT.CardKind.BEAM_DPS_UP:
+			# BEAM_DAMAGE_COOLDOWN × 0.7 → ~43% faster tick rate.
+			# Floor at 0.4 so successive picks don't go absurdly fast.
+			_beam_dps_mult = maxf(0.4, _beam_dps_mult * 0.7)
+		UpgradeCatalogT.CardKind.BEAM_RANGE_UP:
+			# BEAM_RANGE × 1.5 (each pick stacks multiplicatively).
+			# Cap at 3.0 (= 480 px) so beam can't reach the whole map.
+			_beam_range_mult = minf(3.0, _beam_range_mult * 1.5)
+			# Rebuild the visual line so the new max-range is reflected
+			# even when nothing is currently in the beam's path.
+			if _beam_line != null:
+				_beam_line.points = [Vector2(8, 0), Vector2(BEAM_RANGE * _beam_range_mult, 0)]
+		UpgradeCatalogT.CardKind.BEAM_PIERCE:
+			_beam_pierce = true
+		# arc-4 iter 199 (Round 23 Phase 3): MORTAR cards
+		UpgradeCatalogT.CardKind.AOE_DAMAGE_UP:
+			_mortar_aoe_damage_bonus += 1
+		UpgradeCatalogT.CardKind.AOE_RADIUS_UP:
+			_mortar_aoe_radius_bonus += 6.0
+		UpgradeCatalogT.CardKind.MORTAR_COOLDOWN_DOWN:
+			# Multiplicative; floor at 0.4 (= 0.6s base for MORTAR).
+			# Also push the new effective cooldown into the live timer.
+			_mortar_cooldown_mult = maxf(0.4, _mortar_cooldown_mult * 0.7)
+			if archetype == TankArchetype.MORTAR and has_node("GunTimer"):
+				var gt2: Timer = $GunTimer
+				gt2.wait_time = maxf(RELOAD_MIN, MORTAR_GUN_COOLDOWN * _mortar_cooldown_mult - _reload_reduction)
+		# arc-4 iter 200 (Round 23 Phase 4): RAM cards
+		UpgradeCatalogT.CardKind.SWING_DAMAGE_UP:
+			_ram_swing_damage_bonus += 1
+		UpgradeCatalogT.CardKind.COLLISION_DAMAGE_UP:
+			_ram_collision_damage_bonus += 1
+		UpgradeCatalogT.CardKind.SPRINT_DURATION_UP:
+			overdrive_burst += 0.5
+		# arc-4 iter 200 (Round 23 Phase 4): DEFAULT cards
+		UpgradeCatalogT.CardKind.FASTER_RELOAD:
+			# Mirrors the iter-92 P0-2 path used by _apply_level_boost.
+			_reload_reduction += RELOAD_STEP
+			if has_node("GunTimer"):
+				var gt3: Timer = $GunTimer
+				var arch_base: float = MORTAR_GUN_COOLDOWN * _mortar_cooldown_mult if archetype == TankArchetype.MORTAR else _base_default_gun_wait_time
+				gt3.wait_time = maxf(RELOAD_MIN, arch_base - _reload_reduction)
+		UpgradeCatalogT.CardKind.SHELL_CAP_PLUS_1:
+			if loadout != null:
+				if loadout.max_he_reserve < MAX_HE_RESERVE_CEILING:
+					loadout.max_he_reserve += 1
+				if loadout.max_heat_reserve < MAX_HEAT_RESERVE_CEILING:
+					loadout.max_heat_reserve += 1
+				if loadout.max_apcr_reserve < MAX_APCR_RESERVE_CEILING:
+					loadout.max_apcr_reserve += 1
+				loadout.refill_he(1)
+				loadout.refill_heat(1)
+				loadout.refill_apcr(1)
+		UpgradeCatalogT.CardKind.MOMENTUM:
+			# +20% move speed per pick; multiplicative; capped at 2.0.
+			# arc-4 PR-#4 P1 review fix — was previously two parallel
+			# mutations (one stored + capped in _momentum_mult; one
+			# UNCAPPED in `speed` itself), so the cap on _momentum_mult
+			# was dead code and `speed` could grow past 2× base via
+			# repeated picks. Now the multiplier is the single source of
+			# truth and _recompute_speed derives `speed` from it.
+			_momentum_mult = minf(2.0, _momentum_mult * 1.2)
+			_recompute_speed()
+		_:
+			# Defensive: silent no-op for any card not yet wired.
+			pass
+	# arc-4 iter 302: the iter-200 "LEVEL UP <label>" toast at end of
+	# _apply_card REMOVED. The iter-302 toast at top of _apply_card
+	# already shows the full UpgradeCatalog label + sentence (richer
+	# than just "LEVEL UP <label>"), so this fire was redundant and
+	# produced 2 toasts per pick. The `msg` local is still computed
+	# above for any future use within the match arms.
+
+
+func _poll_levelup_pick_input() -> void:
+	if Input.is_physical_key_pressed(KEY_1):
+		_pick_levelup_card(0)
+	elif Input.is_physical_key_pressed(KEY_2):
+		_pick_levelup_card(1)
+	elif Input.is_physical_key_pressed(KEY_3):
+		_pick_levelup_card(2)
+
+
+# arc-4 iter 67 (Round 9e): RAM melee swing — damage every Node2D
+# sibling in the forward semicircle within RAM_SWING_RANGE that has
+# take_damage. Sibling-distance pattern (cf. MORTAR AoE, HE blast).
+# Public so the harness drives it.
+func _ram_swing() -> void:
+	var lvl: Node = get_parent()
+	if lvl == null:
+		return
+	var origin: Vector2 = global_position
+	var dir: Vector2 = Vector2(1.0, 0.0).rotated(rotation)
+	for sibling in lvl.get_children():
+		if sibling == self:
+			continue
+		if not (sibling is Node2D):
+			continue
+		if not sibling.has_method("take_damage"):
+			continue
+		var to_target: Vector2 = (sibling as Node2D).global_position - origin
+		var forward_proj: float = to_target.dot(dir)
+		if forward_proj <= 0.0:
+			continue  # behind the tank
+		if to_target.length() > RAM_SWING_RANGE:
+			continue  # out of range
+		sibling.take_damage(RAM_SWING_DAMAGE + _ram_swing_damage_bonus)
+
+
+# arc-4 iter 116 (Round 14 Phase 2): scan the "enemy" group for the
+# closest enemy in the player's rear 90° cone within REAR_GUARD_RANGE.
+# Returns null if none. Used by the REAR_GUARD auto-defense tick in
+# _physics_process. Pure read — does not mutate state.
+func _find_rear_cone_enemy() -> Node:
+	var rear_vec: Vector2 = -Vector2(1, 0).rotated(rotation)
+	var closest: Node = null
+	var closest_d: float = REAR_GUARD_RANGE
+	for enemy in get_tree().get_nodes_in_group("enemy"):
+		if not (enemy is Node2D) or not is_instance_valid(enemy):
+			continue
+		var to_enemy: Vector2 = (enemy as Node2D).global_position - global_position
+		var dist: float = to_enemy.length()
+		if dist > REAR_GUARD_RANGE or dist < 0.1:
+			continue
+		var cos_angle: float = to_enemy.normalized().dot(rear_vec)
+		if cos_angle < REAR_GUARD_CONE_COS:
+			continue
+		if dist < closest_d:
+			closest_d = dist
+			closest = enemy
+	return closest
+
+
+# arc-4 iter 116 (Round 14 Phase 2): fire an AP shell backward (180°
+# from current facing) via the shoot signal. No shell consumed; the
+# REAR_GUARD upgrade is a free auto-defense per cooldown window.
+# Public so the harness can drive it directly.
+func _fire_rear_guard() -> void:
+	var rear_dir: int
+	match direction:
+		Constants.Dir.L: rear_dir = Constants.Dir.R
+		Constants.Dir.R: rear_dir = Constants.Dir.L
+		Constants.Dir.U: rear_dir = Constants.Dir.D
+		Constants.Dir.D: rear_dir = Constants.Dir.U
+		_: rear_dir = Constants.Dir.L
+	var rear_offset: Vector2 = -Vector2(1, 0).rotated(rotation) * 8.0
+	var spawn_pos: Vector2 = global_position + rear_offset
+	shoot.emit(Bullet, spawn_pos, rear_dir, BulletT.SHELL_CLASS_AP)
 
 
 func take_damage(amount: int) -> void:
@@ -202,6 +1638,28 @@ func take_damage(amount: int) -> void:
 	else:
 		_start_hit_flash()
 		_start_screen_shake()
+
+
+# arc-4 iter 109 (Round 12 Gap 2): receives the source taxon from
+# the damaging bullet (Bullet._on_body_entered) just before
+# take_damage. Stored in `_last_damage_source` so `_die()` can
+# stamp `run_recap.killer` with a concrete cause instead of the
+# "shell impact" placeholder. Empty string = no attribution (the
+# default; preserves "shell impact" fallback).
+func set_last_damage_source(label: String) -> void:
+	_last_damage_source = label
+
+
+# arc-4 iter 286 (Q1 sprint 3/4 per blueprint loop/breach/
+# iter-283-round24-Q1-architect.md; consult-001 Q3 verdict 0.92):
+# pass-through called by Bullet.gd._try_record_shot_hit when a shot
+# damages a body. Gated on run_recap (which is gated on loadout) so
+# arc-2/3 baseline + non-breach modes silently no-op — never touches
+# the new RunRecap dicts on the procedural path. Hash anchor preserved.
+func record_shot_hit(shell_class: int, hit_kind: String) -> void:
+	if run_recap == null:
+		return
+	run_recap.record_shot_hit(shell_class, hit_kind)
 
 
 # iter 78 (Q5 priority 4): heal called by HP pickup overlap. Clamped to max_hp.
@@ -223,28 +1681,60 @@ func heal(amount: int) -> void:
 func apply_shield(duration: float) -> void:
 	if _dead:
 		return
-	_shield_timer = max(_shield_timer, duration)  # take the longer of active/new
+	# arc-4 iter 59 (Round 8d): in breach mode the shield lasts longer —
+	# playtest-3 "make shields longer." arc-2/3 keeps the passed value.
+	var effective: float = duration
+	if loadout != null:
+		effective = maxf(duration, BREACH_SHIELD_DURATION)
+	_shield_timer = max(_shield_timer, effective)  # take the longer of active/new
 	_show_pickup_toast("SHIELD", Color(0.9, 0.9, 1.0, 1.0))
 
 
 # iter 80: brief HUD toast on pickup activation. Confirmation feedback.
 # Label spawned at top-center, fades over 1.5s, then self-frees.
+# arc-4 iter 104 (P2-B fix from code-review-iter-100): stagger Y
+# offset based on live-toast count so multi-level-up XP bursts
+# don't pile 3 toasts at the same position. Cap stagger at TOAST_
+# STAGGER_MAX (4) — beyond that, wrap to 0; concurrent toasts
+# beyond 4 are a different problem (likely a bug worth seeing).
+const TOAST_BASE_Y: float = 28.0
+const TOAST_STAGGER_PX: float = 12.0
+const TOAST_STAGGER_MAX: int = 4
 func _show_pickup_toast(text: String, color: Color) -> void:
 	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
 	if canvas == null:
 		return
 	var toast: Label = Label.new()
 	toast.text = text
-	toast.position = Vector2(140, 28)
+	# Stagger Y by counting live (non-deletion-queued) toasts on the
+	# canvas — those tagged with our metadata key. Caps at
+	# TOAST_STAGGER_MAX so the stack doesn't push off-HUD.
+	var live: int = _count_live_toasts(canvas)
+	var stagger: int = mini(live, TOAST_STAGGER_MAX)
+	toast.position = Vector2(140, TOAST_BASE_Y + float(stagger) * TOAST_STAGGER_PX)
+	toast.set_meta("is_pickup_toast", true)
 	toast.add_theme_color_override("font_color", color)
 	toast.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 	toast.add_theme_constant_override("outline_size", 2)
+	toast.z_index = HUD_Z_TOAST  # iter 298 z-index audit — always-on-top feedback
 	canvas.add_child(toast)
 	var tween: Tween = toast.create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(toast, "modulate:a", 0.0, 1.5)
 	tween.tween_property(toast, "position:y", 16.0, 1.5)
 	tween.chain().tween_callback(toast.queue_free)
+
+
+# arc-4 iter 104 (P2-B fix): count toasts on the HUD that are
+# tagged with our is_pickup_toast meta key and not queued for
+# deletion. Used to compute the stagger offset for the next toast.
+func _count_live_toasts(canvas: CanvasLayer) -> int:
+	var n: int = 0
+	for child in canvas.get_children():
+		if child is Label and child.has_meta("is_pickup_toast"):
+			if is_instance_valid(child) and not child.is_queued_for_deletion():
+				n += 1
+	return n
 
 
 # Visual damage cue (iter 19): bright red pulse + alternating alpha blink
@@ -306,8 +1796,30 @@ func _die() -> void:
 	_dead = true
 	sprite.stop()
 	velocity = Vector2.ZERO
+	# arc-4 iter 097 (P2-4 fix from code-review-iter-090): stop the
+	# PRISM beam on death so the death overlay doesn't have a beam
+	# line still drawn across the screen.
+	if archetype == TankArchetype.PRISM and _beam_line != null:
+		_stop_beam()
 	# iter 31: ascender run summary on death (Pro Consult 005 H4)
 	var depth: int = int(maxf(0.0, (_start_y - _min_y_reached) / 16.0))
+	# arc-4: capture death attribution. Passes the killing BreachBand
+	# object from the parent level's _current_breach_band (set by
+	# ProceduralLevel breach mode) so the recap can name both the band
+	# and its dominant_pressure. null when absent.
+	# arc-4 iter 108: hoist `band` out of the run_recap block so the
+	# death-label verdict path (below) can also read its canonical_answer.
+	var band = null
+	var lvl: Node = get_parent()
+	if lvl != null and "_current_breach_band" in lvl:
+		band = lvl._current_breach_band
+	if run_recap != null:
+		# arc-4 iter 109 (Round 12 Gap 2): stamp the killer from the
+		# last damage event's source taxon. Empty fallback preserves the
+		# placeholder so the verdict still reads cleanly.
+		if not _last_damage_source.is_empty():
+			run_recap.killer = _last_damage_source
+		run_recap.capture_death(depth, band, loadout)
 	var t: int = int(_run_time)
 	var ascent_rate: float = 0.0
 	if _run_time > 0.0:
@@ -355,7 +1867,30 @@ func _die() -> void:
 			best_time_line = "\n* NEW BEST TIME!  (was %d:%02d)" % [prior_best_time / 60, prior_best_time % 60]
 		else:
 			best_time_line = "\nBEST TIME %d:%02d" % [prior_best_time / 60, prior_best_time % 60]
-		_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nCANCELS %d\nSTALL %d%%%s%s" % [depth, t / 60, t % 60, kills, aim_cancels, int(stall_pct), best_line, best_time_line]
+		# arc-4 iter 108 (Round 12 γ, substrate write ×42): the death
+		# overlay now shows the RunRecap verdict sentence (constraint-6-
+		# shaped diagnosis) + a compact ASCENDER footer. In arc-2/3 modes
+		# (run_recap == null), the iter-43 ASCENDER block is preserved
+		# bit-identical — keeps the procedural baseline + OG mode HUD
+		# behaviour untouched.
+		if run_recap != null:
+			var canonical: String = ""
+			if band != null and "canonical_answer" in band:
+				canonical = String(band.canonical_answer)
+			var verdict: String = run_recap.verdict_sentence(canonical)
+			# arc-4 iter 291 (consult-001 Q3 verdict 0.92): splice
+			# route-currency summary between verdict + footer when
+			# any route/combat hits were recorded. Empty when no
+			# hits (e.g. died before firing) — keeps panel tight.
+			var route_summary: String = run_recap.route_currency_summary()
+			var route_block: String = ("\n\n" + route_summary) \
+					if not route_summary.is_empty() else ""
+			_death_label.text = "YOU DIED\n\n%s%s\n\nDEPTH %d · TIME %d:%02d · KILLS %d%s%s" % [
+				verdict, route_block, depth, t / 60, t % 60, kills,
+				best_line, best_time_line,
+			]
+		else:
+			_death_label.text = "YOU DIED\n\nDEPTH %d\nTIME %d:%02d\nKILLS %d\nCANCELS %d\nSTALL %d%%%s%s" % [depth, t / 60, t % 60, kills, aim_cancels, int(stall_pct), best_line, best_time_line]
 		_death_label.visible = true
 	if _death_panel != null:
 		_death_panel.visible = true
@@ -367,6 +1902,57 @@ func _die() -> void:
 		_restart_hint_tween = create_tween().set_loops()
 		_restart_hint_tween.tween_property(_restart_hint_label, "modulate:a", 0.35, 0.6)
 		_restart_hint_tween.tween_property(_restart_hint_label, "modulate:a", 1.0, 0.6)
+	# arc-4 iter 78 (Round 10 Phase 3): breach-mode playtest prompt
+	# visible only when both dead and breach mode (loadout != null,
+	# which is implied by the prompt nodes being non-null since they
+	# are only built under that gate in _setup_hud).
+	if _breach_prompt_panel != null:
+		_breach_prompt_panel.visible = true
+	if _breach_prompt_label != null:
+		# arc-4 iter 83 (Round 11 Phase 1 continuation): append the
+		# band-visit sequence to the prompt label so the user sees
+		# the actual run-shape next to the reflection questions.
+		# Per CONSULT 009 — band-shape distinctness is the open
+		# axis; the visible sequence anchors the user's recall.
+		# arc-4 iter 123 (Round 17 BUILD-QUALITY, Gap 5 from iter-106):
+		# REPLACE the generic playtest prompt with an auto-generated
+		# regret-quote candidate when one is available (dry-on-shell
+		# signal present). Falls back to the iter-78 generic prompt
+		# when no signal. Loadout-gated entire block.
+		var regret: String = ""
+		if run_recap != null:
+			var rb = null
+			if lvl != null and "_current_breach_band" in lvl:
+				rb = lvl._current_breach_band
+			var rc: String = ""
+			if rb != null and "canonical_answer" in rb:
+				rc = String(rb.canonical_answer)
+			regret = run_recap.regret_quote_candidate(rc)
+		var prompt_text: String
+		if not regret.is_empty():
+			prompt_text = "— playtest prompt —\n" + regret
+		else:
+			prompt_text = "— playtest prompt —\nwhich moment did you regret?  right archetype?  would switching help?"
+		# arc-4 iter 121 (Round 16 BUILD-QUALITY, Gap 4 from iter-106):
+		# replace the simple "bands visited" line with the route-diff
+		# clause that names BOTH the visited path AND the path-not-
+		# taken — strongest constraint-6 form for ROUTE attribution.
+		# Falls back to the iter-83 simple line if route data missing.
+		if run_recap != null and run_recap.band_visit_log.size() > 0:
+			var route_names: Array = []
+			for b in _route_bands:
+				if "band_name" in b:
+					route_names.append(String(b.band_name))
+			var diff: String = run_recap.route_diff_clause(route_names)
+			if not diff.is_empty():
+				prompt_text += "\n" + diff
+			else:
+				var seq_names: Array = []
+				for v in run_recap.band_visit_log:
+					seq_names.append(String(v["band"]))
+				prompt_text += "\nbands visited: %s" % " > ".join(seq_names)
+		_breach_prompt_label.text = prompt_text
+		_breach_prompt_label.visible = true
 	died.emit()
 
 
@@ -481,11 +2067,16 @@ func _setup_hud() -> void:
 	canvas.add_child(_hp_bar_fg)
 	_hp_label = Label.new()
 	_hp_label.name = "HPLabel"
-	_hp_label.position = Vector2(4, 10)  # iter 49: moved below bar
+	_hp_label.position = Vector2(4, 11)  # iter 49: moved below bar; iter 299: tightened to font_size 8
 	_hp_label.text = "HP %d/%d" % [hp, max_hp]
 	_hp_label.add_theme_color_override("font_color", Color.WHITE)
 	_hp_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 	_hp_label.add_theme_constant_override("outline_size", 2)
+	# iter 299 typography pass: was rendering at Godot default 16pt,
+	# overlapping the reload bar (y=24) AND the LVL label (x=44, y=2).
+	# 8pt matches the shell-chip labels + breach prompt + level label
+	# (which was already 9pt). Compact HUD is the convention.
+	_hp_label.add_theme_font_size_override("font_size", 8)
 	canvas.add_child(_hp_label)
 	# iter 71 (F011 typography): dark semi-transparent backing panel behind
 	# death label improves readability against any terrain. Larger font_size
@@ -496,6 +2087,7 @@ func _setup_hud() -> void:
 	_death_panel.size = Vector2(208, 130)
 	_death_panel.color = Color(0.0, 0.0, 0.0, 0.65)  # dark semi-transparent
 	_death_panel.visible = false
+	_death_panel.z_index = HUD_Z_DEATH  # iter 298 z-index audit
 	canvas.add_child(_death_panel)
 	_death_label = Label.new()
 	_death_label.name = "DeathLabel"
@@ -509,6 +2101,7 @@ func _setup_hud() -> void:
 	_death_label.add_theme_constant_override("outline_size", 2)
 	_death_label.add_theme_font_size_override("font_size", 12)
 	_death_label.visible = false
+	_death_label.z_index = HUD_Z_DEATH  # iter 298
 	canvas.add_child(_death_label)
 	# iter 76: separate pulsing [R] RESTART hint (Q3 polish)
 	_restart_hint_label = Label.new()
@@ -521,7 +2114,36 @@ func _setup_hud() -> void:
 	_restart_hint_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 	_restart_hint_label.add_theme_constant_override("outline_size", 2)
 	_restart_hint_label.visible = false
+	_restart_hint_label.z_index = HUD_Z_DEATH  # iter 298
 	canvas.add_child(_restart_hint_label)
+	# arc-4 iter 78 (Round 10 Phase 3): breach-mode playtest prompt
+	# panel — gated on loadout != null (the established breach-mode
+	# gate). Arc-2/3 unaffected. Three structured questions focus
+	# the user on the open C15 anchor 5 / identity-vs-weapons axis
+	# per Consult 008.
+	if loadout != null:
+		_breach_prompt_panel = ColorRect.new()
+		_breach_prompt_panel.name = "BreachPromptPanel"
+		_breach_prompt_panel.position = Vector2(24, 192)
+		_breach_prompt_panel.size = Vector2(272, 56)  # iter 83: +12 for band-visit line
+		_breach_prompt_panel.color = Color(0.0, 0.0, 0.0, 0.65)
+		_breach_prompt_panel.visible = false
+		_breach_prompt_panel.z_index = HUD_Z_DEATH  # iter 298 — same layer as death overlay
+		canvas.add_child(_breach_prompt_panel)
+		_breach_prompt_label = Label.new()
+		_breach_prompt_label.name = "BreachPromptLabel"
+		_breach_prompt_label.position = Vector2(32, 196)
+		_breach_prompt_label.size = Vector2(256, 48)  # iter 83: +12 for band-visit line
+		_breach_prompt_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_breach_prompt_label.text = "— playtest prompt —\nwhich moment did you regret?  right archetype?  would switching help?"
+		_breach_prompt_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_breach_prompt_label.add_theme_color_override("font_color", Color(0.85, 0.95, 1.0))
+		_breach_prompt_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		_breach_prompt_label.add_theme_constant_override("outline_size", 2)
+		_breach_prompt_label.add_theme_font_size_override("font_size", 8)
+		_breach_prompt_label.visible = false
+		_breach_prompt_label.z_index = HUD_Z_DEATH  # iter 298 — same layer as death overlay
+		canvas.add_child(_breach_prompt_label)
 	# Roguelike ascender HUD (iter 11) — top-right.
 	# iter 019 (F003 fix): gated on show_ascender_hud. When false (OG mode),
 	# _depth_label / _time_label stay null; _update_run_hud already null-checks,
@@ -535,17 +2157,728 @@ func _setup_hud() -> void:
 		_depth_label.add_theme_color_override("font_color", Color.WHITE)
 		_depth_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 		_depth_label.add_theme_constant_override("outline_size", 2)
+		_depth_label.add_theme_font_size_override("font_size", 8)  # iter 299
 		canvas.add_child(_depth_label)
 		_time_label = Label.new()
 		_time_label.name = "TimeLabel"
-		_time_label.position = Vector2(232, 16)
+		_time_label.position = Vector2(232, 14)  # iter 299: tightened spacing 16→14
 		_time_label.text = "TIME 0:00"
 		_time_label.add_theme_color_override("font_color", Color.WHITE)
 		_time_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 		_time_label.add_theme_constant_override("outline_size", 2)
+		_time_label.add_theme_font_size_override("font_size", 8)  # iter 299
 		canvas.add_child(_time_label)
+	# arc-4 iter 35-36: breach-mode shell panel + run-start codex. Gated
+	# on loadout != null so arc-2/3 HUD is bit-identical (neither built).
+	if loadout != null:
+		# iter 300 (user feedback #3): _build_shell_panel REMOVED — the
+		# legacy 316×26 bottom tray at y=209 is replaced by the iter-276
+		# shell chips relocated to bottom-center (WoT-style). Labels now
+		# carry shell-name + reserve like the tray did.
+		_build_shell_codex(canvas)
+		_build_reload_bar(canvas)
+		_build_shell_chips(canvas)
+		_build_active_cards_ribbon(canvas)
+		# arc-4 iter 292 reload-pip (consult-001 conf 0.84) REMOVED iter 297
+		# per user playtest feedback ("I don't think the reload bar should
+		# stay with my tank"). The consult prediction will score as "miss"
+		# on the tank-adjacent placement. Top-left bar remains as the
+		# sole reload readout for now; iter-298 may move it bottom-center
+		# (WoT convention) per user feedback #3.
+		# arc-4 iter 42 (Round 6d, stakes): the live best-depth readout —
+		# the depth chase, always visible (not just on the death recap).
+		_run_best_depth = _load_best_depth()
+		_best_label = Label.new()
+		_best_label.name = "BestLabel"
+		_best_label.position = Vector2(232, 24)  # iter 299: tightened 28→24
+		_best_label.text = "BEST %d" % _run_best_depth
+		_best_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.5, 1.0))
+		_best_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		_best_label.add_theme_constant_override("outline_size", 2)
+		_best_label.add_theme_font_size_override("font_size", 8)  # iter 299
+		canvas.add_child(_best_label)
+		# arc-4 iter 275 (Round 24 Phase A widget 3): speed meter — top-right
+		# column, under BEST. Shows current speed normalized to BC baseline
+		# (32). Reflects RAM init, MOMENTUM card, and OVERDRIVE burst.
+		_speed_label = Label.new()
+		_speed_label.name = "SpeedLabel"
+		_speed_label.position = Vector2(232, 34)  # iter 299: tightened 40→34
+		_speed_label.text = "SPD 1.0×"
+		_speed_label.add_theme_color_override("font_color", Color(0.65, 0.95, 0.65, 1.0))
+		_speed_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		_speed_label.add_theme_constant_override("outline_size", 2)
+		_speed_label.add_theme_font_size_override("font_size", 8)  # iter 299
+		canvas.add_child(_speed_label)
+		# arc-4 iter 56 (Round 8a): XP bar + level readout — the visible
+		# roguelite progression beat (playtest-3). Top strip, right of HP.
+		_level_label = Label.new()
+		_level_label.name = "LevelLabel"
+		_level_label.position = Vector2(44, 2)
+		_level_label.text = "LVL 1"
+		_level_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.4, 1.0))
+		_level_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		_level_label.add_theme_constant_override("outline_size", 2)
+		_level_label.add_theme_font_size_override("font_size", 8)  # iter 299: was 9
+		canvas.add_child(_level_label)
+		_xp_bar_bg = ColorRect.new()
+		_xp_bar_bg.name = "XPBarBG"
+		_xp_bar_bg.position = Vector2(44, 14)
+		_xp_bar_bg.size = Vector2(90, 4)
+		_xp_bar_bg.color = Color(0.15, 0.15, 0.18, 0.85)
+		canvas.add_child(_xp_bar_bg)
+		_xp_bar_fg = ColorRect.new()
+		_xp_bar_fg.name = "XPBarFG"
+		_xp_bar_fg.position = Vector2(45, 15)
+		_xp_bar_fg.size = Vector2(0, 2)
+		_xp_bar_fg.color = Color(1.0, 0.85, 0.3, 1.0)
+		canvas.add_child(_xp_bar_fg)
+		# arc-4 iter 59 (Round 8d): shield indicator — visible only while
+		# a shield is active (toggled in _physics_process).
+		_shield_label = Label.new()
+		_shield_label.name = "ShieldLabel"
+		_shield_label.position = Vector2(44, 24)
+		_shield_label.text = "SHIELD"
+		_shield_label.add_theme_color_override("font_color", Color(0.7, 0.85, 1.0, 1.0))
+		_shield_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		_shield_label.add_theme_constant_override("outline_size", 2)
+		_shield_label.add_theme_font_size_override("font_size", 8)
+		_shield_label.visible = false
+		canvas.add_child(_shield_label)
 	add_child(canvas)
 	hp_changed.connect(_on_hp_changed_hud)
+
+
+# arc-4 iter 30: render the shell HUD line. Shell-class index → name.
+func _shell_name(sc: int) -> String:
+	if sc == BulletT.SHELL_CLASS_HE:
+		return "HE"
+	if sc == BulletT.SHELL_CLASS_HEAT:
+		return "HEAT"
+	if sc == BulletT.SHELL_CLASS_APCR:
+		return "APCR"
+	return "AP"
+
+
+# arc-4 iter 35: per-shell HUD colour — matches the Bullet.gd in-flight
+# modulate so the panel chip and the airborne shell read as one thing.
+func _shell_color(sc: int) -> Color:
+	if sc == BulletT.SHELL_CLASS_HE:
+		return Color(1.0, 0.85, 0.25, 1.0)
+	if sc == BulletT.SHELL_CLASS_HEAT:
+		return Color(1.0, 0.35, 0.25, 1.0)
+	if sc == BulletT.SHELL_CLASS_APCR:
+		return Color(0.6, 0.85, 1.0, 1.0)
+	return Color(0.92, 0.92, 0.95, 1.0)  # AP — pale steel
+
+
+# arc-4 iter 35: finite reserve for a shell class. AP is unlimited → 0
+# here; the panel renders AP as "--" rather than a count.
+func _shell_reserve(sc: int) -> int:
+	if loadout == null:
+		return 0
+	if sc == BulletT.SHELL_CLASS_HE:
+		return loadout.he_reserve
+	if sc == BulletT.SHELL_CLASS_HEAT:
+		return loadout.heat_reserve
+	if sc == BulletT.SHELL_CLASS_APCR:
+		return loadout.apcr_reserve
+	return 0
+
+
+# arc-4 iter 274 (Round 24 Phase A widget 2): reload bar. Linear bar
+# under HP, fills 0→100% as GunTimer cools down; fg color matches the
+# current shell (reuses _shell_color so the chrome reads continuous
+# with the in-flight bullet). Caller gates on loadout != null, so
+# arc-2/3 HUD is bit-identical (bar never built).
+const RELOAD_BAR_BG_X: float = 3.0
+const RELOAD_BAR_BG_Y: float = 24.0
+const RELOAD_BAR_BG_W: float = 40.0
+const RELOAD_BAR_BG_H: float = 4.0
+const RELOAD_BAR_INSET: float = 1.0
+func _build_reload_bar(canvas: CanvasLayer) -> void:
+	_reload_bar_bg = ColorRect.new()
+	_reload_bar_bg.name = "ReloadBarBG"
+	_reload_bar_bg.position = Vector2(RELOAD_BAR_BG_X, RELOAD_BAR_BG_Y)
+	_reload_bar_bg.size = Vector2(RELOAD_BAR_BG_W, RELOAD_BAR_BG_H)
+	_reload_bar_bg.color = Color(0.07, 0.07, 0.09, 0.82)
+	canvas.add_child(_reload_bar_bg)
+	_reload_bar_fg = ColorRect.new()
+	_reload_bar_fg.name = "ReloadBarFG"
+	_reload_bar_fg.position = Vector2(
+		RELOAD_BAR_BG_X + RELOAD_BAR_INSET,
+		RELOAD_BAR_BG_Y + RELOAD_BAR_INSET)
+	_reload_bar_fg.size = Vector2(
+		RELOAD_BAR_BG_W - 2.0 * RELOAD_BAR_INSET,
+		RELOAD_BAR_BG_H - 2.0 * RELOAD_BAR_INSET)
+	_reload_bar_fg.color = _shell_color(current_shell)
+	canvas.add_child(_reload_bar_fg)
+
+
+# arc-4 iter 278 (Round 24 Phase A widget 4 v1): build the active-cards
+# ribbon at bottom-left. Pre-allocates ACTIVE_CARDS_MAX_VISIBLE chip
+# slots — each starts hidden. _update_active_cards_ribbon flips
+# visibility + writes label/color as `_applied_cards` grows.
+func _build_active_cards_ribbon(canvas: CanvasLayer) -> void:
+	_active_cards_panel = ColorRect.new()
+	_active_cards_panel.name = "ActiveCardsPanel"
+	_active_cards_panel.position = Vector2(ACTIVE_CARDS_X - 1.0, ACTIVE_CARDS_Y - 1.0)
+	var total_w: float = float(ACTIVE_CARDS_MAX_VISIBLE) \
+			* (ACTIVE_CARD_CHIP_W + ACTIVE_CARD_CHIP_GAP)
+	_active_cards_panel.size = Vector2(total_w, ACTIVE_CARD_CHIP_H + 2.0)
+	_active_cards_panel.color = Color(0.04, 0.04, 0.06, 0.6)
+	_active_cards_panel.visible = false  # only appear once a card is picked
+	_active_cards_panel.z_index = HUD_Z_RUN_CONTEXT  # iter 298 z-index audit
+	canvas.add_child(_active_cards_panel)
+	for i in ACTIVE_CARDS_MAX_VISIBLE:
+		var x: float = ACTIVE_CARDS_X + float(i) * (ACTIVE_CARD_CHIP_W + ACTIVE_CARD_CHIP_GAP)
+		var bg: ColorRect = ColorRect.new()
+		bg.position = Vector2(x, ACTIVE_CARDS_Y)
+		bg.size = Vector2(ACTIVE_CARD_CHIP_W, ACTIVE_CARD_CHIP_H)
+		bg.color = Color(0.1, 0.1, 0.12, 0.0)  # alpha 0 — hidden until populated
+		bg.visible = false
+		canvas.add_child(bg)
+		_active_cards_chip_bgs.append(bg)
+		var lbl: Label = Label.new()
+		lbl.position = Vector2(x + 2.0, ACTIVE_CARDS_Y - 1.0)
+		lbl.size = Vector2(ACTIVE_CARD_CHIP_W - 2.0, ACTIVE_CARD_CHIP_H)
+		lbl.text = ""
+		lbl.add_theme_font_size_override("font_size", 8)
+		lbl.add_theme_color_override("font_color", Color.WHITE)
+		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		lbl.add_theme_constant_override("outline_size", 2)
+		lbl.visible = false
+		canvas.add_child(lbl)
+		_active_cards_chip_labels.append(lbl)
+
+
+# arc-4 iter 280 (consult-001 H5 fix, conf 0.95): per-card 3-5 char
+# semantic token for the ribbon chip. /agentify CONSULT explicitly
+# called the prior 2-letter scheme "not parseable after 5 seconds —
+# abbreviations are recall aids, not first-read affordances." Tokens
+# below are semantic stems (verb/noun) chosen so a player reading
+# cold can guess the meaning. Pickup toast (iter 281+ planned) shows
+# the full UpgradeCatalog.label_for() name for 1-2s when card lands.
+func _card_chip_short(kind: int) -> String:
+	match kind:
+		UpgradeCatalogT.CardKind.HP_PLUS_1: return "HP"
+		UpgradeCatalogT.CardKind.HP_PLUS_2: return "HP+"
+		UpgradeCatalogT.CardKind.FASTER_RELOAD: return "RLD"
+		UpgradeCatalogT.CardKind.SHELL_CAP_PLUS_1: return "CAP"
+		UpgradeCatalogT.CardKind.MOMENTUM: return "MOVE"
+		UpgradeCatalogT.CardKind.BEAM_DPS_UP: return "BEAM"
+		UpgradeCatalogT.CardKind.BEAM_RANGE_UP: return "RNG"
+		UpgradeCatalogT.CardKind.BEAM_PIERCE: return "PIER"
+		UpgradeCatalogT.CardKind.AOE_DAMAGE_UP: return "AOE"
+		UpgradeCatalogT.CardKind.AOE_RADIUS_UP: return "RAD"
+		UpgradeCatalogT.CardKind.MORTAR_COOLDOWN_DOWN: return "CD"
+		UpgradeCatalogT.CardKind.SWING_DAMAGE_UP: return "SWNG"
+		UpgradeCatalogT.CardKind.COLLISION_DAMAGE_UP: return "COL"
+		UpgradeCatalogT.CardKind.SPRINT_DURATION_UP: return "SPRT"
+	return "?"
+
+
+# arc-4 iter 278: per-card category color. HP=green; DEFAULT=AP-pale;
+# PRISM=cyan (APCR-like); MORTAR=warm yellow (HE-like); RAM=warm red
+# (HEAT-like). Aligns with the shell-color palette so the player reads
+# "this chip belongs to my archetype family" at a glance.
+func _card_chip_color(kind: int) -> Color:
+	match kind:
+		UpgradeCatalogT.CardKind.HP_PLUS_1, UpgradeCatalogT.CardKind.HP_PLUS_2:
+			return Color(0.3, 0.9, 0.4, 1.0)
+		UpgradeCatalogT.CardKind.BEAM_DPS_UP, UpgradeCatalogT.CardKind.BEAM_RANGE_UP, \
+				UpgradeCatalogT.CardKind.BEAM_PIERCE:
+			return Color(0.6, 0.85, 1.0, 1.0)
+		UpgradeCatalogT.CardKind.AOE_DAMAGE_UP, UpgradeCatalogT.CardKind.AOE_RADIUS_UP, \
+				UpgradeCatalogT.CardKind.MORTAR_COOLDOWN_DOWN:
+			return Color(1.0, 0.85, 0.25, 1.0)
+		UpgradeCatalogT.CardKind.SWING_DAMAGE_UP, \
+				UpgradeCatalogT.CardKind.COLLISION_DAMAGE_UP, \
+				UpgradeCatalogT.CardKind.SPRINT_DURATION_UP:
+			return Color(1.0, 0.35, 0.25, 1.0)
+	return Color(0.92, 0.92, 0.95, 1.0)  # DEFAULT pool — AP-pale
+
+
+# arc-4 iter 278: refresh chip visibility/label/color from _applied_cards.
+# Shows up to ACTIVE_CARDS_MAX_VISIBLE chips; overflow is silently capped
+# (V2 with /agentify icons can add a "+N more" indicator).
+func _update_active_cards_ribbon() -> void:
+	if _active_cards_panel == null:
+		return
+	_active_cards_panel.visible = not _applied_cards.is_empty()
+	var shown: int = mini(_applied_cards.size(), ACTIVE_CARDS_MAX_VISIBLE)
+	for i in ACTIVE_CARDS_MAX_VISIBLE:
+		var bg: ColorRect = _active_cards_chip_bgs[i]
+		var lbl: Label = _active_cards_chip_labels[i]
+		if i < shown:
+			var kind: int = _applied_cards[i]
+			bg.visible = true
+			bg.color = _card_chip_color(kind)
+			lbl.visible = true
+			lbl.text = _card_chip_short(kind)
+		else:
+			bg.visible = false
+			lbl.visible = false
+
+
+# arc-4 iter 276 (Round 24 Phase A widget 1 v1): build the top-left
+# shell chip row. 4 slots — one per shell class — each a small bg
+# ColorRect plus a compact label. The selected chip renders at full
+# shell-color saturation; non-selected chips dim to ~35% so the
+# active class reads at a glance. Caller gates on loadout != null.
+func _build_shell_chips(canvas: CanvasLayer) -> void:
+	var classes: Array[int] = [
+		BulletT.SHELL_CLASS_AP, BulletT.SHELL_CLASS_HE,
+		BulletT.SHELL_CLASS_HEAT, BulletT.SHELL_CLASS_APCR,
+	]
+	_shell_chips_panel = ColorRect.new()
+	_shell_chips_panel.name = "ShellChipsPanel"
+	_shell_chips_panel.position = Vector2(SHELL_CHIPS_X - 1.0, SHELL_CHIPS_Y - 1.0)
+	var total_w: float = float(classes.size()) * (SHELL_CHIP_W + SHELL_CHIP_GAP)
+	_shell_chips_panel.size = Vector2(total_w, SHELL_CHIP_H + 2.0)
+	# iter 300: use SHELL_PANEL_BG_DEFAULT so _flash_shell_panel_reject's
+	# fade target matches the actual base color (the constants now apply
+	# to the chips panel since the legacy _shell_panel is removed).
+	_shell_chips_panel.color = SHELL_PANEL_BG_DEFAULT
+	canvas.add_child(_shell_chips_panel)
+	for i in classes.size():
+		var x: float = SHELL_CHIPS_X + float(i) * (SHELL_CHIP_W + SHELL_CHIP_GAP)
+		var bg: ColorRect = ColorRect.new()
+		bg.position = Vector2(x, SHELL_CHIPS_Y)
+		bg.size = Vector2(SHELL_CHIP_W, SHELL_CHIP_H)
+		bg.color = _shell_color(classes[i])
+		canvas.add_child(bg)
+		_shell_chip_bgs.append(bg)
+		var lbl: Label = Label.new()
+		lbl.position = Vector2(x + 2.0, SHELL_CHIPS_Y - 1.0)
+		lbl.size = Vector2(SHELL_CHIP_W - 2.0, SHELL_CHIP_H)
+		lbl.text = "AP" if classes[i] == BulletT.SHELL_CLASS_AP else "0"
+		lbl.add_theme_font_size_override("font_size", 8)
+		lbl.add_theme_color_override("font_color", Color.WHITE)
+		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		lbl.add_theme_constant_override("outline_size", 2)
+		canvas.add_child(lbl)
+		_shell_chip_labels.append(lbl)
+
+
+# arc-4 iter 276 (chip update) — iter 300 reworked for WoT bottom-center
+# placement. Labels now show shell-name + reserve count (matching the
+# legacy tray that this replaces): "AP --" / "HE 6" / "HEAT 3" / "APCR 4".
+# Selected = full saturation; others = dimmed. Out-of-reserve dims the
+# whole chip alpha so the player sees which shells are empty.
+func _update_shell_chips() -> void:
+	if _shell_chip_bgs.is_empty():
+		return
+	var classes: Array[int] = [
+		BulletT.SHELL_CLASS_AP, BulletT.SHELL_CLASS_HE,
+		BulletT.SHELL_CLASS_HEAT, BulletT.SHELL_CLASS_APCR,
+	]
+	for i in classes.size():
+		var sc: int = classes[i]
+		var bg: ColorRect = _shell_chip_bgs[i]
+		var base: Color = _shell_color(sc)
+		if sc == current_shell:
+			bg.color = base
+		else:
+			bg.color = Color(base.r * 0.35, base.g * 0.35, base.b * 0.35, 0.85)
+		if sc == BulletT.SHELL_CLASS_AP:
+			_shell_chip_labels[i].text = "AP --"
+		else:
+			_shell_chip_labels[i].text = "%s %d" % [_shell_name(sc), _shell_reserve(sc)]
+		# iter 300: dim chip when reserve is empty (shell unavailable).
+		var dim: float = 1.0
+		if loadout != null and not loadout.can_fire(sc):
+			dim = 0.4
+		_shell_chip_labels[i].modulate.a = dim
+
+
+# arc-4 iter 292 reload-pip helpers REMOVED iter 297 — user playtest
+# rejected the tank-adjacent placement.
+
+
+# arc-4 iter 298 (z-index audit per user feedback #2): explicit HUD-layer
+# stacking constants so popups don't depend on insertion order.
+# Doc: loop/breach/iter-298-z-index-audit.md
+#   HUD_Z_BASE        — HP bar, reload bar, shell chips, ascender, speed, level/XP
+#   HUD_Z_RUN_CONTEXT — route panel, active-cards ribbon, legacy shell tray
+#   HUD_Z_INFO        — shell codex (run-start primer)
+#   HUD_Z_MODAL       — archetype pick, levelup pick, depot panel
+#   HUD_Z_DEATH       — death panel/label/restart hint/breach prompt
+#   HUD_Z_BANNER      — band-arrival banner (transient confirmation)
+#   HUD_Z_TOAST       — pickup toasts (transient feedback always reaches player)
+const HUD_Z_BASE: int = 0
+const HUD_Z_RUN_CONTEXT: int = 1
+const HUD_Z_INFO: int = 10
+const HUD_Z_MODAL: int = 20
+const HUD_Z_DEATH: int = 30
+const HUD_Z_BANNER: int = 35
+const HUD_Z_TOAST: int = 40
+
+
+# arc-4 iter 275: per-frame text update for the speed meter. Computes
+# effective speed = base speed × overdrive_mult (if burst active),
+# divides by SPEED_BASELINE (32 = BC default), formats one-decimal ratio.
+# Color shifts yellow when boosted ≥ 1.5×, cyan during overdrive.
+func _update_speed_meter() -> void:
+	if _speed_label == null:
+		return
+	var effective: float = float(speed)
+	var overdriving: bool = _overdrive_timer > 0.0
+	if overdriving:
+		effective *= overdrive_mult
+	var ratio: float = effective / SPEED_BASELINE
+	_speed_label.text = "SPD %.1f×" % ratio
+	if overdriving:
+		_speed_label.add_theme_color_override("font_color", Color(0.55, 0.95, 1.0, 1.0))
+	elif ratio >= 1.5:
+		_speed_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.4, 1.0))
+	else:
+		_speed_label.add_theme_color_override("font_color", Color(0.65, 0.95, 0.65, 1.0))
+
+
+# arc-4 iter 274 (rewired iter 297 per user playtest feedback #4):
+# progress is now driven by _last_fire_time + wait_time, NOT
+# GunTimer.time_left. The GunTimer is one_shot=false by default in
+# PlayerTank.tscn — so after the cooldown elapses it RESTARTS, making
+# time_left repeatedly cycle nonzero → bar reads "filling" forever.
+# can_shoot stays true so gameplay was unaffected, but the visual
+# read as "the reload bar is looping on its own." Driving from
+# _last_fire_time (a monotonic stamp) gives a clean fill-to-ready
+# behavior: progress 0 at fire, 1 at wait_time elapsed, stays at 1
+# until the NEXT fire.
+func _update_reload_bar() -> void:
+	if _reload_bar_fg == null:
+		return
+	var progress: float = 1.0
+	if has_node("GunTimer"):
+		var gt: Timer = $GunTimer
+		var elapsed: float = (Time.get_ticks_msec() / 1000.0) - _last_fire_time
+		if elapsed < gt.wait_time and elapsed >= 0.0 and gt.wait_time > 0.0:
+			progress = clampf(elapsed / gt.wait_time, 0.0, 1.0)
+	var max_w: float = RELOAD_BAR_BG_W - 2.0 * RELOAD_BAR_INSET
+	_reload_bar_fg.size.x = max_w * progress
+	_reload_bar_fg.color = _shell_color(current_shell)
+
+
+# arc-4 iter 35 _build_shell_panel REMOVED iter 300 — replaced by the
+# iter-276 shell chips relocated to bottom-center (user feedback #3).
+
+
+# arc-4 iter 102 (P1-D fix from code-review-iter-100): a brief
+# warm-orange flash on the shell-panel BG when `_fire` is rejected
+# because `_swap_cooldown > 0`. Preserves the iter-27 swap-cost
+# reload-beat design (constraint 7 — verbs over passive stats), only
+# fixes the silent-input-drop UX failure (player would otherwise
+# read the rejection as a broken input). Tween fades back to default
+# over SHELL_PANEL_REJECT_FADE_S (~0.18s).
+func _flash_shell_panel_reject() -> void:
+	# iter 300: legacy _shell_panel removed; retarget the reject-flash
+	# to the bottom-center chips panel (the iter-276 _shell_chips_panel).
+	# Same warm-orange flash + same fade duration, just on the new home.
+	if _shell_chips_panel == null:
+		return
+	_shell_chips_panel.color = SHELL_PANEL_BG_REJECTED
+	var t: Tween = _shell_chips_panel.create_tween()
+	t.tween_property(_shell_chips_panel, "color", SHELL_PANEL_BG_DEFAULT,
+		SHELL_PANEL_REJECT_FADE_S)
+
+
+# arc-4 iter 35 _update_shell_panel REMOVED iter 300 — replaced by
+# _update_shell_chips (iter 276, relocated to bottom-center iter 300).
+# Reserve-count + selection-highlight + out-of-reserve dimming logic
+# now lives in the chips updater.
+
+
+# arc-4 iter 36: any movement / fire / shell-swap key — used to dismiss
+# the shell codex overlay once the player starts playing.
+func _any_gameplay_input() -> bool:
+	return Input.is_action_pressed("ui_up") or Input.is_action_pressed("ui_down") \
+		or Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right") \
+		or Input.is_action_pressed("ui_accept") \
+		or Input.is_physical_key_pressed(KEY_TAB)
+
+
+# arc-4 iter 36: hide the shell codex. Called on first gameplay input;
+# public so the harness can dismiss it without synthesising input.
+func _dismiss_codex() -> void:
+	if _shell_codex != null:
+		_shell_codex.visible = false
+	# arc-4 iter 50: the route strip sits behind the codex — reveal it
+	# when the player dismisses the primer and play begins.
+	if _route_panel != null:
+		_route_panel.visible = true
+
+
+# arc-4 iter 36: a styled Label inside the codex panel.
+func _codex_line(parent: Control, text: String, pos: Vector2,
+		font_size: int, color: Color) -> void:
+	var lbl: Label = Label.new()
+	lbl.text = text
+	lbl.position = pos
+	lbl.add_theme_color_override("font_color", color)
+	lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	lbl.add_theme_constant_override("outline_size", 2)
+	lbl.add_theme_font_size_override("font_size", font_size)
+	parent.add_child(lbl)
+
+
+# arc-4 iter 36 (Round 5, playtest findings 2-3 — "no tutorial" + "I
+# don't understand when to use which shell"): the shell codex. A
+# one-screen primer shown at the start of a breach run — the breach-
+# economy framing + each shell's one-line role. Dismissed by the first
+# gameplay input (_physics_process). Gated on loadout != null by the
+# caller, so arc-2/3 never builds it.
+func _build_shell_codex(canvas: CanvasLayer) -> void:
+	_shell_codex = ColorRect.new()
+	_shell_codex.name = "ShellCodex"
+	_shell_codex.position = Vector2(28, 26)
+	_shell_codex.size = Vector2(264, 206)
+	_shell_codex.color = Color(0.05, 0.05, 0.08, 0.96)
+	_shell_codex.z_index = HUD_Z_INFO  # iter 298 z-index audit
+	canvas.add_child(_shell_codex)
+	_codex_line(_shell_codex, "BREACH ECONOMY", Vector2(12, 8), 13,
+		Color(1.0, 0.95, 0.6, 1.0))
+	_codex_line(_shell_codex, "Shells are finite. Spend them to open the next lane.",
+		Vector2(12, 27), 8, Color(0.82, 0.84, 0.9, 1.0))
+	var rows: Array = [
+		[BulletT.SHELL_CLASS_AP, "AP - cheap, precise. Your default shell."],
+		[BulletT.SHELL_CLASS_HE, "HE - blast. Opens BRICK walls fast."],
+		[BulletT.SHELL_CLASS_HEAT, "HEAT - 2x vs armor. Kills ARMORED heavies."],
+		[BulletT.SHELL_CLASS_APCR, "APCR - the only shell that breaches STEEL."],
+	]
+	for i in rows.size():
+		var row_y: float = 48.0 + float(i) * 29.0
+		var chip: ColorRect = ColorRect.new()
+		chip.position = Vector2(14, row_y + 3.0)
+		chip.size = Vector2(10, 10)
+		chip.color = _shell_color(rows[i][0])
+		_shell_codex.add_child(chip)
+		_codex_line(_shell_codex, rows[i][1], Vector2(32, row_y), 9, Color.WHITE)
+	# arc-4 iter 50 (Round 7c): run-route line — teaches that the climb
+	# is a shuffled band sequence (playtest finding 2); pairs with the
+	# persistent route strip.
+	_codex_line(_shell_codex, "ROUTE  5 depth bands; the middle 3 reshuffle each run.",
+		Vector2(12, 150), 8, Color(0.85, 0.88, 0.6, 1.0))
+	# arc-4 iter 51 (Round 7d, playtest finding 3 — "what can be
+	# unlocked?"): the meta-progression unlock ladder.
+	_build_unlock_ladder(MetaProgressT.best_depth())
+	_codex_line(_shell_codex, "TAB swaps shells.  Move or fire to begin.",
+		Vector2(12, 190), 8, Color(0.78, 0.8, 0.86, 1.0))
+
+
+# arc-4 iter 51 (Round 7d, playtest finding 3 — "what can be
+# unlocked?"): render the meta-progression unlock ladder into the shell
+# codex — a header naming the player's best depth, then one cell per
+# unlock tier (green = the best depth has reached it, dark = still
+# locked). Replaces the iter-45 single (vague) meta line. Static within
+# a run (best_depth only changes between runs), so it is built once
+# with no update path.
+func _build_unlock_ladder(best: int) -> void:
+	if _shell_codex == null:
+		return
+	_codex_line(_shell_codex,
+		"UNLOCKS  best depth %d  —  climb to earn depot options:" % best,
+		Vector2(12, 161), 8, Color(0.62, 0.82, 1.0, 1.0))
+	var ladder: Array = MetaProgressT.unlock_ladder()
+	var cell_w: float = 60.0
+	for i in ladder.size():
+		var tier: Dictionary = ladder[i]
+		var depth: int = int(tier["depth"])
+		var unlocked: bool = best >= depth
+		var cx: float = 12.0 + float(i) * cell_w
+		var cell: ColorRect = ColorRect.new()
+		cell.position = Vector2(cx, 172)
+		cell.size = Vector2(cell_w - 3.0, 13.0)
+		cell.color = Color(0.24, 0.5, 0.3, 0.92) if unlocked else Color(0.16, 0.16, 0.2, 0.92)
+		_shell_codex.add_child(cell)
+		var lbl: Label = Label.new()
+		lbl.position = Vector2(cx + 3.0, 172.0)
+		lbl.size = Vector2(cell_w - 7.0, 13.0)
+		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lbl.text = "%d %s" % [depth, String(tier["name"])]
+		var fc: Color = Color(0.96, 1.0, 0.92, 1.0) if unlocked else Color(0.58, 0.58, 0.64, 1.0)
+		lbl.add_theme_color_override("font_color", fc)
+		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		lbl.add_theme_constant_override("outline_size", 2)
+		lbl.add_theme_font_size_override("font_size", 7)
+		_shell_codex.add_child(lbl)
+
+
+# arc-4 iter 42 (Round 6d): the breach level reports a band crossing.
+func _on_breach_band_changed(band) -> void:
+	if band != null:
+		_show_band_banner(band)
+		_update_route_for_band(band)
+		# arc-4 iter 82 (Round 11 Phase 1): record the band crossing
+		# into the run recap's per-band visit log for CONSULT-009
+		# band-shape analysis.
+		# arc-4 iter 095 (P1-4 fix): the previous code overwrote
+		# run_recap.archetype on every band crossing, contradicting
+		# the documented "at run start" contract. Removed. Run-start
+		# capture lives in _ready (line ~244) and _pick_archetype
+		# (line ~769) now.
+		if run_recap != null and "band_name" in band:
+			run_recap.enter_band(String(band.band_name))
+
+
+# arc-4 iter 42 (Round 6d, stakes & escalation): the band-arrival banner.
+# When the player crosses into a new depth band, name it + its dominant
+# pressure for ~2s — each band is a new climb problem (CONSULT §9 #5)
+# and the transition is the escalation beat the run is built around.
+func _show_band_banner(band) -> void:
+	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
+	if canvas == null:
+		return
+	var nm: String = ""
+	var pressure: String = ""
+	if "band_name" in band:
+		nm = String(band.band_name).to_upper().replace("_", " ")
+	if "dominant_pressure" in band:
+		pressure = String(band.dominant_pressure)
+	# arc-4 iter 102 (P1-C fix): free any prior live banner before
+	# spawning the next. A Y-boundary-oscillating player can emit
+	# breach_band_changed every few frames; the tween's 1.3s interval
+	# + 0.9s fade meant Labels stacked on the HUD layer until the
+	# slowest tween finished. Track + free.
+	if _band_banner != null and is_instance_valid(_band_banner):
+		_band_banner.queue_free()
+	var banner: Label = Label.new()
+	banner.name = "BandBanner"
+	banner.text = "ENTERING:  %s\n%s" % [nm, pressure]
+	banner.position = Vector2(20, 58)
+	banner.size = Vector2(280, 40)
+	banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	banner.add_theme_color_override("font_color", Color(1.0, 0.95, 0.6, 1.0))
+	banner.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	banner.add_theme_constant_override("outline_size", 2)
+	banner.add_theme_font_size_override("font_size", 11)
+	banner.z_index = HUD_Z_BANNER  # iter 298 z-index audit
+	canvas.add_child(banner)
+	_band_banner = banner
+	var tween: Tween = banner.create_tween()
+	tween.tween_interval(1.3)
+	tween.tween_property(banner, "modulate:a", 0.0, 0.9)
+	tween.tween_callback(banner.queue_free)
+
+
+# arc-4 iter 50 (Round 7c): the run's ordered band list, read from the
+# breach level's (post-shuffle) breach_config. Empty when there is no
+# breach level / config — the route strip then never builds.
+func _run_band_route() -> Array:
+	var lvl: Node = get_parent()
+	if lvl == null or not ("breach_config" in lvl):
+		return []
+	var cfg = lvl.breach_config
+	if cfg == null or not ("bands" in cfg):
+		return []
+	return cfg.bands
+
+
+# arc-4 iter 50: a short, legible name for a depth band — the route
+# strip cells are ~63px wide, too narrow for the full two-word names.
+func _band_short_name(band) -> String:
+	if band == null or not ("band_name" in band):
+		return "?"
+	var raw: String = String(band.band_name)
+	var short_names: Dictionary = {
+		"tutorial_choke": "CHOKE",
+		"brick_maze": "MAZE",
+		"bunker_zone": "BUNKER",
+		"open_killbox": "KILLBOX",
+		"endgame_mixed": "ENDGAME",
+	}
+	if short_names.has(raw):
+		return short_names[raw]
+	var parts: PackedStringArray = raw.split("_", false)
+	if parts.size() > 0:
+		return String(parts[parts.size() - 1]).to_upper()
+	return raw.to_upper()
+
+
+# arc-4 iter 50 (Round 7c, playtest finding 2 — "no idea what band
+# shuffle means"): the persistent run-route strip. One cell per depth
+# band, named in THIS run's order, so the player sees the run is a
+# specific shuffled sequence — and a different one next run. Built
+# deferred (see _ready); gated on loadout != null by the caller, so
+# arc-2/3 builds nothing.
+func _build_route_strip() -> void:
+	if loadout == null:
+		return
+	var canvas: CanvasLayer = $HUD if has_node("HUD") else null
+	if canvas == null:
+		return
+	_route_bands = _run_band_route()
+	if _route_bands.is_empty():
+		return
+	_route_panel = ColorRect.new()
+	_route_panel.name = "RoutePanel"
+	_route_panel.position = Vector2(2, 195)
+	_route_panel.size = Vector2(316, 13)
+	_route_panel.color = Color(0.07, 0.07, 0.09, 0.82)
+	_route_panel.z_index = HUD_Z_RUN_CONTEXT  # iter 298 z-index audit
+	canvas.add_child(_route_panel)
+	var n: int = _route_bands.size()
+	var cell_w: float = 316.0 / float(n)
+	for i in n:
+		var bg: ColorRect = ColorRect.new()
+		bg.position = Vector2(float(i) * cell_w + 1.0, 1.0)
+		bg.size = Vector2(cell_w - 2.0, 11.0)
+		bg.color = Color(0, 0, 0, 0)
+		_route_panel.add_child(bg)
+		_route_cell_bgs.append(bg)
+		var lbl: Label = Label.new()
+		lbl.position = Vector2(float(i) * cell_w + 3.0, 0.0)
+		lbl.size = Vector2(cell_w - 6.0, 13.0)
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lbl.text = _band_short_name(_route_bands[i])
+		lbl.add_theme_color_override("font_color", Color.WHITE)
+		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+		lbl.add_theme_constant_override("outline_size", 2)
+		lbl.add_theme_font_size_override("font_size", 8)
+		_route_panel.add_child(lbl)
+		_route_cell_labels.append(lbl)
+	# initial highlight — the run starts in the level's current band.
+	var start_idx: int = 0
+	var lvl: Node = get_parent()
+	if lvl != null and "_current_breach_band" in lvl and lvl._current_breach_band != null:
+		var ci: int = _route_bands.find(lvl._current_breach_band)
+		if ci >= 0:
+			start_idx = ci
+	_highlight_route_cell(start_idx)
+	# the strip lives behind the run-start codex; revealed on dismiss.
+	_route_panel.visible = _shell_codex == null or not _shell_codex.visible
+
+
+# arc-4 iter 50: paint the route strip — cleared bands behind `idx`
+# tinted, the current band bright, bands ahead plain.
+# arc-4 iter 104 (P2-C fix from code-review-iter-100): track the
+# highest idx ever reached so cells visited then retreated-from
+# keep their "cleared" tint. Before: `i < idx` lost the cleared
+# tint on retreat; now `i <= _route_max_cleared_idx and i != idx`
+# preserves the cleared-band visual across non-monotonic Y motion.
+func _highlight_route_cell(idx: int) -> void:
+	if idx > _route_max_cleared_idx:
+		_route_max_cleared_idx = idx
+	for i in _route_cell_bgs.size():
+		if i == idx:
+			_route_cell_bgs[i].color = Color(0.95, 0.95, 0.55, 0.5)
+			_route_cell_labels[i].modulate = Color(1, 1, 1, 1)
+		elif i <= _route_max_cleared_idx:
+			_route_cell_bgs[i].color = Color(0.32, 0.55, 0.36, 0.4)
+			_route_cell_labels[i].modulate = Color(1, 1, 1, 0.6)
+		else:
+			_route_cell_bgs[i].color = Color(0, 0, 0, 0)
+			_route_cell_labels[i].modulate = Color(1, 1, 1, 0.85)
+
+
+# arc-4 iter 50: move the route-strip highlight when the player crosses
+# into a new band.
+func _update_route_for_band(band) -> void:
+	if _route_panel == null or _route_bands.is_empty():
+		return
+	var idx: int = _route_bands.find(band)
+	if idx >= 0:
+		_highlight_route_cell(idx)
 
 
 func _on_hp_changed_hud(new_hp: int, the_max_hp: int) -> void:
@@ -573,9 +2906,181 @@ func _update_run_hud() -> void:
 			var crossed: int = (depth / depth_milestone_step) * depth_milestone_step
 			_last_milestone_depth = crossed
 			_flash_depth_milestone(crossed)
+		# arc-4 iter 42: best-depth live readout — once the run passes the
+		# prior best, the label live-tracks the new record.
+		if _best_label != null:
+			if depth > _run_best_depth:
+				_best_label.text = "NEW BEST %d" % depth
+			else:
+				_best_label.text = "BEST %d" % _run_best_depth
 	if _time_label != null:
 		var t: int = int(_run_time)
 		_time_label.text = "TIME %d:%02d" % [t / 60, t % 60]
+	# arc-4 iter 35 shell-panel update REMOVED iter 300 — legacy tray gone;
+	# the iter-276 _update_shell_chips call below handles reserves now.
+	# arc-4 iter 274 (Round 24 Phase A widget 2): refresh reload bar.
+	if _reload_bar_fg != null and loadout != null:
+		_update_reload_bar()
+	# arc-4 iter 292 reload-pip update REMOVED iter 297 (user feedback #1).
+	# The pip is no longer built; null-guards in _update_reload_pip would
+	# silently no-op, but skipping the call entirely keeps the per-frame
+	# update path clean.
+	# arc-4 iter 294 (consult-001 H6 conf 0.81): pressure-fade run-context.
+	if loadout != null:
+		_update_h6_pressure_fade()
+
+
+# arc-4 iter 294: return true when the player has fired within
+# H6_PRESSURE_WINDOW_S seconds. Used to fade run-context HUD strips
+# (active-cards ribbon + route panel) during combat focus.
+func _is_high_pressure() -> bool:
+	var now: float = Time.get_ticks_msec() / 1000.0
+	return (now - _last_fire_time) < H6_PRESSURE_WINDOW_S
+
+
+# arc-4 iter 294: apply alpha modulation to the run-context HUD strips
+# (ribbon + route panel) based on pressure state. Combat-critical
+# widgets are deliberately NOT modulated — they must stay legible
+# whether or not the player is in active combat.
+func _update_h6_pressure_fade() -> void:
+	var target_alpha: float = H6_FADE_ALPHA if _is_high_pressure() else H6_FULL_ALPHA
+	if _active_cards_panel != null:
+		_active_cards_panel.modulate.a = target_alpha
+	if _route_panel != null:
+		_route_panel.modulate.a = target_alpha
+	# arc-4 iter 275 (Round 24 Phase A widget 3): refresh speed meter.
+	if _speed_label != null and loadout != null:
+		_update_speed_meter()
+	# arc-4 iter 276 (Round 24 Phase A widget 1 v1): refresh shell chips.
+	if not _shell_chip_bgs.is_empty() and loadout != null:
+		_update_shell_chips()
+	# arc-4 iter 56 (Round 8a): accrue XP from kills + depth.
+	_tick_xp()
+
+
+# arc-4 iter 56 (Round 8a): accrue XP from enemy kills + depth climbed,
+# then grant it. Breach-mode only; called every run-HUD tick.
+func _tick_xp() -> void:
+	if loadout == null:
+		return
+	var gained: int = 0
+	var depth: int = int(maxf(0.0, (_start_y - _min_y_reached) / 16.0))
+	if depth > _xp_depth_counted:
+		gained += (depth - _xp_depth_counted) * XP_PER_DEPTH_ROW
+		_xp_depth_counted = depth
+	if _spawner != null and "enemies_killed" in _spawner:
+		var kills: int = int(_spawner.enemies_killed)
+		if kills > _xp_kills_counted:
+			gained += (kills - _xp_kills_counted) * XP_PER_KILL
+			_xp_kills_counted = kills
+	_grant_xp(gained)
+
+
+# arc-4 iter 56: add XP; each threshold crossing levels up + applies an
+# automatic stat boost. Public so the harness can drive it directly.
+func _grant_xp(amount: int) -> void:
+	if amount <= 0 or loadout == null:
+		return
+	_xp += amount
+	# arc-4 PR-#4 P1 review fix — count multi-level threshold crossings
+	# rather than firing _show_levelup_pick per iteration. Auto-boost
+	# still applies per level (it's a stat mutation, not a UI flow).
+	# The pick UI is QUEUED: show the first one now, the rest as the
+	# player picks each preceding card (_pick_levelup_card → re-show).
+	var picks_this_grant: int = 0
+	while _xp >= _xp_to_next:
+		_xp -= _xp_to_next
+		_level += 1
+		_xp_to_next = XP_BASE + (_level - 1) * XP_STEP
+		_apply_level_boost(_level)
+		# arc-4 iter 200 (Round 23 Phase 4): also pop the pick UI when
+		# the feature flag is set (default false to preserve test compat).
+		# The auto-boost above is the baseline reward; the pick is a
+		# bonus card. Once playtest validates the pick experience, the
+		# auto-boost may be removed.
+		if pick_card_on_levelup:
+			picks_this_grant += 1
+	if pick_card_on_levelup and picks_this_grant > 0:
+		# Show the first pick UI now; queue the rest. Each
+		# _pick_levelup_card decrements the backlog + re-shows the next.
+		_pending_levelup_picks += picks_this_grant - 1
+		_show_levelup_pick(_level)
+	_update_xp_hud()
+
+
+# arc-4 iter 103 (P1-E + P1-F fixes from code-review-iter-100):
+# cap the level-up max-cap growth at sane ceilings so a long run
+# can't inflate max_hp / max_*_reserve without bound. Starting
+# values: max_hp=3, max_he=6, max_heat=3, max_apcr=4. Ceilings
+# chosen for ~5-7 level-ups of headroom per axis. When at ceiling,
+# the level-up still grants a refill (full heal / full reserve
+# top-up) so the boost is never a silent no-op.
+const MAX_HP_CEILING: int = 8
+const MAX_HE_RESERVE_CEILING: int = 12
+const MAX_HEAT_RESERVE_CEILING: int = 8
+const MAX_APCR_RESERVE_CEILING: int = 10
+
+
+# arc-4 iter 56: the level-up stat boost — AUTOMATIC (no mid-combat
+# modal, so CONSULT constraint 1 holds), rotated across a small legible
+# set: max HP / reload speed / shell capacity.
+func _apply_level_boost(level: int) -> void:
+	var kind: int = (level - 2) % 3  # level 2 is the first level-up
+	var msg: String = ""
+	if kind == 0:
+		# arc-4 iter 103 (P1-F fix): clamp max_hp to MAX_HP_CEILING;
+		# if at cap, fall back to full heal so the level-up still
+		# rewards the player.
+		if max_hp < MAX_HP_CEILING:
+			max_hp += 1
+			hp += 1
+			msg = "+1 MAX HP"
+		else:
+			hp = max_hp
+			msg = "FULL HEAL"
+		hp_changed.emit(hp, max_hp)
+	elif kind == 1:
+		# arc-4 iter 092 (P0-2 fix): accumulate the reload reduction
+		# in _reload_reduction (so it survives archetype switches),
+		# then derive the current GunTimer.wait_time from per-archetype
+		# base − reduction (floored at RELOAD_MIN).
+		_reload_reduction += RELOAD_STEP
+		var gt: Timer = $GunTimer
+		var arch_base: float = MORTAR_GUN_COOLDOWN * _mortar_cooldown_mult if archetype == TankArchetype.MORTAR else _base_default_gun_wait_time
+		gt.wait_time = maxf(RELOAD_MIN, arch_base - _reload_reduction)
+		msg = "FASTER RELOAD"
+	else:
+		if loadout != null:
+			# arc-4 iter 103 (P1-E fix): per-shell ceiling clamp.
+			# Each max_*_reserve only grows if below its ceiling.
+			# The refill always fires (so an at-cap player still
+			# gets a full top-up — meaningful reward).
+			var grew: int = 0
+			if loadout.max_he_reserve < MAX_HE_RESERVE_CEILING:
+				loadout.max_he_reserve += 1
+				grew += 1
+			if loadout.max_heat_reserve < MAX_HEAT_RESERVE_CEILING:
+				loadout.max_heat_reserve += 1
+				grew += 1
+			if loadout.max_apcr_reserve < MAX_APCR_RESERVE_CEILING:
+				loadout.max_apcr_reserve += 1
+				grew += 1
+			loadout.refill_he(1)
+			loadout.refill_heat(1)
+			loadout.refill_apcr(1)
+			msg = "+SHELL CAP" if grew > 0 else "+SHELL REFILL"
+		else:
+			msg = "+SHELL CAP"
+	_show_pickup_toast("LEVEL %d  %s" % [level, msg], Color(1.0, 0.9, 0.35, 1.0))
+
+
+# arc-4 iter 56: refresh the XP bar + level readout.
+func _update_xp_hud() -> void:
+	if _level_label != null:
+		_level_label.text = "LVL %d" % _level
+	if _xp_bar_fg != null and _xp_to_next > 0:
+		var ratio: float = clampf(float(_xp) / float(_xp_to_next), 0.0, 1.0)
+		_xp_bar_fg.size = Vector2(88.0 * ratio, 2.0)
 
 
 # iter 30 (Pro Consult 005 META — "readable upward intent"): when player
