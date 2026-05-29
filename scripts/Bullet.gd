@@ -234,14 +234,40 @@ const HE_BLAST_RADIUS_PX: float = 18.0  # ~1.1 tile radius at grid_size=16
 
 # Returns the count of sibling bodies the blast struck (used by the
 # Breach Dividend threshold check).
+#
+# arc-4 PR-#4 P1 review fix — three converging bugs corrected:
+#   (a) friendly fire: the firing player is a sibling of bricks/enemies
+#       under the Level parent, so a point-blank HE breach used to
+#       splash the player. Skip both the firing player ref AND any
+#       node in the "player" group.
+#   (b) armor bypass: the primary hit path applies ARMOR_MITIGATION to
+#       AP/HE on armored bodies, but the splash path skipped it — so a
+#       direct HE hit on a Heavy did 0 dmg while the splash from the
+#       same shot did the full raw damage. That inverts the design rule
+#       (HE = brick-zone, HEAT/APCR = armor). Apply the same mitigation
+#       to splash.
+#   (c) attribution miscredit: splash hits skipped set_last_damage_shell
+#       /source propagation + _try_record_shot_hit, so death bursts from
+#       radius kills used the wrong tint and the route-currency ledger
+#       undercounted HE cluster breaches.
 func _apply_he_blast(primary_body: Node) -> int:
 	var parent: Node = primary_body.get_parent()
 	if parent == null or not (primary_body is Node2D):
 		return 0
 	var origin: Vector2 = (primary_body as Node2D).global_position
+	# (a) firing-player ref via the iter-24 lvl.player pattern; defensive
+	# duck-type so harness parents without it still work.
+	var firing_player: Node = null
+	if "player" in parent:
+		firing_player = parent.player
 	var hits: int = 0
 	for sibling in parent.get_children():
 		if sibling == primary_body:
+			continue
+		# (a) skip firing player + any player-group member.
+		if firing_player != null and sibling == firing_player:
+			continue
+		if sibling.is_in_group("player"):
 			continue
 		if not sibling.has_method("take_damage"):
 			continue
@@ -249,7 +275,24 @@ func _apply_he_blast(primary_body: Node) -> int:
 			continue
 		var d: float = (sibling as Node2D).global_position.distance_to(origin)
 		if d <= HE_BLAST_RADIUS_PX:
-			sibling.take_damage(damage)
+			# (b) splash armor mitigation — HE is AP-class on armored.
+			var splash_deal: int = damage
+			if sibling.is_in_group("armored"):
+				splash_deal = max(0, splash_deal - ARMOR_MITIGATION)
+			# (c) propagate attribution before take_damage so the death
+			# burst tint + recap source are correct on splash kills.
+			# Method-existence-gated so arc-2/3 bodies stay unaffected.
+			if sibling.has_method("set_last_damage_source"):
+				sibling.set_last_damage_source(source_label)
+			if sibling.has_method("set_last_damage_shell"):
+				sibling.set_last_damage_shell(shell_class)
+			sibling.take_damage(splash_deal)
+			# NOTE: splash does NOT call _try_record_shot_hit — the
+			# shells_spent_on_routes ledger tracks shells SPENT, and only
+			# one shell was fired. The primary hit already recorded it
+			# (via the caller). Counting each splash victim would
+			# overcount the shell economy and break Probe 1 F1's
+			# "1 shot = 1 route" routes-1/1/1/1 invariant.
 			hits += 1
 	return hits
 
