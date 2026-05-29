@@ -298,6 +298,14 @@ var _ram_collision_damage_bonus: int = 0
 # DEFAULT MOMENTUM card — +20% move speed per pick (stacks
 # multiplicatively). At 1.0 = no card. Capped at 2.0 (2× base).
 var _momentum_mult: float = 1.0
+# arc-4 PR-#4 P1 review fix — base speed snapshot (captured in _ready
+# pre-_init_archetype). Effective `speed` derives from this + the
+# MOMENTUM multiplier + the RAM_SPEED_BONUS additive, via
+# _recompute_speed(). Replaces the prior in-place mutations of `speed`
+# at three sites (MOMENTUM card, RAM init, RAM revert) that compounded
+# multiplicatively-then-additively and left permanent inflation when
+# MOMENTUM landed during RAM.
+var _base_speed: int = 0
 # arc-4 iter 200 (Round 23 Phase 4): feature flag for wiring the
 # level-up event into _show_levelup_pick. Default false — existing
 # _apply_level_boost auto-cycle path is preserved so test_breach_xp /
@@ -426,6 +434,12 @@ func _ready() -> void:
 	# DEFAULT base first for the FASTER_RELOAD bonus math to compose.
 	if has_node("GunTimer"):
 		_base_default_gun_wait_time = ($GunTimer as Timer).wait_time
+	# arc-4 PR-#4 P1 review fix — capture the base speed BEFORE any
+	# archetype init mutates it. The @export `speed` default is 32; a
+	# scene override (.tscn) is picked up here. From this point on,
+	# `speed` is a DERIVED value computed by _recompute_speed() from
+	# _base_speed + _momentum_mult + (archetype == RAM ? RAM_SPEED_BONUS : 0).
+	_base_speed = speed
 	# arc-4 iter 68 (Round 9f): per-archetype init is extracted into a
 	# single function — also called after _pick_archetype (post-_ready)
 	# when the user picks a non-DEFAULT archetype from the start-pick
@@ -994,7 +1008,13 @@ func _revert_archetype() -> void:
 			_mortar_reticle.queue_free()
 			_mortar_reticle = null
 	elif archetype == TankArchetype.RAM:
-		speed -= RAM_SPEED_BONUS
+		# arc-4 PR-#4 P1 review fix — speed derives from _recompute_speed
+		# now; this revert is a no-op marker (the next _recompute_speed
+		# after archetype changes will drop RAM_SPEED_BONUS automatically).
+		# Caller (_revert_archetype) sets the new archetype after this
+		# block, then re-init calls _recompute_speed. To make revert
+		# self-contained when no re-init follows (DEFAULT case), call
+		# _recompute_speed explicitly after the caller updates archetype.
 		_ram_swing_timer = 0.0  # S1: clear pending swing cooldown
 
 
@@ -1080,6 +1100,25 @@ func _set_shell_hud_visible(show: bool) -> void:
 		_shell_codex.visible = false
 
 
+# arc-4 PR-#4 P1 review fix — single derivation of effective `speed`
+# from base + MOMENTUM multiplier + RAM additive. Stops the in-place
+# `speed +=` / `speed -=` / `speed *=` mutations across MOMENTUM card,
+# RAM init, RAM revert that compounded when MOMENTUM landed during RAM:
+#   prior bug: RAM 32→38, MOMENTUM round(38*1.2)=46, revert 46-6=40.
+#                 (permanent +2 inflation per MOMENTUM-during-RAM pick)
+#   fixed:     _base_speed=32 always; _momentum_mult tracks card stacks;
+#              RAM is a pure additive on top. Revert composes cleanly.
+# Defensive against zero base (instantiation paths that mutate speed
+# before _ready runs).
+func _recompute_speed() -> void:
+	if _base_speed <= 0:
+		_base_speed = max(1, speed)  # late-init fallback
+	var s: int = int(round(float(_base_speed) * _momentum_mult))
+	if archetype == TankArchetype.RAM:
+		s += RAM_SPEED_BONUS
+	speed = s
+
+
 func _init_archetype() -> void:
 	if _archetype_initialized:
 		return
@@ -1097,8 +1136,11 @@ func _init_archetype() -> void:
 		gt.stop()
 		gt.wait_time = maxf(RELOAD_MIN, MORTAR_GUN_COOLDOWN * _mortar_cooldown_mult - _reload_reduction)
 		can_shoot = true
-	elif archetype == TankArchetype.RAM:
-		speed += RAM_SPEED_BONUS
+	# arc-4 PR-#4 P1 review fix — RAM speed bonus is now a derived
+	# additive in _recompute_speed(), not an in-place mutation. Recompute
+	# at the END of init so any archetype that needs it (currently RAM
+	# only) gets the bonus + future archetypes get it via the same path.
+	_recompute_speed()
 	# DEFAULT — no per-archetype init.
 
 
@@ -1447,8 +1489,14 @@ func _apply_card(kind: int) -> void:
 				loadout.refill_apcr(1)
 		UpgradeCatalogT.CardKind.MOMENTUM:
 			# +20% move speed per pick; multiplicative; capped at 2.0.
+			# arc-4 PR-#4 P1 review fix — was previously two parallel
+			# mutations (one stored + capped in _momentum_mult; one
+			# UNCAPPED in `speed` itself), so the cap on _momentum_mult
+			# was dead code and `speed` could grow past 2× base via
+			# repeated picks. Now the multiplier is the single source of
+			# truth and _recompute_speed derives `speed` from it.
 			_momentum_mult = minf(2.0, _momentum_mult * 1.2)
-			speed = int(round(speed * 1.2))
+			_recompute_speed()
 		_:
 			# Defensive: silent no-op for any card not yet wired.
 			pass
