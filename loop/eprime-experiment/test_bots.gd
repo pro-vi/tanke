@@ -81,11 +81,28 @@ func _initialize() -> void:
 	failures += _expect("reload-aware-wait kites away while reloading", raw.move_dir == Dir.L)
 	failures += _expect("reload-aware-wait does NOT fire while reloading", raw.fire == false)
 
-	# panic-random: low HP -> a (deterministic) cardinal move
+	# panic-random: hurt -> a (deterministic) cardinal flail
 	var pr := BotRegistry.make("panic-random").tick(
 		_obs(Vector2i(5, 5), [_enemy(Vector2i(10, 5))], [], [], 1, 10, 1.0))
-	failures += _expect("panic-random flails (a cardinal move) at low HP",
+	failures += _expect("panic-random flails (a cardinal move) when hurt",
 		pr.move_dir >= Dir.L and pr.move_dir <= Dir.R)
+
+	# --- competence teeth (obstacle-avoidance + line-of-sight) ---
+	# approach-enemy must steer AROUND a wall in its path, not walk into it:
+	# enemy straight up (5,0), wall directly above at (5,4) -> sidestep (L/R), not U
+	failures += _expect("approach-enemy steers around a blocking wall (not into it)",
+		[Dir.L, Dir.R].has(BotRegistry.make("approach-enemy").tick(
+			_obs(Vector2i(5, 5), [_enemy(Vector2i(5, 0))], [_obstacle(Vector2i(5, 4))], [], 3, 3, 1.0)).move_dir))
+
+	# fire-when-lined-up must HOLD fire when a wall blocks the cardinal line...
+	failures += _expect("fire-when-lined-up holds fire when a wall blocks the shot",
+		BotRegistry.make("fire-when-lined-up").tick(
+			_obs(Vector2i(5, 5), [_enemy(Vector2i(5, 0))], [_obstacle(Vector2i(5, 3))], [], 3, 3, 1.0)).fire == false)
+
+	# ...and DOES fire when the line is clear (teeth both ways)
+	failures += _expect("fire-when-lined-up fires when the cardinal line is clear",
+		BotRegistry.make("fire-when-lined-up").tick(
+			_obs(Vector2i(5, 5), [_enemy(Vector2i(5, 0))], [], [], 3, 3, 1.0)).fire == true)
 
 	if failures == 0:
 		print("BOTS_OK 7/7")

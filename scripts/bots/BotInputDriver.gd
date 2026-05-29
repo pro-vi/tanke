@@ -22,6 +22,12 @@ var level: Node = null    # parent level (enemy / projectile / obstacle scan)
 var _iter_n: int = 0
 var _run_start_ms: int = 0
 
+# motor-level stuck-recovery state (see _unstick)
+const STUCK_TICKS := 6           # ticks of zero displacement before slipping
+var _last_pos := Vector2.INF
+var _stuck_ticks: int = 0
+var _slip_side: int = 0          # index into perpendiculars(); flips if still stuck
+
 # The most recent action applied — read by TelemetryRecorder for
 # ui_action_correlation + reload_cancel accounting (sibling, optional).
 var last_action: BotAction = null
@@ -58,7 +64,34 @@ func _physics_process(_delta: float) -> void:
 	var action: BotAction = bot_policy.tick(obs)
 	if action == null:
 		action = BotAction.new()  # null policy output -> idle (safe)
+	action = _unstick(action)
 	apply_action(action, obs.current_shell_class)
+
+
+# Motor-level stuck recovery (NOT strategy — that stays in the policy). The
+# policies reason at 8px tile granularity, but the tank is 16px (2 cells) wide,
+# so it can wedge on a wall's flank while the tile check thinks the path is
+# clear; being stateless, a policy can't notice it stopped moving. Here the
+# driver watches actual displacement: if it commanded a move but the tank didn't
+# move for a few ticks, slip to a perpendicular (alternating sides) to slide off
+# the wall. Deterministic (no RNG) → reproducible. Per-run state (fresh driver
+# per run) so nothing leaks across the 84 reloads.
+func _unstick(action: BotAction) -> BotAction:
+	if not is_instance_valid(player):
+		return action
+	var pos: Vector2 = player.global_position
+	if action.move_dir != BotAction.NONE and _last_pos != Vector2.INF and pos.distance_to(_last_pos) < 0.5:
+		_stuck_ticks += 1
+	else:
+		_stuck_ticks = 0
+	_last_pos = pos
+	if _stuck_ticks >= STUCK_TICKS and action.move_dir != BotAction.NONE:
+		var perps := BotHeuristics.perpendiculars(action.move_dir)
+		if _stuck_ticks >= STUCK_TICKS * 3:  # slip didn't work -> try the other side
+			_slip_side = 1 - _slip_side
+			_stuck_ticks = STUCK_TICKS
+		return BotAction.new(perps[_slip_side], action.fire, action.shell_swap_to)
+	return action
 
 
 # Synthesize input for a single action. Public so the unit verifier can drive it

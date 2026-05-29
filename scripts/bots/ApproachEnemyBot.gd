@@ -16,7 +16,8 @@ func tick(obs: BotObservation) -> BotAction:
 	if ne.is_empty():
 		return BotAction.new(Constants.Dir.U, false)  # no enemy -> probe upward
 	var epos: Vector2i = ne["pos_tile"]
-	var move := BotHeuristics.cardinal_toward(obs.player_pos_tile, epos)
-	var aligned := BotHeuristics.aligned_dir(obs.player_pos_tile, epos) != BotHeuristics.NONE
-	var fire := aligned and obs.reload_bar_value >= RELOAD_READY
+	var blocked := BotHeuristics.blocked_set(obs.visible_obstacles)
+	var move := BotHeuristics.step_toward(obs.player_pos_tile, epos, blocked)
+	# fire only with a clear line (don't waste shells into cover) + reloaded
+	var fire := BotHeuristics.clear_shot(obs.player_pos_tile, epos, blocked) and obs.reload_bar_value >= RELOAD_READY
 	return BotAction.new(move, fire)

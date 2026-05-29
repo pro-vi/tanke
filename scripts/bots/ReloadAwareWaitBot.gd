@@ -18,11 +18,11 @@ func tick(obs: BotObservation) -> BotAction:
 	if ne.is_empty():
 		return BotAction.new()
 	var epos: Vector2i = ne["pos_tile"]
+	var blocked := BotHeuristics.blocked_set(obs.visible_obstacles)
 	var ready := obs.reload_bar_value >= RELOAD_READY
 	if ready:
-		var aligned := BotHeuristics.aligned_dir(obs.player_pos_tile, epos) != BotHeuristics.NONE
-		if aligned:
-			return BotAction.new(BotAction.NONE, true)  # hold + fire
-		return BotAction.new(BotHeuristics.cardinal_toward(obs.player_pos_tile, epos), false)  # close in
-	# reloading -> kite away, never fire (no reload-cancel)
-	return BotAction.new(BotHeuristics.cardinal_away(obs.player_pos_tile, epos), false)
+		if BotHeuristics.clear_shot(obs.player_pos_tile, epos, blocked):
+			return BotAction.new(BotAction.NONE, true)  # hold + fire (clear line)
+		return BotAction.new(BotHeuristics.step_toward(obs.player_pos_tile, epos, blocked), false)  # close in for a shot
+	# reloading -> kite away around obstacles, never fire (no reload-cancel)
+	return BotAction.new(BotHeuristics.step_away(obs.player_pos_tile, epos, blocked), false)

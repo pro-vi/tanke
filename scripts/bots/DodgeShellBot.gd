@@ -14,4 +14,9 @@ func tick(obs: BotObservation) -> BotAction:
 		return BotAction.new()  # no incoming threat -> hold
 	var heading: Vector2 = inc.get("dir", Vector2.ZERO)
 	var dodge := BotHeuristics.perpendicular_cardinal(heading)
+	# don't dodge straight into cover — flip to the other side if blocked
+	if dodge != BotHeuristics.NONE:
+		var blocked := BotHeuristics.blocked_set(obs.visible_obstacles)
+		if blocked.has(BotHeuristics.next_tile(obs.player_pos_tile, dodge)):
+			dodge = BotHeuristics.opposite(dodge)
 	return BotAction.new(dodge, false)

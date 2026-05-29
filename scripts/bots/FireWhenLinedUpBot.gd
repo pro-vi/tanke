@@ -12,5 +12,6 @@ func tick(obs: BotObservation) -> BotAction:
 	var ne := obs.nearest_enemy()
 	if ne.is_empty():
 		return BotAction.new()  # stationary, no target
-	var aligned := BotHeuristics.aligned_dir(obs.player_pos_tile, ne["pos_tile"]) != BotHeuristics.NONE
-	return BotAction.new(BotAction.NONE, aligned)
+	# fire only on a clear cardinal line — not through brick/steel cover
+	var blocked := BotHeuristics.blocked_set(obs.visible_obstacles)
+	return BotAction.new(BotAction.NONE, BotHeuristics.clear_shot(obs.player_pos_tile, ne["pos_tile"], blocked))
