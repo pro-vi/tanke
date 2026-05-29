@@ -50,5 +50,14 @@ if ! grep -q "^RUNS_OK" "$RUN_DIR/_run.log"; then
   exit 1
 fi
 
-python3 "$PROJECT_DIR/tools/bot_summary.py" --in "$RUN_DIR" --out "$OUT"
+# Aggregate — fail loudly if summary generation fails (no -e, so check
+# explicitly): a missing/stale summary after RUNS_OK must NOT exit 0. (Codex PR#5 P2.)
+if ! python3 "$PROJECT_DIR/tools/bot_summary.py" --in "$RUN_DIR" --out "$OUT"; then
+  echo "bot_runner.sh: summary generation failed — no summary written" >&2
+  exit 1
+fi
+if [[ ! -f "$OUT" ]]; then
+  echo "bot_runner.sh: summary missing after aggregation: $OUT" >&2
+  exit 1
+fi
 echo "bot_runner.sh: $(grep -o '^RUNS_OK [0-9]*/[0-9]*' "$RUN_DIR/_run.log") -> summary $OUT"

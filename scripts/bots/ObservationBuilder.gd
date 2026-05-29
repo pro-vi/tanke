@@ -36,15 +36,19 @@ static func build(player: Node, level: Node, iter_n: int, time_sec: float) -> Bo
 	obs.current_shell_class = int(player.get("current_shell"))
 	obs.player_pos_tile = _to_tile(player.global_position)
 
-	# reload bar: (now - last_fire) / GunTimer.wait_time, clamped [0,1]; 1.0=ready
-	var last_fire: float = float(player.get("_last_fire_time") if player.get("_last_fire_time") != null else -100.0)
+	# reload bar from the ACTUAL game-time fire gate (PlayerTank.can_shoot +
+	# GunTimer.time_left), NOT wall clock. PlayerTank.can_shoot is cleared on
+	# fire and restored by GunTimer.timeout (a game-time Timer); _last_fire_time
+	# is wall-time display-only. Reading wall time made reload state CPU-speed-
+	# dependent under --fixed-fps and the reload-cancel/correlation telemetry
+	# non-deterministic. (Codex PR#5 P1.)
+	var can_shoot = player.get("can_shoot")
 	var gun: Node = player.get_node_or_null("GunTimer")
-	var wait_t: float = float(gun.wait_time) if gun != null else 0.0
-	if wait_t > 0.0:
-		var elapsed: float = (Time.get_ticks_msec() / 1000.0) - last_fire
-		obs.reload_bar_value = clampf(elapsed / wait_t, 0.0, 1.0) if (elapsed >= 0.0) else 1.0
+	if can_shoot != null and not bool(can_shoot) and gun != null \
+			and not gun.is_stopped() and float(gun.wait_time) > 0.0:
+		obs.reload_bar_value = clampf(1.0 - float(gun.time_left) / float(gun.wait_time), 0.0, 1.0)
 	else:
-		obs.reload_bar_value = 1.0
+		obs.reload_bar_value = 1.0  # ready: can_shoot true, or no live cooldown
 
 	# shell reserves (AP unlimited = -1)
 	var loadout = player.get("loadout")
