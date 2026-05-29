@@ -112,6 +112,47 @@ static func step_away(from_tile: Vector2i, to_tile: Vector2i, blocked: Dictionar
 	return step_toward(from_tile, from_tile + (from_tile - to_tile), blocked)
 
 
+# Bounded BFS over free tiles (within `radius` Manhattan of the start) to find
+# the first step on a shortest path to the HIGHEST reachable tile (min y = most
+# climbed). Escapes the local minima that trap greedy step_toward in a maze:
+# greedy sidesteps a wall then re-points straight up into it again; this looks
+# `radius` tiles ahead and commits to a route around the pocket. NONE if boxed in.
+static func step_climb(from_tile: Vector2i, blocked: Dictionary, radius: int) -> int:
+	return step_bfs(from_tile, Vector2i(from_tile.x, from_tile.y - radius - 1), blocked, radius)
+
+
+# Bounded BFS first-step toward `goal` (or the reachable tile nearest goal within
+# `radius`). General maze navigation: returns the Dir of the first step on a
+# shortest path. NONE if no reachable free tile improves on staying put.
+static func step_bfs(from_tile: Vector2i, goal: Vector2i, blocked: Dictionary, radius: int) -> int:
+	var dirs := [Constants.Dir.U, Constants.Dir.D, Constants.Dir.L, Constants.Dir.R]
+	var first_step := {}          # tile -> Dir of the first step from the origin
+	var visited := {from_tile: true}
+	var queue := [from_tile]
+	var qi := 0
+	var best := from_tile
+	var best_d := manhattan(from_tile, goal)
+	while qi < queue.size():
+		var cur: Vector2i = queue[qi]
+		qi += 1
+		for dir in dirs:
+			var nxt := next_tile(cur, dir)
+			if visited.has(nxt) or blocked.has(nxt):
+				continue
+			if manhattan(nxt, from_tile) > radius:
+				continue
+			visited[nxt] = true
+			first_step[nxt] = first_step.get(cur, dir)
+			queue.append(nxt)
+			var d := manhattan(nxt, goal)
+			if d < best_d:
+				best_d = d
+				best = nxt
+	if best == from_tile:
+		return NONE
+	return first_step.get(best, NONE)
+
+
 # True iff `to_tile` is on a cardinal axis from `from_tile` AND no blocked tile
 # lies strictly between them on that axis (don't fire into cover).
 static func clear_shot(from_tile: Vector2i, to_tile: Vector2i, blocked: Dictionary) -> bool:
