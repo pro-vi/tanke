@@ -30,6 +30,12 @@ func _initialize() -> void:
 	var seeds := _parse_seeds(args, "--seeds")
 	var out_dir := _parse_str(args, "--out", "res://data/telemetry")
 
+	# An empty --bots ('' or ',') must FAIL loudly, not skip all runs with a
+	# vacuous RUNS_OK 0/0 (AC-007 no-silent-skip). Seeds are guarded below. (Codex PR#5 P2.)
+	if bots.is_empty():
+		print("RUNS_FAIL no bots resolved (empty --bots list)")
+		quit(1)
+		return
 	for b in bots:
 		if not BotRegistry.has(b):
 			print("RUNS_FAIL unknown bot '%s' (no silent skip)" % b)

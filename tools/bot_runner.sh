@@ -21,10 +21,13 @@ BOTS="all"
 SEEDS="all"
 OUT=""
 while [[ $# -gt 0 ]]; do
+  # Validate a value is present BEFORE shift 2 — a bare `--bots` (no value) would
+  # otherwise make `shift 2` fail (count > $#) and, with no `set -e`, leave $1
+  # unchanged so the while loop spins forever. (Codex PR#5 P2.)
   case "$1" in
-    --bots)  BOTS="${2:-}"; shift 2 ;;
-    --seeds) SEEDS="${2:-}"; shift 2 ;;
-    --out)   OUT="${2:-}"; shift 2 ;;
+    --bots)  [[ $# -ge 2 ]] || { echo "bot_runner.sh: --bots requires a value" >&2; exit 2; }; BOTS="$2"; shift 2 ;;
+    --seeds) [[ $# -ge 2 ]] || { echo "bot_runner.sh: --seeds requires a value" >&2; exit 2; }; SEEDS="$2"; shift 2 ;;
+    --out)   [[ $# -ge 2 ]] || { echo "bot_runner.sh: --out requires a value" >&2; exit 2; }; OUT="$2"; shift 2 ;;
     *) echo "bot_runner.sh: unknown argument '$1'" >&2; exit 2 ;;
   esac
 done
