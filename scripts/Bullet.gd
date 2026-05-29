@@ -131,9 +131,9 @@ func _on_body_entered(body: Node) -> void:
 			# the iter-286 wiring missed the APCR-steel path because the
 			# steel branch returns early before the standard hit-record
 			# call site. Method-existence-gated via _try_record_shot_hit.
-			# arc-4 PR-#4 P2 #1 review fix — player-fired only (enemies
-			# don't fire APCR, but the gate stays consistent with line 180).
-			if source_label == "":
+			# PR-#4 P2 #1 — player-fired only (enemies don't fire APCR,
+			# but kept consistent with the primary-hit gate).
+			if _is_player_fired():
 				_try_record_shot_hit(body)
 		# Steel Salvage (iter 41, retuned iter 49): drilling
 		# >=STEEL_SALVAGE_THRESHOLD blocks with one shot refunds 1 APCR
@@ -153,22 +153,10 @@ func _on_body_entered(body: Node) -> void:
 			and body.is_in_group("armored"):
 		deal = max(0, deal - ARMOR_MITIGATION)
 	if body.has_method("take_damage"):
-		# arc-4 iter 109 (Round 12 Gap 2): propagate the source taxon
-		# string so the body's recap can attribute the kill. The method
-		# exists only on the arc-4 player; arc-2/3 bodies don't define
-		# it, so this is a no-op on the baseline.
-		# arc-4 PR-#4 S3 review fix — only set when the hit will actually
-		# apply damage. Armor mitigation can drive deal to 0 (AP/HE on
-		# armored); without this gate, the recap killer would attribute
-		# to a hit that did 0 damage. (iframes/shield are inside
-		# take_damage and out of Bullet's visibility — separate concern.)
-		if deal > 0 and body.has_method("set_last_damage_source"):
-			body.set_last_damage_source(source_label)
-		# arc-4 iter 277 (Round 24 Phase A widget 5): propagate shell
-		# class so Enemy.gd can tint its death burst by killing shell.
-		# Method-existence gated so arc-2/3 bodies are unaffected.
-		if deal > 0 and body.has_method("set_last_damage_shell"):
-			body.set_last_damage_shell(shell_class)
+		# arc-4 iter 109 + iter 277 + PR-#4 S3 — propagate kill
+		# attribution (source string + shell class) for the body's recap
+		# + death-burst tint. Skips when deal <= 0 (armor mitigation).
+		_propagate_kill_attribution(body, deal)
 		body.take_damage(deal)
 		# arc-4 iter 286 (Q1 sprint 3/4 per blueprint loop/breach/
 		# iter-283-round24-Q1-architect.md; consult-001 Q3 verdict 0.92):
@@ -176,10 +164,8 @@ func _on_body_entered(body: Node) -> void:
 		# metrics. Reads is_route_gate meta on the body (set by the level
 		# scene when spawning gate-row terrain or entrenched-gate enemies).
 		# Reaches the player via the iter-24 lvl.player pattern.
-		# arc-4 PR-#4 P2 #1 review fix — only player-fired bullets credit
-		# the recap (enemy-fired bullets have non-empty source_label set
-		# by Enemy._fire at iter 109; player bullets default to "").
-		if source_label == "":
+		# PR-#4 P2 #1 — only player-fired bullets credit the recap.
+		if _is_player_fired():
 			_try_record_shot_hit(body)
 	if shell_class == SHELL_CLASS_HE:
 		var radius_hits: int = _apply_he_blast(body)
@@ -215,6 +201,32 @@ func _try_breach_dividend() -> void:
 
 
 # arc-4 iter 286: classify the hit as route-gate or combat and forward
+# arc-4 PR-#4 refactor — shared helpers used by both the primary hit
+# path AND the HE-splash loop. Extracted because each site had the
+# same `if dmg > 0 and body.has_method("set_last_damage_*"): ...`
+# 4-line block (8 lines × 2 sites was 16; helper + 2 calls is 8).
+# Single source of truth for the attribution-propagation rule:
+#   - propagation only fires when the hit actually deals damage
+#     (PR-#4 S3 fix — armor mitigation can drive dmg to 0)
+#   - method-existence-gated so arc-2/3 bodies stay unaffected.
+func _propagate_kill_attribution(body: Node, dmg: int) -> void:
+	if dmg <= 0:
+		return
+	if body.has_method("set_last_damage_source"):
+		body.set_last_damage_source(source_label)
+	if body.has_method("set_last_damage_shell"):
+		body.set_last_damage_shell(shell_class)
+
+
+# arc-4 PR-#4 refactor — shared player-fired gate (PR-#4 P2 #1 fix).
+# Enemy._fire at iter 109 tags bullets with non-empty source_label
+# ("light bullet" / etc); PlayerTank-fired bullets default to "".
+# Used to gate recap recording so enemy shots don't credit the
+# player's run-recap counters.
+func _is_player_fired() -> bool:
+	return source_label == ""
+
+
 # to the firing player's record_shot_hit pass-through. Bodies set
 # `is_route_gate` meta from the level scene at gate-row positions;
 # defaults to combat when meta absent or falsy. All reads duck-typed —
@@ -293,13 +305,9 @@ func _apply_he_blast(primary_body: Node) -> int:
 				splash_deal = max(0, splash_deal - ARMOR_MITIGATION)
 			# (c) propagate attribution before take_damage so the death
 			# burst tint + recap source are correct on splash kills.
-			# Method-existence-gated so arc-2/3 bodies stay unaffected.
-			# arc-4 PR-#4 S3 review fix — only set when splash actually
-			# damages (armor mitigation can drive splash_deal to 0).
-			if splash_deal > 0 and sibling.has_method("set_last_damage_source"):
-				sibling.set_last_damage_source(source_label)
-			if splash_deal > 0 and sibling.has_method("set_last_damage_shell"):
-				sibling.set_last_damage_shell(shell_class)
+			# Shared helper handles deal-gate + method-existence checks;
+			# PR-#4 S3 fix lives there too.
+			_propagate_kill_attribution(sibling, splash_deal)
 			sibling.take_damage(splash_deal)
 			# NOTE: splash does NOT call _try_record_shot_hit — the
 			# shells_spent_on_routes ledger tracks shells SPENT, and only
