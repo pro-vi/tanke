@@ -559,9 +559,16 @@ func _pick_enemy_type() -> Dictionary:
 			if not forced.is_empty():
 				return forced
 	var weights: Dictionary = band.get("type_weights", {})
+	# arc-4 PR-#4 P2 #5 review fix — total gate must use the SAME fallback
+	# as _weighted_pick (0.0), or a band that omits an enemy type would
+	# show a nonzero total here but never actually roll that type below
+	# (since _weighted_pick uses 0.0 fallback at lines 575 + 581). Latent
+	# today because all DEPTH_BANDS list every type, but future bands
+	# that omit a type would skew the distribution + invalidate the
+	# total-gate invariant.
 	var total: float = 0.0
 	for t in ENEMY_TYPES:
-		total += float(weights.get(t.name, t.weight))
+		total += float(weights.get(t.name, 0.0))
 	if total <= 0.0:
 		return ENEMY_TYPES[0]
 	return _weighted_pick(weights)
