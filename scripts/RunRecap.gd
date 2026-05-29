@@ -468,6 +468,11 @@ func format() -> String:
 	var ap: int = shells_fired.get(Bullet.SHELL_CLASS_AP, 0)
 	var he: int = shells_fired.get(Bullet.SHELL_CLASS_HE, 0)
 	var heat: int = shells_fired.get(Bullet.SHELL_CLASS_HEAT, 0)
+	# arc-4 PR-#4 Codex P2 review fix — APCR participates in
+	# shells_fired + build_tag now but the recap's printed line still
+	# omitted it. An APCR-heavy run would show build="steel driller"
+	# with "AP X / HE 0 / HEAT 0" — zero APCR shots fired visible.
+	var apcr: int = shells_fired.get(Bullet.SHELL_CLASS_APCR, 0)
 	# arc-4 iter 82: render band-visit summary if any band crossings
 	# were logged. Reads as the player's actual run-shape (which bands
 	# in what order) for CONSULT-009 band-shape verdict.
@@ -483,6 +488,6 @@ func format() -> String:
 		"  band pressure : %s" % killing_pressure,
 		"  build         : %s" % build_tag(),
 		"  killed by     : %s" % killer,
-		"  shells fired  : AP %d / HE %d / HEAT %d" % [ap, he, heat],
+		"  shells fired  : AP %d / HE %d / HEAT %d / APCR %d" % [ap, he, heat, apcr],
 		"  reserve left  : HE %d / HEAT %d / APCR %d" % [he_reserve_at_death, heat_reserve_at_death, apcr_reserve_at_death],
 	]) + band_line

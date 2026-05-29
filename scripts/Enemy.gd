@@ -524,6 +524,14 @@ func take_damage(amount: int) -> void:
 	# double, ammo drops re-roll, XP doubles.
 	if hp <= 0:
 		return
+	# arc-4 PR-#4 Codex P2 review fix — guard amount <= 0 BEFORE the
+	# side effects. Bullet still calls take_damage(0) when armor
+	# mitigates AP/HE on Heavies; the iter-51 AIM_FIRE cancel block
+	# below would fire `aim_canceled` on a 0-damage hit and interrupt
+	# the wind-up, breaking the armor rule ("AP/HE bounce off armor").
+	# Also short-circuits the _update_hp_bar redraw on a no-op hit.
+	if amount <= 0:
+		return
 	hp -= amount
 	if hp <= 0:
 		killed.emit()  # iter 101: synchronous kill notification (Spawner counts here)
