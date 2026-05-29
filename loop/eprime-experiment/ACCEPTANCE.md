@@ -39,7 +39,11 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
 - status: OPEN
 - depends_on: []
 - reopen_condition: bot policy added/removed/renamed OR Action interface changes
-- last_verification: null
+- last_verification: |
+    iter 1 (U1 contract foundation): `make check-bots-base` -> BOTS_BASE_OK.
+    BotPolicy/BotAction/BotObservation types ship; BotAction.is_valid() rejects
+    malformed actions (teeth). The criterion verifier `make check-bots`
+    (BOTS_OK 7/7) is NOT yet green — the 7 policies (U6) remain. Stays OPEN.
 
 ---
 
@@ -128,10 +132,17 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
     `make check-hash-anchor` exits 0 AND stdout contains exact line `HASH_OK 23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291`. Verifier runs: `godot --headless --path . --script res://loop/test_runner.gd -- --seed 42 --json | grep '^{' | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print('HASH_OK '+d['tile_hash']) if d['tile_hash']=='23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291' else (print('HASH_BROKEN '+d['tile_hash']) or sys.exit(1))"`. Mutation test: temporarily editing a Layer-1 file to perturb the procedural output must trigger HASH_BROKEN.
 - fail_evidence: |
     Hash mismatch on flag-off codepath, OR substrate file modified without default-on gating, OR verifier never ran post-substrate-write.
-- status: OPEN
+- status: PASS_PENDING_FINAL
 - depends_on: []
 - reopen_condition: any substrate write (Layer 1/2/3)
-- last_verification: null
+- last_verification: |
+    iter 1: `make check-hash-anchor` -> HASH_OK
+    23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291 (exit 0).
+    Teeth proven oracle-independent: seed-99 -> HASH_BROKEN + exit 1; seed-42 ->
+    HASH_OK + exit 0. The literal "edit a Layer-1 file" mutation was replaced by
+    this seed-variation proof because Layer-1 files are FORBIDDEN edits (PROMPT
+    scope manifest). Zero substrate writes this arc (Path B — see STATE AR-001),
+    so the anchor is preserved by construction. Re-confirmed in final-verify.
 
 ---
 

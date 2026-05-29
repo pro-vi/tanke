@@ -2,26 +2,84 @@
 
 ```yaml
 goal_version: bot-harness-v0.1
-phase: ready-iter-1 (all preloop done; branch arc-5-bot-harness; scaffolding committed at 9426240; awaiting runner fire)
-iter: 0
+phase: iter-1-done (U1 contract foundation shipped; AC-005 verifier green+teeth; input-synthesis risk retired)
+iter: 1
 preloop_complete: yes
-current_criterion: none (iter 1 will open U1 per blueprint implementation order)
+current_criterion: AC-001 (U1 contract foundation done; U3 BotInputDriver + U6 7-bots remain before check-bots green)
 stuck_counters: {AC-001: 0, AC-002: 0, AC-003: 0, AC-004: 0, AC-005: 0, AC-006: 0, AC-007: 0}
-last_action: /architect emitted iter-0-architect.md; user committed all 4 files + pushed arc-5-bot-harness branch (9426240)
+last_action: |
+  Iter 1 shipped U1 (the AC-001 contract foundation) — 3 new type files
+  scripts/bots/{BotPolicy,BotAction,BotObservation}.gd + verifier
+  loop/eprime-experiment/test_bots_base.gd + Makefile targets check-bots-base
+  and check-hash-anchor. Red->green proven (verifier parse-failed before the
+  types existed). AC-005 verifier green (HASH_OK) AND teeth-proven (seed-99 ->
+  HASH_BROKEN + exit 1; seed-42 -> HASH_OK + exit 0) WITHOUT touching forbidden
+  substrate. Retired the harness' biggest risk: synthetic parse_input_event
+  (both keycode + physical_keycode set) drives is_action_pressed("ui_up"/
+  "ui_accept") AND is_physical_key_pressed(KEY_TAB) headless — Path B (zero
+  substrate touch) confirmed viable. `make test` still green (no arc regression).
 next_action: |
-  Iter 1: open U1 from iter-0-architect.md (BotPolicy base class + Action +
-  Observation types — 3 new files under scripts/bots/). Follow PROMPT.md
-  § Iteration protocol 10-step ritual. Implementation order is:
-  U1 → U2 → (U3 ‖ U4) → U5 → U6 → U7 → (U8 ‖ U9). Each U-ID maps to
-  AC criteria per blueprint § Implementation Units.
+  U3 (BotInputDriver, scripts/bots/BotInputDriver.gd): translate BotAction ->
+  InputEventKey via Input.parse_input_event. Set BOTH .keycode AND
+  .physical_keycode on every event (proven needed for ui_* + physical TAB).
+  PAIR every press with a release (held keys persist otherwise). Map:
+  Dir.U->KEY_UP, Dir.D->KEY_DOWN, Dir.L->KEY_LEFT, Dir.R->KEY_RIGHT,
+  fire->KEY_SPACE (ui_accept), shell_swap->KEY_TAB (only when target != current).
+  await >=2 process_frame after parse for the action to register.
 
-  U2 is the ONE substrate touch — hash-anchor verification mandatory
-  pre-commit; default-off gating template required.
+  Then (any order, all AC-001/002/003 independent):
+    U4 TelemetryRecorder + TelemetrySchema + good/bad fixtures (AC-002) —
+      RunRecap is NOT a file-writer; find real FileAccess/JSON.stringify
+      precedent (grep scripts/ for FileAccess.open). death_cause: classify
+      by nearest threat at death (projectile/melee/suicide) + timeout(30s) +
+      victory(player reaches GOAL_ROW=0). shell_hit_rate via best-effort
+      observable proxy. Q1 has NO victory mechanism — runner computes it.
+    U5 seed bank 12 seeds 4/4/4 (AC-003) — classify via test_runner reachability
+      (seed 42 = 676 reachable_cells observed; baseline).
+    U6 7 bot policies (AC-001) — copy Enemy.gd heuristic primitives
+      (cardinal projection Enemy.gd:853, LOS dot Enemy.gd:480, _opposite/
+      _perpendicular). Then check-bots -> BOTS_OK 7/7.
+  Then U7 batch (AC-004), U8 Makefile composite (AC-006), U9 orchestration (AC-007).
 
-  Final-verify: `make bot-harness` (emits `BOT_HARNESS_OK 84/84` on success).
-  Halt with `criteria-met` when all 7 criteria PASS in single final-verify.
+  IMPORTANT repo gotcha: after creating any new class_name .gd file, run
+  `godot --headless --path . --import` once to register it in
+  .godot/global_script_class_cache.cfg, else --script runs parse-fail with
+  "Identifier X not declared". (See SKILL-HARVEST.)
+
+  Final-verify: `make bot-harness` (emits `BOT_HARNESS_OK 84/84`). Halt with
+  `criteria-met` when all 7 criteria PASS in a single final-verify.
 oracle_change_notes: []
 ```
+
+## Alignment Review — AR-001 (iter 1): substrate touch eliminated (Path B)
+
+- **problem**: The blueprint's U2 specifies adding `@export var bot_controlled`
+  + `bot_policy` to `scripts/PlayerTank.gd` as "the ONE substrate touch,"
+  gated + hash-verified.
+- **context**: (a) The PROMPT scope manifest permits the PlayerTank touch
+  "only if a bot-input hook is needed AND it cannot live in a new scripts/bots/
+  helper." (b) Iter-1 probe proved `Input.parse_input_event` drives all
+  PlayerTank input paths headless — so a sibling BotInputDriver can drive the
+  tank with ZERO PlayerTank change. (c) The entire arc-4 Q1 feature was built
+  this way: `Q1ProofRoomScene.gd:20` header states "no Layer 1/2/3 substrate
+  touch." The hook CAN live in a helper → the necessity test fails → the touch
+  is not permitted.
+- **options considered**: (A) blueprint-faithful — add the 2 exports, hash-verify;
+  (B) zero substrate touch — BotInputDriver holds the policy (set by the runner),
+  finds the PlayerTank sibling, builds observations from its readable fields,
+  synthesizes input via Input.parse_input_event.
+- **chosen contract**: Option B. The governing PROMPT scope manifest overrides
+  the subordinate blueprint when they conflict. AC-005 stays meaningful: proven
+  green + teeth (seed-variation) without any substrate write.
+- **alignment cost**: Diverges from the blueprint's stated U2 design; AC-005's
+  literal "edit a Layer-1 file" mutation test is replaced by the safe
+  seed-variation teeth proof (Layer-1 files are FORBIDDEN edits).
+- **rollback trigger**: If a later unit genuinely needs an in-tank seam that
+  cannot be synthesized through the Input singleton (none found so far), revert
+  to Option A with the default-off gating + hash verification per blueprint.
+- **review question for human**: Confirm zero-substrate-touch is preferred over
+  the blueprint's inspector-assignable `@export bot_policy` ergonomics. (The
+  exports are additive later if desired.)
 
 ## Provenance
 

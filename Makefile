@@ -154,6 +154,34 @@ check-titlescreen-nav:
 # (RUBRIC C1/5 + C6/5 + C10/4 + C10/5 verification.)
 test-all: test check-loader check-chain check-chain-35 check-titlescreen-nav
 
+# ============================================================================
+# Arc-5 bot-harness scaffolding (E′ experiment) — loop/eprime-experiment/
+# Composite `bot-harness` is the goal-loop final-verify (AC-006); it is grown
+# target-by-target as units U1..U9 land and assembled at the bottom of this
+# section. Sub-targets follow the breach house style: visible run + `grep -q`
+# positive-sentinel gate. See loop/eprime-experiment/{PROMPT,ACCEPTANCE}.md.
+# ============================================================================
+
+# Cross-arc procedural hash anchor (since arc-1 iter-0). Bit-identical on the
+# flag-off baseline gates every substrate-touching iter.
+HASH_ANCHOR    := 23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291
+
+.PHONY: check-bots-base check-hash-anchor
+
+# AC-001 (U1) — bot contract foundation: BotPolicy / BotAction / BotObservation
+# load, BotAction.is_valid() rejects malformed actions (oracle teeth).
+check-bots-base:
+	@$(HEADLESS) --script res://loop/eprime-experiment/test_bots_base.gd 2>&1 | grep -E "^(  case|  FAIL|BOTS_BASE_OK|BOTS_BASE_FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/eprime-experiment/test_bots_base.gd 2>&1 | grep -q "^BOTS_BASE_OK"
+
+# AC-005 — cross-arc procedural hash anchor preserved bit-identical on the
+# flag-off baseline. The bot harness adds only sibling nodes + new files, so
+# this proves no write perturbed ProceduralLevel seed-42 tile generation.
+check-hash-anchor:
+	@$(HEADLESS) --script res://loop/test_runner.gd -- --seed 42 --json 2>/dev/null \
+		| grep '^{' \
+		| python3 -c "import sys,json; d=json.load(sys.stdin); h=d.get('tile_hash',''); ok=h=='$(HASH_ANCHOR)'; print(('HASH_OK ' if ok else 'HASH_BROKEN ')+h); sys.exit(0 if ok else 1)"
+
 # Arc-4 breach mode: verify configs/breach_default.tres loads cleanly
 # with >=2 distinct bands and per-band terrain-weight overrides (C4
 # anchor 1 structural cite).
