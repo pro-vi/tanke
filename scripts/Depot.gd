@@ -439,6 +439,21 @@ func _is_player(body: Node) -> bool:
 		return false
 	if body.is_in_group("player"):
 		return true
+	# arc-4 iter 5: _on_PlayerTank_shoot is on Level.gd (the arc-2 level
+	# script), not PlayerTank.gd. The arc-2 single-scene loop has the
+	# PlayerTank as a child of the Level; this duck-type check matches
+	# the parent's signal-handler signature there.
 	if body.has_method("_on_PlayerTank_shoot"):
+		return true
+	# arc-4 PR-#4 Codex P1 review fix — in the live BreachLevel.tscn
+	# flow the body delivered by body_entered is the actual PlayerTank
+	# node, which is NOT in the "player" group AND does NOT define
+	# _on_PlayerTank_shoot (that handler is on Level.gd, not the tank).
+	# So depot entry would silently no-op in real play — no pause, no
+	# upgrade panel, no breach-economy. switch_archetype is a
+	# PlayerTank-only method (arc-4 iter 69 + grep-confirmed) that the
+	# depot's own SWITCH_TO_* upgrades already call on captured player
+	# refs, so it's a stable PlayerTank-identity signature.
+	if body.has_method("switch_archetype"):
 		return true
 	return false
