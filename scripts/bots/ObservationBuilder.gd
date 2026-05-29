@@ -17,6 +17,8 @@ extends RefCounted
 
 const CELL_PX: float = 8.0
 const SPEED_BASELINE: float = 32.0  # PlayerTank SPEED_BASELINE:145
+const DEPTH_PX: float = 16.0        # level's logical grid for rows-climbed/depth
+const VISION_TILES: int = 30        # only obstacles within ~a screen of the player
 
 
 static func _to_tile(world: Vector2) -> Vector2i:
@@ -35,6 +37,11 @@ static func build(player: Node, level: Node, iter_n: int, time_sec: float) -> Bo
 	obs.player_hp_max = int(player.get("max_hp"))
 	obs.current_shell_class = int(player.get("current_shell"))
 	obs.player_pos_tile = _to_tile(player.global_position)
+
+	# rows climbed (16px logical grid) from the start — the game's depth metric
+	var start_y = player.get("_start_y")
+	if start_y != null:
+		obs.rows_climbed = int(maxf(0.0, (float(start_y) - player.global_position.y) / DEPTH_PX))
 
 	# reload bar from the ACTUAL game-time fire gate (PlayerTank.can_shoot +
 	# GunTimer.time_left), NOT wall clock. PlayerTank.can_shoot is cleared on
@@ -101,16 +108,21 @@ static func build(player: Node, level: Node, iter_n: int, time_sec: float) -> Bo
 					"owner": "player" if src == "" else "enemy",
 				})
 			elif c is StaticBody2D:
+				# classify by name SUBSTRING (Q1 names blocks BrickBlock_c_r;
+				# ProceduralLevel auto-names converted blocks @BrickBlock@N — both
+				# CONTAIN the type; begins_with missed the @-prefixed ones) within
+				# a screen of the player (faithful + bounds the scan cost on the arc)
 				var nm: String = c.name
 				var kind: String = ""
-				if nm.begins_with("BrickBlock"):
+				if nm.contains("Brick"):
 					kind = "brick"
-				elif nm.begins_with("SteelBlock"):
+				elif nm.contains("Steel") or c.is_in_group("steel"):
 					kind = "steel"
+				elif nm.contains("Water"):
+					kind = "water"
 				if kind != "":
-					obs.visible_obstacles.append({
-						"pos_tile": _to_tile(c.global_position),
-						"type": kind,
-					})
+					var ot: Vector2i = _to_tile(c.global_position)
+					if abs(ot.x - obs.player_pos_tile.x) + abs(ot.y - obs.player_pos_tile.y) <= VISION_TILES:
+						obs.visible_obstacles.append({"pos_tile": ot, "type": kind})
 
 	return obs

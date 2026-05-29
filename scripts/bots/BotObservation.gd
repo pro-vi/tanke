@@ -35,6 +35,11 @@ var visible_obstacles: Array[Dictionary] = []
 # owner: "player" | "enemy"
 var visible_projectiles: Array[Dictionary] = []
 
+# --- progress (real arc) ---
+# rows climbed from the run start, in the level's 16px logical grid (the game's
+# own depth metric). Distinct from player_pos_tile (8px). 0 in fixed rooms.
+var rows_climbed: int = 0
+
 # --- timing ---
 var iter_n: int = 0        # physics ticks since run start
 var time_sec: float = 0.0  # wall seconds since run start
