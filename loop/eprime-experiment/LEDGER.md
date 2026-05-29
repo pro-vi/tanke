@@ -90,3 +90,25 @@ Per PROMPT.md § Artifacts. Each accepted change cites ≥1 criterion ID.
 **Status moves**: none (AC-002 already PASS_PENDING_FINAL from U4a; recorder's live correctness is AC-004's gate). U4 complete; unblocks U7.
 
 **Next**: U5 seed bank — author data/seed_bank/seeds.json (12 seeds, 4 easy / 4 medium / 4 hard-or-bug), classify via test_runner reachability (seed 42 = 676 cells baseline), + check-seed-bank with tier-mutation teeth. Then U6 7 bots, U7 batch.
+
+---
+
+## iter 5 — 2026-05-28 — U5 seed bank 12 seeds 4/4/4 (AC-003)
+
+**criterion-id | failing-evidence | hypothesis | edit-surface | rollback**
+`AC-003 | no seed bank | 12 seeds partitioned 4/4/4 by reachable_cells, re-validated against test_runner.gd | data/seed_bank/seeds.json + tools/check_seed_bank.py + Makefile | rm new files`
+
+**Did**:
+- Swept ~47 seeds via test_runner.gd to find clean extremes (reachable_cells ranged 256-904). Picked 4/4/4 with margin from the 500/800 boundaries: easy {1234,888,1111,1500} (836-904); medium {13,314,42,5} (608-724, 42 = hash-anchor baseline → correctly medium); hard {9,100,3000,21} (256-464).
+- `data/seed_bank/seeds.json` — 12 entries {seed, tier, reason, expected_band, reachable_cells, bug_id}.
+- `tools/check_seed_bank.py` — re-measures each seed against the canonical oracle (test_runner.gd), validates count(12) + partition(4/4/4) + declared-tier==measured-tier + declared-rc==measured-rc + playable. Tier formula: bug_id→hard; rc>800→easy; 500-800→medium; <500→hard. Also `--classify <seed>` mode (subsumes the architect's separate classify_seed.gd — tier formula kept in ONE place, DRY).
+- Green: `SEED_BANK_OK 12/12`. Teeth: flipped seed 1234 easy→hard in a temp copy → `SEED_BANK_FAIL` exit 1 (tier + partition violations); real file → exit 0.
+- Makefile: `check-seed-bank`.
+
+**Verified / accepted**: `make check-seed-bank` → `SEED_BANK_OK 12/12 (4 easy / 4 medium / 4 hard-or-bug)`. `make check-hash-anchor` still HASH_OK.
+
+**Status moves**: AC-003 OPEN → PASS_PENDING_FINAL.
+
+**Deviation**: architect listed tools/classify_seed.gd; implemented `--classify` in check_seed_bank.py instead (DRY — single tier formula). No separate GDScript.
+
+**Next**: U6 — 7 bot policies under scripts/bots/ + .tres instances, copying Enemy.gd heuristic primitives (cardinal projection Enemy.gd:853, LOS dot Enemy.gd:480, _opposite/_perpendicular). check-bots -> BOTS_OK 7/7 (mutation teeth: a tick() returning null fails). Then U7 batch.

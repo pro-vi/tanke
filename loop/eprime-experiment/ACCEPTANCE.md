@@ -100,10 +100,19 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
     `make check-seed-bank` exits 0 AND stdout contains `SEED_BANK_OK 12/12 (4 easy / 4 medium / 4 hard-or-bug)`. Each seed is reachability-tested against `loop/test_runner.gd` and the actual tier-classification matches the declared tier (mutation test: declare an easy seed as "hard" → verifier fails).
 - fail_evidence: |
     Wrong count (not 12), wrong partition (not 4/4/4), seed-not-reachable, OR declared tier doesn't match measured reachability.
-- status: OPEN
+- status: PASS_PENDING_FINAL
 - depends_on: []
 - reopen_condition: seed added/removed OR tier reclassified
-- last_verification: null
+- last_verification: |
+    iter 5 (U5): `make check-seed-bank` -> `SEED_BANK_OK 12/12 (4 easy / 4 medium
+    / 4 hard-or-bug)`. data/seed_bank/seeds.json: easy {1234,888,1111,1500} rc
+    836-904; medium {13,314,42,5} rc 608-724 (42 = hash-anchor baseline); hard
+    {9,100,3000,21} rc 256-464. Each re-measured against the canonical oracle
+    test_runner.gd; declared tier + reachable_cells match measured. Teeth: a
+    flipped tier (1234 easy->hard) -> SEED_BANK_FAIL exit 1 (tier + partition
+    violations caught). NOTE: all 4 hard seeds are low-reachability (bug_id
+    null) — no historical-regression seed is flagged yet; the formula admits
+    bug_id-flagged seeds and the reopen_condition covers adding one later.
 
 ---
 

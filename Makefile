@@ -166,7 +166,7 @@ test-all: test check-loader check-chain check-chain-35 check-titlescreen-nav
 # flag-off baseline gates every substrate-touching iter.
 HASH_ANCHOR    := 23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291
 
-.PHONY: check-bots-base check-bot-driver check-telemetry-schema check-telemetry-recorder check-hash-anchor
+.PHONY: check-bots-base check-bot-driver check-telemetry-schema check-telemetry-recorder check-seed-bank check-hash-anchor
 
 # AC-001 (U1) — bot contract foundation: BotPolicy / BotAction / BotObservation
 # load, BotAction.is_valid() rejects malformed actions (oracle teeth).
@@ -194,6 +194,12 @@ check-telemetry-schema:
 check-telemetry-recorder:
 	@$(HEADLESS) --script res://loop/eprime-experiment/test_telemetry_recorder.gd 2>&1 | grep -E "^(  case|  FAIL|RECORDER_OK|RECORDER_FAIL|ERROR|SCRIPT ERROR)"; \
 	$(HEADLESS) --script res://loop/eprime-experiment/test_telemetry_recorder.gd 2>&1 | grep -q "^RECORDER_OK"
+
+# AC-003 — seed bank: 12 seeds partitioned 4 easy / 4 medium / 4 hard-or-bug,
+# each declared tier re-validated against the canonical reachability oracle
+# (test_runner.gd). Teeth: a mis-declared tier fails (tier-mutation rejected).
+check-seed-bank:
+	@python3 $(PROJECT_DIR)/tools/check_seed_bank.py --godot $(GODOT) --project $(PROJECT_DIR) --seeds $(PROJECT_DIR)/data/seed_bank/seeds.json
 
 # AC-005 — cross-arc procedural hash anchor preserved bit-identical on the
 # flag-off baseline. The bot harness adds only sibling nodes + new files, so

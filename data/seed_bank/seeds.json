@@ -1,0 +1,16 @@
+[
+  {"seed": 1234, "tier": "easy",   "reason": "high reachability, open lanes — bot should consistently survive", "expected_band": "open-warmup",   "reachable_cells": 836, "bug_id": null},
+  {"seed": 888,  "tier": "easy",   "reason": "high reachability, generous routing",                              "expected_band": "open-warmup",   "reachable_cells": 840, "bug_id": null},
+  {"seed": 1111, "tier": "easy",   "reason": "high reachability, low choke density",                             "expected_band": "open-warmup",   "reachable_cells": 864, "bug_id": null},
+  {"seed": 1500, "tier": "easy",   "reason": "highest sampled reachability — easiest survival band",             "expected_band": "open-warmup",   "reachable_cells": 904, "bug_id": null},
+
+  {"seed": 13,   "tier": "medium", "reason": "mid reachability, contested routing",                              "expected_band": "contested",     "reachable_cells": 608, "bug_id": null},
+  {"seed": 314,  "tier": "medium", "reason": "mid reachability, mixed survival",                                 "expected_band": "contested",     "reachable_cells": 644, "bug_id": null},
+  {"seed": 42,   "tier": "medium", "reason": "cross-arc procedural baseline (hash-anchor seed); historical mid", "expected_band": "baseline-medium", "reachable_cells": 676, "bug_id": null},
+  {"seed": 5,    "tier": "medium", "reason": "upper-mid reachability, tighter shell budget pressure",            "expected_band": "contested",     "reachable_cells": 724, "bug_id": null},
+
+  {"seed": 9,    "tier": "hard-or-bug", "reason": "lowest sampled reachability — severe choke, diversity floor", "expected_band": "choke-dense",   "reachable_cells": 256, "bug_id": null},
+  {"seed": 100,  "tier": "hard-or-bug", "reason": "low reachability, dense terrain",                             "expected_band": "choke-dense",   "reachable_cells": 348, "bug_id": null},
+  {"seed": 3000, "tier": "hard-or-bug", "reason": "low reachability, fragmented routing",                        "expected_band": "choke-dense",   "reachable_cells": 384, "bug_id": null},
+  {"seed": 21,   "tier": "hard-or-bug", "reason": "sub-500 reachability, constrained ascent",                    "expected_band": "choke-dense",   "reachable_cells": 464, "bug_id": null}
+]
