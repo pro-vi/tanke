@@ -1,0 +1,12 @@
+{
+  "survival_time_sec": -3.0,
+  "damage_taken": 2,
+  "shells_fired_per_class": {"AP": 5, "HE": 1, "HEAT": 0},
+  "shell_hit_rate": 1.7,
+  "reload_cancel_events": 1,
+  "time_exposed_pct": 0.78,
+  "ui_action_correlation": {"reload_bar": 0.3},
+  "seed": 42,
+  "bot_id": "",
+  "schema_version": "v0.2"
+}

@@ -70,10 +70,17 @@ Frozen on emit. `status` and `last_verification` mutate; everything else is cont
     `make check-telemetry-schema` exits 0 AND stdout contains `TELEMETRY_OK <N>/<N> files conform`. The check runs against a fixture telemetry JSON (oracle-independence: a hand-crafted INVALID fixture in `tests/fixtures/telemetry_bad.json` must fail the verifier first; a hand-crafted VALID fixture must pass).
 - fail_evidence: |
     Schema validator missing OR fixture-bad passes OR fixture-good fails OR any required field missing from emitted JSON.
-- status: OPEN
+- status: PASS_PENDING_FINAL
 - depends_on: []
 - reopen_condition: schema changes (any field added/removed/renamed) OR new bot generates non-conforming JSON
-- last_verification: null
+- last_verification: |
+    iter 3 (U4a): `make check-telemetry-schema` -> `TELEMETRY_OK 2/2 fixtures
+    conform`. TelemetrySchema.validate() ACCEPTS tests/fixtures/telemetry_good.json
+    and REJECTS telemetry_bad.json (8 violations) — oracle teeth proven (a
+    rubber-stamp validator fails the bad-fixture case). Validator tolerates
+    JSON int-as-float typing. The PRODUCER (TelemetryRecorder, U4b) is proven
+    transitively by check-84-runs (AC-004): every one of the 84 emitted JSONs
+    must validate against this same schema.
 
 ---
 

@@ -50,3 +50,24 @@ Per PROMPT.md § Artifacts. Each accepted change cites ≥1 criterion ID.
 **Status moves**: none (AC-001 needs U6's 7 bots for `check-bots`; AC-002 needs U4). U3 unblocks U6/U7.
 
 **Next**: U4 TelemetryRecorder + schema + good/bad fixtures (AC-002) — reuse ObservationBuilder; death_cause by nearest-threat heuristic + timeout + victory; find FileAccess/JSON.stringify precedent. Then U5 seeds, U6 bots, U7 batch.
+
+---
+
+## iter 3 — 2026-05-28 — U4a telemetry schema contract + fixtures (AC-002)
+
+**criterion-id | failing-evidence | hypothesis | edit-surface | rollback**
+`AC-002 | no telemetry schema/validator exists | a TelemetrySchema.validate() + good/bad fixtures define + enforce the contract; bad must fail first (teeth) | scripts/telemetry/TelemetrySchema.gd + tests/fixtures/telemetry_{good,bad}.json + verifier | rm new files`
+
+**Decision**: split U4 into U4a (schema + fixtures = AC-002's actual verifier `check-telemetry-schema`) and U4b (TelemetryRecorder producer, gated transitively by AC-004's 84 conforming runs). Lets AC-002 reach PASS_PENDING_FINAL on the schema oracle without prematurely building U7's scene machinery.
+
+**Did**:
+- `scripts/telemetry/TelemetrySchema.gd` — `validate(t) -> Array` (empty = valid) for all 11 AC-002 fields (survival_time_sec, damage_taken, shells_fired_per_class{AP,HE,HEAT,APCR}, shell_hit_rate[0,1], reload_cancel_events, time_exposed_pct[0,1], death_cause enum, ui_action_correlation{reload_bar,shell_chip,ribbon_visible}, seed, bot_id, schema_version=="v0.1"). `_is_int_like` tolerates JSON int-as-float so the SAME validator passes disk fixtures + the recorder's in-memory ints.
+- `tests/fixtures/telemetry_good.json` (valid) + `telemetry_bad.json` (8 deliberate violations).
+- Red→green: `test_telemetry_schema.gd` parse-failed (TelemetrySchema undeclared) → after create + `--import`, `TELEMETRY_OK 2/2 fixtures conform`. Teeth: bad fixture REJECTED (8 violations) — a rubber-stamp validator fails this case.
+- Makefile: `check-telemetry-schema`.
+
+**Verified / accepted**: `make check-telemetry-schema` → `TELEMETRY_OK 2/2 fixtures conform` (exit 0). Impact guards green: `make test`, `check-bot-driver`, `check-hash-anchor` all pass.
+
+**Status moves**: AC-002 OPEN → PASS_PENDING_FINAL (own verifier green + teeth).
+
+**Next**: U4b TelemetryRecorder (producer; reuse ObservationBuilder; signals shoot/hp_changed/died/lives_changed; death_cause by nearest-threat heuristic + timeout(30s) + victory(GOAL_ROW=0); shell_hit_rate via run_recap if present; reads BotInputDriver.last_action for ui_action_correlation). Then U5 seeds, U6 7 bots, U7 batch.

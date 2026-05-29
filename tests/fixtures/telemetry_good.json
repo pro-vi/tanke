@@ -1,0 +1,13 @@
+{
+  "survival_time_sec": 12.5,
+  "damage_taken": 2,
+  "shells_fired_per_class": {"AP": 5, "HE": 1, "HEAT": 0, "APCR": 2},
+  "shell_hit_rate": 0.625,
+  "reload_cancel_events": 1,
+  "time_exposed_pct": 0.78,
+  "death_cause": "projectile",
+  "ui_action_correlation": {"reload_bar": 0.3, "shell_chip": 0.1, "ribbon_visible": 0.0},
+  "seed": 42,
+  "bot_id": "approach-enemy",
+  "schema_version": "v0.1"
+}
