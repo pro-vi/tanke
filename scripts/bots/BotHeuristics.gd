@@ -121,6 +121,24 @@ static func step_climb(from_tile: Vector2i, blocked: Dictionary, radius: int) ->
 	return step_bfs(from_tile, Vector2i(from_tile.x, from_tile.y - radius - 1), blocked, radius)
 
 
+# Minkowski-inflate a blocked set by (hx, hy) tiles — every blocked tile also
+# blocks its neighbours within that radius. Models a body wider than one tile:
+# a 16px tank (2 cells) on an 8px grid extends ~1 tile from its centre, so
+# inflating by (1, 0) keeps a width-aware climb from routing the centre into a
+# gap the tank can't actually fit through (the 8px single-file path bug). hx==0
+# and hy==0 returns the input unchanged.
+static func inflate(blocked: Dictionary, hx: int, hy: int) -> Dictionary:
+	if hx <= 0 and hy <= 0:
+		return blocked
+	var out := {}
+	for t in blocked.keys():
+		var bt: Vector2i = t
+		for dx in range(-hx, hx + 1):
+			for dy in range(-hy, hy + 1):
+				out[Vector2i(bt.x + dx, bt.y + dy)] = true
+	return out
+
+
 # Bounded BFS first-step toward `goal` (or the reachable tile nearest goal within
 # `radius`). General maze navigation: returns the Dir of the first step on a
 # shortest path. NONE if no reachable free tile improves on staying put.

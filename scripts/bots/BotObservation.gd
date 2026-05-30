@@ -27,6 +27,10 @@ var speed_meter_normalized: float = 1.0
 
 # --- spatial state (what the rendered tiles reveal) ---
 var player_pos_tile: Vector2i = Vector2i.ZERO
+# Raw world-space position (px). The 8px tile is too coarse for the motion
+# executor's lane-error correction (a few px of perpendicular drift is what makes
+# the 16px tank clip flanks), so the arc bot reads the continuous position here.
+var player_pos_px: Vector2 = Vector2.ZERO
 # Each: {pos_tile: Vector2i, hp: int, type: String}
 var visible_enemies: Array[Dictionary] = []
 # Each: {pos_tile: Vector2i, type: String}  (type: "brick"|"steel")
@@ -34,6 +38,11 @@ var visible_obstacles: Array[Dictionary] = []
 # Each: {pos_tile: Vector2i, dir: Vector2, shell_class: int, owner: String}
 # owner: "player" | "enemy"
 var visible_projectiles: Array[Dictionary] = []
+# Each: {pos_tile: Vector2i, name: String}  (breach-mode field depots, what a
+# human sees as the next safe-gate). Empty in fixed rooms (Q1ProofRoom has none),
+# so the 7 Q1 policies see [] and are unaffected — only the arc CompetentBot
+# reads this to steer onto a depot's column and trigger its upgrade gate.
+var visible_depots: Array[Dictionary] = []
 
 # --- progress (real arc) ---
 # rows climbed from the run start, in the level's 16px logical grid (the game's

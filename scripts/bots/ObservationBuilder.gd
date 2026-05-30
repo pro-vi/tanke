@@ -37,6 +37,7 @@ static func build(player: Node, level: Node, iter_n: int, time_sec: float) -> Bo
 	obs.player_hp_max = int(player.get("max_hp"))
 	obs.current_shell_class = int(player.get("current_shell"))
 	obs.player_pos_tile = _to_tile(player.global_position)
+	obs.player_pos_px = player.global_position   # continuous pos for motion lane-error
 
 	# rows climbed (16px logical grid) from the start — the game's depth metric
 	var start_y = player.get("_start_y")
@@ -108,21 +109,45 @@ static func build(player: Node, level: Node, iter_n: int, time_sec: float) -> Bo
 					"owner": "player" if src == "" else "enemy",
 				})
 			elif c is StaticBody2D:
-				# classify by name SUBSTRING (Q1 names blocks BrickBlock_c_r;
-				# ProceduralLevel auto-names converted blocks @BrickBlock@N — both
-				# CONTAIN the type; begins_with missed the @-prefixed ones) within
-				# a screen of the player (faithful + bounds the scan cost on the arc)
+				# Classify terrain by GROUP + SCRIPT, then name. The procedural
+				# BreachLevel instantiates BrickBlock.tscn whose ROOT is a bare
+				# StaticBody2D, so converted bricks auto-name `@StaticBody2D@N` —
+				# a name-substring match (Q1's "BrickBlock_c_r") misses every one,
+				# which left the bot blind to the entire procedural climb. The
+				# attached script path (res://scripts/BrickBlock.gd) is the stable
+				# tell; steel self-registers in group "steel". Scoped to a screen
+				# of the player (faithful + bounds scan cost on the arc).
+				# WaterBlock.tscn is a SCRIPTLESS StaticBody2D on collision layer 512,
+				# and only the first instance keeps the name "WaterBlock" — the rest
+				# auto-name `@StaticBody2D@N`, so neither name nor script identifies
+				# them. The collision LAYER does (512 == water), which is why a tank
+				# kept wedging on invisible water it couldn't see or breach.
 				var nm: String = c.name
+				var sp: String = ""
+				var scr = c.get_script()
+				if scr != null and scr.resource_path != null:
+					sp = String(scr.resource_path)
+				var layer: int = int(c.collision_layer)
 				var kind: String = ""
-				if nm.contains("Brick"):
-					kind = "brick"
-				elif nm.contains("Steel") or c.is_in_group("steel"):
+				if c.is_in_group("steel") or nm.contains("Steel") or sp.contains("Steel"):
 					kind = "steel"
-				elif nm.contains("Water"):
+				elif (layer & 512) != 0 or nm.contains("Water") or sp.contains("Water"):
 					kind = "water"
+				elif nm.contains("Brick") or sp.contains("Brick"):
+					kind = "brick"
 				if kind != "":
 					var ot: Vector2i = _to_tile(c.global_position)
 					if abs(ot.x - obs.player_pos_tile.x) + abs(ot.y - obs.player_pos_tile.y) <= VISION_TILES:
 						obs.visible_obstacles.append({"pos_tile": ot, "type": kind})
+			elif c is Area2D and c.has_method("apply_choice"):
+				# breach-mode field depot — the next safe-gate a human sees.
+				# Duck-typed on the public apply_choice (Depot.gd:355). Lets the
+				# arc CompetentBot steer onto the depot column to trigger its
+				# upgrade gate. Absent in fixed rooms -> visible_depots stays [].
+				var dt: Vector2i = _to_tile(c.global_position)
+				if abs(dt.x - obs.player_pos_tile.x) + abs(dt.y - obs.player_pos_tile.y) <= VISION_TILES:
+					var dn = c.get("depot_name")
+					var nm2: String = str(dn) if dn != null and str(dn) != "" else String(c.name)
+					obs.visible_depots.append({"pos_tile": dt, "name": nm2})
 
 	return obs

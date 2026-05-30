@@ -1,0 +1,30 @@
+{
+  "survival_time_sec": 142.0,
+  "damage_taken": 38,
+  "shells_fired_per_class": {"AP": 47, "HE": 6, "HEAT": 9, "APCR": 4},
+  "shell_hit_rate": 0.71,
+  "reload_cancel_events": 12,
+  "time_exposed_pct": 0.64,
+  "death_cause": "victory",
+  "ui_action_correlation": {"reload_bar": 0.42, "shell_chip": 0.18, "ribbon_visible": 0.05},
+  "seed": 1234,
+  "bot_id": "competent",
+  "schema_version": "v0.2-arc",
+  "max_depth": 184,
+  "final_band": "endgame_mixed",
+  "reached_endgame": true,
+  "bands_reached": ["tutorial_choke", "brick_maze", "bunker_zone", "open_killbox", "endgame_mixed"],
+  "band_segments": [
+    {"band": "tutorial_choke", "entered_sec": 0.0, "duration_sec": 18.5, "shells_fired": {"AP": 9, "HE": 0, "HEAT": 0, "APCR": 0}, "damage_taken": 2},
+    {"band": "brick_maze", "entered_sec": 18.5, "duration_sec": 41.0, "shells_fired": {"AP": 8, "HE": 6, "HEAT": 0, "APCR": 0}, "damage_taken": 7},
+    {"band": "bunker_zone", "entered_sec": 59.5, "duration_sec": 49.5, "shells_fired": {"AP": 12, "HE": 0, "HEAT": 9, "APCR": 4}, "damage_taken": 21},
+    {"band": "open_killbox", "entered_sec": 109.0, "duration_sec": 31.0, "shells_fired": {"AP": 16, "HE": 0, "HEAT": 0, "APCR": 0}, "damage_taken": 6},
+    {"band": "endgame_mixed", "entered_sec": 140.0, "duration_sec": 2.0, "shells_fired": {"AP": 2, "HE": 0, "HEAT": 0, "APCR": 0}, "damage_taken": 2}
+  ],
+  "depot_picks": [
+    {"depot": "depot_1", "kind": 0, "band_next": "brick_maze"},
+    {"depot": "depot_2", "kind": 4, "band_next": "bunker_zone"},
+    {"depot": "depot_3", "kind": 1, "band_next": "open_killbox"},
+    {"depot": "depot_4", "kind": 8, "band_next": "endgame_mixed"}
+  ]
+}

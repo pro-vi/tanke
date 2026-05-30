@@ -23,10 +23,13 @@ var _iter_n: int = 0
 var _run_start_ms: int = 0
 
 # motor-level stuck-recovery state (see _unstick)
-const STUCK_TICKS := 6           # ticks of zero displacement before slipping
+const STUCK_TICKS := 6           # ticks of zero displacement before an escape shimmy
+const SHIMMY_HOLD := 3           # ticks to hold each escape micro-direction
 var _last_pos := Vector2.INF
 var _stuck_ticks: int = 0
-var _slip_side: int = 0          # index into perpendiculars(); flips if still stuck
+var _escape_active: bool = false # true while running an escape shimmy
+var _escape_phase: int = 0       # which escape micro-direction (cycles)
+var _escape_hold: int = 0        # ticks held on the current escape micro-direction
 
 # The most recent action applied — read by TelemetryRecorder for
 # ui_action_correlation + reload_cancel accounting (sibling, optional).
@@ -80,18 +83,41 @@ func _unstick(action: BotAction) -> BotAction:
 	if not is_instance_valid(player):
 		return action
 	var pos: Vector2 = player.global_position
-	if action.move_dir != BotAction.NONE and _last_pos != Vector2.INF and pos.distance_to(_last_pos) < 0.5:
-		_stuck_ticks += 1
-	else:
-		_stuck_ticks = 0
+	var moved := _last_pos != Vector2.INF and pos.distance_to(_last_pos) >= 0.5
 	_last_pos = pos
-	if _stuck_ticks >= STUCK_TICKS and action.move_dir != BotAction.NONE:
-		var perps := BotHeuristics.perpendiculars(action.move_dir)
-		if _stuck_ticks >= STUCK_TICKS * 3:  # slip didn't work -> try the other side
-			_slip_side = 1 - _slip_side
-			_stuck_ticks = STUCK_TICKS
-		return BotAction.new(perps[_slip_side], action.fire, action.shell_swap_to)
+	if moved:
+		_stuck_ticks = 0
+		_escape_active = false   # progress resumed -> drop the shimmy, obey the policy
+	elif action.move_dir != BotAction.NONE:
+		_stuck_ticks += 1
+	if action.move_dir == BotAction.NONE:
+		return action            # policy isn't trying to move (firing/swapping in place)
+
+	# Escape shimmy: the previous recovery only held ONE perpendicular and never
+	# reversed, so it couldn't back the 16px tank out of a corner — it would grind
+	# in place. When wedged, cycle rapidly through BOTH perpendiculars and REVERSE
+	# (a few ticks each), exiting the instant the tank moves. Fire is preserved
+	# through the shimmy, so a perpendicular nudge can also breach a FLANKING brick
+	# (the exact wedge a forward-only shot never clears).
+	if not _escape_active and _stuck_ticks >= STUCK_TICKS:
+		_escape_active = true
+		_escape_phase = 0
+		_escape_hold = 0
+	if _escape_active:
+		var escapes := _escape_dirs(action.move_dir)
+		var d: int = escapes[_escape_phase % escapes.size()]
+		_escape_hold += 1
+		if _escape_hold >= SHIMMY_HOLD:
+			_escape_hold = 0
+			_escape_phase += 1
+		return BotAction.new(d, action.fire, action.shell_swap_to)
 	return action
+
+
+# Escape micro-directions for a wedged move: both perpendiculars, then reverse.
+func _escape_dirs(dir: int) -> Array:
+	var perps := BotHeuristics.perpendiculars(dir)
+	return [perps[0], perps[1], BotHeuristics.opposite(dir)]
 
 
 # Synthesize input for a single action. Public so the unit verifier can drive it
