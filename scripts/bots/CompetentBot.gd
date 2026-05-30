@@ -78,13 +78,20 @@ func tick(obs: BotObservation) -> BotAction:
 	if step == BotHeuristics.NONE:
 		step = Constants.Dir.U   # fully enclosed by known impassable — push up + breach-try
 
+	# Finalize the heading FIRST — a depot detour can override the climb step with a
+	# horizontal L/R seek. fire/swap MUST be derived from the heading the tank will
+	# ACTUALLY face, or a shot meant to breach a blocker above is emitted while the
+	# tank faces sideways: the breach never lands and the tank stays blocked.
+	# (PR#5 review #3: compose fire/swap on the final move, not the pre-bias step.)
+	var move := _depot_bias(obs, pos, raw, step)
+
 	# 3. FIRE/SWAP while moving — NEVER halt for combat. The tank faces its move
 	# direction, so a forward shot hits whatever is along it: breach the terrain
 	# blocker ahead (steel->APCR, dense brick wall->HE, else cheap AP), or shoot an
 	# enemy lined up that way (Heavy->HEAT). Off-axis enemies are climbed past.
 	var fire := false
 	var swap := BotAction.NO_SWAP
-	var blk := _blocker_ahead(obs, pos, step)
+	var blk := _blocker_ahead(obs, pos, move)
 	if blk == "steel":
 		if _reserve(obs, SHELL_APCR) > 0:
 			if obs.current_shell_class != SHELL_APCR:
@@ -93,13 +100,13 @@ func tick(obs: BotObservation) -> BotAction:
 				fire = true
 	elif blk == "brick":
 		fire = true
-		if step == Constants.Dir.U and _footprint_brick_density(obs, pos) >= 3 \
+		if move == Constants.Dir.U and _footprint_brick_density(obs, pos) >= 3 \
 				and _reserve(obs, SHELL_HE) > 0:
 			if obs.current_shell_class != SHELL_HE:
 				swap = SHELL_HE
 				fire = false   # cycle to HE first; breach the wide lane next tick
 	else:
-		var foe := _enemy_in_dir(obs, pos, step, raw)
+		var foe := _enemy_in_dir(obs, pos, move, raw)
 		if not foe.is_empty() and obs.reload_bar_value >= RELOAD_READY:
 			fire = true
 			if str(foe.get("type", "")) == "Heavy" and _reserve(obs, SHELL_HEAT) > 0 \
@@ -107,7 +114,7 @@ func tick(obs: BotObservation) -> BotAction:
 				swap = SHELL_HEAT
 				fire = false   # cycle to HEAT first
 
-	return BotAction.new(_depot_bias(obs, pos, raw, step), fire, swap)
+	return BotAction.new(move, fire, swap)
 
 
 # An enemy lined up on the cardinal axis in direction `dir` from pos with a clear

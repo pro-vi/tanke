@@ -102,6 +102,16 @@ func _initialize() -> void:
 		[_depot(Vector2i(9, 2))]))
 	failures += _expect("depot above off-column -> steers toward its column", dp.move_dir == Dir.R)
 
+	# 4c. COMPOSE (PR#5 review #3) — a brick is directly above AND a depot pulls the
+	# tank sideways. fire/swap must follow the FINAL heading (R toward the depot),
+	# not the climb step (U): the tank faces R, nothing breachable is ahead that way,
+	# so it must NOT fire a shot that would miss. Teeth: pre-fix this fired the
+	# brick-breach (UP) logic while the tank faced R.
+	var cmp := CompetentBotT.new().tick(_obs(Vector2i(5, 5), [], [_ob(Vector2i(5, 4), "brick")], [],
+		{"AP": -1, "HE": 0, "HEAT": 0, "APCR": 0}, AP, 1.0, [_depot(Vector2i(9, 2))]))
+	failures += _expect("blocker-above + off-column depot -> steers to depot (R)", cmp.move_dir == Dir.R)
+	failures += _expect("blocker-above + off-column depot -> does NOT fire sideways", cmp.fire == false)
+
 	if failures == 0:
 		print("COMPETENT_OK")
 		quit(0)
