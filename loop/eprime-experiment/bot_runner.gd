@@ -94,8 +94,16 @@ func _run_one(bot: String, seed_v: int, out_dir: String) -> Dictionary:
 		await process_frame
 		return {"ok": false, "cause": "", "errs": ["no PlayerTank spawned"], "frames": 0}
 
+	# PR#5 review #8 — null policy must FAIL LOUD, not idle the tank into a vacuous
+	# schema-valid timeout counted in RUNS_OK. BotRegistry.has(bot) can pass while
+	# make(bot) returns null (a missing/failed script). Mirrors arc_run_helper:71-73.
+	var policy := BotRegistry.make(bot)
+	if policy == null:
+		level.queue_free()
+		await process_frame
+		return {"ok": false, "cause": "", "errs": ["bot policy null for id '%s' (no silent skip)" % bot], "frames": 0}
 	var driver := BotInputDriver.new()
-	driver.bot_policy = BotRegistry.make(bot)
+	driver.bot_policy = policy
 	driver.player = player
 	driver.level = level
 	level.add_child(driver)
@@ -108,6 +116,15 @@ func _run_one(bot: String, seed_v: int, out_dir: String) -> Dictionary:
 	rec.bot_id = bot
 	rec.out_path = "%s/seed_%d_bot_%s.json" % [out_dir, seed_v, bot]
 	level.add_child(rec)
+
+	# PR#5 review #2 — determinism: re-seed AFTER the 4 setup frames (mirror
+	# arc_run_helper). Q1ProofRoomScene spawns enemies in _ready (EnemyScene.
+	# instantiate, scene L98/L112); during the setup frames they — and any prior
+	# run's not-yet-freed stragglers — consume the global RNG, so the run-proper
+	# enemy-fire stagger otherwise depends on batch ORDER. This is NOT a no-op: it
+	# corrects an order-dependent value (the canonical matrix shifts victory 2->1 to
+	# the order-INDEPENDENT result). RUNS_OK 84/84 count + HASH_OK anchor preserved.
+	seed(seed_v)
 
 	var frames := 0
 	while not rec._ended and frames < MAX_FRAMES:
@@ -132,9 +149,12 @@ func _run_one(bot: String, seed_v: int, out_dir: String) -> Dictionary:
 			errs = ["telemetry file not written: %s" % path]
 		else:
 			var f := FileAccess.open(path, FileAccess.READ)
-			var disk = JSON.parse_string(f.get_as_text())
-			f.close()
-			errs = TelemetrySchema.validate(disk)
+			if f == null:   # exists() can pass yet open() fail (lock/perm) — don't crash the batch (PR#5 #9)
+				errs = ["telemetry file unreadable: %s (err %d)" % [path, FileAccess.get_open_error()]]
+			else:
+				var disk = JSON.parse_string(f.get_as_text())
+				f.close()
+				errs = TelemetrySchema.validate(disk)
 
 	return {"ok": errs.is_empty(), "cause": cause, "errs": errs, "frames": frames}
 
@@ -168,6 +188,8 @@ func _parse_seeds(args: PackedStringArray, flag: String) -> Array:
 	if not FileAccess.file_exists(SEEDS_PATH):
 		return []
 	var f := FileAccess.open(SEEDS_PATH, FileAccess.READ)
+	if f == null:   # exists() can pass yet open() fail (lock/perm) (PR#5 #9, second site)
+		return []
 	var bank = JSON.parse_string(f.get_as_text())
 	f.close()
 	var seeds: Array = []
