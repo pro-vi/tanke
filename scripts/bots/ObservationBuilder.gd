@@ -18,7 +18,17 @@ extends RefCounted
 const CELL_PX: float = 8.0
 const SPEED_BASELINE: float = 32.0  # PlayerTank SPEED_BASELINE:145
 const DEPTH_PX: float = 16.0        # level's logical grid for rows-climbed/depth
-const VISION_TILES: int = 30        # only obstacles within ~a screen of the player
+const VISION_TILES: int = 30        # terrain/depot planning horizon (~a screen of the player)
+# On-screen half-extents in 8px tiles for the 320x240 viewport (project.godot
+# window/size). The viewport is 320x240, player roughly centered, so only ~20
+# tiles each side horizontally (160px) and ~15 vertically (120px) are actually
+# rendered. ENEMIES use this strict per-axis bound — not the looser VISION_TILES
+# Manhattan radius — because off-screen enemy positions feed aiming/dodging and
+# exposure telemetry, which must honor the screen-visible observation contract
+# (PR#5 #6 follow-up). Terrain/depot scans keep VISION_TILES: they are a planning
+# horizon (NavMemory accumulation), not a combat-fairness surface.
+const VIEWPORT_HALF_X_TILES: int = 20   # 320px / 8px / 2
+const VIEWPORT_HALF_Y_TILES: int = 15   # 240px / 8px / 2
 
 
 static func _to_tile(world: Vector2) -> Vector2i:
@@ -82,18 +92,21 @@ static func build(player: Node, level: Node, iter_n: int, time_sec: float) -> Bo
 	obs.speed_meter_normalized = spd / SPEED_BASELINE
 
 	# --- spatial: enemies (group "enemy") ---
-	# Screen-visible only: enemies beyond ~a screen (VISION_TILES) are off-screen and
-	# must NOT inform aiming/dodging — same scope the obstacle + depot scans use below.
-	# Without this the bot got ground-truth knowledge of off-viewport enemies, breaking
-	# the screen-visible observation contract the telemetry measures (PR#5 #6). The
-	# fixed Q1 room keeps every enemy within a screen, so this is a no-op there.
+	# Screen-visible only, by the VIEWPORT half-extents (per-axis), NOT a Manhattan
+	# radius: a 30-tile Manhattan cutoff still admits an enemy ~30 tiles (~240px) away
+	# on a cardinal axis, which is off-camera in a 320x240 viewport (~20x15 visible
+	# tiles). Off-screen enemy positions must NOT inform aiming/dodging or exposure
+	# telemetry — that breaks the screen-visible observation contract the harness
+	# measures (PR#5 #6 + Codex follow-up). The fixed Q1 room keeps every enemy within
+	# a screen, so this is a no-op there.
 	var tree := player.get_tree()
 	if tree != null:
 		for e in tree.get_nodes_in_group("enemy"):
 			if e == null or not is_instance_valid(e):
 				continue
 			var et: Vector2i = _to_tile(e.global_position)
-			if abs(et.x - obs.player_pos_tile.x) + abs(et.y - obs.player_pos_tile.y) > VISION_TILES:
+			if abs(et.x - obs.player_pos_tile.x) > VIEWPORT_HALF_X_TILES \
+					or abs(et.y - obs.player_pos_tile.y) > VIEWPORT_HALF_Y_TILES:
 				continue
 			obs.visible_enemies.append({
 				"pos_tile": et,
