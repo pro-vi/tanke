@@ -145,3 +145,39 @@ These carry from `loop/breach/PROMPT.md` lineage as operational disciplines — 
 4. `loop/eprime-experiment/iter-0-architect.md` — Deep blueprint with 9 implementation units (U1..U9), 9 decisive architectural choices, substrate-touch checklist, bug-trace cross-check, risks
 5. `/Users/provi/Development/_projs/tanke/loop/originals/iter027-meta-arc3-ceiling.md` — arc-3 PATTERN 5 (input-synthesis via `Input.parse_input_event`) — precedent for U2 + U3 implementation
 6. `loop/breach/CONSULT-LEDGER.md` — consult-001 §3 bot-playtester architecture rationale + P2+P3 predictions the harness measures structurally
+
+## arc-harness-v0.2 (competent bot on the REAL arc) — SHIPPED 2026-05-30, honest-capability
+
+✅ `make arc-harness` → `ARC_HARNESS_OK` in one repo state alongside the Q1 guards
+(`BOT_HARNESS_OK 84/84`, `make test-all`, `HASH_OK 23d6a2ec…4024291`). The composite
+`CompetentBot` (deliberately NOT in `BotRegistry`) plays `BreachLevel` and emits
+per-band v0.2-arc telemetry. AC-A1..A4 all green. See `ACCEPTANCE-arc.md`,
+`NIGHT-REPORT-U10.md`, the `2026-05-29-001-feat-arc-competent-bot-plan.md` blueprint.
+
+**Honest capability:** competent reaches mid-`tutorial_choke` (band 0), median
+max_depth ~6–13 (seed-set dependent), decisively out-climbing every single-verb bot
+(objective-rush=0). Does NOT reach endgame or clear band 0.
+
+**U10 (motion-primitive controller) — DISCONFIRMED, do NOT redo.** The plan's premise
+(a footprint-aligned motion controller lifts the depth ceiling) was built in two
+variants and measured WORSE than the committed baseline (footprint-lane BFS median
+8.5, brick-cost Dijkstra median 2, vs baseline 13). Reverted the bot; kept only the
+genuine win — a determinism re-seed in `arc_run_helper`. The negative result IS the
+deliverable.
+
+### next_action (arc-5) — SURVIVAL, not navigation
+
+The depth ceiling is **enemy survival, not pathing**: the tank has **3 HP** and the
+Spawner ramps spawn rate up to **2.5×** when ascent < 0.3 rows/s, so a slow climb
+self-amplifies the swarm. Deaths are `melee`/`projectile`/`suicide`. Next push:
+pre-emptive evasion of Heavy aim-fire lines, kite-while-reload, clear lane-blocking
+enemies before advancing, don't linger in open sightlines — verify against the
+**death-cause mix**, not just max_depth. (Navigation rewrites are a measured dead end;
+don't re-tune motion.)
+
+- **Tidy-up:** the U6 oracle (`test_arc_climb.gd`) uses its own seed set (median 13)
+  while the arc batch uses the canonical seed-bank seeds (median 6). Point the oracle
+  at the seed-bank seeds so the two medians reconcile (small follow-up).
+- **LLM-between-runs loop** — feed v0.2-arc telemetry to an LLM that proposes the next
+  survival heuristic.
+- Score consult-001 P2/P3 legibility predictions against real telemetry.

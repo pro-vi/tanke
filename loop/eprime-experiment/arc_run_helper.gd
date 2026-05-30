@@ -86,6 +86,14 @@ func run_one(tree: SceneTree, bot_id: String, seed_v: int, out_path: String) -> 
 	rec.out_path = out_path
 	level.add_child(rec)
 
+	# Determinism: re-seed the global RNG AFTER setup settles. The 4 setup frames
+	# (and any not-yet-freed stragglers from a prior run in the same process) tick
+	# the Spawner and consume randf(), which otherwise offsets this run's enemy-fire
+	# stagger by an amount that depends on run order. Re-seeding here pins the
+	# run-proper enemy RNG to seed_v regardless of what ran during setup, so a seed
+	# yields the same trajectory whether run first or tenth in a batch.
+	seed(seed_v)
+
 	var frames := 0
 	while not rec._ended and frames < ARC_MAX_FRAMES:
 		await tree.process_frame

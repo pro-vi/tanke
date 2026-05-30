@@ -242,6 +242,48 @@ check-orchestration:
 bot-harness: check-hash-anchor check-bots-base check-bots check-bot-driver check-telemetry-schema check-telemetry-recorder check-seed-bank check-84-runs check-orchestration
 	@echo "BOT_HARNESS_OK 84/84"
 
+# ============================================================================
+# arc-harness-v0.2 (E′ experiment) — the competent bot on the REAL procedural
+# arc (BreachLevel). NEW targets only; the frozen Q1 bot-harness above is left
+# bit-identical. Same house style: visible run + `grep -q` positive sentinel.
+# ============================================================================
+
+.PHONY: check-competent-bot check-arc-telemetry-schema check-arc-telemetry-recorder check-arc-runs check-arc-climb arc-harness
+
+# AC-A1 — the composite CompetentBot loads as a BotPolicy, returns a VALID action
+# for every observation (teeth: null/garbage caught), and exhibits each verb.
+check-competent-bot:
+	@$(HEADLESS) --script res://loop/eprime-experiment/test_competent_bot.gd 2>&1 | grep -E "^(  case|  behaviour|  FAIL|COMPETENT_OK|COMPETENT_FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/eprime-experiment/test_competent_bot.gd 2>&1 | grep -q "^COMPETENT_OK"
+
+# AC-A2 — arc telemetry SCHEMA contract (v0.2-arc superset) + oracle independence.
+check-arc-telemetry-schema:
+	@$(HEADLESS) --script res://loop/eprime-experiment/test_arc_telemetry_schema.gd 2>&1 | grep -E "^(  fixture|  FAIL|ARC_TELEMETRY_OK|ARC_TELEMETRY_SCHEMA_FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/eprime-experiment/test_arc_telemetry_schema.gd 2>&1 | grep -q "^ARC_TELEMETRY_OK"
+
+# AC-A2 — ArcTelemetryRecorder emits a schema-conforming v0.2-arc record (stub scene).
+check-arc-telemetry-recorder:
+	@$(HEADLESS) --script res://loop/eprime-experiment/test_arc_telemetry_recorder.gd 2>&1 | grep -E "^(  case|  FAIL|ARC_RECORDER_OK|ARC_RECORDER_FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/eprime-experiment/test_arc_telemetry_recorder.gd 2>&1 | grep -q "^ARC_RECORDER_OK"
+
+# AC-A3 — competence oracle: competent traverses the arc, out-climbing the
+# single-verb baseline (teeth: objective-rush stalls). Honest distribution recorded.
+check-arc-climb:
+	@out=$$($(HEADLESS) --fixed-fps 60 --script res://loop/eprime-experiment/test_arc_climb.gd 2>&1); \
+	echo "$$out" | grep -E "^(  competent|  baseline|  case|  FAIL|ARC_CLIMB_OK|ARC_CLIMB_FAIL|SCRIPT ERROR)"; \
+	echo "$$out" | grep -q "^ARC_CLIMB_OK"
+
+# AC-A4 — arc batch integration proof: arc roster x seed bank, conforming JSON, no crash.
+check-arc-runs:
+	@out=$$($(HEADLESS) --fixed-fps 60 --script res://loop/eprime-experiment/arc_runner.gd 2>&1); \
+	echo "$$out" | grep -E "^(ARC_RUNS_OK|ARC_RUNS_FAIL|  RUN_FAIL|SCRIPT ERROR)"; \
+	echo "$$out" | grep -q "^ARC_RUNS_OK"
+
+# AC-A1..A4 composite final-verify. Does NOT touch the Q1 bot-harness (run
+# `make bot-harness` separately for the 84/84 guard).
+arc-harness: check-hash-anchor check-competent-bot check-arc-telemetry-schema check-arc-telemetry-recorder check-arc-climb check-arc-runs
+	@echo "ARC_HARNESS_OK"
+
 # Arc-4 breach mode: verify configs/breach_default.tres loads cleanly
 # with >=2 distinct bands and per-band terrain-weight overrides (C4
 # anchor 1 structural cite).

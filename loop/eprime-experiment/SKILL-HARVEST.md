@@ -37,3 +37,26 @@ Reusable process lessons surfaced by this loop. Format per PROMPT.md § Skill Ha
 - **why it generalizes**: The local-by-value capture is a language-level GDScript semantic; any agent reaching for the idiomatic 'collect into a closure variable' pattern (common from JS/Python habits where closures capture by reference) hits it. It is silent and survives small tests (which often use members), surfacing only at scale.
 - **suggested patch wording**: (above — add to `/architect`/`/build` GDScript gotchas, and the repo overlay.)
 - **accidental-encouragement risk**: Negligible — it steers toward member-var or direct-field reads, both safe.
+
+---
+
+## SH-004 (arc-harness-v0.2): trust FileAccess output, NEVER tool-display output, for numerical telemetry
+
+- **target skill**: any `/loopgen` / `/build` loop that reads numerical results back from a headless run; deserves a Psyche concept note (cross-session loop hazard).
+- **observed gap**: In this environment, Bash stdout AND the Read tool's display of long/many-line content were intermittently **garbled** — returning *plausible but wrong* numbers (e.g. a depth distribution displayed as "median 39/42" when the true value, written to a file, was 13). Because the wrong numbers were plausible, they were trusted and written into acceptance docs / oracle thresholds before being caught. This happened more than once in one session and cost multiple iterations of rework + correction.
+- **evidence iteration**: arc-harness-v0.2 U10. A bot rewrite was reported as a 3× depth win ("median 39") from garbled reads; the FileAccess-written `_dist.txt` showed the same build was actually median 8.5 (worse than baseline 13). The error was only caught by writing a one-line summary via `FileAccess` and reading THAT.
+- **proposed rule**: "Never report or threshold a metric you have not read back from a FILE the run wrote via `FileAccess`. Pattern: have the GDScript probe write a SHORT result (ideally one summary line) to `res://…_out.txt`, read it with the Read tool or `od -c`, and cross-check by re-running and `diff`-ing two batches (determinism is itself a correctness check). Treat any number that appears only in streamed Bash stdout or in a long Read render as UNVERIFIED."
+- **why it generalizes**: Any loop that measures a headless harness and feeds the measurement into a gate/threshold/report is exposed. Garbled display is silent and the numbers look real, so it survives until cross-checked. The fix (short FileAccess summary + diff) is cheap and universal.
+- **environment sub-gotchas (same family — silent EMPTY output)**: `godot` is on PATH (`/opt/homebrew/bin/godot`), NOT `./godot`; macOS has **no `timeout`** command — use the runner's own timeout. Both produce empty output that can be mis-read as "test ran and found nothing."
+- **accidental-encouragement risk**: Low. Slightly more ceremony per measurement (write-file + re-run-diff); worth it — an unverified metric in a gate is a false PASS/FAIL.
+
+---
+
+## SH-005 (arc-harness-v0.2): disconfirmation is a deliverable — revert the premise, keep the sub-finding
+
+- **target skill**: `/loopgen` / `/build` bounded-attempt discipline; `/architect` risk framing.
+- **observed gap**: When a planned approach (here: the U10 motion-primitive controller, blessed by the plan + a frontier-model second opinion) is measured WORSE than the existing baseline, the instinct is to keep tuning it (sunk cost) or to quietly lower the acceptance threshold so it "passes." Both corrupt the loop.
+- **evidence iteration**: arc-harness-v0.2 U10. Two motion-controller variants measured worse than the committed baseline (8.5 and 2 vs 13). The correct move was: REVERT the bot to baseline (no regression), KEEP only the orthogonal sub-finding that independently held (a determinism re-seed that fixed a real RNG-leak), and RECORD the negative result in the handover so the next session does not redo motion tuning. The premise died; the instrumentation lived.
+- **proposed rule**: "A bounded attempt that measures worse than baseline is a successful experiment, not a failure to hide. Revert the regressing change, salvage any orthogonal sub-finding that holds on its own measurement, and write the disconfirmation into the next-session handover with the numbers. NEVER lower an acceptance threshold to make a regressing change pass — raise the bar only when capability earns it."
+- **why it generalizes**: Every iterative loop will eventually pursue a plausible hypothesis that doesn't pan out. Treating the negative result as a recorded deliverable (with a 'do not redo' note) prevents the next session from re-burning the same budget.
+- **accidental-encouragement risk**: Low. Could be misread as "give up early"; mitigate by requiring the revert be *measurement-driven* (worse than a real baseline across the bounded attempt), not vibes.
