@@ -79,11 +79,26 @@ static func perpendicular_cardinal(heading: Vector2) -> int:
 	return Constants.Dir.D if perp.y > 0.0 else Constants.Dir.U
 
 
-# Build a set (Dictionary keyed by Vector2i) of blocked tiles from a list of
-# obstacle dicts {pos_tile, type}.
+# Build a set (Dictionary keyed by Vector2i) of MOVEMENT-blocked tiles from a list
+# of obstacle dicts {pos_tile, type} — every obstacle blocks movement.
 static func blocked_set(obstacles: Array) -> Dictionary:
 	var s := {}
 	for o in obstacles:
+		s[o["pos_tile"]] = true
+	return s
+
+
+# Build a set of SHOT-blocking tiles only. Shells collide with the Environment
+# layer (brick + steel, collision_layer 1; bullet mask 9 = 1|8) but PASS THROUGH
+# water (collision_layer 512, verified WaterBlock.tscn / Bullet.tscn). So water is
+# cover for movement but NOT for line-of-fire — feeding it to clear_shot() would
+# make a bot wrongly believe an enemy behind water is un-shootable (PR#5 review #7).
+# (No-op vs blocked_set when there is no water, e.g. the fixed Q1 room.)
+static func shot_blocked_set(obstacles: Array) -> Dictionary:
+	var s := {}
+	for o in obstacles:
+		if str(o.get("type", "")) == "water":
+			continue   # shells pass water — it is not shot-blocking cover
 		s[o["pos_tile"]] = true
 	return s
 

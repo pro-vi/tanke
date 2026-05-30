@@ -82,13 +82,21 @@ static func build(player: Node, level: Node, iter_n: int, time_sec: float) -> Bo
 	obs.speed_meter_normalized = spd / SPEED_BASELINE
 
 	# --- spatial: enemies (group "enemy") ---
+	# Screen-visible only: enemies beyond ~a screen (VISION_TILES) are off-screen and
+	# must NOT inform aiming/dodging — same scope the obstacle + depot scans use below.
+	# Without this the bot got ground-truth knowledge of off-viewport enemies, breaking
+	# the screen-visible observation contract the telemetry measures (PR#5 #6). The
+	# fixed Q1 room keeps every enemy within a screen, so this is a no-op there.
 	var tree := player.get_tree()
 	if tree != null:
 		for e in tree.get_nodes_in_group("enemy"):
 			if e == null or not is_instance_valid(e):
 				continue
+			var et: Vector2i = _to_tile(e.global_position)
+			if abs(et.x - obs.player_pos_tile.x) + abs(et.y - obs.player_pos_tile.y) > VISION_TILES:
+				continue
 			obs.visible_enemies.append({
-				"pos_tile": _to_tile(e.global_position),
+				"pos_tile": et,
 				"hp": int(e.get("hp")) if e.get("hp") != null else 1,
 				"type": str(e.get("enemy_type")) if e.get("enemy_type") != null else "Light",
 			})

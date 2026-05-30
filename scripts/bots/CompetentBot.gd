@@ -51,7 +51,10 @@ func _init() -> void:
 
 func tick(obs: BotObservation) -> BotAction:
 	var pos: Vector2i = obs.player_pos_tile
-	var raw := BotHeuristics.blocked_set(obs.visible_obstacles)   # all — for dodge/clear_shot/depot
+	var raw := BotHeuristics.blocked_set(obs.visible_obstacles)   # all obstacles — movement/dodge/depot
+	# shot line-of-fire: brick+steel block shells, water does NOT (PR#5 #7). Feeding
+	# `raw` (incl. water) to clear_shot would skip winnable shots through water.
+	var shot := BotHeuristics.shot_blocked_set(obs.visible_obstacles)
 	# Fold this tick's terrain into the persistent map (water/steel only; bricks are
 	# breakable so the plan routes straight through them and the bot breaches).
 	_nav.observe(obs.visible_obstacles)
@@ -106,7 +109,7 @@ func tick(obs: BotObservation) -> BotAction:
 				swap = SHELL_HE
 				fire = false   # cycle to HE first; breach the wide lane next tick
 	else:
-		var foe := _enemy_in_dir(obs, pos, move, raw)
+		var foe := _enemy_in_dir(obs, pos, move, shot)
 		if not foe.is_empty() and obs.reload_bar_value >= RELOAD_READY:
 			fire = true
 			if str(foe.get("type", "")) == "Heavy" and _reserve(obs, SHELL_HEAT) > 0 \

@@ -23,7 +23,15 @@ class StubBand extends RefCounted:
 class StubDepot extends Node:
 	signal depot_picked(depot, kind)
 	var depot_name: String = "depot_2"
-	var band_name_next: String = "bunker_zone"
+	# Deliberately WRONG static export — the recorder must IGNORE it and resolve the
+	# next band from the level's runtime (shuffled) order instead (PR#5 #5 teeth).
+	var band_name_next: String = "STALE_EXPORT_must_be_overridden"
+
+
+# A minimal stand-in for the level's (already-shuffled) BreachConfig: just the
+# ordered band list the recorder reads to resolve the true next band.
+class StubConfig extends RefCounted:
+	var bands: Array = []
 
 
 class StubPlayer extends Node2D:
@@ -42,6 +50,7 @@ class StubPlayer extends Node2D:
 class StubLevel extends Node2D:
 	signal breach_band_changed(band)
 	var _current_breach_band = null
+	var breach_config = null   # StubConfig with the ordered (shuffled) band list
 
 
 func _initialize() -> void:
@@ -49,6 +58,13 @@ func _initialize() -> void:
 
 	var level := StubLevel.new()
 	level._current_breach_band = StubBand.new("tutorial_choke")
+	# runtime band order: after brick_maze comes bunker_zone — so a depot picked while
+	# _cur_band == brick_maze must record band_next == bunker_zone, NOT the depot's
+	# stale "STALE_EXPORT..." export. (PR#5 #5)
+	var cfg := StubConfig.new()
+	cfg.bands = [StubBand.new("tutorial_choke"), StubBand.new("brick_maze"),
+		StubBand.new("bunker_zone"), StubBand.new("open_killbox"), StubBand.new("endgame_mixed")]
+	level.breach_config = cfg
 	var depot := StubDepot.new()
 	level.add_child(depot)               # depot present BEFORE recorder wires signals
 	get_root().add_child(level)

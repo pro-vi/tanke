@@ -99,7 +99,12 @@ func run_one(tree: SceneTree, bot_id: String, seed_v: int, out_path: String) -> 
 		await tree.process_frame
 		frames += 1
 		if tree.paused:
-			_drive_depot(level)
+			# Drive the active depot past its safe-gate. Backstop (PR#5 #4): if the
+			# tree is paused but NO depot was drivable (e.g. a depot paused before
+			# capturing the loadout, so apply_choice would early-return on null),
+			# force-unpause so the run can't spin to ARC_MAX_FRAMES on a stuck gate.
+			if not _drive_depot(level):
+				tree.paused = false
 
 	# backstop: if the frame cap hit before the recorder finalized, force timeout
 	# so every run yields a record (never a vacuous "no telemetry").
@@ -143,16 +148,20 @@ func run_one(tree: SceneTree, bot_id: String, seed_v: int, out_path: String) -> 
 
 
 # Drive the active depot past its safe-gate (apply choice 1 = first offer). The
-# active depot is the one that captured the player's loadout and hasn't been
-# picked yet; apply_choice both applies the upgrade and unpauses the tree.
-static func _drive_depot(level: Node) -> void:
+# active depot is the one that captured the player's loadout and hasn't been picked
+# yet; apply_choice both applies the upgrade and unpauses the tree. Returns true if
+# a depot was driven. Searches the WHOLE subtree (find_children, recursive) so the
+# gate is still driven if the arc ever re-parents depots under an intermediate node
+# instead of directly under the level root (PR#5 #4a).
+static func _drive_depot(level: Node) -> bool:
 	if not is_instance_valid(level):
-		return
-	for c in level.get_children():
+		return false
+	for c in level.find_children("*", "", true, false):
 		if is_instance_valid(c) and c.has_method("apply_choice") \
 				and c.get("_player_loadout") != null and not bool(c.get("_picked")):
 			c.apply_choice(1)
-			return
+			return true
+	return false
 
 
 func _teardown(tree: SceneTree, level: Node) -> void:

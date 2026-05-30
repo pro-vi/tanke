@@ -108,12 +108,42 @@ func _on_depot_pick(depot, kind) -> void:
 	if depot == null:
 		return
 	var dn = depot.get("depot_name")
+	# band_next: prefer the RUNTIME-resolved next band (the band after the current one
+	# in the level's shuffled order). The depot's band_name_next export is the
+	# UNSHUFFLED value baked into BreachLevel.tscn, so it is wrong for seeds where
+	# ProceduralLevel permutes the middle bands (PR#5 review #5). Fall back to the
+	# static export when the runtime order is unavailable (e.g. a stub level).
+	var resolved := _next_band_after_current()
 	var bn = depot.get("band_name_next")
+	var band_next := resolved if resolved != "" else (str(bn) if bn != null else "")
 	_depot_picks.append({
 		"depot": str(dn) if dn != null and str(dn) != "" else String(depot.name),
 		"kind": int(kind),
-		"band_next": str(bn) if bn != null else "",
+		"band_next": band_next,
 	})
+
+
+# The band the player enters after the current one, read from the level's
+# (already-shuffled) ordered band list. "" if unavailable or the current band is
+# last. This is the true next-band even when the middle bands were permuted.
+func _next_band_after_current() -> String:
+	if level == null or not is_instance_valid(level):
+		return ""
+	var cfg = level.get("breach_config")
+	if cfg == null:
+		return ""
+	var bands = cfg.get("bands")
+	if bands == null or typeof(bands) != TYPE_ARRAY:
+		return ""
+	for i in range(bands.size()):
+		var b = bands[i]
+		if b != null and ("band_name" in b) and String(b.band_name) == _cur_band:
+			if i + 1 < bands.size():
+				var nb = bands[i + 1]
+				if nb != null and ("band_name" in nb):
+					return String(nb.band_name)
+			return ""   # current band is the last — no next
+	return ""
 
 
 # Close the open band segment (deltas since it opened). No-op if no band is open.
