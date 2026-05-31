@@ -279,9 +279,17 @@ check-arc-runs:
 	echo "$$out" | grep -E "^(ARC_RUNS_OK|ARC_RUNS_FAIL|  RUN_FAIL|SCRIPT ERROR)"; \
 	echo "$$out" | grep -q "^ARC_RUNS_OK"
 
+# PR#5 Codex P2 — arc-scoped camera-rect enemy bounds: a top-of-screen enemy that
+# the old player-centered box dropped under the bottom-clamped camera is surfaced
+# by ObservationBuilder.build() (teeth: fails on the pre-fix per-axis filter).
+check-arc-viewport:
+	@out=$$($(HEADLESS) --fixed-fps 60 --script res://loop/eprime-experiment/test_arc_viewport.gd 2>&1); \
+	echo "$$out" | grep -E "^(  case|  FAIL|ARC_VIEWPORT_OK|ARC_VIEWPORT_FAIL|SCRIPT ERROR)"; \
+	echo "$$out" | grep -q "^ARC_VIEWPORT_OK"
+
 # AC-A1..A4 composite final-verify. Does NOT touch the Q1 bot-harness (run
 # `make bot-harness` separately for the 84/84 guard).
-arc-harness: check-hash-anchor check-competent-bot check-arc-telemetry-schema check-arc-telemetry-recorder check-arc-climb check-arc-runs
+arc-harness: check-hash-anchor check-competent-bot check-arc-telemetry-schema check-arc-telemetry-recorder check-arc-viewport check-arc-climb check-arc-runs
 	@echo "ARC_HARNESS_OK"
 
 # Arc-4 breach mode: verify configs/breach_default.tres loads cleanly

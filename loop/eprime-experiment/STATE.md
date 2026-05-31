@@ -191,6 +191,9 @@ don't re-tune motion.)
   more on-screen awareness = marginally better survival); competent climb median
   unchanged (6; floor 4 held); determinism preserved (same-seed-twice identical).
   Arc buckets are not a frozen sentinel, so the shift is honest and expected.
+  Guarded by `make check-arc-viewport` (test_arc_viewport.gd, in arc-harness):
+  a top-of-screen enemy the old box dropped is surfaced by the live build path —
+  teeth-verified (fails on the pre-fix per-axis filter).
 - **LLM-between-runs loop** — feed v0.2-arc telemetry to an LLM that proposes the next
   survival heuristic.
 - Score consult-001 P2/P3 legibility predictions against real telemetry.
