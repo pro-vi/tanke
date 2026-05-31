@@ -154,6 +154,144 @@ check-titlescreen-nav:
 # (RUBRIC C1/5 + C6/5 + C10/4 + C10/5 verification.)
 test-all: test check-loader check-chain check-chain-35 check-titlescreen-nav
 
+# ============================================================================
+# Arc-5 bot-harness scaffolding (E′ experiment) — loop/eprime-experiment/
+# Composite `bot-harness` is the goal-loop final-verify (AC-006); it is grown
+# target-by-target as units U1..U9 land and assembled at the bottom of this
+# section. Sub-targets follow the breach house style: visible run + `grep -q`
+# positive-sentinel gate. See loop/eprime-experiment/{PROMPT,ACCEPTANCE}.md.
+# ============================================================================
+
+# Cross-arc procedural hash anchor (since arc-1 iter-0). Bit-identical on the
+# flag-off baseline gates every substrate-touching iter.
+HASH_ANCHOR    := 23d6a2ec3bf2821f9e45943364483fef4f91b7af55e1badb1140fa7634024291
+
+.PHONY: check-bots-base check-bots check-bot-driver check-telemetry-schema check-telemetry-recorder check-seed-bank check-84-runs check-hash-anchor check-orchestration bot-harness
+
+# AC-001 (U1) — bot contract foundation: BotPolicy / BotAction / BotObservation
+# load, BotAction.is_valid() rejects malformed actions (oracle teeth).
+check-bots-base:
+	@$(HEADLESS) --script res://loop/eprime-experiment/test_bots_base.gd 2>&1 | grep -E "^(  case|  FAIL|BOTS_BASE_OK|BOTS_BASE_FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/eprime-experiment/test_bots_base.gd 2>&1 | grep -q "^BOTS_BASE_OK"
+
+# AC-001 (U6) — the 7 deterministic bot policies: each instantiates as a
+# BotPolicy + tick() returns a VALID BotAction (teeth: null/garbage caught) +
+# defining behaviour per policy (teeth: a heuristic ignoring the obs fails).
+check-bots:
+	@$(HEADLESS) --script res://loop/eprime-experiment/test_bots.gd 2>&1 | grep -E "^(  case|  behaviour|  FAIL|BOTS_OK|BOTS_FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/eprime-experiment/test_bots.gd 2>&1 | grep -q "^BOTS_OK"
+
+# AC-001 (U3) — BotInputDriver synthesizes correct held-key state from a
+# BotAction; releases old keys on dir change + idle (oracle teeth: stuck keys
+# fail). Zero substrate touch — drives PlayerTank via the Input singleton.
+check-bot-driver:
+	@$(HEADLESS) --script res://loop/eprime-experiment/test_bot_input_driver.gd 2>&1 | grep -E "^(  case|  FAIL|BOT_DRIVER_OK|BOT_DRIVER_FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/eprime-experiment/test_bot_input_driver.gd 2>&1 | grep -q "^BOT_DRIVER_OK"
+
+# AC-002 (U4a) — telemetry SCHEMA contract + oracle independence: a VALID
+# fixture validates and an INVALID fixture is rejected (teeth). The producer
+# (TelemetryRecorder, U4b) is proven transitively by check-84-runs (AC-004).
+check-telemetry-schema:
+	@$(HEADLESS) --script res://loop/eprime-experiment/test_telemetry_schema.gd 2>&1 | grep -E "^(  fixture|  FAIL|TELEMETRY_OK|TELEMETRY_SCHEMA_FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/eprime-experiment/test_telemetry_schema.gd 2>&1 | grep -q "^TELEMETRY_OK"
+
+# AC-002 (U4b) — TelemetryRecorder produces a schema-conforming record from
+# PlayerTank signals (stub-player unit test; the live 84-run integration proof
+# is check-84-runs). Teeth: emitted record must validate + field tallies match.
+check-telemetry-recorder:
+	@$(HEADLESS) --script res://loop/eprime-experiment/test_telemetry_recorder.gd 2>&1 | grep -E "^(  case|  FAIL|RECORDER_OK|RECORDER_FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/eprime-experiment/test_telemetry_recorder.gd 2>&1 | grep -q "^RECORDER_OK"
+
+# AC-003 — seed bank: 12 seeds partitioned 4 easy / 4 medium / 4 hard-or-bug,
+# each declared tier re-validated against the canonical reachability oracle
+# (test_runner.gd). Teeth: a mis-declared tier fails (tier-mutation rejected).
+check-seed-bank:
+	@python3 $(PROJECT_DIR)/tools/check_seed_bank.py --godot $(GODOT) --project $(PROJECT_DIR) --seeds $(PROJECT_DIR)/data/seed_bank/seeds.json
+
+# AC-004 — the integration proof: 7 bots x 12 seeds = 84 headless Q1ProofRoom
+# runs, each emitting a schema-conforming telemetry JSON, no Godot crash, in
+# <5 min. --fixed-fps decouples from wall clock (runs as fast as CPU allows;
+# ~14s for all 84). NOT mocked — this IS the live headless integration.
+# Single-run capture (the batch is expensive) gates on RUNS_OK 84/84.
+check-84-runs:
+	@out=$$($(HEADLESS) --fixed-fps 60 --script res://loop/eprime-experiment/bot_runner.gd 2>&1); \
+	echo "$$out" | grep -E "^(RUNS_OK|RUNS_FAIL|  RUN_FAIL|SCRIPT ERROR)"; \
+	echo "$$out" | grep -q "^RUNS_OK 84/84"
+
+# AC-005 — cross-arc procedural hash anchor preserved bit-identical on the
+# flag-off baseline. The bot harness adds only sibling nodes + new files, so
+# this proves no write perturbed ProceduralLevel seed-42 tile generation.
+check-hash-anchor:
+	@$(HEADLESS) --script res://loop/test_runner.gd -- --seed 42 --json 2>/dev/null \
+		| grep '^{' \
+		| python3 -c "import sys,json; d=json.load(sys.stdin); h=d.get('tile_hash',''); ok=h=='$(HASH_ANCHOR)'; print(('HASH_OK ' if ok else 'HASH_BROKEN ')+h); sys.exit(0 if ok else 1)"
+
+# AC-007 — the LLM-between-runs orchestration entry point (tools/bot_runner.sh):
+# a subset run produces a parseable summary JSON; an unknown bot fails loudly.
+check-orchestration:
+	@out=$$(GODOT=$(GODOT) bash $(PROJECT_DIR)/tools/check_orchestration.sh 2>&1); \
+	echo "$$out" | grep -E "^(  case|  FAIL|ORCHESTRATION_OK|ORCHESTRATION_FAIL)"; \
+	echo "$$out" | grep -q "^ORCHESTRATION_OK"
+
+# AC-006 — THE FINAL-VERIFY. Composite proving the whole bot-harness inventory
+# (AC-001..AC-007) in ONE repo state: hash anchor first (fail fast on substrate
+# drift), then the bot contract + driver + telemetry schema/recorder + seed bank
+# + the 84-run integration + the orchestration entry point. Prereqs run in order;
+# any failure aborts before the sentinel. Emits `BOT_HARNESS_OK 84/84` only when
+# every sub-check passed.
+bot-harness: check-hash-anchor check-bots-base check-bots check-bot-driver check-telemetry-schema check-telemetry-recorder check-seed-bank check-84-runs check-orchestration
+	@echo "BOT_HARNESS_OK 84/84"
+
+# ============================================================================
+# arc-harness-v0.2 (E′ experiment) — the competent bot on the REAL procedural
+# arc (BreachLevel). NEW targets only; the frozen Q1 bot-harness above is left
+# bit-identical. Same house style: visible run + `grep -q` positive sentinel.
+# ============================================================================
+
+.PHONY: check-competent-bot check-arc-telemetry-schema check-arc-telemetry-recorder check-arc-runs check-arc-climb arc-harness
+
+# AC-A1 — the composite CompetentBot loads as a BotPolicy, returns a VALID action
+# for every observation (teeth: null/garbage caught), and exhibits each verb.
+check-competent-bot:
+	@$(HEADLESS) --script res://loop/eprime-experiment/test_competent_bot.gd 2>&1 | grep -E "^(  case|  behaviour|  FAIL|COMPETENT_OK|COMPETENT_FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/eprime-experiment/test_competent_bot.gd 2>&1 | grep -q "^COMPETENT_OK"
+
+# AC-A2 — arc telemetry SCHEMA contract (v0.2-arc superset) + oracle independence.
+check-arc-telemetry-schema:
+	@$(HEADLESS) --script res://loop/eprime-experiment/test_arc_telemetry_schema.gd 2>&1 | grep -E "^(  fixture|  FAIL|ARC_TELEMETRY_OK|ARC_TELEMETRY_SCHEMA_FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/eprime-experiment/test_arc_telemetry_schema.gd 2>&1 | grep -q "^ARC_TELEMETRY_OK"
+
+# AC-A2 — ArcTelemetryRecorder emits a schema-conforming v0.2-arc record (stub scene).
+check-arc-telemetry-recorder:
+	@$(HEADLESS) --script res://loop/eprime-experiment/test_arc_telemetry_recorder.gd 2>&1 | grep -E "^(  case|  FAIL|ARC_RECORDER_OK|ARC_RECORDER_FAIL|ERROR|SCRIPT ERROR)"; \
+	$(HEADLESS) --script res://loop/eprime-experiment/test_arc_telemetry_recorder.gd 2>&1 | grep -q "^ARC_RECORDER_OK"
+
+# AC-A3 — competence oracle: competent traverses the arc, out-climbing the
+# single-verb baseline (teeth: objective-rush stalls). Honest distribution recorded.
+check-arc-climb:
+	@out=$$($(HEADLESS) --fixed-fps 60 --script res://loop/eprime-experiment/test_arc_climb.gd 2>&1); \
+	echo "$$out" | grep -E "^(  competent|  baseline|  case|  FAIL|ARC_CLIMB_OK|ARC_CLIMB_FAIL|SCRIPT ERROR)"; \
+	echo "$$out" | grep -q "^ARC_CLIMB_OK"
+
+# AC-A4 — arc batch integration proof: arc roster x seed bank, conforming JSON, no crash.
+check-arc-runs:
+	@out=$$($(HEADLESS) --fixed-fps 60 --script res://loop/eprime-experiment/arc_runner.gd 2>&1); \
+	echo "$$out" | grep -E "^(ARC_RUNS_OK|ARC_RUNS_FAIL|  RUN_FAIL|SCRIPT ERROR)"; \
+	echo "$$out" | grep -q "^ARC_RUNS_OK"
+
+# PR#5 Codex P2 — arc-scoped camera-rect enemy bounds: a top-of-screen enemy that
+# the old player-centered box dropped under the bottom-clamped camera is surfaced
+# by ObservationBuilder.build() (teeth: fails on the pre-fix per-axis filter).
+check-arc-viewport:
+	@out=$$($(HEADLESS) --fixed-fps 60 --script res://loop/eprime-experiment/test_arc_viewport.gd 2>&1); \
+	echo "$$out" | grep -E "^(  case|  FAIL|ARC_VIEWPORT_OK|ARC_VIEWPORT_FAIL|SCRIPT ERROR)"; \
+	echo "$$out" | grep -q "^ARC_VIEWPORT_OK"
+
+# AC-A1..A4 composite final-verify. Does NOT touch the Q1 bot-harness (run
+# `make bot-harness` separately for the 84/84 guard).
+arc-harness: check-hash-anchor check-competent-bot check-arc-telemetry-schema check-arc-telemetry-recorder check-arc-viewport check-arc-climb check-arc-runs
+	@echo "ARC_HARNESS_OK"
+
 # Arc-4 breach mode: verify configs/breach_default.tres loads cleanly
 # with >=2 distinct bands and per-band terrain-weight overrides (C4
 # anchor 1 structural cite).

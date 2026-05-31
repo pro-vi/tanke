@@ -1,0 +1,23 @@
+{
+  "survival_time_sec": -3.0,
+  "damage_taken": 38,
+  "shells_fired_per_class": {"AP": 47, "HE": 6, "HEAT": 9},
+  "shell_hit_rate": 1.4,
+  "reload_cancel_events": 12,
+  "time_exposed_pct": 0.64,
+  "death_cause": "exploded",
+  "ui_action_correlation": {"reload_bar": 0.42, "shell_chip": 0.18},
+  "seed": 1234,
+  "bot_id": "",
+  "schema_version": "v0.1",
+  "max_depth": -5,
+  "final_band": 99,
+  "reached_endgame": "yes",
+  "bands_reached": ["tutorial_choke", 7],
+  "band_segments": [
+    {"band": "tutorial_choke", "entered_sec": -1.0, "shells_fired": {"AP": 9, "HE": 0, "HEAT": 0, "APCR": 0}, "damage_taken": 2}
+  ],
+  "depot_picks": [
+    {"depot": "depot_1", "kind": "free"}
+  ]
+}

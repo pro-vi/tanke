@@ -21,6 +21,12 @@ data_*/
 # Loop output
 tools/out/
 
+# Arc-5/arc-v0.2 bot-harness: generated per-run telemetry (regenerable via
+# make check-84-runs / bot-harness / the arc runner). The seed bank + fixtures
+# ARE source. Recursive so the arc subdir (data/telemetry/arc/) is covered too.
+data/telemetry/**/*.json
+data/telemetry/*.json
+
 # Session/tracking
 .claude/
 .prov/
