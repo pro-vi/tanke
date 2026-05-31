@@ -20,19 +20,51 @@ const SPEED_BASELINE: float = 32.0  # PlayerTank SPEED_BASELINE:145
 const DEPTH_PX: float = 16.0        # level's logical grid for rows-climbed/depth
 const VISION_TILES: int = 30        # terrain/depot planning horizon (~a screen of the player)
 # On-screen half-extents in 8px tiles for the 320x240 viewport (project.godot
-# window/size). The viewport is 320x240, player roughly centered, so only ~20
-# tiles each side horizontally (160px) and ~15 vertically (120px) are actually
-# rendered. ENEMIES use this strict per-axis bound — not the looser VISION_TILES
-# Manhattan radius — because off-screen enemy positions feed aiming/dodging and
-# exposure telemetry, which must honor the screen-visible observation contract
-# (PR#5 #6 follow-up). Terrain/depot scans keep VISION_TILES: they are a planning
-# horizon (NavMemory accumulation), not a combat-fairness surface.
+# window/size): ~20 tiles horizontally (160px) and ~15 vertically (120px).
+# These bound the ENEMY scan (not the looser VISION_TILES Manhattan radius) so
+# off-screen enemy positions never feed aiming/dodging or exposure telemetry,
+# honoring the screen-visible observation contract the harness measures
+# (PR#5 #6). They are the PLAYER-CENTERED fallback used by the fixed Q1 lane;
+# the arc/breach lane instead derives the on-screen bound from the live,
+# bottom-clamped Camera2D rect (see _arc_view_rect + the enemy scan below),
+# because a player-centered box is wrong under the arc's clamped/pinned camera.
+# Terrain/depot scans keep VISION_TILES: a planning horizon (NavMemory
+# accumulation), not a combat-fairness surface.
 const VIEWPORT_HALF_X_TILES: int = 20   # 320px / 8px / 2
 const VIEWPORT_HALF_Y_TILES: int = 15   # 240px / 8px / 2
 
 
 static func _to_tile(world: Vector2) -> Vector2i:
 	return Vector2i(roundi(world.x / CELL_PX), roundi(world.y / CELL_PX))
+
+
+# Live on-screen world rect from the active Camera2D — the breach/arc lane's
+# screen-visible bound. The arc camera (ProceduralLevel) is BOTTOM-CLAMPED
+# (limit_bottom=240, player start y=232 -> every run begins clamped) and
+# horizontally PINNED (level width == viewport width). Under the clamp a
+# player-centered box hides on-screen enemies ABOVE the player — exactly where
+# top-spawned enemies live — and, off-center, on the far horizontal side, which
+# biased the very climb metric the arc measures (PR#5 Codex P2: deferred, now
+# fixed arc-scoped). get_screen_center_position() honors limits + smoothing, so
+# the rect is the actual rendered region. Returns an empty Rect2 (size 0) when
+# no camera resolves, signalling the caller to use the player-centered fallback.
+# Deterministic under --fixed-fps (fixed delta + seeded player path).
+static func _arc_view_rect(player: Node, level: Node) -> Rect2:
+	var vp := player.get_viewport()
+	if vp == null:
+		return Rect2()
+	var cam: Camera2D = vp.get_camera_2d()
+	if cam == null and level != null and is_instance_valid(level):
+		cam = level.get_node_or_null("Camera2D") as Camera2D
+	if cam == null:
+		return Rect2()
+	var zoom: Vector2 = cam.zoom
+	if zoom.x == 0.0 or zoom.y == 0.0:
+		zoom = Vector2.ONE
+	var size: Vector2 = vp.get_visible_rect().size / zoom
+	var center: Vector2 = cam.get_screen_center_position()
+	# one-tile margin so an enemy straddling the screen edge still counts visible
+	return Rect2(center - size * 0.5, size).grow(CELL_PX)
 
 
 static func build(player: Node, level: Node, iter_n: int, time_sec: float) -> BotObservation:
@@ -92,21 +124,34 @@ static func build(player: Node, level: Node, iter_n: int, time_sec: float) -> Bo
 	obs.speed_meter_normalized = spd / SPEED_BASELINE
 
 	# --- spatial: enemies (group "enemy") ---
-	# Screen-visible only, by the VIEWPORT half-extents (per-axis), NOT a Manhattan
-	# radius: a 30-tile Manhattan cutoff still admits an enemy ~30 tiles (~240px) away
-	# on a cardinal axis, which is off-camera in a 320x240 viewport (~20x15 visible
-	# tiles). Off-screen enemy positions must NOT inform aiming/dodging or exposure
-	# telemetry — that breaks the screen-visible observation contract the harness
-	# measures (PR#5 #6 + Codex follow-up). The fixed Q1 room keeps every enemy within
-	# a screen, so this is a no-op there.
+	# Screen-visible only. The arc/breach lane bounds enemies by the LIVE camera
+	# rect (bottom-clamped + width-pinned — a player-centered box is wrong on both
+	# axes there, hiding on-screen enemies above/beside the player; PR#5 Codex P2).
+	# The fixed Q1 lane keeps the static player-centered VIEWPORT half-extents,
+	# byte-identical to before (De Morgan of the old |dx|>X or |dy|>Y cutoff), so
+	# its frozen telemetry/HASH sentinel is untouched. Off-screen enemy positions
+	# must NOT inform aiming/dodging or exposure telemetry — that breaks the
+	# screen-visible observation contract the harness measures (PR#5 #6).
+	var is_breach := false
+	if level != null and is_instance_valid(level) and ("breach_mode_enabled" in level):
+		is_breach = bool(level.breach_mode_enabled)
+	var view_rect := Rect2()
+	if is_breach:
+		view_rect = _arc_view_rect(player, level)
+	var use_view: bool = view_rect.size.x > 0.0
 	var tree := player.get_tree()
 	if tree != null:
 		for e in tree.get_nodes_in_group("enemy"):
 			if e == null or not is_instance_valid(e):
 				continue
 			var et: Vector2i = _to_tile(e.global_position)
-			if abs(et.x - obs.player_pos_tile.x) > VIEWPORT_HALF_X_TILES \
-					or abs(et.y - obs.player_pos_tile.y) > VIEWPORT_HALF_Y_TILES:
+			var on_screen: bool
+			if use_view:
+				on_screen = view_rect.has_point(e.global_position)
+			else:
+				on_screen = abs(et.x - obs.player_pos_tile.x) <= VIEWPORT_HALF_X_TILES \
+						and abs(et.y - obs.player_pos_tile.y) <= VIEWPORT_HALF_Y_TILES
+			if not on_screen:
 				continue
 			obs.visible_enemies.append({
 				"pos_tile": et,

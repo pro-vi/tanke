@@ -178,17 +178,19 @@ don't re-tune motion.)
 - **Tidy-up:** the U6 oracle (`test_arc_climb.gd`) uses its own seed set (median 13)
   while the arc batch uses the canonical seed-bank seeds (median 6). Point the oracle
   at the seed-bank seeds so the two medians reconcile (small follow-up).
-- **Arc-scoped camera-rect observation bounds** (deferred PR#5 Codex P2, comment
-  3329421242). The enemy-visibility filter in the SHARED `ObservationBuilder` is
-  player-centered per-axis (|dx|<=20, |dy|<=15 for the 320x240 viewport). That is
-  imprecise under the arc's BOTTOM-CLAMPED camera (`ProceduralLevel.tscn`
-  limit_bottom=240, player start y=232): early in a run the visible screen is
-  y=0..240, so a top-edge enemy >15 tiles up is on-screen yet dropped. The correct
-  fix derives bounds from the live `Camera2D.get_screen_center_position()` +
-  viewport rect — but that adds camera coupling AND would re-perturb the frozen Q1
-  telemetry a third time. Deferred: scope camera-rect-accurate bounds to the ARC
-  lane only, leaving Q1 on the simple filter. (The current per-axis bound already
-  fixes the core off-camera-enemy leak; this is residual clamp precision.)
+- **Arc-scoped camera-rect observation bounds** — RESOLVED (PR#5 Codex P2, comment
+  3329421242; was deferred). `ObservationBuilder` now derives the ARC/breach lane's
+  enemy-visibility bound from the live `Camera2D` rect (`_arc_view_rect`:
+  `get_screen_center_position()` + viewport size, honoring limits/smoothing), gated
+  on `breach_mode_enabled`. Fixes the bottom-clamp blind spot (top-edge on-screen
+  enemies >15 tiles up were dropped) AND the width-pinned horizontal under-coverage.
+  The fixed Q1 lane keeps the player-centered per-axis filter (De Morgan-equivalent
+  to the old `|dx|>20 or |dy|>15` cutoff) — byte-identical, so HASH_OK + bot-harness
+  84/84 (timeout 0/death 83/victory 1) are untouched. Measured arc impact (96-run
+  sweep, pre-fix -> fix): death 83->80, timeout 13->16 (3 runs flip death->timeout —
+  more on-screen awareness = marginally better survival); competent climb median
+  unchanged (6; floor 4 held); determinism preserved (same-seed-twice identical).
+  Arc buckets are not a frozen sentinel, so the shift is honest and expected.
 - **LLM-between-runs loop** — feed v0.2-arc telemetry to an LLM that proposes the next
   survival heuristic.
 - Score consult-001 P2/P3 legibility predictions against real telemetry.
